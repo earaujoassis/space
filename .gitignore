@@ -1,0 +1,5 @@
+.DS_Store
+.travis.yml
+.vagrant
+ci
+env
