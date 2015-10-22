@@ -1,4 +1,4 @@
-# Wallet
+# Space
 
 > An user management microservice
 
