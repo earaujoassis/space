@@ -4,8 +4,20 @@
 
 ## Setup
 
+Install dependencies (soon it'll be migrated to `godep`):
+
 ```sh
-$ go get
+$ go get -u github.com/gorilla/mux
+$ go get -u github.com/lib/pq
+$ go get -u gopkg.in/godo.v1/cmd/godo
+```
+
+## Running
+
+It assumes [`godo`](https://github.com/go-godo/godo) is properly installed.
+
+```sh
+$ godo serve
 ```
 
 ## Issues
