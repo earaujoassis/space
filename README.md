@@ -4,11 +4,18 @@
 
 ## Setup
 
-Install dependencies (soon it'll be migrated to `godep`):
+Please make sure to `git clone` (or `go get`) this project inside the `$GOPATH`
+in the following structure: `$GOPATH/src/github.com/earaujoassis/space`. Install
+the project dependencies:
 
 ```sh
-$ go get -u github.com/gorilla/mux
-$ go get -u github.com/lib/pq
+$ cd $GOPATH/src/github.com/earaujoassis/space
+$ go get
+```
+
+Please install the [`godo`](https://github.com/go-godo/godo) task runner:
+
+```sh
 $ go get -u gopkg.in/godo.v1/cmd/godo
 ```
 
@@ -17,7 +24,13 @@ $ go get -u gopkg.in/godo.v1/cmd/godo
 It assumes [`godo`](https://github.com/go-godo/godo) is properly installed.
 
 ```sh
-$ godo serve
+$ godo setup server
+```
+
+## Testing
+
+```sh
+$ go test
 ```
 
 ## Issues
