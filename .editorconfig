@@ -8,13 +8,9 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{py,go}]
+[*.go]
 indent_size = 4
 
-[*.tsv]
-indent_style = tab
-indent_size = 4
-
-[Makefile]
+[{Makefile,*.sql}]
 indent_style = tab
 indent_size = 4
