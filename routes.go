@@ -3,7 +3,7 @@ package main
 import (
     "net/http"
 
-    "./energy"
+    . "github.com/earaujoassis/space/energy"
 )
 
 const (
@@ -17,12 +17,12 @@ func Index(r *http.Request) (int, interface{}) {
     return 200, map[string]string{"message": "Hello World"}
 }
 
-var routes = energy.Routes{
-    energy.Route{ GET, "/", Index, },
-    energy.Route{ GET, "/applications", GetApplications, },
-    energy.Route{ POST, "/applications", PostApplication, },
-    energy.Route{ GET, "/applications/{id}", GetApplication, },
-    energy.Route{ GET, "/users", GetUsers, },
-    energy.Route{ POST, "/users", PostUser, },
-    energy.Route{ GET, "/users/{id}", GetUser, },
+var routes = Routes{
+    Route{ GET, "/", Index, },
+    Route{ GET, "/applications", GetApplications, },
+    Route{ POST, "/applications", PostApplication, },
+    Route{ GET, "/applications/{id}", GetApplication, },
+    Route{ GET, "/users", GetUsers, },
+    Route{ POST, "/users", PostUser, },
+    Route{ GET, "/users/{id}", GetUser, },
 }

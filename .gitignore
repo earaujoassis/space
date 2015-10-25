@@ -2,6 +2,7 @@
 .travis.yml
 .vagrant
 godobin*
+space
 ci
 env
 db
