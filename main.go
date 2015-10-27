@@ -1,7 +1,6 @@
 package main
 
 import (
-    "database/sql"
     "fmt"
     "log"
     "net/http"
@@ -9,9 +8,10 @@ import (
 
     _ "github.com/lib/pq"
     . "github.com/earaujoassis/space/energy"
+    "github.com/jinzhu/gorm"
 )
 
-var Database *sql.DB
+var Database gorm.DB
 
 func main() {
     var err error
@@ -28,7 +28,7 @@ func main() {
         "postgres",
         "space_development",
     )
-    Database, err = sql.Open("postgres", databaseUrl)
+    Database, err = gorm.Open("postgres", databaseUrl)
     if err != nil {
         log.Fatal("Could not connect to database")
     }
