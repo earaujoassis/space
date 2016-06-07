@@ -4,7 +4,7 @@
 
 ## Issues
 
-Please take a look at [/issues](https://github.com/quatrolabs/space/issues)
+Please take a look at [/issues](https://github.com/earaujoassis/space/issues)
 
 ## License
 
