@@ -1,0 +1,68 @@
+.login-content {
+  position relative
+  @media screen and (min-width: 600px) {
+    max-width 400px
+    margin 40px auto
+    box-shadow 0px 2px 2px rgba(0, 0, 0, 0.3)
+  }
+  padding 40px 40px
+  background #323232
+  color #fff
+
+  &:before {
+    content ""
+    position absolute
+    left 0
+    top -13px
+    display block
+    width 400px
+    height 400px
+    border 11.3262379px solid #272727
+    transform rotate(11.32624deg)
+    opacity 0.1
+  }
+
+  .user-avatar {
+    &.unknown:before, &.secrecy:before, &.code:before {
+      display block
+      position absolute
+      color #222
+      font normal normal normal 14px/1 FontAwesome
+      font-size 6rem
+      text-align center
+      bottom -10px
+      left 0
+      right 0
+    }
+
+    &.unknown:before {
+      content "\f21b"
+    }
+
+    &.secrecy:before {
+      content "\f084"
+    }
+
+    &.code:before {
+      content "\f10b"
+    }
+
+    position relative
+    width 125px
+    height 125px
+    margin 0 auto 40px
+    border-radius 50%
+    background #cfcfCf
+    overflow hidden
+  }
+
+  .upper-box {
+    margin-top 10px
+    font-weight 100
+    font-size 0.9rem
+  }
+
+  p {
+    margin 0
+  }
+}
