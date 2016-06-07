@@ -1,9 +1,5 @@
 .DS_Store
-.travis.yml
-.vagrant
-godobin*
-space
-ci
-env
-db
-atoms
+node_modules
+jupiter/public/vendor
+jupiter/public/css/base.css
+jupiter/public/js/ganymede.min.js
