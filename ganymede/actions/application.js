@@ -1,5 +1,5 @@
 import { ActionTypes } from '../constants';
-import ActionCreator from './base';
+import ActionCreator from '../../core/actions/base';
 
 class ApplicationActionFactory {
     setupApp() {

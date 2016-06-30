@@ -1,7 +1,6 @@
 import React from 'react';
 
-import Login from './login.jsx';
-import Settings from './settings.jsx';
+import Login from './Login.jsx';
 
 export default class Root extends React.Component {
     constructor() {
@@ -15,7 +14,7 @@ export default class Root extends React.Component {
         if (!this.state.user) {
             component = <Login afterLogin={this._afterLogin} />;
         } else {
-            component = <Settings />;
+            component = null;
         }
         return component;
     }
