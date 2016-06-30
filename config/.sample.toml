@@ -1,0 +1,10 @@
+[datastore]
+host = "localhost"
+user = "postgres"
+password = ""
+database_prefix = "space"
+sslmode = "disable"
+key_secret = "secret"
+
+[http]
+port = 8080

@@ -18,7 +18,6 @@
     "tests"
   ],
   "dependencies": {
-    "foundation": "~5.5.3",
     "font-awesome": "~4.6.1"
   }
 }

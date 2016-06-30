@@ -1,0 +1,15 @@
+.request-usage {
+  margin-top: 20px;
+
+  .options {
+    border-top: 1px solid #383838;
+    border-bottom: 1px solid #383838;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-weight: 100;
+
+    .active {
+      color: #007095;
+    }
+  }
+}

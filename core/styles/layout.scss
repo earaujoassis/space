@@ -1,0 +1,76 @@
+.site-header {
+  padding: 20px 0;
+}
+.branding {
+  text-align: center;
+  font-weight: 100;
+}
+.site-footer {
+  font-weight: 300;
+  font-size: 0.9rem;
+
+  p {
+    margin-bottom: 4px;
+  }
+
+  &:before {
+    content: "";
+    display: block;
+    border-top: 1px solid #383838;
+    padding-top: 5px;
+  }
+}
+.breadcrumbs-custom,
+.row .row.breadcrumbs-custom {
+  margin: 0 0 25px;
+  padding: 0.4625rem 0 0.4625rem 1rem;
+  border: none;
+  border-left: 3px solid #fff;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 100;
+
+  ul {
+    margin: 0;
+    list-style: none;
+
+    li {
+      display: inline;
+    }
+
+    li ~ li:before {
+      padding: 0 4px;
+      content: ' > ';
+    }
+  }
+}
+.centered-message {
+  padding-top: 20px;
+  padding-bottom: 60px;
+}
+.section-title {
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+.separator {
+  margin-bottom: 20px;
+
+  form {
+    margin-bottom: 30px;
+  }
+}
+form {
+  p.help {
+    margin-bottom: 5px;
+    font-weight: 200;
+    font-size: 0.8rem;
+  }
+
+  button {
+    padding: 0.7rem 2rem 0.7625rem;
+
+    & ~ button {
+      margin-left: 20px;
+    }
+  }
+}

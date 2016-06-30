@@ -1,6 +1,11 @@
-# Space / Jupiter
+# Space / Jupiter / Core
 
 > An user management microservice
+
+## Core
+
+The `core` subproject provides reusable JavaScript code (React + Flux) in order
+to build satellite applications (Io, Ganymede and Europa).
 
 ## Issues
 

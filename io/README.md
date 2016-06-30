@@ -1,6 +1,10 @@
-# Space / Jupiter
+# Space / Jupiter / Io
 
 > An user management microservice
+
+## Ganymede
+
+Io is the JavaScript (React + Flux) application responsible for user sign up.
 
 ## Issues
 

@@ -1,22 +1,25 @@
 import React from 'react';
 
-import Row from './reusable/row.jsx';
-import Columns from './reusable/columns.jsx';
+import Row from '../../core/components/row.jsx';
+import Columns from '../../core/components/columns.jsx';
 
 const StepsOrder = ['access', 'secrecy', 'code'];
 const StepsData = {
     access: {
         className: "unknown",
+        name: "holder",
         type: "text",
         placeholder: "Access holder"
     },
     secrecy: {
         className: "secrecy",
+        name: "password",
         type: "password",
         placeholder: "Passphrase"
     },
     code: {
         className: "code",
+        name: "code",
         type: "text",
         placeholder: "Code"
 
@@ -45,9 +48,9 @@ export default class Login extends React.Component {
                 <Row>
                     <Columns className="large-12">
                         <div className={`user-avatar ${step.className}`}></div>
-                        <form action="" method="POST">
-                            <input type={step.type} placeholder={step.placeholder} />
-                            <button name="" className="expand" onClick={this._updateStep}>Continue</button>
+                        <form action="." method="post">
+                            <input type={step.type} name={step.name} placeholder={step.placeholder} />
+                            <button type="submit" className="button expand" onClick={this._updateStep}>Continue</button>
                         </form>
                         <p className="upper-box">2<sub>min</sub> to attempt a login</p>
                     </Columns>

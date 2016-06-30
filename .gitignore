@@ -1,5 +1,7 @@
 .DS_Store
+Godeps/*
+!Godeps/Godeps.json
 node_modules
-jupiter/public/vendor
-jupiter/public/css/base.css
-jupiter/public/js/ganymede.min.js
+public/vendor
+public/css/*.css
+public/js/*.min.js
