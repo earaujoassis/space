@@ -2,6 +2,6 @@
 Godeps/*
 !Godeps/Godeps.json
 node_modules
-public/vendor
-public/css/*.css
-public/js/*.min.js
+web/public/vendor
+web/public/css/*.css
+web/public/js/*.min.js
