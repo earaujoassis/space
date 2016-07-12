@@ -1,6 +1,6 @@
 # Space / Jupiter / Core
 
-> An user management microservice
+> A user management microservice; OAuth 2 provider
 
 ## Core
 

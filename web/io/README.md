@@ -1,6 +1,6 @@
 # Space / Jupiter / Io
 
-> An user management microservice
+> A user management microservice; OAuth 2 provider
 
 ## Ganymede
 
