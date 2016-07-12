@@ -1,6 +1,6 @@
 # Space / Acceptance tests
 
-> An user management microservice
+> A user management microservice; OAuth 2 provider
 
 ## Setup
 
