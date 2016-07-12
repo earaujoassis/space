@@ -1,3 +1,6 @@
+[settings]
+storage_secret = ""
+
 [datastore]
 host = "localhost"
 user = "postgres"

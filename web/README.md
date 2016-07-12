@@ -1,4 +1,4 @@
-# Space
+# Space / Jupiter (web)
 
 > An user management microservice
 

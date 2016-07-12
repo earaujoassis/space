@@ -8,6 +8,10 @@
 			"Rev": "f0aeabca5a127c4078abb8c8d64298b147264b55"
 		},
 		{
+			"ImportPath": "github.com/boombuler/barcode",
+			"Rev": "d1c739eed5fe6b2198220f20403e60584ecffadb"
+		},
+		{
 			"ImportPath": "github.com/fsnotify/fsnotify",
 			"Comment": "v1.3.0",
 			"Rev": "30411dbcefb7a1da7e84f75530ad3abe4011b4f8"
@@ -55,6 +59,10 @@
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
 			"Rev": "d2dd0262208475919e1a362f675cfc0e7c10e905"
+		},
+		{
+			"ImportPath": "github.com/pquerna/otp",
+			"Rev": "7ba81f8449fd03d83832cc7aa5e01a0df8c143fe"
 		},
 		{
 			"ImportPath": "github.com/satori/go.uuid",
