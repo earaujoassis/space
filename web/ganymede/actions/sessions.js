@@ -2,21 +2,21 @@ import { ActionTypes } from '../../core/constants'
 import { ActionCreator, errorHandler, processResponse, processData, successHandler } from '../../core/actions/base'
 import SpaceApi from '../../core/utils/SpaceApi'
 
-class UsersActionFactory {
-    signUp(data) {
+class SessionsActionFactory {
+    signIn(data) {
         let action = new ActionCreator()
         action.setUUID()
         action.dispatch({type: ActionTypes.SEND_DATA})
         SpaceApi
-            .createUser(data)
+            .createSession(data)
             .then(processResponse)
             .then(processData)
             .then(successHandler)
             .catch(errorHandler)
-        return action
+        return action.actionID()
     }
-}
+};
 
-const UsersActions = new UsersActionFactory()
+const SessionsActions = new SessionsActionFactory()
 
-export default UsersActions
+export default SessionsActions

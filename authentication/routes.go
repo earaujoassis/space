@@ -6,6 +6,7 @@ import (
     "bytes"
     "encoding/base64"
     "image/png"
+    "time"
 
     "github.com/gin-gonic/gin"
 
@@ -19,18 +20,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
     users := router.Group("/users")
     {
         users.GET("/", func(c *gin.Context) {
-            c.String(http.StatusOK, "not implemented")
+            c.String(http.StatusMethodNotAllowed, "not implemented")
         })
         users.POST("/", func(c *gin.Context) {
             var buf bytes.Buffer
             var imageData string
 
             dataStore := datastore.GetDataStoreConnection()
-            /*
-             * TODO There should be an actionToken prior to any action.
-             * An actionToken should be created whenever a client (web or remote client)
-             * attempts a creational action (like creating a user or a session)
-             */
             user := models.User{
                 FirstName: c.PostForm("first_name"),
                 LastName: c.PostForm("last_name"),
@@ -56,18 +52,14 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             result := dataStore.Create(&user)
             if count := result.RowsAffected; count < 1 {
-                c.JSON(406, utils.H{
+                c.JSON(http.StatusNotAcceptable, utils.H{
                     "_status":  "error",
                     "_message": "User was not created",
-                    "_links": utils.H{
-                        "rel": "self",
-                        "href": c.Request.RequestURI,
-                    },
                     "error": fmt.Sprintf("%v", result.GetErrors()),
                     "user": user,
                 })
             } else {
-                c.JSON(200, utils.H{
+                c.JSON(http.StatusOK, utils.H{
                     "_status":  "created",
                     "_message": "User was created",
                     "_links": utils.H{
@@ -81,16 +73,87 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
         })
         users.GET("/:id", func(c *gin.Context) {
-            //id := c.Param("id")
-            c.String(http.StatusOK, "not implemented")
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
         users.PUT("/:id", func(c *gin.Context) {
-            //id := c.Param("id")
-            c.String(http.StatusOK, "not implemented")
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
         users.DELETE("/:id", func(c *gin.Context) {
-            //id := c.Param("id")
-            c.String(http.StatusOK, "not implemented")
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
+        })
+    }
+    sessions := router.Group("/sessions")
+    {
+        sessions.GET("/", func(c *gin.Context) {
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
+        })
+        sessions.POST("/", func(c *gin.Context) {
+            var holder string = c.PostForm("holder")
+            dataStore := datastore.GetDataStoreConnection()
+            user := services.FindUserByAccountHolder(holder)
+            client := services.FindOrCreateClient("Jupiter")
+            if !dataStore.NewRecord(user) {
+                if user.Authentic(c.PostForm("password"), c.PostForm("passcode")) {
+                    session := models.Session{
+                        User: user,
+                        Client: client,
+                        Moment: time.Now().UTC().Unix(),
+                        Ip: c.Request.RemoteAddr,
+                        UserAgent: c.Request.UserAgent(),
+                    }
+                    result := dataStore.Create(&session)
+                    if count := result.RowsAffected; count > 0 {
+                        c.JSON(http.StatusOK, utils.H{
+                            "_id": session.UUID,
+                            "_status":  "created",
+                            "_message": "Session was created",
+                            "access_token": session.AccessToken,
+                            "token_type": "bearer",
+                            "expires_in": 0,
+                            "refresh_token": session.RefreshToken,
+                            "scope": "public",
+                        })
+                        return
+                    }
+                }
+            }
+            c.JSON(http.StatusNotAcceptable, utils.H{
+                "_status":  "error",
+                "_message": "Unauthentic user",
+                "error": "access_denied",
+                "error_description": "Unauthentic user; session was not created",
+            })
+        })
+        sessions.GET("/:id", func(c *gin.Context) {
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
+        })
+        sessions.PUT("/:id", func(c *gin.Context) {
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
+        })
+        sessions.DELETE("/:id", func(c *gin.Context) {
+            id := c.Param("id")
+            session := services.FindSessionByUUID(id)
+            dataStore := datastore.GetDataStoreConnection()
+            if dataStore.NewRecord(session) {
+                c.JSON(http.StatusNotAcceptable, utils.H{
+                    "_status":  "error",
+                    "_message": "Invalid session (not found)",
+                    "error": "invalid_grant",
+                    "error_description": "Session is not available nor found",
+                })
+                return
+            }
+            session.Invalidated = true
+            dataStore.Save(&session)
+            c.JSON(http.StatusOK, utils.H{
+                "_status":  "deleted",
+                "_message": "Session was deleted (soft)",
+                "access_token": session.AccessToken,
+                "token_type": "bearer",
+                "expires_in": 0,
+                "refresh_token": session.RefreshToken,
+                "scope": "public",
+            })
         })
     }
 }

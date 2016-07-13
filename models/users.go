@@ -20,8 +20,8 @@ type User struct {
     LastName string             `gorm:"not null" validate:"required,min=3,max=20" json:"last_name"`
     Email string                `gorm:"not null;unique;index" validate:"required,email" json:"email"`
     Passphrase string           `gorm:"not null" validate:"required,min=10" json:"-"`
-    Active bool                 `gorm:"default:false" json:"active"`
-    Admin bool                  `gorm:"default:false" json:"admin"`
+    Active bool                 `gorm:"not null;default:false" json:"active"`
+    Admin bool                  `gorm:"not null;default:false" json:"admin"`
     Client Client               `gorm:"not null" validate:"exists" json:"-"`
     ClientID uint               `gorm:"not null" json:"-"`
     Language Language           `gorm:"not null" validate:"exists" json:"-"`
@@ -31,12 +31,14 @@ type User struct {
     RecoverSecret string        `gorm:"not null" validate:"required" json:"-"`
 }
 
-func (user *User) Authentic(password []byte) bool {
-    return bcrypt.CompareHashAndPassword([]byte(user.Passphrase), password) == nil
+func (user *User) Authentic(password string, passcode string) bool {
+    validPassword := bcrypt.CompareHashAndPassword([]byte(user.Passphrase), []byte(password)) == nil
+    validPasscode := totp.Validate(passcode, user.CodeSecret)
+    return validPasscode && validPassword
 }
 
-func (user *User) UpdatePassword(password []byte) error {
-    pw, err := bcrypt.GenerateFromPassword([]byte(user.Passphrase), bcrypt.DefaultCost)
+func (user *User) UpdatePassword(password string) error {
+    pw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err == nil {
         user.Passphrase = string(pw)
         return nil
@@ -46,7 +48,7 @@ func (user *User) UpdatePassword(password []byte) error {
 
 func (user *User) GenerateCodeSecret() *otp.Key {
     key, err := totp.Generate(totp.GenerateOpts{
-        Issuer:      "quatrolabs.com",
+        Issuer:      "QuatroLabs.com",
         AccountName: user.Username,
     })
     user.CodeSecret = key.Secret()
@@ -74,7 +76,6 @@ func (user *User) BeforeSave(scope *gorm.Scope) error {
     }
     return nil
 }
-
 
 func (user *User) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("UUID", generateUUID())

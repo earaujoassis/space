@@ -44,6 +44,6 @@ export default class SignUp extends React.Component {
 
     _signUp(e) {
         e.preventDefault()
-        UsersActions.signIn(new FormData(ReactDOM.findDOMNode(this.refs.form)))
+        UsersActions.signUp(new FormData(ReactDOM.findDOMNode(this.refs.form)))
     }
 }

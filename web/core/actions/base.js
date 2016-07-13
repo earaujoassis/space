@@ -1,11 +1,12 @@
 import * as node_uuid from 'node-uuid';
 
+import { ActionTypes } from '../constants'
 import dispatcher from '../dispatcher';
 
 export function errorHandler(error) {
     let action = new ActionCreator()
     action.setUUID()
-    action.dispatch({type: 'ERROR', payload: error})
+    action.dispatch({type: ActionTypes.ERROR, payload: error})
     return action
 }
 
@@ -30,7 +31,7 @@ export function processData(response) {
 export function successHandler(data) {
     let action = new ActionCreator()
     action.setUUID()
-    action.dispatch({type: 'SUCCESS', payload: data})
+    action.dispatch({type: ActionTypes.SUCCESS, payload: data})
     return action
 }
 
