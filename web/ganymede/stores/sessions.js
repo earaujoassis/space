@@ -4,19 +4,19 @@ import Store from '../../core/stores/base'
 
 var _state = {}
 
-class UserStoreBase extends Store {
+class SessionStoreBase extends Store {
     constructor() {
         super()
         this.dispatchToken = dispatcher.register(function(action) {
             switch (action.type) {
                 case ActionTypes.SUCCESS:
-                    UserStore.setCommons(action)
-                    UserStore.emitChange()
+                    SessionStore.setCommons(action)
+                    SessionStore.emitChange()
                     break
 
                 case ActionTypes.ERROR:
-                    UserStore.setCommons(action)
-                    UserStore.emitChange()
+                    SessionStore.setCommons(action)
+                    SessionStore.emitChange()
                     break
             }
         });
@@ -34,6 +34,6 @@ class UserStoreBase extends Store {
     }
 }
 
-const UserStore = new UserStoreBase();
+const SessionStore = new SessionStoreBase();
 
-export default UserStore;
+export default SessionStore;

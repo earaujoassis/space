@@ -4,6 +4,13 @@ let SpaceApi = {
             method: 'POST',
             body: data
         })
+    },
+
+    createSession(data) {
+        return fetch('/api/v1/sessions', {
+            method: 'POST',
+            body: data
+        })
     }
 }
 
