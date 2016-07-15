@@ -15,11 +15,11 @@ export default class Root extends React.Component {
     }
 
     componentDidMount() {
-        UserStore.addChangeListener(this._updateFromStore);
+        UserStore.addChangeListener(this._updateFromStore)
     }
 
     componentWillUnmount() {
-        UserStore.removeChangeListener(this._updateFromStore);
+        UserStore.removeChangeListener(this._updateFromStore)
     }
 
     render() {

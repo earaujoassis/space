@@ -3,7 +3,9 @@ package models
 import (
     "time"
     "math/rand"
+
     "github.com/satori/go.uuid"
+    "gopkg.in/bluesuncorp/validator.v5"
 )
 
 type Model struct {
@@ -20,6 +22,15 @@ const (
 )
 
 var src = rand.NewSource(time.Now().UnixNano())
+
+func IsValid(tagName string, model interface{}) bool {
+    validate := validator.New(tagName, validator.BakedInValidators)
+    err := validate.Struct(model)
+    if err != nil {
+        return false
+    }
+    return true
+}
 
 func randStringBytesMaskImprSrc(n int) string {
     b := make([]byte, n)

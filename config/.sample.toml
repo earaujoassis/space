@@ -11,3 +11,4 @@ key_secret = "secret"
 
 [http]
 port = 8080
+session_secret = "secret"

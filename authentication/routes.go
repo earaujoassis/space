@@ -6,7 +6,6 @@ import (
     "bytes"
     "encoding/base64"
     "image/png"
-    "time"
 
     "github.com/gin-gonic/gin"
 
@@ -20,8 +19,9 @@ func ExposeRoutes(router *gin.RouterGroup) {
     users := router.Group("/users")
     {
         users.GET("/", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "not implemented")
+            c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
+
         users.POST("/", func(c *gin.Context) {
             var buf bytes.Buffer
             var imageData string
@@ -33,6 +33,15 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 Username: c.PostForm("username"),
                 Email: c.PostForm("email"),
                 Passphrase: c.PostForm("password"),
+            }
+            if !models.IsValid("essential", user) {
+                c.JSON(http.StatusNotAcceptable, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not created",
+                    "error": "Missing essential fields",
+                    "user": user,
+                })
+                return
             }
             if dataStore.NewRecord(user.Client) {
                 user.Client = services.FindOrCreateClient("Jupiter")
@@ -72,12 +81,15 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 })
             }
         })
+
         users.GET("/:id", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
+
         users.PUT("/:id", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
+
         users.DELETE("/:id", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
@@ -87,8 +99,11 @@ func ExposeRoutes(router *gin.RouterGroup) {
         sessions.GET("/", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
+
         sessions.POST("/", func(c *gin.Context) {
             var holder string = c.PostForm("holder")
+            var state string = c.PostForm("state")
+
             dataStore := datastore.GetDataStoreConnection()
             user := services.FindUserByAccountHolder(holder)
             client := services.FindOrCreateClient("Jupiter")
@@ -97,21 +112,22 @@ func ExposeRoutes(router *gin.RouterGroup) {
                     session := models.Session{
                         User: user,
                         Client: client,
-                        Moment: time.Now().UTC().Unix(),
                         Ip: c.Request.RemoteAddr,
                         UserAgent: c.Request.UserAgent(),
+                        Scopes: models.PublicScope,
+                        TokenType: models.GrantToken,
                     }
                     result := dataStore.Create(&session)
                     if count := result.RowsAffected; count > 0 {
                         c.JSON(http.StatusOK, utils.H{
-                            "_id": session.UUID,
                             "_status":  "created",
                             "_message": "Session was created",
-                            "access_token": session.AccessToken,
-                            "token_type": "bearer",
-                            "expires_in": 0,
-                            "refresh_token": session.RefreshToken,
-                            "scope": "public",
+                            "scope": session.Scopes,
+                            "grant_type": "authorization_code",
+                            "code": session.Token,
+                            "redirect_uri": "/session",
+                            "client_id": client.Key,
+                            "state": state,
                         })
                         return
                     }
@@ -121,38 +137,36 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 "_status":  "error",
                 "_message": "Unauthentic user",
                 "error": "access_denied",
-                "error_description": "Unauthentic user; session was not created",
+                "error_description": "Unauthentic user; authorization token was not created",
             })
         })
+
         sessions.GET("/:id", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
+
         sessions.PUT("/:id", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
+
         sessions.DELETE("/:id", func(c *gin.Context) {
-            id := c.Param("id")
+            var id string = c.Param("id")
+
             session := services.FindSessionByUUID(id)
             dataStore := datastore.GetDataStoreConnection()
             if dataStore.NewRecord(session) {
                 c.JSON(http.StatusNotAcceptable, utils.H{
                     "_status":  "error",
                     "_message": "Invalid session (not found)",
-                    "error": "invalid_grant",
+                    "error": "invalid_session",
                     "error_description": "Session is not available nor found",
                 })
                 return
             }
-            session.Invalidated = true
-            dataStore.Save(&session)
+            services.InvalidateSession(session)
             c.JSON(http.StatusOK, utils.H{
                 "_status":  "deleted",
                 "_message": "Session was deleted (soft)",
-                "access_token": session.AccessToken,
-                "token_type": "bearer",
-                "expires_in": 0,
-                "refresh_token": session.RefreshToken,
-                "scope": "public",
             })
         })
     }

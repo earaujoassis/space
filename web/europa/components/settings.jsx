@@ -1,12 +1,10 @@
 import React from 'react';
 
-import RouterStore from '../stores/router';
-
 import Row from '../../core/components/row.jsx';
 import Columns from '../../core/components/columns.jsx';
-import Applications from './settings/applications.jsx';
-import Profile from './settings/profile.jsx';
-import AccountLog from './settings/account_log.jsx';
+import Applications from './Applications.jsx';
+import Profile from './Profile.jsx';
+import AccountLog from './AccountLog.jsx';
 
 const SubViews = {
     'Applications': Applications,
@@ -26,14 +24,6 @@ export default class Settings extends React.Component {
         this._setTab();
     }
 
-    componentDidMount() {
-        RouterStore.addChangeListener(this._setTab);
-    }
-
-    componentWillUnmount() {
-        RouterStore.removeChangeListener(this._setTab);
-    }
-
     render() {
         let childComponent = this.state.currentSubView;
         return (
@@ -45,6 +35,7 @@ export default class Settings extends React.Component {
                         <li><a href="/account-log" className={this._isActive(AccountLog)}>Account Log</a></li>
                         <li class="divider"></li>
                         <li><a href="/settings">Settings</a></li>
+                        <li><a href="/signout">Signout</a></li>
                     </ul>
                 </Columns>
                 <Columns className="medium-9 large-10 settings-content">
@@ -65,12 +56,6 @@ export default class Settings extends React.Component {
     }
 
     _setTab() {
-        let routeData = RouterStore.getRouteData();
-        if (routeData.view && routeData.view == 'Settings' && routeData.subview) {
-            let subviewClass = SubViews[routeData.subview];
-            if (subviewClass) {
-                this.setState({currentSubView: subviewClass});
-            }
-        }
+        console.log("not implemented")
     }
 };

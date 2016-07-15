@@ -1,0 +1,53 @@
+.settings-wrapper {
+  margin-bottom: 40px;
+}
+.profile {
+  @media screen and (min-width: 600px) {
+    box-shadow: 0px 2px 2px rgba(225,225,225,0.2);
+  }
+  background: #f7f7f7;
+  color: #222;
+
+  .profile-entry {
+    padding: 0.9rem 0 0.7625rem;
+
+    .field {
+      font-weight: 500;
+    }
+
+    .value {
+      font-weight: 200;
+    }
+  }
+
+  .profile-entry ~ .profile-entry {
+    border-top: 1px solid rgba(0,0,0,0.12);
+  }
+}
+table {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #878787;
+
+  thead {
+    background: transparent;
+
+    tr th {
+      padding: 1.4rem 1.2rem;
+      border-top: 1px solid #d7d7d7;
+      border-bottom: 1px solid #d7d7d7;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: inherit;
+    }
+  }
+
+  tr.odd, tr:nth-of-type(odd) {
+    td {
+      color: inherit;
+    }
+
+    color: inherit;
+  }
+}

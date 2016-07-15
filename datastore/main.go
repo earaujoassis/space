@@ -12,7 +12,10 @@ import (
 var dataStore *gorm.DB
 
 func init() {
-    GetDataStoreConnection().AutoMigrate(&models.Client{}, &models.Language{}, &models.User{}, &models.Session{})
+    GetDataStoreConnection().AutoMigrate(&models.Client{},
+        &models.Language{},
+        &models.User{},
+        &models.Session{})
 }
 
 func GetDataStoreConnection() *gorm.DB {
@@ -20,7 +23,9 @@ func GetDataStoreConnection() *gorm.DB {
         return dataStore
     }
     var err error
-    var databaseName = fmt.Sprintf("%v_%v", config.GetConfig("datastore.database_prefix"), config.GetConfig("environment"))
+    var databaseName = fmt.Sprintf("%v_%v",
+        config.GetConfig("datastore.database_prefix"),
+        config.GetConfig("environment"))
     var databaseConnectionData = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s",
         config.GetConfig("datastore.host"),
         config.GetConfig("datastore.user"),
