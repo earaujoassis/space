@@ -8,6 +8,11 @@
 			"Rev": "f0aeabca5a127c4078abb8c8d64298b147264b55"
 		},
 		{
+			"ImportPath": "github.com/boj/redistore",
+			"Comment": "v1.2",
+			"Rev": "fc113767cd6b051980f260d6dbe84b2740c46ab0"
+		},
+		{
 			"ImportPath": "github.com/boombuler/barcode",
 			"Rev": "d1c739eed5fe6b2198220f20403e60584ecffadb"
 		},
@@ -17,7 +22,21 @@
 			"Rev": "30411dbcefb7a1da7e84f75530ad3abe4011b4f8"
 		},
 		{
+			"ImportPath": "github.com/garyburd/redigo/internal",
+			"Comment": "v1.0.0",
+			"Rev": "8873b2f1995f59d4bcdd2b0dc9858e2cb9bf0c13"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/redis",
+			"Comment": "v1.0.0",
+			"Rev": "8873b2f1995f59d4bcdd2b0dc9858e2cb9bf0c13"
+		},
+		{
 			"ImportPath": "github.com/gin-gonic/contrib/renders/multitemplate",
+			"Rev": "0ec5111a0a464abbc4989880fd63788e01aae419"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/contrib/sessions",
 			"Rev": "0ec5111a0a464abbc4989880fd63788e01aae419"
 		},
 		{
@@ -28,6 +47,19 @@
 		{
 			"ImportPath": "github.com/golang/protobuf/proto",
 			"Rev": "e51d002c610dbe8c136679a67a6ded5df4d49b5c"
+		},
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/securecookie",
+			"Comment": "v1.1-2-gff35634",
+			"Rev": "ff356348f74133a59d3e93aa24b5b4551b6fe90d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/sessions",
+			"Rev": "56ba4b0a11da87516629a57408a5f7e4c8ea7b0b"
 		},
 		{
 			"ImportPath": "github.com/hashicorp/hcl",
