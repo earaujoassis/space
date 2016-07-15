@@ -18,10 +18,6 @@ import (
 func ExposeRoutes(router *gin.RouterGroup) {
     users := router.Group("/users")
     {
-        users.GET("/", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
-        })
-
         users.POST("/", func(c *gin.Context) {
             var buf bytes.Buffer
             var imageData string
@@ -96,10 +92,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
     }
     sessions := router.Group("/sessions")
     {
-        sessions.GET("/", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
-        })
-
         sessions.POST("/", func(c *gin.Context) {
             var holder string = c.PostForm("holder")
             var state string = c.PostForm("state")
@@ -141,18 +133,18 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        sessions.GET("/:id", func(c *gin.Context) {
+        sessions.GET("/:token", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
-        sessions.PUT("/:id", func(c *gin.Context) {
+        sessions.PUT("/:token", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
-        sessions.DELETE("/:id", func(c *gin.Context) {
-            var id string = c.Param("id")
+        sessions.DELETE("/:token", func(c *gin.Context) {
+            var token string = c.Param("token")
 
-            session := services.FindSessionByUUID(id)
+            session := services.FindSessionByToken(token, models.GrantToken)
             dataStore := datastore.GetDataStoreConnection()
             if dataStore.NewRecord(session) {
                 c.JSON(http.StatusNotAcceptable, utils.H{

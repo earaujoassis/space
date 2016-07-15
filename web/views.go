@@ -16,6 +16,10 @@ import (
     "github.com/earaujoassis/space/utils"
 )
 
+const (
+    errorURI string = "%s?error=%s&state=%s"
+)
+
 func createCustomRender() multitemplate.Render {
     render := multitemplate.New()
     render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
@@ -202,7 +206,7 @@ func authorizeHandler(c *gin.Context) {
                 "state": state,
             })
             if err == nil {
-                location = fmt.Sprintf("%s?error=%s&state=%s", redirectURI, result["error"], result["state"])
+                location = fmt.Sprintf(errorURI, redirectURI, result["error"], result["state"])
                 c.Redirect(http.StatusFound, location)
             } else {
                 location = fmt.Sprintf("%s?code=%s&state=%s", redirectURI, result["code"], result["state"])
@@ -213,12 +217,12 @@ func authorizeHandler(c *gin.Context) {
         }
     // Implicit Grant
     case oauth.Token:
-        location = fmt.Sprintf("%s?error=%s&state=%s",
+        location = fmt.Sprintf(errorURI,
             redirectURI, oauth.UnsupportedResponseType, state)
         c.Redirect(http.StatusFound, location)
         return
     default:
-        location = fmt.Sprintf("%s?error=%s&state=%s",
+        location = fmt.Sprintf(errorURI,
             redirectURI, oauth.InvalidRequest, state)
         c.Redirect(http.StatusFound, location)
         return
