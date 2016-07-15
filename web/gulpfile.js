@@ -7,10 +7,15 @@ var babelify   = require('babelify');
 var source     = require('vinyl-source-stream');
 var buffer     = require('vinyl-buffer');
 
-var satellites = ['ganymede', 'io']; //['ganymede', 'io', 'europa'];
+var satellites = ['ganymede', 'io', 'europa']; //['ganymede', 'io', 'europa', 'callisto'];
 
 gulp.task('styles', function () {
-  return gulp.src(['./ganymede/styles/ganymede.scss', './io/styles/io.scss'])
+  return gulp
+    .src([
+        './ganymede/styles/ganymede.scss',
+        './io/styles/io.scss',
+        './europa/styles/europa.scss'
+    ])
     .pipe(sass({
             includePaths: [
                 'node_modules/foundation-sites/scss',

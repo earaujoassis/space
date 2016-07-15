@@ -39,6 +39,20 @@ export default class Login extends React.Component {
         }
         this._updateStep = this._updateStep.bind(this)
         this._updateStepValue = this._updateStepValue.bind(this)
+        this._updateFromStore = this._updateFromStore.bind(this)
+        this._setFormSubmitTimeout = this._setFormSubmitTimeout.bind(this)
+        this._triggerFormLock = this._triggerFormLock.bind(this)
+        this._triggerFormUnlock = this._triggerFormUnlock.bind(this)
+    }
+
+    componentDidMount() {
+        SessionStore.addChangeListener(this._updateFromStore)
+        this._triggerFormLock()
+    }
+
+    componentWillUnmount() {
+        SessionStore.removeChangeListener(this._updateFromStore)
+        clearTimeout(this.securityTimeoutID)
     }
 
     render() {
@@ -48,6 +62,11 @@ export default class Login extends React.Component {
                 <Row>
                     <Columns className="large-12">
                         <div className={`user-avatar ${step.className}`}></div>
+                        {
+                            this.state.failed ? (
+                                <p className="error-message">Authentication failed</p>
+                            ) : null
+                        }
                         <form action="." method="post">
                             <input ref="input" type={step.type}
                                 name={step.name}
@@ -65,6 +84,27 @@ export default class Login extends React.Component {
                 </Row>
             </div>
         )
+    }
+
+    _setFormSubmitTimeout(bool, delay) {
+        let value = bool
+        this.securityTimeoutID = setTimeout(() => {
+            let state = {disableSubmit: value}
+            if (!value) {
+                state.currentStepIndex = 0
+                state.failed = undefined
+            }
+            this.setState(state)
+            this.securityTimeoutID = null
+        }, delay)
+    }
+
+    _triggerFormLock() {
+        this._setFormSubmitTimeout(true, 2 * 60000)
+    }
+
+    _triggerFormUnlock() {
+        this._setFormSubmitTimeout(false, 5 * 1000)
     }
 
     _updateStepValue(e) {
@@ -91,5 +131,16 @@ export default class Login extends React.Component {
             SessionsActions.signIn(formData)
         }
         this.setState(state)
+    }
+
+    _updateFromStore() {
+        if (SessionStore.success()) {
+            let r = SessionStore.getState().payload || {}
+            let location = `${r.redirect_uri}?client_id=${r.client_id}&code=${r.code}&grant_type=${r.grant_type}&scope=${r.scope}&state=${r.state}`
+            window.location.href = location
+        } else {
+            this.setState({failed: true})
+            this._triggerFormUnlock()
+        }
     }
 }

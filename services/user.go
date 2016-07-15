@@ -9,9 +9,12 @@ func FindUserByAccountHolder(holder string) models.User {
     var user models.User
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.Preload("Client").Preload("Language").Where("username = ? OR email = ?", holder, holder).First(&user)
-    if dataStoreSession.NewRecord(user) {
-        return models.User{}
-    } else {
-        return user
-    }
+    return user
+}
+
+func FindUserByPublicId(publicId string) models.User {
+    var user models.User
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.Preload("Client").Preload("Language").Where("public_id = ?", publicId).First(&user)
+    return user
 }

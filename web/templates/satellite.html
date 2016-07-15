@@ -1,5 +1,9 @@
 {{ define "content" }}
-<div id="application-context"></div>
+<div id="application-context">
+  <noscript>
+    <p>If you're reading this, it means JavaScript is not enabled in your web browser.</p>
+  </noscript>
+</div>
 <script src="/public/js/{{ .Satellite }}.min.js"></script>
 {{ end }}
 
