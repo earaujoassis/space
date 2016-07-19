@@ -6,12 +6,14 @@ import (
     "bytes"
     "encoding/base64"
     "image/png"
+    "strings"
 
     "github.com/gin-gonic/gin"
 
     "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/models"
     "github.com/earaujoassis/space/services"
+    "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/utils"
 )
 
@@ -58,8 +60,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
             result := dataStore.Create(&user)
             if count := result.RowsAffected; count < 1 {
                 c.JSON(http.StatusNotAcceptable, utils.H{
-                    "_status":  "error",
-                    "_message": "User was not created",
                     "error": fmt.Sprintf("%v", result.GetErrors()),
                     "user": user,
                 })
@@ -126,31 +126,56 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 }
             }
             c.JSON(http.StatusNotAcceptable, utils.H{
-                "_status":  "error",
-                "_message": "Unauthentic user",
                 "error": "access_denied",
                 "error_description": "Unauthentic user; authorization token was not created",
             })
         })
 
         sessions.GET("/:token", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
-        })
+            var token string = c.Param("token")
 
-        sessions.PUT("/:token", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
+            authorizationBasic := strings.Replace(c.Request.Header["Authorization"][0], "Basic ", "", 1)
+            client := oauth.ClientAuthentication(authorizationBasic)
+            if client.ID == 0 {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+            }
+
+            session := services.FindSessionByToken(token, models.GrantToken)
+            if session.ID == 0 {
+                c.JSON(http.StatusNotAcceptable, utils.H{
+                    "error": oauth.InvalidSession,
+                })
+                return
+            }
+            // TODO We should check token expiration; issue #16
+            c.JSON(http.StatusOK, utils.H{
+                "active":  true,
+                "scope": session.Scopes,
+                "client_id": session.Client.Key,
+                "token_type": "Bearer",
+            })
         })
 
         sessions.DELETE("/:token", func(c *gin.Context) {
             var token string = c.Param("token")
 
+            authorizationBasic := strings.Replace(c.Request.Header["Authorization"][0], "Basic ", "", 1)
+            client := oauth.ClientAuthentication(authorizationBasic)
+            if client.ID == 0 {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
             session := services.FindSessionByToken(token, models.GrantToken)
             if session.ID == 0 {
                 c.JSON(http.StatusNotAcceptable, utils.H{
-                    "_status":  "error",
-                    "_message": "Invalid session (not found)",
-                    "error": "invalid_session",
-                    "error_description": "Session is not available nor found",
+                    "error": oauth.InvalidSession,
                 })
                 return
             }
@@ -158,6 +183,10 @@ func ExposeRoutes(router *gin.RouterGroup) {
             c.JSON(http.StatusOK, utils.H{
                 "_status":  "deleted",
                 "_message": "Session was deleted (soft)",
+                "active":  false,
+                "scope": session.Scopes,
+                "client_id": session.Client.Key,
+                "token_type": "Bearer",
             })
         })
     }
