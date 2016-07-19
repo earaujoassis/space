@@ -79,7 +79,30 @@ func ExposeRoutes(router *gin.RouterGroup) {
         })
 
         users.GET("/:id", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
+            var publicId string = c.Param("id")
+
+            authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
+            session := oauth.SessionAuthentication(authorizationBearer)
+            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            user := services.FindUserByPublicId(publicId)
+            if user.ID == 0 || user.ID != session.UserID {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            c.JSON(http.StatusOK, utils.H{
+                "user":  user,
+            })
         })
 
         users.PUT("/:id", func(c *gin.Context) {
@@ -126,7 +149,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 }
             }
             c.JSON(http.StatusNotAcceptable, utils.H{
-                "error": "access_denied",
+                "error": oauth.AccessDenied,
                 "error_description": "Unauthentic user; authorization token was not created",
             })
         })
@@ -141,6 +164,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
                 })
+                return
             }
 
             session := services.FindSessionByToken(token, models.GrantToken)

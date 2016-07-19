@@ -49,3 +49,11 @@ func InvalidateSession(session models.Session) {
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.Model(&session).Select("invalidated").Update("invalidated", true)
 }
+
+func SessionGrantsReadAbility(session models.Session) bool {
+    return session.Scopes == models.ReadScope || session.Scopes == models.ReadWriteScope
+}
+
+func SessionGrantsWriteAbility(session models.Session) bool {
+    return session.Scopes == models.ReadWriteScope
+}
