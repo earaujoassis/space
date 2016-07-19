@@ -1,0 +1,41 @@
+.authorize {
+  .user, .client {
+    text-align: center;
+
+    h2 {
+      font-weight: 200;
+      font-size: 2.3rem;
+    }
+
+    small {
+      line-height: 1;
+    }
+  }
+
+  .user {
+    h2 {
+      line-height: 1.7;
+    }
+  }
+
+  .client {
+    h2 {
+      line-height: 0.8;
+    }
+  }
+}
+.request-usage {
+  margin-top: 20px;
+
+  .options {
+    border-top: 1px solid #383838;
+    border-bottom: 1px solid #383838;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-weight: 100;
+
+    .active {
+      color: #007095;
+    }
+  }
+}

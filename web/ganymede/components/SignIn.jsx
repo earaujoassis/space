@@ -29,7 +29,7 @@ const StepsData = {
     }
 }
 
-export default class Login extends React.Component {
+export default class SignIn extends React.Component {
     constructor() {
         super()
         this.state = {
@@ -58,7 +58,7 @@ export default class Login extends React.Component {
     render() {
         let step = StepsData[StepsOrder[this.state.currentStepIndex]]
         return (
-            <div className="login-content">
+            <div className="signin-content">
                 <Row>
                     <Columns className="large-12">
                         <div className={`user-avatar ${step.className}`}></div>
@@ -79,7 +79,7 @@ export default class Login extends React.Component {
                                 disabled={this.state.disableSubmit}
                                 onClick={this._updateStep}>Continue</button>
                         </form>
-                        <p className="upper-box">2<sub>min</sub> to attempt a login</p>
+                        <p className="upper-box">2<sub>min</sub> to attempt a sign-in</p>
                     </Columns>
                 </Row>
             </div>

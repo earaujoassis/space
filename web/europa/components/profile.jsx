@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 
-import Row from '../../core/components/row.jsx';
-import Columns from '../../core/components/columns.jsx';
-import { Entry } from '../../core/components/form.jsx';
+import Row from '../../core/components/row.jsx'
+import Columns from '../../core/components/columns.jsx'
+import { Entry } from '../../core/components/form.jsx'
 
 export default class Profile extends React.Component {
     render() {
@@ -18,6 +18,6 @@ export default class Profile extends React.Component {
                     </Row>
                 </Columns>
             </Row>
-        );
+        )
     }
-};
+}

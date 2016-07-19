@@ -5,8 +5,8 @@ import (
     "strings"
 )
 
-func BasicAuthEncode(username, password string) string {
-    token := username + ":" + password
+func BasicAuthEncode(key, secret string) string {
+    token := key + ":" + secret
     return base64.StdEncoding.EncodeToString([]byte(token))
 }
 

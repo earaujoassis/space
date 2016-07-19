@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
-import Row from '../../core/components/row.jsx';
-import Columns from '../../core/components/columns.jsx';
+import Row from '../../core/components/row.jsx'
+import Columns from '../../core/components/columns.jsx'
 
 export default class Applications extends React.Component {
     render() {
@@ -18,6 +18,6 @@ export default class Applications extends React.Component {
                     </Row>
                 </Columns>
             </Row>
-        );
+        )
     }
-};
+}

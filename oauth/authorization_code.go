@@ -2,10 +2,9 @@ package oauth
 
 import (
     "strings"
-    "encoding/base64"
 
     "github.com/earaujoassis/space/utils"
-    "github.com/earaujoassis/space/datastore"
+    "github.com/earaujoassis/space/services"
     "github.com/earaujoassis/space/models"
 )
 
@@ -36,8 +35,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
         userAgent = data["userAgent"].(string)
     }
 
-    redirectURIBytes, _ := base64.StdEncoding.DecodeString(data["redirect_uri"].(string))
-    redirectURI = string(redirectURIBytes)
+    redirectURI = data["redirect_uri"].(string)
     client = data["client"].(models.Client)
     user = data["user"].(models.User)
 
@@ -49,24 +47,20 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
         return accessDeniedResult(state)
     }
 
+    /*
+     * WARNING
+     * It will grant access, but with a public-only scope
+     */
     if scope != "" && !strings.Contains(client.Scopes, scope) {
         scope = models.PublicScope
     }
 
-    session := models.Session{
-        User: user,
-        Client: client,
-        Ip: ip,
-        UserAgent: userAgent,
-        Scopes: scope,
-        TokenType: models.GrantToken,
-    }
-    dataStore := datastore.GetDataStoreConnection()
-    result := dataStore.Create(&session)
-    if count := result.RowsAffected; count > 0 {
+    session := services.CreateSession(user, client, ip, userAgent, scope, models.GrantToken)
+    if session.ID > 0 {
         return utils.H{
             "code": session.Token,
             "state": state,
+            "scope": scope,
         }, nil
     } else {
         return serverErrorResult(state)

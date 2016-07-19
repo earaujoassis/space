@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import Login from './components/Login.jsx'
+import SignIn from './components/SignIn.jsx'
 
-ReactDOM.render(<Login />, document.getElementById('application-context'))
+ReactDOM.render(<SignIn />, document.getElementById('application-context'))

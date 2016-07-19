@@ -4,6 +4,7 @@
 .branding {
   text-align: center;
   font-weight: 100;
+  font-size: 4rem;
 }
 .site-footer {
   font-weight: 300;
@@ -74,3 +75,34 @@ form {
     }
   }
 }
+.inline-list {
+  list-style: none;
+}
+.inline-list.align-right {
+  float: right;
+  margin-right: 1.375rem;
+  margin-left: 0;
+}
+button,.button {
+  margin: 0;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.3);
+  cursor: pointer;
+  background-color: #2199e8;
+
+  &.expand {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8625rem;
+  }
+}
+.side-nav {
+  list-style: none;
+}
+.side-nav li a:not(.button) {
+  color: inherit;
+}
+.side-nav li a:not(.button).active,
+.side-nav li a:not(.button):focus,
+.side-nav li a:not(.button):hover {
+  color: #007095;
+}
+
