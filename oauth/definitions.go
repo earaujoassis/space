@@ -11,6 +11,7 @@ const (
     TemporarilyUnavailable        string = "temporarily_unavailable"
     UnsupportedGrantType          string = "unsupported_grant_type"
     InvalidGrant                  string = "invalid_grant"
+    InvalidSession                string = "invalid_session"
 
     // Grant types
     AuthorizationCode             string = "authorization_code"

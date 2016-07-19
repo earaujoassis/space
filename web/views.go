@@ -129,6 +129,7 @@ func ExposeRoutes(router *gin.Engine) {
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
                 })
+                return
             }
 
             switch grantType {
