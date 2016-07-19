@@ -15,13 +15,13 @@ type User struct {
     Model
     UUID string                 `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"-"`
     PublicId string             `gorm:"not null;unique;index" json:"public_id"`
-    Username string             `gorm:"not null;unique;index" validate:"required,alphanum,max=60" json:"username"`
+    Username string             `gorm:"not null;unique;index" validate:"required,alphanum,max=60" json:"-"`
     FirstName string            `gorm:"not null" validate:"required,min=3,max=20" essential:"required,min=3,max=20" json:"first_name"`
     LastName string             `gorm:"not null" validate:"required,min=3,max=20" essential:"required,min=3,max=20" json:"last_name"`
     Email string                `gorm:"not null;unique;index" validate:"required,email" essential:"required,email" json:"email"`
     Passphrase string           `gorm:"not null" validate:"required" essential:"required,min=10" json:"-"`
     Active bool                 `gorm:"not null;default:false" json:"active"`
-    Admin bool                  `gorm:"not null;default:false" json:"admin"`
+    Admin bool                  `gorm:"not null;default:false" json:"-"`
     Client Client               `gorm:"not null" validate:"exists" json:"-"`
     ClientID uint               `gorm:"not null" json:"-"`
     Language Language           `gorm:"not null" validate:"exists" json:"-"`
