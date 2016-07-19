@@ -11,7 +11,7 @@ import (
 
 var dataStore *gorm.DB
 
-func init() {
+func Start() {
     GetDataStoreConnection().AutoMigrate(&models.Client{},
         &models.Language{},
         &models.User{},

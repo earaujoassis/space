@@ -8,9 +8,9 @@ import (
 
 func errorResult(errorType, state string) (utils.H, error) {
     return utils.H{
-            "error": InvalidRequest,
+            "error": errorType,
             "state": state,
-    }, errors.New(InvalidRequest)
+    }, errors.New(errorType)
 }
 
 func invalidRequestResult(state string) (utils.H, error) {
@@ -27,4 +27,12 @@ func accessDeniedResult(state string) (utils.H, error) {
 
 func serverErrorResult(state string) (utils.H, error) {
     return errorResult(ServerError, state)
+}
+
+func invalidGrantResult(state string) (utils.H, error) {
+    return errorResult(InvalidGrant, state)
+}
+
+func invalidScopeResult(state string) (utils.H, error) {
+    return errorResult(InvalidScope, state)
 }

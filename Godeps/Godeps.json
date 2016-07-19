@@ -118,6 +118,11 @@
 			"Rev": "c1ccc378a054ea8d4e38d8c67f6938d4760b53dd"
 		},
 		{
+			"ImportPath": "github.com/urfave/cli",
+			"Comment": "v1.18.0-26-g11c1345",
+			"Rev": "11c134509d89c2018675f369955218a180dc7428"
+		},
+		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
 			"Rev": "c8b9e6388ef638d5a8a9d865c634befdc46a6784"
 		},

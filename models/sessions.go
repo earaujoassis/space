@@ -25,7 +25,8 @@ type Session struct {
     UserID uint                 `gorm:"not null" json:"-"`
     Client Client               `gorm:"not null" validate:"exists" json:"-"`
     ClientID uint               `gorm:"not null" json:"-"`
-    Moment int64                `gorm:"not null"`
+    Moment int64                `gorm:"not null" json:"moment"`
+  //ExpiresIn int64             `gorm:"not null" json:"expires_in"` TODO
     Ip string                   `gorm:"not null;index" validate:"required" json:"-"`
     UserAgent string            `gorm:"not null" validate:"required" json:"-"`
     Invalidated bool            `gorm:"default:false"`
@@ -40,6 +41,8 @@ func (session *Session) BeforeSave(scope *gorm.Scope) error {
     if err != nil {
         return err
     }
+    // TODO Check if it has a valid scope
+    // TODO Check if it is a valid token
     return nil
 }
 

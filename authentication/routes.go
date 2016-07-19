@@ -145,8 +145,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             var token string = c.Param("token")
 
             session := services.FindSessionByToken(token, models.GrantToken)
-            dataStore := datastore.GetDataStoreConnection()
-            if dataStore.NewRecord(session) {
+            if session.ID == 0 {
                 c.JSON(http.StatusNotAcceptable, utils.H{
                     "_status":  "error",
                     "_message": "Invalid session (not found)",

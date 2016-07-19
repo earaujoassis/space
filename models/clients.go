@@ -1,6 +1,8 @@
 package models
 
 import (
+    "strings"
+
     "github.com/jinzhu/gorm"
     "gopkg.in/bluesuncorp/validator.v5"
 )
@@ -28,6 +30,7 @@ func (client *Client) BeforeSave(scope *gorm.Scope) error {
     if err != nil {
         return err
     }
+    // TODO Check if it is a valid client type
     return nil
 }
 
@@ -36,4 +39,8 @@ func (client *Client) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("Secret", randStringBytesMaskImprSrc(64))
     scope.SetColumn("Key", randStringBytesMaskImprSrc(32))
     return nil
+}
+
+func (client *Client) DefaultRedirectURI() string {
+    return strings.Split(client.RedirectURI, "\n")[0]
 }

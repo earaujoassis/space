@@ -24,3 +24,7 @@ func init() {
 func GetConfig(key string) interface{} {
     return viper.Get(key)
 }
+
+func SetConfig(key, value string) {
+    viper.SetDefault(key, value)
+}
