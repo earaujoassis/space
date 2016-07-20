@@ -12,7 +12,7 @@ func CreateSession(user models.User, client models.Client, ip, userAgent, scopes
         Ip: ip,
         UserAgent: userAgent,
         Scopes: scopes,
-        TokenType: models.GrantToken,
+        TokenType: tokenType,
     }
     dataStore := datastore.GetDataStoreConnection()
     dataStore.Create(&session)

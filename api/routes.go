@@ -1,4 +1,4 @@
-package authentication
+package api
 
 import (
     "net/http"
@@ -20,7 +20,7 @@ import (
 func ExposeRoutes(router *gin.RouterGroup) {
     users := router.Group("/users")
     {
-        users.POST("/", func(c *gin.Context) {
+        users.POST("/create", func(c *gin.Context) {
             var buf bytes.Buffer
             var imageData string
 
@@ -78,8 +78,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
         })
 
-        users.GET("/:id", func(c *gin.Context) {
-            var publicId string = c.Param("id")
+        users.POST("/introspect", func(c *gin.Context) {
+            var publicId string = c.PostForm("user_id")
 
             authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
             session := oauth.SessionAuthentication(authorizationBearer)
@@ -105,17 +105,17 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        users.PUT("/:id", func(c *gin.Context) {
+        users.POST("/update", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
-        users.DELETE("/:id", func(c *gin.Context) {
+        users.POST("/deactivate", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
     }
     sessions := router.Group("/sessions")
     {
-        sessions.POST("/", func(c *gin.Context) {
+        sessions.POST("/create", func(c *gin.Context) {
             var holder string = c.PostForm("holder")
             var state string = c.PostForm("state")
 
@@ -154,8 +154,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        sessions.GET("/:token", func(c *gin.Context) {
-            var token string = c.Param("token")
+        sessions.POST("/introspect", func(c *gin.Context) {
+            var token string = c.PostForm("access_token")
 
             authorizationBasic := strings.Replace(c.Request.Header["Authorization"][0], "Basic ", "", 1)
             client := oauth.ClientAuthentication(authorizationBasic)
@@ -167,7 +167,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            session := services.FindSessionByToken(token, models.GrantToken)
+            session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
                 c.JSON(http.StatusNotAcceptable, utils.H{
                     "error": oauth.InvalidSession,
@@ -183,8 +183,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        sessions.DELETE("/:token", func(c *gin.Context) {
-            var token string = c.Param("token")
+        sessions.POST("/invalidate", func(c *gin.Context) {
+            var token string = c.PostForm("access_token")
 
             authorizationBasic := strings.Replace(c.Request.Header["Authorization"][0], "Basic ", "", 1)
             client := oauth.ClientAuthentication(authorizationBasic)
@@ -196,7 +196,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            session := services.FindSessionByToken(token, models.GrantToken)
+            session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
                 c.JSON(http.StatusNotAcceptable, utils.H{
                     "error": oauth.InvalidSession,
