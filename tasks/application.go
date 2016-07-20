@@ -7,7 +7,7 @@ import (
     "github.com/earaujoassis/space/config"
     "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/web"
-    "github.com/earaujoassis/space/authentication"
+    "github.com/earaujoassis/space/api"
 )
 
 func Server(publicFolder, templateFolder string) {
@@ -17,6 +17,6 @@ func Server(publicFolder, templateFolder string) {
     router := gin.Default()
     web.ExposeRoutes(router)
     restApi := router.Group("/api/v1")
-    authentication.ExposeRoutes(restApi)
+    api.ExposeRoutes(restApi)
     router.Run(fmt.Sprintf(":%v", config.GetConfig("http.port")))
 }
