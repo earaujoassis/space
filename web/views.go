@@ -250,7 +250,9 @@ func authorizeHandler(c *gin.Context) {
     switch responseType {
     // Authorization Code Grant
     case oauth.Code:
-        if c.Request.Method == "GET" {
+        activeSessions := services.ActiveSessionsForClient(client.Key)
+        if c.Request.Method == "GET" && activeSessions == 0 {
+            services.ActiveSessionsForClient(client.Key)
             c.HTML(http.StatusOK, "satellite", utils.H{
                 "Title": " - Authorize",
                 "Satellite": "callisto",
@@ -263,7 +265,7 @@ func authorizeHandler(c *gin.Context) {
                 },
             })
             return
-        } else if c.Request.Method == "POST" {
+        } else if c.Request.Method == "POST" || (activeSessions > 0 && c.Request.Method == "GET") {
             if c.PostForm("access_denied") == "true" {
                 location = fmt.Sprintf(errorURI, redirectURI, oauth.AccessDenied, state)
                 c.Redirect(http.StatusFound, location)
