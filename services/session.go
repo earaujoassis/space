@@ -50,6 +50,19 @@ func InvalidateSession(session models.Session) {
     dataStoreSession.Model(&session).Select("invalidated").Update("invalidated", true)
 }
 
+func ActiveSessionsForClient(clientKey string) int64 {
+    var count struct{
+        Count int64
+    }
+
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.
+        Raw("SELECT count(*) AS count FROM sessions JOIN clients ON clients.id = sessions.client_id WHERE clients.key = ? AND invalidated = false AND token_type = ? OR token_type = ?;",
+            clientKey, models.AccessToken, models.RefreshToken).
+        Scan(&count)
+    return count.Count
+}
+
 func SessionGrantsReadAbility(session models.Session) bool {
     return session.Scopes == models.ReadScope || session.Scopes == models.ReadWriteScope
 }

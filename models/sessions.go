@@ -26,7 +26,7 @@ type Session struct {
     Client Client               `gorm:"not null" validate:"exists" json:"-"`
     ClientID uint               `gorm:"not null" json:"-"`
     Moment int64                `gorm:"not null" json:"moment"`
-  //ExpiresIn int64             `gorm:"not null" json:"expires_in"` TODO
+    ExpiresIn int64             `gorm:"not null;default:0" json:"expires_in"`
     Ip string                   `gorm:"not null;index" validate:"required" json:"-"`
     UserAgent string            `gorm:"not null" validate:"required" json:"-"`
     Invalidated bool            `gorm:"default:false"`
