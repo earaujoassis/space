@@ -10,7 +10,6 @@ import (
     "github.com/gin-gonic/contrib/sessions"
 
     "github.com/earaujoassis/space/config"
-    "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/services"
     "github.com/earaujoassis/space/models"
@@ -95,13 +94,11 @@ func ExposeRoutes(router *gin.Engine) {
             }
 
             client := services.FindOrCreateClient("Jupiter")
-            dataStore := datastore.GetDataStoreConnection()
             if client.Key == clientId && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
                 grantToken := services.FindSessionByToken(code, models.GrantToken)
-                if !dataStore.NewRecord(grantToken) {
+                if grantToken.ID != 0 {
                     session.Set("userPublicId", grantToken.User.PublicId)
                     session.Save()
-                    // FIXME `InvalidateSession` is not working :(
                     services.InvalidateSession(grantToken)
                     c.Redirect(http.StatusFound, "/")
                     return

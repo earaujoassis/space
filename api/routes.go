@@ -119,21 +119,16 @@ func ExposeRoutes(router *gin.RouterGroup) {
             var holder string = c.PostForm("holder")
             var state string = c.PostForm("state")
 
-            dataStore := datastore.GetDataStoreConnection()
             user := services.FindUserByAccountHolder(holder)
             client := services.FindOrCreateClient("Jupiter")
-            if !dataStore.NewRecord(user) {
+            if user.ID != 0 {
                 if user.Authentic(c.PostForm("password"), c.PostForm("passcode")) {
-                    session := models.Session{
-                        User: user,
-                        Client: client,
-                        Ip: c.Request.RemoteAddr,
-                        UserAgent: c.Request.UserAgent(),
-                        Scopes: models.PublicScope,
-                        TokenType: models.GrantToken,
-                    }
-                    result := dataStore.Create(&session)
-                    if count := result.RowsAffected; count > 0 {
+                    session := services.CreateSession(user, client,
+                        c.Request.RemoteAddr,
+                        c.Request.UserAgent(),
+                        models.PublicScope,
+                        models.GrantToken)
+                    if session.ID != 0 {
                         c.JSON(http.StatusOK, utils.H{
                             "_status":  "created",
                             "_message": "Session was created",
@@ -174,7 +169,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 })
                 return
             }
-            // TODO We should check token expiration; issue #16
             c.JSON(http.StatusOK, utils.H{
                 "active":  true,
                 "scope": session.Scopes,
