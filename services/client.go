@@ -1,6 +1,9 @@
 package services
 
 import (
+    "fmt"
+    "net/url"
+
     "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/models"
 )
@@ -46,6 +49,14 @@ func FindClientByKey(key string) models.Client {
     return client
 }
 
+func FindClientByUUID(uuid string) models.Client {
+    var client models.Client
+
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.Where("uuid = ?", uuid).First(&client)
+    return client
+}
+
 func ClientAuthentication(key, secret string) models.Client {
     var client models.Client
 
@@ -54,4 +65,23 @@ func ClientAuthentication(key, secret string) models.Client {
         return client
     }
     return models.Client{}
+}
+
+func ActiveClientsForUser(internalUserId uint) []models.Client {
+    var clients []models.Client
+
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.
+        Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.redirect_uri " +
+            "FROM clients JOIN sessions ON clients.id = sessions.client_id " +
+            "WHERE sessions.user_id = ? AND sessions.invalidated = false AND sessions.token_type = ? OR sessions.token_type = ?;",
+            internalUserId, models.AccessToken, models.RefreshToken).
+        Scan(&clients)
+    for i := range clients {
+        client := clients[i]
+        u, _ := url.Parse(client.RedirectURI)
+        client.RedirectURI = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+        clients[i] = client
+    }
+    return clients
 }

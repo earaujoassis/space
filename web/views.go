@@ -34,18 +34,9 @@ func ExposeRoutes(router *gin.Engine) {
     router.Use(sessions.Sessions("jupiter", store))
     views := router.Group("/")
     {
-        views.GET("/", func(c *gin.Context) {
-            session := sessions.Default(c)
-            userPublicId := session.Get("userPublicId")
-            if userPublicId == nil {
-                c.Redirect(http.StatusFound, "/signin")
-                return
-            }
-            c.HTML(http.StatusOK, "satellite", utils.H{
-                "Title": " - Mission control",
-                "Satellite": "europa",
-            })
-        })
+        views.GET("/", jupiterHandler)
+        views.GET("/profile", jupiterHandler)
+        views.GET("/log", jupiterHandler)
 
         views.GET("/signup", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
@@ -195,6 +186,30 @@ func ExposeRoutes(router *gin.Engine) {
             }
         })
     }
+}
+
+func jupiterHandler(c *gin.Context) {
+    session := sessions.Default(c)
+    userPublicId := session.Get("userPublicId")
+    if userPublicId == nil {
+        c.Redirect(http.StatusFound, "/signin")
+        return
+    }
+    client := services.FindOrCreateClient("Jupiter")
+    user := services.FindUserByPublicId(userPublicId.(string))
+    sessionToken := services.CreateSession(user, client,
+        c.Request.RemoteAddr,
+        c.Request.UserAgent(),
+        models.ReadScope,
+        models.ActionToken)
+    c.HTML(http.StatusOK, "satellite", utils.H{
+        "Title": " - Mission control",
+        "Satellite": "europa",
+        "Data": utils.H {
+            "action_token": sessionToken.Token,
+            "user_id": user.UUID,
+        },
+    })
 }
 
 func authorizeHandler(c *gin.Context) {

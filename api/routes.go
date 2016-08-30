@@ -34,7 +34,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
             if !models.IsValid("essential", user) {
                 c.JSON(http.StatusNotAcceptable, utils.H{
-                    "_status":  "error",
+                    "_status": "error",
                     "_message": "User was not created",
                     "error": "Missing essential fields",
                     "user": user,
@@ -65,12 +65,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 })
             } else {
                 c.JSON(http.StatusOK, utils.H{
-                    "_status":  "created",
+                    "_status": "created",
                     "_message": "User was created",
-                    "_links": utils.H{
-                        "rel": "self",
-                        "href": fmt.Sprintf("%s/%s", c.Request.RequestURI, user.PublicId),
-                    },
                     "recover_secret": recoverSecret,
                     "code_secret_image": imageData,
                     "user": user,
@@ -78,11 +74,12 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
         })
 
+        // Authorization type: access session (Bearer)
         users.POST("/introspect", func(c *gin.Context) {
             var publicId string = c.PostForm("user_id")
 
             authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
-            session := oauth.SessionAuthentication(authorizationBearer)
+            session := oauth.AccessAuthentication(authorizationBearer)
             if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
@@ -101,7 +98,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
 
             c.JSON(http.StatusOK, utils.H{
-                "user":  user,
+                "user": user,
             })
         })
 
@@ -111,6 +108,95 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         users.POST("/deactivate", func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
+        })
+
+        // Authorization type: action session (Bearer)
+        users.GET("/:id/clients", func(c *gin.Context) {
+            var uuid string = c.Param("id")
+
+            authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
+            session := oauth.ActionAuthentication(authorizationBearer)
+            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            user := services.FindUserByUUID(uuid)
+            if user.ID == 0 || user.ID != session.UserID {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            c.JSON(http.StatusOK, utils.H{
+                "clients": services.ActiveClientsForUser(user.ID),
+            })
+        })
+
+        // Authorization type: action session (Bearer)
+        users.DELETE("/:user_id/clients/:client_id/revoke", func(c *gin.Context) {
+            var userUUID string = c.Param("user_id")
+            //var clientUUID string = c.Param("client_id")
+
+            authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
+            session := oauth.ActionAuthentication(authorizationBearer)
+            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            user := services.FindUserByUUID(userUUID)
+            if user.ID == 0 || user.ID != session.UserID {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            //client := services.FindClientByUUID(clientUUID)
+
+            c.Status(http.StatusNoContent)
+        })
+
+        // Authorization type: action session (Bearer)
+        users.GET("/:id/profile", func(c *gin.Context) {
+            var uuid string = c.Param("id")
+
+            authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
+            session := oauth.ActionAuthentication(authorizationBearer)
+            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            user := services.FindUserByUUID(uuid)
+            if user.ID == 0 || user.ID != session.UserID {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            c.JSON(http.StatusOK, utils.H{
+                "username": user.Username,
+                "first_name": user.FirstName,
+                "last_name": user.LastName,
+                "email": user.Email,
+                "timezone_identifier": user.TimezoneIdentifier,
+            })
         })
     }
     sessions := router.Group("/sessions")
@@ -130,7 +216,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                         models.GrantToken)
                     if session.ID != 0 {
                         c.JSON(http.StatusOK, utils.H{
-                            "_status":  "created",
+                            "_status": "created",
                             "_message": "Session was created",
                             "scope": session.Scopes,
                             "grant_type": "authorization_code",
@@ -149,6 +235,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
+        // Authorization type: Basic
         sessions.POST("/introspect", func(c *gin.Context) {
             var token string = c.PostForm("access_token")
 
@@ -170,13 +257,14 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
             c.JSON(http.StatusOK, utils.H{
-                "active":  true,
+                "active": true,
                 "scope": session.Scopes,
                 "client_id": session.Client.Key,
                 "token_type": "Bearer",
             })
         })
 
+        // Authorization type: Basic
         sessions.POST("/invalidate", func(c *gin.Context) {
             var token string = c.PostForm("access_token")
 
@@ -199,9 +287,9 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
             services.InvalidateSession(session)
             c.JSON(http.StatusOK, utils.H{
-                "_status":  "deleted",
+                "_status": "deleted",
                 "_message": "Session was deleted (soft)",
-                "active":  false,
+                "active": false,
                 "scope": session.Scopes,
                 "client_id": session.Client.Key,
                 "token_type": "Bearer",

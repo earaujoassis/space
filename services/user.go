@@ -18,3 +18,10 @@ func FindUserByPublicId(publicId string) models.User {
     dataStoreSession.Preload("Client").Preload("Language").Where("public_id = ?", publicId).First(&user)
     return user
 }
+
+func FindUserByUUID(uuid string) models.User {
+    var user models.User
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.Preload("Client").Preload("Language").Where("uuid = ?", uuid).First(&user)
+    return user
+}

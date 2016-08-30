@@ -33,9 +33,9 @@ export default class SignIn extends React.Component {
     constructor() {
         super()
         this.state = {
-              currentStepIndex: 0,
-              disableSubmit: false,
-              form: {}
+            currentStepIndex: 0,
+            disableSubmit: false,
+            form: this._initialForm()
         }
         this._updateStep = this._updateStep.bind(this)
         this._updateStepValue = this._updateStepValue.bind(this)
@@ -57,6 +57,7 @@ export default class SignIn extends React.Component {
 
     render() {
         let step = StepsData[StepsOrder[this.state.currentStepIndex]]
+        console.log(step, this.state.form, this.state.form[step.name])
         return (
             <div className="signin-content">
                 <Row>
@@ -72,6 +73,7 @@ export default class SignIn extends React.Component {
                                 name={step.name}
                                 placeholder={step.placeholder}
                                 value={this.state.form[step.name]}
+                                defaultValue={this.state.form[step.name]}
                                 onChange={this._updateStepValue}
                                 required={true}
                                 disabled={this.state.disableSubmit} />
@@ -113,6 +115,10 @@ export default class SignIn extends React.Component {
         this.setState({form: form})
     }
 
+    _initialForm() {
+        return {holder: '', password: '', passcode: ''}
+    }
+
     _updateStep(e) {
         if (e) e.preventDefault()
         let state = {}
@@ -139,7 +145,7 @@ export default class SignIn extends React.Component {
             let location = `${r.redirect_uri}?client_id=${r.client_id}&code=${r.code}&grant_type=${r.grant_type}&scope=${r.scope}&state=${r.state}`
             window.location.href = location
         } else {
-            this.setState({failed: true})
+            this.setState({failed: true, form: this._initialForm()})
             this._triggerFormUnlock()
         }
     }
