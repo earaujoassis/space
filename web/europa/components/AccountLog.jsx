@@ -19,22 +19,10 @@ export default class AccountLog extends React.Component {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>123.456.789.0</td>
-                                <td>application.example.com</td>
-                                <td>/api/1/oauth/authorize</td>
-                                <td>2016-04-16 15:50:40.211005</td>
-                            </tr>
-                            <tr>
-                                <td>123.456.789.0</td>
-                                <td>application.example.com</td>
-                                <td>/api/1/oauth/authorize</td>
-                                <td>2016-04-16 15:52:10.783773</td>
-                            </tr>
-                            <tr>
-                                <td>123.456.789.0</td>
-                                <td>application.example.com</td>
-                                <td>/api/1/oauth/authorize</td>
-                                <td>2016-04-16 15:52:10.783773</td>
+                                <td>?</td>
+                                <td>?</td>
+                                <td>?</td>
+                                <td>?</td>
                             </tr>
                         </tbody>
                     </table>

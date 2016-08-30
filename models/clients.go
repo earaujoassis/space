@@ -14,23 +14,32 @@ const (
 
 type Client struct {
     Model
-    UUID string                 `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"-"`
+    UUID string                 `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
     Name string                 `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
     Description string          `json:"description"`
-    Key string                  `gorm:"not null;unique;index" validate:"required" json:"client_id"`
+    Key string                  `gorm:"not null;unique;index" validate:"required" json:"-"`
     Secret string               `gorm:"not null" validate:"required" json:"-"`
     Scopes string               `gorm:"not null" validate:"required" json:"-"`
-    RedirectURI string          `gorm:"not null" validate:"required" json:"-"`
-    Type string                 `gorm:"not null" validate:"required" json:"client_type"`
+    RedirectURI string          `gorm:"not null" validate:"required" json:"uri"`
+    Type string                 `gorm:"not null" validate:"required" json:"-"`
+}
+
+func validClientType(top interface{}, current interface{}, field interface{}, param string) bool {
+    typeField := field.(string)
+    if typeField != PublicClient && typeField != ConfidentialClient {
+        return false
+    }
+    return true
 }
 
 func (client *Client) BeforeSave(scope *gorm.Scope) error {
     validate := validator.New("validate", validator.BakedInValidators)
+    // FIX The function below is not working when it is used as a Client struct tag
+    validate.AddFunction("client", validClientType)
     err := validate.Struct(client)
     if err != nil {
         return err
     }
-    // TODO Check if it is a valid client type
     return nil
 }
 
