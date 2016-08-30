@@ -19,6 +19,10 @@ export default class Applications extends React.Component {
         UsersActions.fetchActiveClients()
     }
 
+    componentWillUnmount() {
+        UserStore.removeChangeListener(this._updateFromStore)
+    }
+
     render() {
         if (this.state.loading) {
             return (

@@ -19,6 +19,10 @@ export default class Profile extends React.Component {
         UsersActions.fetchProfile()
     }
 
+    componentWillUnmount() {
+        UserStore.removeChangeListener(this._updateFromStore)
+    }
+
     render() {
         if (this.state.loading) {
             return (
