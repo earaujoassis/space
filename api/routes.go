@@ -141,7 +141,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Authorization type: action session (Bearer)
         users.DELETE("/:user_id/clients/:client_id/revoke", func(c *gin.Context) {
             var userUUID string = c.Param("user_id")
-            //var clientUUID string = c.Param("client_id")
+            var clientUUID string = c.Param("client_id")
 
             authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
             session := oauth.ActionAuthentication(authorizationBearer)
@@ -162,7 +162,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            //client := services.FindClientByUUID(clientUUID)
+            client := services.FindClientByUUID(clientUUID)
+            services.RevokeClientAccess(client.ID, user.ID)
 
             c.Status(http.StatusNoContent)
         })

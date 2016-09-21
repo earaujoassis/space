@@ -67,15 +67,15 @@ func ClientAuthentication(key, secret string) models.Client {
     return models.Client{}
 }
 
-func ActiveClientsForUser(internalUserId uint) []models.Client {
+func ActiveClientsForUser(userIID uint) []models.Client {
     var clients []models.Client
 
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.
         Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.redirect_uri " +
             "FROM clients JOIN sessions ON clients.id = sessions.client_id " +
-            "WHERE sessions.user_id = ? AND sessions.invalidated = false AND sessions.token_type = ? OR sessions.token_type = ?;",
-            internalUserId, models.AccessToken, models.RefreshToken).
+            "WHERE sessions.token_type IN ('access_token', 'refresh_token') AND sessions.invalidated = false AND " +
+            "sessions.user_id = ?;", userIID).
         Scan(&clients)
     for i := range clients {
         client := clients[i]

@@ -48,6 +48,14 @@ func CreateSession(user models.User, client models.Client, ip, userAgent, scopes
     return models.Session{}
 }
 
+func SessionGrantsReadAbility(session models.Session) bool {
+    return session.Scopes == models.ReadScope || session.Scopes == models.ReadWriteScope
+}
+
+func SessionGrantsWriteAbility(session models.Session) bool {
+    return session.Scopes == models.ReadWriteScope
+}
+
 func withinExpirationWindow(session models.Session) bool {
     now := time.Now().UTC().Unix()
     if session.ExpiresIn == eternalExpirationLength || session.Moment + session.ExpiresIn >= now {
@@ -99,7 +107,7 @@ func InvalidateSession(session models.Session) {
     dataStoreSession.Model(&session).Select("invalidated").Update("invalidated", true)
 }
 
-func ActiveSessionsForClient(clientKey string) int64 {
+func ActiveSessionsForClient(clientIID, userIID uint) int64 {
     var count struct{
         Count int64
     }
@@ -107,17 +115,16 @@ func ActiveSessionsForClient(clientKey string) int64 {
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.
         Raw("SELECT count(*) AS count " +
-            "FROM sessions JOIN clients ON clients.id = sessions.client_id " +
-            "WHERE clients.key = ? AND invalidated = false AND token_type = ? OR token_type = ?;",
-            clientKey, models.AccessToken, models.RefreshToken).
+            "FROM sessions WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND " +
+            "client_id = ? AND user_id = ?;", clientIID, userIID).
         Scan(&count)
     return count.Count
 }
 
-func SessionGrantsReadAbility(session models.Session) bool {
-    return session.Scopes == models.ReadScope || session.Scopes == models.ReadWriteScope
-}
-
-func SessionGrantsWriteAbility(session models.Session) bool {
-    return session.Scopes == models.ReadWriteScope
+func RevokeClientAccess(clientIID, userIID uint) {
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.
+        Exec("UPDATE sessions SET invalidated = true, updated_at = now() " +
+            "WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND " +
+            "client_id = ? AND user_id = ?;", clientIID, userIID)
 }

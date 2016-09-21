@@ -197,16 +197,16 @@ func jupiterHandler(c *gin.Context) {
     }
     client := services.FindOrCreateClient("Jupiter")
     user := services.FindUserByPublicId(userPublicId.(string))
-    sessionToken := services.CreateSession(user, client,
+    actionToken := services.CreateSession(user, client,
         c.Request.RemoteAddr,
         c.Request.UserAgent(),
-        models.ReadScope,
+        models.ReadWriteScope,
         models.ActionToken)
     c.HTML(http.StatusOK, "satellite", utils.H{
         "Title": " - Mission control",
         "Satellite": "europa",
         "Data": utils.H {
-            "action_token": sessionToken.Token,
+            "action_token": actionToken.Token,
             "user_id": user.UUID,
         },
     })
@@ -262,9 +262,8 @@ func authorizeHandler(c *gin.Context) {
     switch responseType {
     // Authorization Code Grant
     case oauth.Code:
-        activeSessions := services.ActiveSessionsForClient(client.Key)
+        activeSessions := services.ActiveSessionsForClient(client.ID, user.ID)
         if c.Request.Method == "GET" && activeSessions == 0 {
-            services.ActiveSessionsForClient(client.Key)
             c.HTML(http.StatusOK, "satellite", utils.H{
                 "Title": " - Authorize",
                 "Satellite": "callisto",

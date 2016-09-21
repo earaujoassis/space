@@ -57,7 +57,6 @@ export default class SignIn extends React.Component {
 
     render() {
         let step = StepsData[StepsOrder[this.state.currentStepIndex]]
-        console.log(step, this.state.form, this.state.form[step.name])
         return (
             <div className="signin-content">
                 <Row>
