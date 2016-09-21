@@ -28,7 +28,20 @@ class UsersActionFactory {
     }
 
     revokeActiveClient(key) {
-        return actionProxy('revokeActiveClient')
+        let token = UserStore.getActionToken()
+        let id = UserStore.getUserId()
+        let action = new ActionCreator()
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        SpaceApi['revokeActiveClient'](id, key, token)
+            .then(processResponse)
+            .then(processData)
+            .then(successHandler)
+            .catch(errorHandler)
+            .then(() => {
+                UsersActions.fetchActiveClients()
+            })
+        return action.actionID()
     }
 }
 

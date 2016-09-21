@@ -49,6 +49,10 @@ export default class Applications extends React.Component {
             return []
         }
 
+        if (!this.state.clients.length) {
+            return (<p className="blank-list">No applications available yet.</p>)
+        }
+
         let applications = []
         for (var i = 0; i < this.state.clients.length; i++) {
             let client = this.state.clients[i]
@@ -56,7 +60,7 @@ export default class Applications extends React.Component {
                 <Columns className="medium-12" key={i}>
                     <div className="application-card">
                         <p className="title">{client.name} <small>(<a href={client.uri} target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small></p>
-                        {/* <p className="action"><button className="button" onClick={this._revokeAccess.bind(client)}>Revoke Access</button></p> */}
+                        <p className="action"><button className="button" onClick={this._revokeAccess.bind(client)}>Revoke Access</button></p>
                         <p className="scope">{client.description}</p>
                         <p className="last-access"><em>Last access:</em> ?</p>
                     </div>
