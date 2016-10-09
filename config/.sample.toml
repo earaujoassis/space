@@ -1,6 +1,10 @@
 [settings]
 storage_secret = ""
 
+[mailer]
+mail_from = "example@example.com"
+mail_key = "AccessKeyId:SecretAccessKey:Region"
+
 [datastore]
 host = "localhost"
 user = "postgres"
