@@ -7,12 +7,14 @@ import (
     "encoding/base64"
     "image/png"
     "strings"
+    "time"
 
     "github.com/gin-gonic/gin"
 
     "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/models"
     "github.com/earaujoassis/space/services"
+    "github.com/earaujoassis/space/services/logger"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/utils"
 )
@@ -64,6 +66,10 @@ func ExposeRoutes(router *gin.RouterGroup) {
                     "user": user,
                 })
             } else {
+                go logger.LogAction("user.created", utils.H{
+                    "Email": user.Email,
+                    "FirstName": user.FirstName,
+                })
                 c.JSON(http.StatusOK, utils.H{
                     "_status": "created",
                     "_message": "User was created",
@@ -216,6 +222,12 @@ func ExposeRoutes(router *gin.RouterGroup) {
                         models.PublicScope,
                         models.GrantToken)
                     if session.ID != 0 {
+                        go logger.LogAction("session.created", utils.H{
+                            "Email": user.Email,
+                            "FirstName": user.FirstName,
+                            "Ip": session.Ip,
+                            "CreatedAt": session.CreatedAt.Format(time.RFC850),
+                        })
                         c.JSON(http.StatusOK, utils.H{
                             "_status": "created",
                             "_message": "Session was created",
