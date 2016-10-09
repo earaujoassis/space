@@ -6,9 +6,10 @@ import (
 
     "golang.org/x/crypto/bcrypt"
     "github.com/jinzhu/gorm"
-    "gopkg.in/bluesuncorp/validator.v5"
     "github.com/pquerna/otp"
     "github.com/pquerna/otp/totp"
+
+    "github.com/earaujoassis/space/security"
 )
 
 type User struct {
@@ -33,14 +34,19 @@ type User struct {
 
 func (user *User) Authentic(password, passcode string) bool {
     validPassword := bcrypt.CompareHashAndPassword([]byte(user.Passphrase), []byte(password)) == nil
-    validPasscode := totp.Validate(passcode, user.CodeSecret)
+    var validPasscode bool
+    if codeSecret, err := security.Decrypt(defaultKey(), user.CodeSecret); err != nil {
+        return false
+    } else {
+        validPasscode = totp.Validate(passcode, string(codeSecret))
+    }
     return validPasscode && validPassword
 }
 
 func (user *User) UpdatePassword(password string) error {
-    pw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    crypted, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err == nil {
-        user.Passphrase = string(pw)
+        user.Passphrase = string(crypted)
         return nil
     }
     return err
@@ -51,7 +57,12 @@ func (user *User) GenerateCodeSecret() *otp.Key {
         Issuer:      "QuatroLabs.com",
         AccountName: user.Username,
     })
-    user.CodeSecret = key.Secret()
+    codeSecret := key.Secret()
+    if cryptedCodeSecret, err := security.Encrypt(defaultKey(), []byte(codeSecret)); err == nil {
+        user.CodeSecret = string(cryptedCodeSecret)
+    } else {
+        user.CodeSecret = codeSecret
+    }
     if err != nil {
         return nil
     }
@@ -60,28 +71,28 @@ func (user *User) GenerateCodeSecret() *otp.Key {
 
 func (user *User) GenerateRecoverSecret() string {
     var secret string = strings.ToUpper(fmt.Sprintf("%s-%s-%s-%s",
-        randStringBytesMaskImprSrc(4),
-        randStringBytesMaskImprSrc(4),
-        randStringBytesMaskImprSrc(4),
-        randStringBytesMaskImprSrc(4),))
+        GenerateRandomString(4),
+        GenerateRandomString(4),
+        GenerateRandomString(4),
+        GenerateRandomString(4),))
     user.RecoverSecret = secret
     return secret
 }
 
 func (user *User) BeforeSave(scope *gorm.Scope) error {
-    validate := validator.New("validate", validator.BakedInValidators)
-    err := validate.Struct(user)
-    if err != nil {
-        return err
-    }
-    return nil
+    return validateModel("validate", user)
 }
 
 func (user *User) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("UUID", generateUUID())
-    scope.SetColumn("PublicId", randStringBytesMaskImprSrc(32))
-    if pw, err := bcrypt.GenerateFromPassword([]byte(user.Passphrase), bcrypt.DefaultCost); err == nil {
-        scope.SetColumn("Passphrase", pw)
+    scope.SetColumn("PublicId", GenerateRandomString(32))
+    if cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Passphrase), bcrypt.DefaultCost); err == nil {
+        scope.SetColumn("Passphrase", cryptedPassword)
+    } else {
+        return err
+    }
+    if cryptedRecoverSecret, err := bcrypt.GenerateFromPassword([]byte(user.RecoverSecret), bcrypt.DefaultCost); err == nil {
+        scope.SetColumn("RecoverSecret", cryptedRecoverSecret)
     } else {
         return err
     }

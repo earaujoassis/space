@@ -4,7 +4,7 @@ import (
     "strings"
 
     "github.com/jinzhu/gorm"
-    "gopkg.in/bluesuncorp/validator.v5"
+    "golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -17,11 +17,11 @@ type Client struct {
     UUID string                 `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
     Name string                 `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
     Description string          `json:"description"`
-    Key string                  `gorm:"not null;unique;index" validate:"required" json:"-"`
+    Key string                  `gorm:"not null;unique;index" json:"-"`
     Secret string               `gorm:"not null" validate:"required" json:"-"`
     Scopes string               `gorm:"not null" validate:"required" json:"-"`
     RedirectURI string          `gorm:"not null" validate:"required" json:"uri"`
-    Type string                 `gorm:"not null" validate:"required" json:"-"`
+    Type string                 `gorm:"not null" validate:"required,client" json:"-"`
 }
 
 func validClientType(top interface{}, current interface{}, field interface{}, param string) bool {
@@ -32,21 +32,32 @@ func validClientType(top interface{}, current interface{}, field interface{}, pa
     return true
 }
 
-func (client *Client) BeforeSave(scope *gorm.Scope) error {
-    validate := validator.New("validate", validator.BakedInValidators)
-    // FIX The function below is not working when it is used as a Client struct tag
-    validate.AddFunction("client", validClientType)
-    err := validate.Struct(client)
-    if err != nil {
-        return err
+func (client *Client) Authentic(secret string) bool {
+    validSecret := bcrypt.CompareHashAndPassword([]byte(client.Secret), []byte(secret)) == nil
+    return validSecret
+}
+
+func (client *Client) UpdateSecret(secret string) error {
+    crypted, err := bcrypt.GenerateFromPassword([]byte(secret), bcrypt.DefaultCost)
+    if err == nil {
+        client.Secret = string(crypted)
+        return nil
     }
-    return nil
+    return err
+}
+
+func (client *Client) BeforeSave(scope *gorm.Scope) error {
+    return validateModel("validate", client)
 }
 
 func (client *Client) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("UUID", generateUUID())
-    scope.SetColumn("Secret", randStringBytesMaskImprSrc(64))
-    scope.SetColumn("Key", randStringBytesMaskImprSrc(32))
+    scope.SetColumn("Key", GenerateRandomString(32))
+    if crypted, err := bcrypt.GenerateFromPassword([]byte(client.Secret), bcrypt.DefaultCost); err == nil {
+        scope.SetColumn("Secret", crypted)
+    } else {
+        return err
+    }
     return nil
 }
 

@@ -8,17 +8,17 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
-func CreateNewClient(name, description, scopes, redirectURI string) models.Client {
+func CreateNewClient(name, description, secret, scopes, redirectURI string) models.Client {
     var client models.Client = models.Client{
         Name: name,
         Description: description,
+        Secret: secret,
         Scopes: scopes,
         RedirectURI: redirectURI,
         Type: models.ConfidentialClient,
     }
 
     dataStoreSession := datastore.GetDataStoreConnection()
-    client.BeforeCreate(dataStoreSession.NewScope(&client))
     dataStoreSession.Create(&client)
     return client
 }
@@ -31,11 +31,11 @@ func FindOrCreateClient(name string) models.Client {
     if dataStoreSession.NewRecord(client) {
         client = models.Client{
             Name: name,
+            Secret: models.GenerateRandomString(64),
             RedirectURI: "/",
             Scopes: models.PublicScope,
             Type: models.PublicClient,
         }
-        client.BeforeCreate(dataStoreSession.NewScope(&client))
         dataStoreSession.Create(&client)
     }
     return client
@@ -61,7 +61,7 @@ func ClientAuthentication(key, secret string) models.Client {
     var client models.Client
 
     client = FindClientByKey(key)
-    if client.ID != 0 && client.Secret == secret {
+    if client.ID != 0 && client.Authentic(secret) {
         return client
     }
     return models.Client{}
