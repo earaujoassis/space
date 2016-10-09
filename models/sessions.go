@@ -4,7 +4,6 @@ import (
     "time"
 
     "github.com/jinzhu/gorm"
-    "gopkg.in/bluesuncorp/validator.v5"
 )
 
 const (
@@ -53,18 +52,11 @@ func validTokenType(top interface{}, current interface{}, field interface{}, par
 }
 
 func (session *Session) BeforeSave(scope *gorm.Scope) error {
-    validate := validator.New("validate", validator.BakedInValidators)
-    validate.AddFunction("scope", validScope)
-    validate.AddFunction("token", validTokenType)
-    err := validate.Struct(session)
-    if err != nil {
-        return err
-    }
-    return nil
+    return validateModel("validate", session)
 }
 
 func (session *Session) BeforeCreate(scope *gorm.Scope) error {
-    scope.SetColumn("Token", randStringBytesMaskImprSrc(64))
+    scope.SetColumn("Token", GenerateRandomString(64))
     scope.SetColumn("UUID", generateUUID())
     scope.SetColumn("Moment", time.Now().UTC().Unix())
     return nil

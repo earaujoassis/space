@@ -6,6 +6,8 @@ import (
 
     "github.com/satori/go.uuid"
     "gopkg.in/bluesuncorp/validator.v5"
+
+    "github.com/earaujoassis/space/config"
 )
 
 type Model struct {
@@ -23,16 +25,7 @@ const (
 
 var src = rand.NewSource(time.Now().UnixNano())
 
-func IsValid(tagName string, model interface{}) bool {
-    validate := validator.New(tagName, validator.BakedInValidators)
-    err := validate.Struct(model)
-    if err != nil {
-        return false
-    }
-    return true
-}
-
-func randStringBytesMaskImprSrc(n int) string {
+func GenerateRandomString(n int) string {
     b := make([]byte, n)
     for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
         if remain == 0 {
@@ -51,4 +44,29 @@ func randStringBytesMaskImprSrc(n int) string {
 
 func generateUUID() string {
     return uuid.NewV4().String()
+}
+
+func validateModel(tagName string, model interface{}) error {
+    validate := validator.New(tagName, validator.BakedInValidators)
+    validate.AddFunction("client", validClientType)
+    validate.AddFunction("scope", validScope)
+    validate.AddFunction("token", validTokenType)
+    err := validate.Struct(model)
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
+func IsValid(tagName string, model interface{}) bool {
+    err := validateModel(tagName, model)
+    if err != nil {
+        return false
+    }
+    return true
+}
+
+func defaultKey() []byte {
+    keyString := config.GetConfig("settings.storage_secret").(string)
+    return []byte(keyString)
 }

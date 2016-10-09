@@ -7,6 +7,7 @@ import (
     "strings"
 
     "github.com/earaujoassis/space/services"
+    "github.com/earaujoassis/space/models"
 )
 
 func CreateClient() {
@@ -24,13 +25,19 @@ func CreateClient() {
     clientURI, _ := reader.ReadString('\n')
     clientURI = strings.Trim(clientURI, "\n")
 
+    clientSecret := models.GenerateRandomString(64)
     client := services.CreateNewClient(clientName,
         clientDescription,
+        clientSecret,
         clientScope,
         clientURI)
-    fmt.Println("A new client application was created")
-    fmt.Println("Client key: ", client.Key)
-    fmt.Println("Client secret: ", client.Secret)
+    if client.ID == 0 {
+        fmt.Println("There's a error and the client was not created")
+    } else {
+        fmt.Println("A new client application was created")
+        fmt.Println("Client key: ", client.Key)
+        fmt.Println("Client secret: ", clientSecret)
+    }
 }
 
 func UpdateClient() {
