@@ -3,36 +3,39 @@ import * as node_uuid from 'node-uuid';
 import { ActionTypes } from '../constants'
 import dispatcher from '../dispatcher';
 
-export function errorHandler(error) {
-    let action = new ActionCreator()
-    action.setUUID()
-    action.dispatch({type: ActionTypes.ERROR, payload: error})
-    return action
-}
-
 export function processResponse(response) {
     if (response.status >= 200 && response.status < 300) {
-        return Promise.resolve(response)
+        return Promise.resolve(response);
     } else {
-        var error = new Error(response.statusText);
-        error.response = response;
-        return Promise.reject(error);
+        return Promise.resolve(response);
     }
 }
 
 export function processData(response) {
+    let data;
+
     if (response.status !== 204) {
-        return response.json()
-    } else {
-        return {}
+        try {
+            return response.json();
+        } catch(e) { /*...*/ }
     }
+    return {};
 }
 
-export function successHandler(data) {
-    let action = new ActionCreator()
-    action.setUUID()
-    action.dispatch({type: ActionTypes.SUCCESS, payload: data})
-    return action
+export function processHandler(data) {
+    let action;
+
+    if (data.error) {
+        action = new ActionCreator();
+        action.setUUID();
+        action.dispatch({type: ActionTypes.ERROR, payload: data});
+        return action;
+    }
+
+    action = new ActionCreator();
+    action.setUUID();
+    action.dispatch({type: ActionTypes.SUCCESS, payload: data});
+    return action;
 }
 
 export class ActionCreator {

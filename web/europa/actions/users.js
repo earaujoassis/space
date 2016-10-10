@@ -1,5 +1,5 @@
 import { ActionTypes } from '../../core/constants'
-import { ActionCreator, errorHandler, processResponse, processData, successHandler } from '../../core/actions/base'
+import { ActionCreator, processResponse, processData, processHandler } from '../../core/actions/base'
 import SpaceApi from '../../core/utils/SpaceApi'
 
 import UserStore from '../stores/users'
@@ -13,8 +13,7 @@ const actionProxy = (name) => {
     SpaceApi[name](id, token)
         .then(processResponse)
         .then(processData)
-        .then(successHandler)
-        .catch(errorHandler)
+        .then(processHandler)
     return action.actionID()
 }
 
@@ -36,8 +35,7 @@ class UsersActionFactory {
         SpaceApi['revokeActiveClient'](id, key, token)
             .then(processResponse)
             .then(processData)
-            .then(successHandler)
-            .catch(errorHandler)
+            .then(processHandler)
             .then(() => {
                 UsersActions.fetchActiveClients()
             })

@@ -11,7 +11,10 @@ user = "postgres"
 password = ""
 database_prefix = "space"
 sslmode = "disable"
-key_secret = "secret"
+
+[memorystore]
+url = ""
+index = 0
 
 [http]
 port = 8080

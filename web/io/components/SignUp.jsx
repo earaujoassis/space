@@ -21,7 +21,12 @@ export default class SignUp extends React.Component {
                         <p>By clicking "Sign Up", you agree to our <a href="//quatrolabs.com/terms-of-service">terms of service</a> and <a href="//quatrolabs.com/privacy-policy">privacy policy</a>. We will send you account related emails occasionally.</p>
                     </Columns>
                     <Columns className="large-5 end">
-                        <form action="." method="post" ref="form" onSubmit={this._signUp}>
+                        <form className="form-sign-up" action="." method="post" ref="form" onSubmit={this._signUp}>
+                            {
+                                this.props.validationFailed ? (
+                                    <p className="error-message">Validation failed</p>
+                                ) : null
+                            }
                             <Row>
                                 <Columns className="large-6">
                                     <input type="text" name="first_name" placeholder="First Name" />

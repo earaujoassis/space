@@ -67,6 +67,11 @@ export default class SignIn extends React.Component {
                                 <p className="error-message">Authentication failed</p>
                             ) : null
                         }
+                        {
+                            this.state.blocked ? (
+                                <p className="error-message">Authentication blocked for user</p>
+                            ) : null
+                        }
                         <form action="." method="post">
                             <input ref="input" type={step.type}
                                 name={step.name}
@@ -144,6 +149,11 @@ export default class SignIn extends React.Component {
             let location = `${r.redirect_uri}?client_id=${r.client_id}&code=${r.code}&grant_type=${r.grant_type}&scope=${r.scope}&state=${r.state}`
             window.location.href = location
         } else {
+            let error = SessionStore.getState().payload
+            if (error.attempts === "blocked") {
+                this.setState({blocked: true, form: this._initialForm(), disableSubmit: true, currentStepIndex: 0})
+                return
+            }
             this.setState({failed: true, form: this._initialForm()})
             this._triggerFormUnlock()
         }
