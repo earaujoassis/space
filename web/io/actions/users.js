@@ -1,5 +1,5 @@
 import { ActionTypes } from '../../core/constants'
-import { ActionCreator, errorHandler, processResponse, processData, successHandler } from '../../core/actions/base'
+import { ActionCreator, processResponse, processData, processHandler } from '../../core/actions/base'
 import SpaceApi from '../../core/utils/SpaceApi'
 
 class UsersActionFactory {
@@ -11,8 +11,7 @@ class UsersActionFactory {
             .createUser(data)
             .then(processResponse)
             .then(processData)
-            .then(successHandler)
-            .catch(errorHandler)
+            .then(processHandler)
         return action
     }
 }

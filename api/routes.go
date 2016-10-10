@@ -15,6 +15,7 @@ import (
     "github.com/earaujoassis/space/models"
     "github.com/earaujoassis/space/services"
     "github.com/earaujoassis/space/services/logger"
+    "github.com/earaujoassis/space/policy"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/utils"
 )
@@ -212,10 +213,16 @@ func ExposeRoutes(router *gin.RouterGroup) {
             var holder string = c.PostForm("holder")
             var state string = c.PostForm("state")
 
+            var Ip string = c.Request.RemoteAddr
+            var userID string = Ip
+            var statusSignInAttempts = policy.SignInAttemptStatus(Ip)
+
             user := services.FindUserByAccountHolder(holder)
             client := services.FindOrCreateClient("Jupiter")
-            if user.ID != 0 {
-                if user.Authentic(c.PostForm("password"), c.PostForm("passcode")) {
+            if user.ID != 0 && statusSignInAttempts != policy.Blocked {
+                userID = user.UUID
+                statusSignInAttempts = policy.SignInAttemptStatus(userID)
+                if user.Authentic(c.PostForm("password"), c.PostForm("passcode")) && statusSignInAttempts != policy.Blocked {
                     session := services.CreateSession(user, client,
                         c.Request.RemoteAddr,
                         c.Request.UserAgent(),
@@ -228,6 +235,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
                             "Ip": session.Ip,
                             "CreatedAt": session.CreatedAt.Format(time.RFC850),
                         })
+                        policy.RegisterSuccessfulSignIn(user.UUID)
+                        policy.RegisterSuccessfulSignIn(Ip)
                         c.JSON(http.StatusOK, utils.H{
                             "_status": "created",
                             "_message": "Session was created",
@@ -242,9 +251,11 @@ func ExposeRoutes(router *gin.RouterGroup) {
                     }
                 }
             }
+            policy.RegisterSignInAttempt(userID)
             c.JSON(http.StatusNotAcceptable, utils.H{
                 "error": oauth.AccessDenied,
                 "error_description": "Unauthentic user; authorization token was not created",
+                "attempts": statusSignInAttempts,
             })
         })
 

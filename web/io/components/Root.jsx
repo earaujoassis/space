@@ -28,13 +28,18 @@ export default class Root extends React.Component {
                 codeSecretImage={this.state.code_secret_image}
                 recoverSecret={this.state.recover_secret} />)
         } else {
-            return (<SignUp />)
+            return (<SignUp validationFailed={this.state.validationFailed} />)
         }
     }
 
     _updateFromStore() {
         if (UserStore.success()) {
             this.setState(UserStore.getState().payload || {})
+        } else {
+            let error = UserStore.getState().payload
+            if (error.user) {
+                this.setState({validationFailed: true})
+            }
         }
     }
 }
