@@ -8,7 +8,3 @@ import (
 func AccessAuthentication(token string) models.Session {
     return services.FindSessionByToken(token, models.AccessToken)
 }
-
-func ActionAuthentication(token string) models.Session {
-    return services.FindSessionByToken(token, models.ActionToken)
-}

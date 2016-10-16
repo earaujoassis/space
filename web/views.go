@@ -197,11 +197,10 @@ func jupiterHandler(c *gin.Context) {
     }
     client := services.FindOrCreateClient("Jupiter")
     user := services.FindUserByPublicId(userPublicId.(string))
-    actionToken := services.CreateSession(user, client,
+    actionToken := services.CreateAction(user, client,
         c.Request.RemoteAddr,
         c.Request.UserAgent(),
-        models.ReadWriteScope,
-        models.ActionToken)
+        models.ReadWriteScope)
     c.HTML(http.StatusOK, "satellite", utils.H{
         "Title": " - Mission control",
         "Satellite": "europa",

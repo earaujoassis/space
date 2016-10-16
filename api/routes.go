@@ -81,7 +81,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
         })
 
-        // Authorization type: access session (Bearer)
+        // Authorization type: access session / Bearer (for OAuth sessions)
         users.POST("/introspect", func(c *gin.Context) {
             var publicId string = c.PostForm("user_id")
 
@@ -117,13 +117,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
-        // Authorization type: action session (Bearer)
+        // Authorization type: action token / Bearer (for web use)
         users.GET("/:id/clients", func(c *gin.Context) {
             var uuid string = c.Param("id")
 
             authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
-            session := oauth.ActionAuthentication(authorizationBearer)
-            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+            action := services.ActionAuthentication(authorizationBearer)
+            if action.UUID == "" || !services.ActionGrantsReadAbility(action) {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
@@ -132,7 +132,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
 
             user := services.FindUserByUUID(uuid)
-            if user.ID == 0 || user.ID != session.UserID {
+            if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
@@ -145,14 +145,14 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        // Authorization type: action session (Bearer)
+        // Authorization type: action token / Bearer (for web use)
         users.DELETE("/:user_id/clients/:client_id/revoke", func(c *gin.Context) {
             var userUUID string = c.Param("user_id")
             var clientUUID string = c.Param("client_id")
 
             authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
-            session := oauth.ActionAuthentication(authorizationBearer)
-            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+            action := services.ActionAuthentication(authorizationBearer)
+            if action.UUID == "" || !services.ActionGrantsReadAbility(action) {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
@@ -161,7 +161,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
 
             user := services.FindUserByUUID(userUUID)
-            if user.ID == 0 || user.ID != session.UserID {
+            if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
@@ -175,13 +175,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
             c.Status(http.StatusNoContent)
         })
 
-        // Authorization type: action session (Bearer)
+        // Authorization type: action token / Bearer (for web use)
         users.GET("/:id/profile", func(c *gin.Context) {
             var uuid string = c.Param("id")
 
             authorizationBearer := strings.Replace(c.Request.Header["Authorization"][0], "Bearer ", "", 1)
-            session := oauth.ActionAuthentication(authorizationBearer)
-            if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+            action := services.ActionAuthentication(authorizationBearer)
+            if action.UUID == "" || !services.ActionGrantsReadAbility(action) {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
@@ -190,7 +190,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
 
             user := services.FindUserByUUID(uuid)
-            if user.ID == 0 || user.ID != session.UserID {
+            if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.AccessDenied,
@@ -259,7 +259,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        // Authorization type: Basic
+        // Authorization type: Basic (for clients use)
         sessions.POST("/introspect", func(c *gin.Context) {
             var token string = c.PostForm("access_token")
 
@@ -288,7 +288,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             })
         })
 
-        // Authorization type: Basic
+        // Authorization type: Basic (for clients use)
         sessions.POST("/invalidate", func(c *gin.Context) {
             var token string = c.PostForm("access_token")
 
