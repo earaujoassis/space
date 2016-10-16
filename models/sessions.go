@@ -10,7 +10,6 @@ const (
     AccessToken               string = "access_token"
     RefreshToken              string = "refresh_token"
     GrantToken                string = "grant_token"
-    ActionToken               string = "action_token"
 
     PublicScope               string = "public"
     ReadScope                 string = "read"
@@ -44,11 +43,23 @@ func validScope(top interface{}, current interface{}, field interface{}, param s
 
 func validTokenType(top interface{}, current interface{}, field interface{}, param string) bool {
     tokenType := field.(string)
-    if tokenType != AccessToken && tokenType != RefreshToken &&
-            tokenType != GrantToken && tokenType != ActionToken {
+    if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken {
         return false
     }
     return true
+}
+
+func expirationLengthForTokenType(tokenType string) int64 {
+    switch tokenType {
+    case AccessToken:
+        return largestExpirationLength
+    case RefreshToken:
+        return eternalExpirationLength
+    case GrantToken:
+        return shortestExpirationLength
+    default:
+        return defaultExpirationLength
+    }
 }
 
 func (session *Session) BeforeSave(scope *gorm.Scope) error {
@@ -59,5 +70,14 @@ func (session *Session) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("Token", GenerateRandomString(64))
     scope.SetColumn("UUID", generateUUID())
     scope.SetColumn("Moment", time.Now().UTC().Unix())
+    scope.SetColumn("ExpiresIn", expirationLengthForTokenType(session.TokenType))
     return nil
+}
+
+func (session *Session) WithinExpirationWindow() bool {
+    now := time.Now().UTC().Unix()
+    if session.ExpiresIn == eternalExpirationLength || session.Moment + session.ExpiresIn >= now {
+        return true
+    }
+    return false
 }
