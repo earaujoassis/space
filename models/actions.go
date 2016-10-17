@@ -39,6 +39,7 @@ func (action *Action) Save() error {
     actionJson, _ := json.Marshal(action)
     memstore.Do("HSET", "models.actions", action.UUID, actionJson)
     memstore.Do("HSET", "models.actions.indexes", action.Token, action.UUID)
+    memstore.Do("ZADD", "models.actions.rank", action.Moment, action.UUID)
     return nil
 }
 
@@ -50,6 +51,7 @@ func (action *Action) Delete() {
     }
     memstore.Do("HDEL", "models.actions.indexes", action.Token)
     memstore.Do("HDEL", "models.actions", action.UUID)
+    memstore.Do("ZREM", "models.actions.rank", action.UUID)
 }
 
 func (action *Action) WithinExpirationWindow() bool {
