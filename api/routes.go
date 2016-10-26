@@ -17,6 +17,7 @@ import (
     "github.com/earaujoassis/space/services/logger"
     "github.com/earaujoassis/space/policy"
     "github.com/earaujoassis/space/oauth"
+    "github.com/earaujoassis/space/feature"
     "github.com/earaujoassis/space/utils"
 )
 
@@ -26,6 +27,15 @@ func ExposeRoutes(router *gin.RouterGroup) {
         users.POST("/create", func(c *gin.Context) {
             var buf bytes.Buffer
             var imageData string
+
+            if !feature.Active("user.create") {
+                c.JSON(http.StatusForbidden, utils.H{
+                    "_status": "error",
+                    "_message": "User was not created",
+                    "error": "Feature is not available at this time",
+                })
+                return
+            }
 
             dataStore := datastore.GetDataStoreConnection()
             user := models.User{

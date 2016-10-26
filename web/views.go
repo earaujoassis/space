@@ -10,9 +10,10 @@ import (
     "github.com/gin-gonic/contrib/sessions"
 
     "github.com/earaujoassis/space/config"
+    "github.com/earaujoassis/space/models"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/services"
-    "github.com/earaujoassis/space/models"
+    "github.com/earaujoassis/space/feature"
     "github.com/earaujoassis/space/utils"
 )
 
@@ -42,6 +43,11 @@ func ExposeRoutes(router *gin.Engine) {
             c.HTML(http.StatusOK, "satellite", utils.H{
                 "Title": " - Sign up",
                 "Satellite": "io",
+                "Data": utils.H{
+                    "feature.gates": utils.H{
+                        "user.create": feature.Active("user.create"),
+                    },
+                },
             })
         })
 
