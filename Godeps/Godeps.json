@@ -8,6 +8,46 @@
 			"Rev": "f0aeabca5a127c4078abb8c8d64298b147264b55"
 		},
 		{
+			"ImportPath": "github.com/aws/aws-sdk-go/aws",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/endpoints",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/protocol",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/private/waiter",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/service/ses",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/service/sts",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/vendor/github.com/go-ini/ini",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/vendor/github.com/jmespath/go-jmespath",
+			"Comment": "v1.4.15-3-gc0d7d32",
+			"Rev": "c0d7d3282e4c14991a4814de7eae4774e388de61"
+		},
+		{
 			"ImportPath": "github.com/boj/redistore",
 			"Comment": "v1.2",
 			"Rev": "fc113767cd6b051980f260d6dbe84b2740c46ab0"
