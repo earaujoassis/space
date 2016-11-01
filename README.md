@@ -19,6 +19,17 @@ It is not planned to implement all authorisation methods described in RFC 6749
 but sections 4.1 and [4.3](https://tools.ietf.org/html/rfc6749#section-4.3),
 the "Resource Owner Password Credentials Grant".
 
+## Setup and running
+
+Please make sure to place this project inside the `$GOPATH`. Once that is done:
+
+```sh
+$ go get github.com/tools/godep
+$ godep restore
+$ go get github.com/mattn/goreman
+$ goreman start
+```
+
 ## Issues
 
 Please take a look at [/issues](https://github.com/earaujoassis/space/issues)
