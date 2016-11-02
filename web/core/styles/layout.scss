@@ -7,18 +7,16 @@
   font-size: 4rem;
 }
 .site-footer {
+  padding-top: 15px;
   font-weight: 300;
   font-size: 0.9rem;
 
   p {
     margin-bottom: 4px;
-  }
 
-  &:before {
-    content: "";
-    display: block;
-    border-top: 1px solid #383838;
-    padding-top: 5px;
+    a:hover {
+      text-decoration: none;
+    }
   }
 }
 .breadcrumbs-custom,

@@ -12,7 +12,7 @@ func main() {
     app := cli.NewApp()
     app.Name = "space"
     app.Usage = "A user management microservice; OAuth 2 provider"
-
+    app.EnableBashCompletion = true
     app.Commands = []cli.Command{
         {
             Name:    "serve",

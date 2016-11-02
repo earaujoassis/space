@@ -106,7 +106,6 @@ func ExposeRoutes(router *gin.Engine) {
         })
 
         views.GET("/authorize", authorizeHandler)
-
         views.POST("/authorize", authorizeHandler)
 
         views.GET("/error", func(c *gin.Context) {
