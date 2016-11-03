@@ -1,3 +1,14 @@
+html {
+  height: 100%;
+}
+body {
+  min-height: 100%;
+}
+.wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .site-header {
   padding: 20px 0;
 }
@@ -6,10 +17,14 @@
   font-weight: 100;
   font-size: 4rem;
 }
+.content {
+  flex: 1;
+}
 .site-footer {
-  padding-top: 15px;
+  padding: 15px 0;
   font-weight: 300;
   font-size: 0.9rem;
+  width: 90%;
 
   p {
     margin-bottom: 4px;
