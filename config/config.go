@@ -3,11 +3,12 @@ package config
 import (
     "fmt"
     "os"
+    "strings"
     "github.com/spf13/viper"
 )
 
 func init() {
-    var environment = os.Getenv("ENVIRONMENT")
+    var environment = strings.ToLower(os.Getenv("ENVIRONMENT"))
     if environment == "" {
         environment = "development"
     }
@@ -19,6 +20,14 @@ func init() {
     if err != nil {
         panic(fmt.Errorf("Fatal error config file: %s \n", err))
     }
+}
+
+func Environment() string {
+    return viper.Get("environment").(string)
+}
+
+func IsEnvironment(env string) bool {
+    return strings.ToLower(env) == Environment()
 }
 
 func GetConfig(key string) interface{} {
