@@ -3,6 +3,7 @@ package web
 import (
     "fmt"
     "net/http"
+    "net/url"
     "strings"
 
     "github.com/gin-gonic/gin"
@@ -79,15 +80,22 @@ func ExposeRoutes(router *gin.Engine) {
                 return
             }
 
+            var nextPath string = "/"
             var scope string = c.Query("scope")
             var grantType string = c.Query("grant_type")
             var code string = c.Query("code")
             var clientId string = c.Query("client_id")
+            var _nextPath string = c.Query("_")
             //var state string = c.Query("state")
 
             if scope == "" || grantType == "" || code == "" || clientId == "" {
                 c.String(http.StatusMethodNotAllowed, "Missing required parameters")
                 return
+            }
+            if _nextPath != "" {
+                if _nextPath, err := url.QueryUnescape(_nextPath); err == nil {
+                    nextPath = _nextPath
+                }
             }
 
             client := services.FindOrCreateClient("Jupiter")
@@ -97,7 +105,7 @@ func ExposeRoutes(router *gin.Engine) {
                     session.Set("userPublicId", grantToken.User.PublicId)
                     session.Save()
                     services.InvalidateSession(grantToken)
-                    c.Redirect(http.StatusFound, "/")
+                    c.Redirect(http.StatusFound, nextPath)
                     return
                 }
             }
@@ -226,8 +234,9 @@ func authorizeHandler(c *gin.Context) {
 
     session := sessions.Default(c)
     userPublicId := session.Get("userPublicId")
+    nextPath := url.QueryEscape(fmt.Sprintf("%s?%s", c.Request.URL.Path, c.Request.URL.RawQuery))
     if userPublicId == nil {
-        location = fmt.Sprintf("/signin?%s", c.Request.URL.RawQuery)
+        location = fmt.Sprintf("/signin?_=%s", nextPath)
         c.Redirect(http.StatusFound, location)
         return
     }
@@ -235,7 +244,7 @@ func authorizeHandler(c *gin.Context) {
     if user.ID == 0 {
         session.Delete("userPublicId")
         session.Save()
-        location = fmt.Sprintf("/signin?%s", c.Request.URL.RawQuery)
+        location = fmt.Sprintf("/signin?_=%s", nextPath)
         c.Redirect(http.StatusFound, location)
         return
     }

@@ -6,6 +6,8 @@ import SessionsActions from '../actions/sessions'
 import Row from '../../core/components/row.jsx'
 import Columns from '../../core/components/columns.jsx'
 
+import { getParameterByName } from '../../core/utils/url'
+
 const StepsOrder = ['access', 'secrecy', 'code']
 const StepsData = {
     access: {
@@ -146,7 +148,11 @@ export default class SignIn extends React.Component {
     _updateFromStore() {
         if (SessionStore.success()) {
             let r = SessionStore.getState().payload || {}
+            let next = getParameterByName('_')
             let location = `${r.redirect_uri}?client_id=${r.client_id}&code=${r.code}&grant_type=${r.grant_type}&scope=${r.scope}&state=${r.state}`
+            if (next && next) {
+                location += `&_=${encodeURI(next)}`
+            }
             window.location.href = location
         } else {
             let error = SessionStore.getState().payload
