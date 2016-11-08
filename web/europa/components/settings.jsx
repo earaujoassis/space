@@ -4,10 +4,22 @@ import { Link } from 'react-router'
 import Row from '../../core/components/row.jsx'
 import Columns from '../../core/components/columns.jsx'
 
+import UserStore from '../stores/users'
+
 export default class Settings extends React.Component {
     constructor() {
         super()
         this._isActive = this._isActive.bind(this)
+        this.state = {error: false}
+        this._updateFromStore = this._updateFromStore.bind(this)
+    }
+
+    componentDidMount() {
+        UserStore.addChangeListener(this._updateFromStore)
+    }
+
+    componentWillUnmount() {
+        UserStore.removeChangeListener(this._updateFromStore)
     }
 
     render() {
@@ -29,6 +41,9 @@ export default class Settings extends React.Component {
                             <li>{this.props.routes[1].name}</li>
                         </ul>
                     </div>
+                    {this.state.error ? (
+                        <div className="token-error">Your action token is expired. Please refresh your page.</div>
+                    ) : null}
                     {this.props.children}
                 </Columns>
             </Row>
@@ -37,5 +52,9 @@ export default class Settings extends React.Component {
 
     _isActive(name) {
         return this.props.routes[1].name == name ? 'active' : ''
+    }
+
+    _updateFromStore() {
+        this.setState({error: UserStore.getState().payload.error === 'access_denied'})
     }
 }
