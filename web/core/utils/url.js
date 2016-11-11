@@ -10,4 +10,4 @@ const getParameterByName = (name, url) => {
     return results[2]
 }
 
-export { getParameterByName };
+export { getParameterByName }
