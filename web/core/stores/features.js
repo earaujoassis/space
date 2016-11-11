@@ -21,6 +21,6 @@ class FeaturesStoreBase extends Store {
     }
 }
 
-const FeaturesStore = new FeaturesStoreBase();
+const FeaturesStore = new FeaturesStoreBase()
 
-export default FeaturesStore;
+export default FeaturesStore
