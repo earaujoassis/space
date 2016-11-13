@@ -4,7 +4,7 @@
   "description": "An user management microservice; OAuth2 provider",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node_modules/.bin/bower install && node_modules/.bin/gulp",
+    "postinstall": "node_modules/.bin/bower --allow-root install && node_modules/.bin/gulp",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node_modules/.bin/gulp"
   },
