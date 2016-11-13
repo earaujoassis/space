@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Row from '../../core/components/row.jsx'
-import Columns from '../../core/components/columns.jsx'
-import { Entry } from '../../core/components/form.jsx'
+import Row from '../../core/components/Row.jsx'
+import Columns from '../../core/components/Columns.jsx'
+import { Entry } from '../../core/components/Form.jsx'
 
 import UserStore from '../stores/users'
 import UsersActions from '../actions/users'

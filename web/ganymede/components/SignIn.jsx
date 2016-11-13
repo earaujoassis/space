@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom'
 
 import SessionStore from '../stores/sessions'
 import SessionsActions from '../actions/sessions'
-import Row from '../../core/components/row.jsx'
-import Columns from '../../core/components/columns.jsx'
+import Row from '../../core/components/Row.jsx'
+import Columns from '../../core/components/Columns.jsx'
 
 import { getParameterByName } from '../../core/utils/url'
 

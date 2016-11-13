@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import UsersActions from '../actions/users'
-import Row from '../../core/components/row.jsx'
-import Columns from '../../core/components/columns.jsx'
+import Row from '../../core/components/Row.jsx'
+import Columns from '../../core/components/Columns.jsx'
 
 export default class SignUp extends React.Component {
     constructor() {
