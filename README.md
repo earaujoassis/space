@@ -33,7 +33,8 @@ $ goreman start
 ## Deployment through a docker container
 
 ```sh
-$ docker run --name space.v-$TAG -d -p 5000:8080 -v $PWD:/go/src/github.com/earaujoassis/space -w /go/src/github.com/earaujoassis/space -e "ENVIRONMENT=production" -e "NODE_ENV=production" earaujoassis/golang-node goreman start
+$ docker build -t earaujoassis/space .
+$ docker run --name space.v-0.1.0 -d -p 5000:8080 earaujoassis/space
 ```
 
 ## Issues
