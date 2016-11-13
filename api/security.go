@@ -13,6 +13,9 @@ import (
 )
 
 func scheme(request *http.Request) string {
+    if scheme := request.Header.Get("X-Forwarded-Proto"); scheme != "" {
+        return scheme
+    }
     if request.TLS == nil {
         return "http"
     } else {
