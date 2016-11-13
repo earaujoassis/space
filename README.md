@@ -34,7 +34,7 @@ $ goreman start
 
 ```sh
 $ docker build -t earaujoassis/space .
-$ docker run --name space.v-0.1.0 -d -p 5000:8080 earaujoassis/space
+$ docker run --net=host --name space.v-0.1.0 -d -p 8080:8080 earaujoassis/space
 ```
 
 ## Issues
