@@ -3,8 +3,8 @@ import React from 'react'
 import FeaturesStore from '../../core/stores/features'
 import UserStore from '../stores/users'
 
-import Row from '../../core/components/row.jsx'
-import Columns from '../../core/components/columns.jsx'
+import Row from '../../core/components/Row.jsx'
+import Columns from '../../core/components/Columns.jsx'
 
 import Blocked from './Blocked.jsx'
 import SignUp from './SignUp.jsx'

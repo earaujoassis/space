@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Row from './row.jsx'
-import Columns from './columns.jsx'
+import Row from './Row.jsx'
+import Columns from './Columns.jsx'
 
 export class Entry extends React.Component {
     static get propTypes() {
