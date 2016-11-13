@@ -13,7 +13,9 @@ database_prefix = "space"
 sslmode = "disable"
 
 [memorystore]
-url = ""
+host = "localhost"
+port = 6379
+password = ""
 index = 0
 
 [http]
