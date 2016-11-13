@@ -10,6 +10,7 @@ import (
     "github.com/earaujoassis/space/utils"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/services"
+    "github.com/earaujoassis/space/security"
 )
 
 func scheme(request *http.Request) string {
@@ -41,6 +42,15 @@ func requiresConformance(c *gin.Context) {
 // The following Authorization method is used by OAuth clients only
 func clientBasicAuthorization(c *gin.Context) {
     authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
+
+    if !security.ValidRandomString(authorizationBasic) {
+        c.JSON(http.StatusBadRequest, utils.H{
+            "error": "must use valid Authorization string",
+        })
+        c.Abort()
+        return
+    }
+
     client := oauth.ClientAuthentication(authorizationBasic)
     if client.ID == 0 {
         c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
@@ -57,6 +67,15 @@ func clientBasicAuthorization(c *gin.Context) {
 // The following Authorization method is used by the web client, with an action token
 func actionTokenBearerAuthorization(c *gin.Context) {
     authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
+
+    if !security.ValidToken(authorizationBearer) {
+        c.JSON(http.StatusBadRequest, utils.H{
+            "error": "must use valid token string",
+        })
+        c.Abort()
+        return
+    }
+
     action := services.ActionAuthentication(authorizationBearer)
     if action.UUID == "" || !services.ActionGrantsReadAbility(action) {
         c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
@@ -73,6 +92,15 @@ func actionTokenBearerAuthorization(c *gin.Context) {
 // The following Authorization method is used by the OAuth clients, with an OAuth session token
 func oAuthTokenBearerAuthorization(c *gin.Context) {
     authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
+
+    if !security.ValidToken(authorizationBearer) {
+        c.JSON(http.StatusBadRequest, utils.H{
+            "error": "must use valid token string",
+        })
+        c.Abort()
+        return
+    }
+
     session := oauth.AccessAuthentication(authorizationBearer)
     if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
         c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
