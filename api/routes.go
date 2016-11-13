@@ -14,6 +14,7 @@ import (
     "github.com/earaujoassis/space/models"
     "github.com/earaujoassis/space/services"
     "github.com/earaujoassis/space/services/logger"
+    "github.com/earaujoassis/space/security"
     "github.com/earaujoassis/space/policy"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/feature"
@@ -95,6 +96,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
         users.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
             var publicId string = c.PostForm("user_id")
 
+            if !security.ValidRandomString(publicId) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid identification string",
+                })
+                return
+            }
+
             session := c.MustGet("Session").(models.Session)
             user := services.FindUserByPublicId(publicId)
             if user.ID == 0 || user.ID != session.UserID {
@@ -127,6 +135,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
         users.GET("/:id/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             var uuid string = c.Param("id")
 
+            if !security.ValidUUID(uuid) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
+
             action := c.MustGet("Action").(models.Action)
             user := services.FindUserByUUID(uuid)
             if user.ID == 0 || user.ID != action.UserID {
@@ -148,6 +163,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
             var userUUID string = c.Param("user_id")
             var clientUUID string = c.Param("client_id")
 
+            if !security.ValidUUID(userUUID) || !security.ValidUUID(clientUUID) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
+
             action := c.MustGet("Action").(models.Action)
             user := services.FindUserByUUID(userUUID)
             if user.ID == 0 || user.ID != action.UserID {
@@ -168,6 +190,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Authorization type: action token / Bearer (for web use)
         users.GET("/:id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             var uuid string = c.Param("id")
+
+            if !security.ValidUUID(uuid) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
 
             action := c.MustGet("Action").(models.Action)
             user := services.FindUserByUUID(uuid)
@@ -198,6 +227,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
             var Ip string = c.Request.RemoteAddr
             var userID string = Ip
             var statusSignInAttempts = policy.SignInAttemptStatus(Ip)
+
+            if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid holder string",
+                })
+                return
+            }
 
             user := services.FindUserByAccountHolder(holder)
             client := services.FindOrCreateClient("Jupiter")
@@ -245,6 +281,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
         sessions.POST("/introspect", clientBasicAuthorization, func(c *gin.Context) {
             var token string = c.PostForm("access_token")
 
+            if !security.ValidToken(token) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid token string",
+                })
+                return
+            }
+
             session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
                 c.JSON(http.StatusNotAcceptable, utils.H{
@@ -263,6 +306,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Authorization type: Basic (for OAuth clients use)
         sessions.POST("/invalidate", clientBasicAuthorization, func(c *gin.Context) {
             var token string = c.PostForm("access_token")
+
+            if !security.ValidToken(token) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid token string",
+                })
+                return
+            }
 
             session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
