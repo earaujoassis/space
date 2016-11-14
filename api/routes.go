@@ -47,7 +47,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 Passphrase: c.PostForm("password"),
             }
             if !models.IsValid("essential", user) {
-                c.JSON(http.StatusNotAcceptable, utils.H{
+                c.JSON(http.StatusBadRequest, utils.H{
                     "_status": "error",
                     "_message": "User was not created",
                     "error": "Missing essential fields",
@@ -73,7 +73,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             result := dataStore.Create(&user)
             if count := result.RowsAffected; count < 1 {
-                c.JSON(http.StatusNotAcceptable, utils.H{
+                c.JSON(http.StatusBadRequest, utils.H{
                     "error": fmt.Sprintf("%v", result.GetErrors()),
                     "user": user,
                 })
@@ -270,7 +270,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 }
             }
             policy.RegisterSignInAttempt(userID)
-            c.JSON(http.StatusNotAcceptable, utils.H{
+            c.JSON(http.StatusBadRequest, utils.H{
                 "error": oauth.AccessDenied,
                 "error_description": "Unauthentic user; authorization token was not created",
                 "attempts": statusSignInAttempts,
@@ -290,7 +290,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
-                c.JSON(http.StatusNotAcceptable, utils.H{
+                c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.InvalidSession,
                 })
                 return
@@ -316,7 +316,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
-                c.JSON(http.StatusNotAcceptable, utils.H{
+                c.JSON(http.StatusUnauthorized, utils.H{
                     "error": oauth.InvalidSession,
                 })
                 return
