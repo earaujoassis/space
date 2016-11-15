@@ -43,7 +43,7 @@ func requiresConformance(c *gin.Context) {
 func clientBasicAuthorization(c *gin.Context) {
     authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 
-    if !security.ValidRandomString(authorizationBasic) {
+    if !security.ValidBase64(authorizationBasic) {
         c.JSON(http.StatusBadRequest, utils.H{
             "error": "must use valid Authorization string",
         })

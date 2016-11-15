@@ -13,10 +13,17 @@ func TestValidUUID(t *testing.T) {
     assert.False(t, ValidUUID("n0t-v4l1d-uu1d"), "should invalidate invalid UUID")
 }
 
+func TestValidBase64(t *testing.T) {
+    assert.True(t,
+        ValidBase64("aGxEa2ZRWVBTYlpHcGxXeUdEZUlIaWpPZnN2VkJPWm06RFJudEx6aWRvbVFzeGpuRk1wT3pjUWN2dVZ5Q1RxQ1JIRHpxTEtudW5Fd0x0bE9PQXBrVWxGZ1dhdk9Ec29URQ=="),
+        "should validate valid base64 string")
+}
+
 func TestValidRandomString(t *testing.T) {
     assert.True(t, ValidRandomString("120salsdsdl912mmdsFadc"), "should validate valid Random string")
     assert.False(t, ValidRandomString("n0t-v4l1d-random-string"), "should invalidate invalid Random string")
     assert.False(t, ValidRandomString(uuid.NewV4().String()), "should invalidate invalid Random string")
+    assert.True(t, ValidRandomString("DRntLzidomQsKnunEwLtlOOApkUlFgWavODsoTE"), "should validate valid Random string")
 }
 
 func TestValidToken(t *testing.T) {

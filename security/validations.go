@@ -9,6 +9,11 @@ func ValidUUID(uuid string) bool {
     return r.MatchString(uuid)
 }
 
+func ValidBase64(encoded string) bool {
+    r := regexp.MustCompile("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$")
+    return r.MatchString(encoded)
+}
+
 func ValidRandomString(random string) bool {
     r := regexp.MustCompile("^[a-zA-Z0-9]+$")
     return r.MatchString(random)
