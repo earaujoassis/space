@@ -16,7 +16,7 @@ func Server(publicFolder, templateFolder string) {
     config.SetConfig("public_folder", publicFolder)
     router := gin.Default()
     web.ExposeRoutes(router)
-    restApi := router.Group("/api/v1")
+    restApi := router.Group("/api")
     api.ExposeRoutes(restApi)
     router.Run(fmt.Sprintf(":%v", config.GetConfig("http.port")))
 }
