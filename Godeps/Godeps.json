@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/earaujoassis/space",
-	"GoVersion": "go1.6.2",
+	"GoVersion": "go1.7.3",
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",

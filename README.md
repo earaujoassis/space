@@ -30,6 +30,12 @@ $ go get github.com/mattn/goreman
 $ goreman start
 ```
 
+## Testing
+
+```sh
+$ ENVIRONMENT=testing go test ./...
+```
+
 ## Deployment through a docker container
 
 ```sh
