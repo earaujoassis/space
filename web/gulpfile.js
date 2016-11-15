@@ -24,7 +24,7 @@ gulp.task('styles', function () {
                 'node_modules/normalize.scss',
                 'core/styles'
             ],
-            outputStyle: environment == 'production' ?'compressed' : 'nested'
+            outputStyle: environment == 'production' ? 'compressed' : 'nested'
         }).on('error', sass.logError))
     .pipe(gulp.dest('./public/css/'));
 });
