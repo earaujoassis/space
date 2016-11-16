@@ -29,7 +29,6 @@ export default class Settings extends React.Component {
                     <ul className="side-nav">
                         <li><Link to="/" className={this._isActive('Applications')}>Applications</Link></li>
                         <li><Link to="/profile" className={this._isActive('Profile')}>Profile</Link></li>
-                        <li><Link to="/log" className={this._isActive('Account log')}>Account log</Link></li>
                         <li className="divider"></li>
                         <li><a href="/signout">Sign out</a></li>
                     </ul>

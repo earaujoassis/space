@@ -38,7 +38,6 @@ func ExposeRoutes(router *gin.Engine) {
     {
         views.GET("/", jupiterHandler)
         views.GET("/profile", jupiterHandler)
-        views.GET("/log", jupiterHandler)
 
         views.GET("/signup", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
