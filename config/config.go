@@ -3,6 +3,7 @@ package config
 import (
     "fmt"
     "os"
+    "path/filepath"
     "strings"
     "github.com/spf13/viper"
 )
@@ -12,13 +13,18 @@ func init() {
     if environment == "" {
         environment = "development"
     }
+    currentDir, _ := os.Getwd()
+    if _, err := os.Stat(filepath.Join(currentDir, "config", environment + ".toml")); os.IsNotExist(err) {
+        fmt.Printf("The configuration file doesn't exist; exiting\n")
+        os.Exit(1)
+    }
     viper.SetDefault("environment", environment)
     viper.SetConfigName(environment)
     viper.AddConfigPath("../config")
     viper.AddConfigPath("./config")
     err := viper.ReadInConfig()
     if err != nil {
-        panic(fmt.Errorf("Fatal error config file: %s \n", err))
+        panic(fmt.Errorf("Fatal error config file: %s\n", err))
     }
 }
 
