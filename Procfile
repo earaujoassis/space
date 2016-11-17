@@ -1,1 +1,1 @@
-web: godep restore && (cd web && npm install --unsafe-perm) && go run main.go serve
+web: godep restore && (cd web && npm install) && go run main.go serve
