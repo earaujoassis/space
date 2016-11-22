@@ -21,16 +21,20 @@ func CreateClient() {
     fmt.Print("Client scope: ")
     clientScope, _ := reader.ReadString('\n')
     clientScope = strings.Trim(clientScope, "\n")
+    fmt.Print("Client canonical URI: ")
+    canonicalURI, _ := reader.ReadString('\n')
+    canonicalURI = strings.Trim(canonicalURI, "\n")
     fmt.Print("Client URI redirect: ")
-    clientURI, _ := reader.ReadString('\n')
-    clientURI = strings.Trim(clientURI, "\n")
+    redirectURI, _ := reader.ReadString('\n')
+    redirectURI = strings.Trim(redirectURI, "\n")
 
     clientSecret := models.GenerateRandomString(64)
     client := services.CreateNewClient(clientName,
         clientDescription,
         clientSecret,
         clientScope,
-        clientURI)
+        canonicalURI,
+        redirectURI)
     if client.ID == 0 {
         fmt.Println("There's a error and the client was not created")
     } else {

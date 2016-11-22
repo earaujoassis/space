@@ -20,7 +20,8 @@ type Client struct {
     Key string                  `gorm:"not null;unique;index" json:"-"`
     Secret string               `gorm:"not null" validate:"required" json:"-"`
     Scopes string               `gorm:"not null" validate:"required" json:"-"`
-    RedirectURI string          `gorm:"not null" validate:"required" json:"uri"`
+    CanonicalURI string         `gorm:"not null" validate:"required" json:"uri"`
+    RedirectURI string          `gorm:"not null" validate:"required" json:"-"`
     Type string                 `gorm:"not null" validate:"required,client" json:"-"`
 }
 
