@@ -27,7 +27,7 @@ export default class Applications extends React.Component {
         if (this.state.loading) {
             return (
                 <Row>
-                    <Columns className="large-offset-1 large-10 end">
+                    <Columns className="small-offset-1 small-10 end">
                         <p className="text-center">Loading...</p>
                     </Columns>
                 </Row>
@@ -35,7 +35,7 @@ export default class Applications extends React.Component {
         }
         return (
             <Row>
-                <Columns className="large-offset-1 large-10 end">
+                <Columns className="small-offset-1 small-10 end">
                     <Row className="applications">
                         {this._applications()}
                     </Row>
@@ -57,7 +57,7 @@ export default class Applications extends React.Component {
         for (var i = 0; i < this.state.clients.length; i++) {
             let client = this.state.clients[i]
             applications.push(
-                <Columns className="medium-12" key={i}>
+                <Columns className="small-12" key={i}>
                     <div className="application-card">
                         <p className="title">{client.name} <small>(<a href={client.uri} target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small></p>
                         <p className="action"><button className="button" onClick={this._revokeAccess.bind(client)}>Revoke Access</button></p>

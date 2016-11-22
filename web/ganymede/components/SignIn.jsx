@@ -62,7 +62,7 @@ export default class SignIn extends React.Component {
         return (
             <div className="signin-content">
                 <Row>
-                    <Columns className="large-12">
+                    <Columns className="small-12">
                         <div className={`user-avatar ${step.className}`}></div>
                         {
                             this.state.failed ? (

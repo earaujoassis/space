@@ -25,7 +25,7 @@ export default class Settings extends React.Component {
     render() {
         return (
             <Row className="settings-wrapper">
-                <Columns className="medium-3 large-2">
+                <Columns className="small-12 medium-3 large-2">
                     <ul className="side-nav">
                         <li><Link to="/" className={this._isActive('Applications')}>Applications</Link></li>
                         <li><Link to="/profile" className={this._isActive('Profile')}>Profile</Link></li>
@@ -33,7 +33,7 @@ export default class Settings extends React.Component {
                         <li><a href="/signout">Sign out</a></li>
                     </ul>
                 </Columns>
-                <Columns className="medium-9 large-10 settings-content">
+                <Columns className="small-12 medium-9 large-10 settings-content">
                     <div className="breadcrumbs-custom">
                         <ul>
                             <li>Dashboard</li>

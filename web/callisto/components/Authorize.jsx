@@ -15,15 +15,15 @@ export default class Authorize extends React.Component {
         return (
             <div className="authorize">
                 <Row className="separator">
-                    <Columns className="medium-offset-2 medium-4 user">
+                    <Columns className="small-offset-2 small-4 user">
                         <h2>{`${this.state.first_name} ${this.state.last_name}`}</h2>
                     </Columns>
-                    <Columns className="medium-4 end client">
+                    <Columns className="small-4 end client">
                         <h2>{this.state.client_name}<br /><small>({this.state.client_uri})</small></h2>
                     </Columns>
                 </Row>
                 <Row className="separator">
-                    <Columns className="medium-offset-2 medium-8 end">
+                    <Columns className="small-offset-2 small-8 end">
                         <p>The application ({this.state.client_name}) is requesting access to the following information:</p>
                         <ul className="">
                             {
@@ -37,15 +37,15 @@ export default class Authorize extends React.Component {
                     </Columns>
                 </Row>
                 <Row className="separator">
-                    <Columns className="medium-12 text-center">
+                    <Columns className="small-12 text-center">
                         <Row>
-                            <Columns className="medium-offset-2 medium-4">
+                            <Columns className="small-offset-2 small-4">
                                 <form action="" method="post">
                                     <input type="hidden" name="access_denied" value="true" />
                                     <button className="button expand secondary" type="submit">Cancel</button>
                                 </form>
                             </Columns>
-                            <Columns className="medium-4 end">
+                            <Columns className="small-4 end">
                                 <form action="" method="post">
                                     <button className="button expand" type="submit">Accept</button>
                                 </form>

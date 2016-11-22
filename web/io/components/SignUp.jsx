@@ -15,12 +15,12 @@ export default class SignUp extends React.Component {
         return (
             <div className="signup-content">
                 <Row>
-                    <Columns className="large-offset-1 large-5 description">
+                    <Columns className="small-offset-1 small-5 description">
                         <h2 className="title">Create a new account</h2>
                         <p>Space is an user management microservice. We aim to provide a secure and reliable authentication and authorization system.</p>
                         <p>By clicking "Sign Up", you agree to our <a href="//quatrolabs.com/terms-of-service">terms of service</a> and <a href="//quatrolabs.com/privacy-policy">privacy policy</a>. We will send you account related emails occasionally.</p>
                     </Columns>
-                    <Columns className="large-5 end">
+                    <Columns className="small-5 end">
                         <form className="form-sign-up" action="." method="post" ref="form" onSubmit={this._signUp}>
                             {
                                 this.props.validationFailed ? (
@@ -28,10 +28,10 @@ export default class SignUp extends React.Component {
                                 ) : null
                             }
                             <Row>
-                                <Columns className="large-6">
+                                <Columns className="small-6">
                                     <input type="text" name="first_name" placeholder="First Name" />
                                 </Columns>
-                                <Columns className="large-6">
+                                <Columns className="small-6">
                                     <input type="text" name="last_name" placeholder="Last Name" />
                                 </Columns>
                             </Row>

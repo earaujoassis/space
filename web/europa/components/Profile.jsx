@@ -27,7 +27,7 @@ export default class Profile extends React.Component {
         if (this.state.loading) {
             return (
                 <Row>
-                    <Columns className="large-offset-1 large-10 end">
+                    <Columns className="small-offset-1 small-10 end">
                         <p className="text-center">Loading...</p>
                     </Columns>
                 </Row>
@@ -35,9 +35,9 @@ export default class Profile extends React.Component {
         }
         return (
             <Row>
-                <Columns className="large-offset-1 large-10 end">
+                <Columns className="small-offset-1 small-10 end">
                     <Row className="profile">
-                        <Columns className="large-12">
+                        <Columns className="small-12">
                             <Entry field="Name" value={`${this.state.first_name} ${this.state.last_name}`} />
                             <Entry field="Username" value={this.state.username} />
                             <Entry field="Email" value={this.state.email} />

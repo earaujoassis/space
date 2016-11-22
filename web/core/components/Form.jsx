@@ -21,8 +21,8 @@ export class Entry extends React.Component {
     render() {
         return (
             <Row className="profile-entry">
-                <Columns className="columns medium-5 medium-offset-1 field">{this.props.field}</Columns>
-                <Columns className="medium-6 value">{this.props.value}</Columns>
+                <Columns className="columns small-5 small-offset-1 field">{this.props.field}</Columns>
+                <Columns className="small-6 value">{this.props.value}</Columns>
             </Row>
         )
     }

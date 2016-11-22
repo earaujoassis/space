@@ -8,7 +8,7 @@ export default class Success extends React.Component {
         return (
             <div className="centered-message">
                 <Row>
-                    <Columns className="medium-8 medium-offset-2 end columns">
+                    <Columns className="small-8 small-offset-2 end columns">
                         <h2>Congrats!</h2>
                         <p>You've just created a new account! If our sign up system is open, you will receive an email message in order
                         to activate your newly created account. Otherwise, we will contact you when your account is ready to be activated.</p>
