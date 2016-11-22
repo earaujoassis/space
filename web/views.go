@@ -34,7 +34,7 @@ func ExposeRoutes(router *gin.Engine) {
     router.HTMLRender = createCustomRender()
     router.Static("/public", config.GetConfig("public_folder").(string))
     store := sessions.NewCookieStore([]byte(config.GetConfig("http.session_secret").(string)))
-    router.Use(sessions.Sessions("jupiter", store))
+    router.Use(sessions.Sessions("jupiter.session", store))
     views := router.Group("/")
     {
         views.GET("/", jupiterHandler)
