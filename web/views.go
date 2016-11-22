@@ -25,6 +25,7 @@ const (
 func createCustomRender() multitemplate.Render {
     render := multitemplate.New()
     render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
+    render.AddFromFiles("error", "web/templates/default.html", "web/templates/error.html")
     return render
 }
 
@@ -88,7 +89,9 @@ func ExposeRoutes(router *gin.Engine) {
             //var state string = c.Query("state")
 
             if scope == "" || grantType == "" || code == "" || clientId == "" {
-                c.String(http.StatusMethodNotAllowed, "Missing required parameters")
+                // Original response:
+                // c.String(http.StatusMethodNotAllowed, "Missing required parameters")
+                c.Redirect(http.StatusFound, "/signin")
                 return
             }
             if _nextPath != "" {
@@ -116,7 +119,11 @@ func ExposeRoutes(router *gin.Engine) {
         views.POST("/authorize", authorizeHandler)
 
         views.GET("/error", func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
+            errorReason := c.Query("response_type")
+
+            c.HTML(http.StatusOK, "error", utils.H{
+                "errorReason": errorReason,
+            })
         })
 
         views.POST("/token", func(c *gin.Context) {

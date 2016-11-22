@@ -13,6 +13,7 @@ var environment = process.env.NODE_ENV;
 gulp.task('styles', function () {
   return gulp
     .src([
+        './core/styles/error.scss',
         './ganymede/styles/ganymede.scss',
         './io/styles/io.scss',
         './europa/styles/europa.scss',

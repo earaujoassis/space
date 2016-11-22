@@ -1,0 +1,23 @@
+{{ define "content" }}
+<div class="content">
+  <div class="centered-message">
+    <div class="row">
+      <div class="small-6 small-offset-3 end columns">
+        <h2>Oh, dear</h2>
+        <p>An unexpected error happened. An external application may have requested for a resource that is
+        not available to it or it may have provided wrong on unsufficient data.</p>
+        <p>If you need help to get back to work, <a href="/">start from the home page</a> or
+        <a href="#back" onclick="history.back();">get back to the original (external) application</a>.</p>
+        <p>Kindly,</p>
+        <p>The Space Team.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+<link rel="stylesheet" href="/public/css/error.css">
+{{ end }}
+
+{{define "front"}}{{end}}{{define "tail"}}{{end}}
