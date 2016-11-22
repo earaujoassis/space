@@ -122,7 +122,7 @@ func ExposeRoutes(router *gin.Engine) {
         views.POST("/token", func(c *gin.Context) {
             var grantType string = c.PostForm("grant_type")
 
-            authorizationBasic := strings.Replace(c.Request.Header["Authorization"][0], "Basic ", "", 1)
+            authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
             client := oauth.ClientAuthentication(authorizationBasic)
             if client.ID == 0 {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
