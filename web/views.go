@@ -290,7 +290,7 @@ func authorizeHandler(c *gin.Context) {
                     "first_name": user.FirstName,
                     "last_name": user.LastName,
                     "client_name": client.Name,
-                    "client_uri": client.DefaultRedirectURI(),
+                    "client_uri": client.CanonicalURI,
                     "requested_scope": scope,
                 },
             })

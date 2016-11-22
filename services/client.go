@@ -1,19 +1,17 @@
 package services
 
 import (
-    "fmt"
-    "net/url"
-
     "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/models"
 )
 
-func CreateNewClient(name, description, secret, scopes, redirectURI string) models.Client {
+func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectURI string) models.Client {
     var client models.Client = models.Client{
         Name: name,
         Description: description,
         Secret: secret,
         Scopes: scopes,
+        CanonicalURI: canonicalURI,
         RedirectURI: redirectURI,
         Type: models.ConfidentialClient,
     }
@@ -32,6 +30,7 @@ func FindOrCreateClient(name string) models.Client {
         client = models.Client{
             Name: name,
             Secret: models.GenerateRandomString(64),
+            CanonicalURI: "localhost",
             RedirectURI: "/",
             Scopes: models.PublicScope,
             Type: models.PublicClient,
@@ -72,16 +71,10 @@ func ActiveClientsForUser(userIID uint) []models.Client {
 
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.
-        Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.redirect_uri " +
+        Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.canonical_uri " +
             "FROM clients JOIN sessions ON clients.id = sessions.client_id " +
             "WHERE sessions.token_type IN ('access_token', 'refresh_token') AND sessions.invalidated = false AND " +
             "sessions.user_id = ?;", userIID).
         Scan(&clients)
-    for i := range clients {
-        client := clients[i]
-        u, _ := url.Parse(client.RedirectURI)
-        client.RedirectURI = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-        clients[i] = client
-    }
     return clients
 }
