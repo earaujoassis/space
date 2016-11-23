@@ -58,7 +58,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
         "user_id": user.PublicId,
         "access_token": accessToken.Token,
         "token_type": "Bearer",
-        "expires_in": 0,
+        "expires_in": accessToken.ExpiresIn,
         "refresh_token": refreshToken.Token,
         "scope": authorizationSession.Scopes,
     }, nil
@@ -114,7 +114,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
         "user_id": user.PublicId,
         "access_token": accessToken.Token,
         "token_type": "Bearer",
-        "expires_in": 0,
+        "expires_in": accessToken.ExpiresIn,
         "refresh_token": refreshToken.Token,
         "scope": refreshSession.Scopes,
     }, nil
