@@ -56,10 +56,7 @@ func (action *Action) Delete() {
 
 func (action *Action) WithinExpirationWindow() bool {
     now := time.Now().UTC().Unix()
-    if action.ExpiresIn == eternalExpirationLength || action.Moment + action.ExpiresIn >= now {
-        return true
-    }
-    return false
+    return action.ExpiresIn == eternalExpirationLength || action.Moment + action.ExpiresIn >= now
 }
 
 func RetrieveActionByUUID(uuid string) Action {
