@@ -76,8 +76,5 @@ func (session *Session) BeforeCreate(scope *gorm.Scope) error {
 
 func (session *Session) WithinExpirationWindow() bool {
     now := time.Now().UTC().Unix()
-    if session.ExpiresIn == eternalExpirationLength || session.Moment + session.ExpiresIn >= now {
-        return true
-    }
-    return false
+    return session.ExpiresIn == eternalExpirationLength || session.Moment + session.ExpiresIn >= now
 }
