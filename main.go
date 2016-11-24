@@ -2,13 +2,19 @@ package main
 
 import (
     "os"
+    "log"
 
+    "github.com/joho/godotenv"
     "github.com/urfave/cli"
 
     "github.com/earaujoassis/space/tasks"
 )
 
 func main() {
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("The configuration file (.env) doesn't exist; exiting\n")
+    }
     app := cli.NewApp()
     app.Name = "space"
     app.Usage = "A user management microservice; OAuth 2 provider"
@@ -19,7 +25,7 @@ func main() {
             Aliases: []string{"s"},
             Usage:   "Serve the application server",
             Action:  func(c *cli.Context) error {
-                tasks.Server("./web/public", "web/templates/*.html")
+                tasks.Server()
                 return nil
             },
         },
