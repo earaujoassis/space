@@ -10,13 +10,11 @@ import (
     "github.com/earaujoassis/space/api"
 )
 
-func Server(publicFolder, templateFolder string) {
+func Server() {
     datastore.Start()
-    config.SetConfig("template_folder", templateFolder)
-    config.SetConfig("public_folder", publicFolder)
     router := gin.Default()
     web.ExposeRoutes(router)
     restApi := router.Group("/api")
     api.ExposeRoutes(restApi)
-    router.Run(fmt.Sprintf(":%v", config.GetConfig("http.port")))
+    router.Run(fmt.Sprintf(":%v", config.GetConfig("PORT")))
 }

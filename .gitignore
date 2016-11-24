@@ -1,4 +1,5 @@
 .DS_Store
+.env
 Godeps/*
 !Godeps/Godeps.json
 node_modules

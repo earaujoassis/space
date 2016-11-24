@@ -13,17 +13,17 @@ var memoryStore redis.Conn
 func Start() {
     var err error
     var storeURI string
-    if config.GetConfig("environment") == "production" {
+    if config.IsEnvironment("production") {
         storeURI = fmt.Sprintf("redis://:%v@%v:%v/%v",
-            config.GetConfig("memorystore.password"),
-            config.GetConfig("memorystore.host"),
-            config.GetConfig("memorystore.port"),
-            config.GetConfig("memorystore.index"))
+            config.GetConfig("SPACE_MEMORYSTORE_PASSWORD"),
+            config.GetConfig("SPACE_MEMORYSTORE_HOST"),
+            config.GetConfig("SPACE_MEMORYSTORE_PORT"),
+            config.GetConfig("SPACE_MEMORYSTORE_INDEX"))
     } else {
         storeURI = fmt.Sprintf("redis://%v:%v/%v",
-            config.GetConfig("memorystore.host"),
-            config.GetConfig("memorystore.port"),
-            config.GetConfig("memorystore.index"))
+            config.GetConfig("SPACE_MEMORYSTORE_HOST"),
+            config.GetConfig("SPACE_MEMORYSTORE_PORT"),
+            config.GetConfig("SPACE_MEMORYSTORE_INDEX"))
     }
     memoryStore, err = redis.DialURL(storeURI)
     if err != nil {

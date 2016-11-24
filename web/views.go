@@ -30,10 +30,10 @@ func createCustomRender() multitemplate.Render {
 }
 
 func ExposeRoutes(router *gin.Engine) {
-    router.LoadHTMLGlob(config.GetConfig("template_folder").(string))
+    router.LoadHTMLGlob("web/templates/*.html")
     router.HTMLRender = createCustomRender()
-    router.Static("/public", config.GetConfig("public_folder").(string))
-    store := sessions.NewCookieStore([]byte(config.GetConfig("http.session_secret").(string)))
+    router.Static("/public", "web/public")
+    store := sessions.NewCookieStore([]byte(config.GetConfig("SPACE_SESSION_SECRET")))
     store.Options(sessions.Options{
         Secure: config.IsEnvironment("production"),
         HttpOnly: true,
