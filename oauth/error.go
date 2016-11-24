@@ -36,3 +36,7 @@ func invalidGrantResult(state string) (utils.H, error) {
 func invalidScopeResult(state string) (utils.H, error) {
     return errorResult(InvalidScope, state)
 }
+
+func invalidRedirectURIResult(state string) (utils.H, error) {
+    return errorResult(InvalidRedirectURI, state)
+}

@@ -44,7 +44,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
     }
 
     if !strings.Contains(client.RedirectURI, redirectURI) {
-        return accessDeniedResult(state)
+        return invalidRedirectURIResult(state)
     }
 
     /*
