@@ -8,9 +8,9 @@ import (
 )
 
 func TestEnvironment(t *testing.T) {
-    externalEnvironment := os.Getenv("ENVIRONMENT")
+    externalEnvironment := os.Getenv("ENV")
     if externalEnvironment == "" {
-        assert.Equal(t, "", GetConfig("ENVIRONMENT"), "empty externalEnvironment")
+        assert.Equal(t, "", GetConfig("ENV"), "empty externalEnvironment")
         assert.Equal(t, "development", Environment(), "default environment is development")
         assert.True(t, IsEnvironment("development"), "default environment is development")
         assert.False(t, IsEnvironment("production"), "production is not the default environment")

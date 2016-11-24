@@ -5,11 +5,11 @@
   </noscript>
 </div>
 <script id="data" type="application/json">{{ .Data }}</script>
-<script src="/public/js/{{ .Satellite }}.min.js"></script>
+<script src="{{ .AssetsEndpoint }}/js/{{ .Satellite }}.min.js"></script>
 {{ end }}
 
 {{ define "head" }}
-<link rel="stylesheet" href="/public/css/{{ .Satellite }}.css">
+<link rel="stylesheet" href="{{ .AssetsEndpoint }}/css/{{ .Satellite }}.css">
 {{ end }}
 
 {{define "front"}}{{end}}{{define "tail"}}{{end}}

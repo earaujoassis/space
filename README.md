@@ -33,7 +33,7 @@ $ goreman start
 ## Testing
 
 ```sh
-$ ENVIRONMENT=testing go test ./...
+$ ENV=testing go test ./...
 ```
 
 ## Deployment through a docker container

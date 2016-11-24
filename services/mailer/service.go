@@ -12,7 +12,7 @@ import (
 )
 
 func SendEmail(subject, body, mail_to string) error {
-    mail_key := strings.Split(config.GetConfig("SPACE_MAIL_KEY"), ":")
+    mail_key := strings.Split(config.GetConfig("SPACE_MAIL_ACCESS"), ":")
     mail_from := config.GetConfig("SPACE_MAIL_FROM")
     sess, err := session.NewSession(&aws.Config{
         Region:      aws.String(mail_key[2]),

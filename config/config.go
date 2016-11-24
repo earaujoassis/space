@@ -8,7 +8,7 @@ import (
 var environment string
 
 func init() {
-    environment = strings.ToLower(os.Getenv("ENVIRONMENT"))
+    environment = strings.ToLower(os.Getenv("ENV"))
     if environment == "" {
         environment = "development"
     }

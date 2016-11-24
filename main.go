@@ -10,11 +10,14 @@ import (
     "github.com/earaujoassis/space/tasks"
 )
 
-func main() {
+func init() {
     err := godotenv.Load()
     if err != nil {
         log.Fatal("The configuration file (.env) doesn't exist; exiting\n")
     }
+}
+
+func main() {
     app := cli.NewApp()
     app.Name = "space"
     app.Usage = "A user management microservice; OAuth 2 provider"

@@ -16,7 +16,7 @@ $ go get github.com/manveru/faker
 ## Testing
 
 ```sh
-$ ENVIRONMENT=testing go test ./...
+$ ENV=testing go test ./...
 ```
 
 ## Generate new test case
