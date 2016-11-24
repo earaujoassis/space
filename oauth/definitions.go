@@ -12,6 +12,7 @@ const (
     UnsupportedGrantType          string = "unsupported_grant_type"
     InvalidGrant                  string = "invalid_grant"
     InvalidSession                string = "invalid_session"
+    InvalidRedirectURI            string = "invalid_redirect_uri"
 
     // Grant types
     AuthorizationCode             string = "authorization_code"
