@@ -40,7 +40,7 @@ $ ENV=testing go test ./...
 
 ```sh
 $ docker build -t earaujoassis/space .
-$ docker run --net=host --name space.v-0.1.0 -d -p 8080:8080 earaujoassis/space
+$ docker run --net=host --name space.$TAG -d -p 8080:5000 earaujoassis/space
 $ docker images --quiet --filter=dangling=true | xargs docker rmi
 ```
 
