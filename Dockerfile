@@ -9,4 +9,4 @@ COPY . /go/src/github.com/earaujoassis/space
 RUN chown -R space:space /go
 USER space
 WORKDIR /go/src/github.com/earaujoassis/space
-ENTRYPOINT goreman start -p $PORT
+ENTRYPOINT goreman start -p 5000
