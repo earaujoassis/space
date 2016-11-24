@@ -22,6 +22,8 @@ const (
     errorURI string = "%s?error=%s&state=%s"
 )
 
+var spaceCDN string
+
 func createCustomRender() multitemplate.Render {
     render := multitemplate.New()
     render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
@@ -32,7 +34,12 @@ func createCustomRender() multitemplate.Render {
 func ExposeRoutes(router *gin.Engine) {
     router.LoadHTMLGlob("web/templates/*.html")
     router.HTMLRender = createCustomRender()
-    router.Static("/public", "web/public")
+    if config.IsEnvironment("production") && config.GetConfig("SPACE_CDN") != "" {
+        spaceCDN = config.GetConfig("SPACE_CDN")
+    } else {
+        spaceCDN = "/public"
+        router.Static("/public", "web/public")
+    }
     store := sessions.NewCookieStore([]byte(config.GetConfig("SPACE_SESSION_SECRET")))
     store.Options(sessions.Options{
         Secure: config.IsEnvironment("production"),
@@ -46,6 +53,7 @@ func ExposeRoutes(router *gin.Engine) {
 
         views.GET("/signup", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
+                "AssetsEndpoint": spaceCDN,
                 "Title": " - Sign up",
                 "Satellite": "io",
                 "Data": utils.H{
@@ -58,6 +66,7 @@ func ExposeRoutes(router *gin.Engine) {
 
         views.GET("/signin", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
+                "AssetsEndpoint": spaceCDN,
                 "Title": " - Sign in",
                 "Satellite": "ganymede",
             })
@@ -126,6 +135,7 @@ func ExposeRoutes(router *gin.Engine) {
             errorReason := c.Query("response_type")
 
             c.HTML(http.StatusOK, "error", utils.H{
+                "AssetsEndpoint": spaceCDN,
                 "errorReason": errorReason,
             })
         })
@@ -225,6 +235,7 @@ func jupiterHandler(c *gin.Context) {
         c.Request.UserAgent(),
         models.ReadWriteScope)
     c.HTML(http.StatusOK, "satellite", utils.H{
+        "AssetsEndpoint": spaceCDN,
         "Title": " - Mission control",
         "Satellite": "europa",
         "Data": utils.H {
@@ -288,6 +299,7 @@ func authorizeHandler(c *gin.Context) {
         activeSessions := services.ActiveSessionsForClient(client.ID, user.ID)
         if c.Request.Method == "GET" && activeSessions == 0 {
             c.HTML(http.StatusOK, "satellite", utils.H{
+                "AssetsEndpoint": spaceCDN,
                 "Title": " - Authorize",
                 "Satellite": "callisto",
                 "Data": utils.H{

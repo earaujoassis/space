@@ -28,6 +28,7 @@
     "foundation-sites": "^6.2.3",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
+    "gulp-s3-upload": "^1.6.4",
     "gulp-sass": "^2.3.2",
     "gulp-uglify": "^1.5.3",
     "node-uuid": "^1.4.7",
