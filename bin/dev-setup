@@ -1,0 +1,10 @@
+#!/bin/bash
+
+ln -s -f $PWD/hooks/pre-commit .git/hooks/pre-commit
+cd web && npm install && cd ../
+go get github.com/tools/godep
+godep restore
+go get github.com/mattn/goreman
+
+echo ""
+echo "Setup completed. You may run 'goreman start' to start the server"

@@ -1,0 +1,27 @@
+#!/bin/sh
+
+pass=true
+RED='\033[1;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+printf "Running linters: "
+
+linter=$(bin/linter)
+ret_code=$?
+
+# Run linters and check return code
+if [ $ret_code != 0 ]; then
+  printf "${RED}failed (commit was not created)${NC}.\n"
+  echo "$linter\n"
+  pass=false
+else
+  printf "${GREEN}passed${NC}.\n"
+fi
+
+# If there were no failures, it is good to commit
+if $pass; then
+  exit 0
+fi
+
+exit 1
