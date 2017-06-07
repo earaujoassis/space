@@ -24,10 +24,9 @@ the "Resource Owner Password Credentials Grant".
 Please make sure to place this project inside the `$GOPATH`. Once that is done:
 
 ```sh
-$ go get github.com/tools/godep
-$ godep restore
-$ go get github.com/mattn/goreman
+$ bin/dev-setup
 $ goreman start
+$ open http://localhost:8080
 ```
 
 ## Testing
@@ -40,7 +39,7 @@ $ ENV=testing go test ./...
 
 ```sh
 $ docker build -t earaujoassis/space .
-$ docker run --net=host --name space.$TAG -d -p 8080:5000 earaujoassis/space
+$ docker run -d -p 8080:8080 earaujoassis/space
 $ docker images --quiet --filter=dangling=true | xargs docker rmi
 ```
 

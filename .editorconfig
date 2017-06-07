@@ -11,6 +11,9 @@ trim_trailing_whitespace = true
 [*.{go,py,js,jsx}]
 indent_size = 4
 
+[{pre-deploy,deploy}]
+indent_size = 4
+
 [{Makefile,*.sql}]
 indent_style = tab
 indent_size = 4

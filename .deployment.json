@@ -1,0 +1,10 @@
+{
+  "number_of_instances": 2,
+  "baseport": 3000,
+  "exposed_port": 8080,
+  "env": {
+    "ENV": "production",
+    "NODE_ENV": "production",
+    "GIN_MODE": "release"
+  }
+}
