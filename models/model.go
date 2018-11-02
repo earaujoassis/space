@@ -10,6 +10,7 @@ import (
     "github.com/earaujoassis/space/config"
 )
 
+// Model is the base model/struct for any model in the application/system
 type Model struct {
     ID uint                     `gorm:"primary_key" json:"-"`
     CreatedAt time.Time         `gorm:"not null" json:"-"`
@@ -25,6 +26,7 @@ const (
 
 var src = rand.NewSource(time.Now().UnixNano())
 
+// GenerateRandomString returns a random string with `n` as the length
 func GenerateRandomString(n int) string {
     b := make([]byte, n)
     for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
@@ -58,6 +60,7 @@ func validateModel(tagName string, model interface{}) error {
     return nil
 }
 
+// IsValid checks if a `model` entry is valid, given the `tagName` (scope) for validation
 func IsValid(tagName string, model interface{}) bool {
     err := validateModel(tagName, model)
     if err != nil {

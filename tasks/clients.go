@@ -10,6 +10,7 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
+// CreateClient task is used to create a new client application
 func CreateClient() {
     reader := bufio.NewReader(os.Stdin)
     fmt.Print("Client name: ")
@@ -44,6 +45,7 @@ func CreateClient() {
     }
 }
 
+// UpdateClient task is used to update a client application
 func UpdateClient() {
 
 }
