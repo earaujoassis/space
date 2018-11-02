@@ -22,13 +22,13 @@ var _ = Describe("UserLogin", func() {
 
     It("should manage user authentication", func() {
         By("redirecting the user to the login form from the webapp page", func() {
-            Expect(page.Navigate(AcceptanceSettings("webappUrl"))).To(Succeed())
+            Expect(page.Navigate(Settings("webappUrl"))).To(Succeed())
         })
 
         By("allowing the user to fill out the login form and submit it", func() {
             Eventually(page.FindByName("email")).Should(BeFound())
-            Expect(page.FindByName("email").Fill(AcceptanceSettings("email"))).To(Succeed())
-            Expect(page.FindByName("password").Fill(AcceptanceSettings("password"))).To(Succeed())
+            Expect(page.FindByName("email").Fill(Settings("email"))).To(Succeed())
+            Expect(page.FindByName("password").Fill(Settings("password"))).To(Succeed())
             Expect(page.FirstByButton("Get Access").Submit()).To(Succeed())
         })
 

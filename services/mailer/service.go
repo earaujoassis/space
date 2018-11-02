@@ -11,12 +11,13 @@ import (
     "github.com/earaujoassis/space/config"
 )
 
-func SendEmail(subject, body, mail_to string) error {
-    mail_key := strings.Split(config.GetConfig("SPACE_MAIL_ACCESS"), ":")
-    mail_from := config.GetConfig("SPACE_MAIL_FROM")
+// SendEmail uses the AWS SES service to send e-mail messages
+func SendEmail(subject, body, mailTo string) error {
+    mailKey := strings.Split(config.GetConfig("SPACE_MAIL_ACCESS"), ":")
+    mailFrom := config.GetConfig("SPACE_MAIL_FROM")
     sess, err := session.NewSession(&aws.Config{
-        Region:      aws.String(mail_key[2]),
-        Credentials: credentials.NewStaticCredentials(mail_key[0], mail_key[1], ""),
+        Region:      aws.String(mailKey[2]),
+        Credentials: credentials.NewStaticCredentials(mailKey[0], mailKey[1], ""),
     })
     if err != nil {
         return err
@@ -24,10 +25,10 @@ func SendEmail(subject, body, mail_to string) error {
 
     svc := ses.New(sess)
     params := &ses.SendEmailInput{
-        Source: aws.String(mail_from),
+        Source: aws.String(mailFrom),
         Destination: &ses.Destination{
             ToAddresses: []*string{
-                aws.String(mail_to),
+                aws.String(mailTo),
             },
         },
         Message: &ses.Message{
@@ -43,7 +44,7 @@ func SendEmail(subject, body, mail_to string) error {
             },
         },
         ReplyToAddresses: []*string{
-            aws.String(mail_from),
+            aws.String(mailFrom),
         },
     }
     if _, err := svc.SendEmail(params); err != nil {

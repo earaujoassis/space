@@ -5,6 +5,7 @@ import (
     "github.com/earaujoassis/space/memstore"
 )
 
+// Active is used to check if a feature-gate `name` is currently active (through Redis keys)
 func Active(name string) bool {
     memstore.Start()
     defer memstore.Close()

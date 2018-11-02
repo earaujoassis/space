@@ -1,5 +1,8 @@
 .DS_Store
 .env
+c.out
+coverage.html
+
 vendor
 Godeps/*
 !Godeps/Godeps.json

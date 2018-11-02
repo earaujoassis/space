@@ -52,12 +52,15 @@ If any new dependency is used within the project, it should be tracked through:
 $ godep save ./...
 ```
 
-## Testing
+## Testing & Linting
 
-For testing and code coverage, you could run:
+For testing (plus code coverage) and linting, you could run:
 
 ```sh
-$ ENV=testing go test -cover ./...
+$ go get -u golang.org/x/lint/golint
+$ ENV=testing go test -race -coverprofile=c.out ./...
+$ go tool cover -html=c.out -o coverage.html
+$ golint ./...
 ```
 
 ## Deployment through a docker container
