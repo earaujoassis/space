@@ -21,6 +21,8 @@ import (
     "github.com/earaujoassis/space/utils"
 )
 
+// ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
+//      in the REST API escope
 func ExposeRoutes(router *gin.RouterGroup) {
     users := router.Group("/users")
     {
@@ -94,9 +96,9 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Authorization type: access session / Bearer (for OAuth sessions)
         users.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
-            var publicId string = c.PostForm("user_id")
+            var publicID = c.PostForm("user_id")
 
-            if !security.ValidRandomString(publicId) {
+            if !security.ValidRandomString(publicID) {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "error": "must use valid identification string",
                 })
@@ -104,7 +106,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
 
             session := c.MustGet("Session").(models.Session)
-            user := services.FindUserByPublicId(publicId)
+            user := services.FindUserByPublicID(publicID)
             if user.ID == 0 || user.ID != session.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
@@ -133,7 +135,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
         users.GET("/:id/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            var uuid string = c.Param("id")
+            var uuid = c.Param("id")
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -160,8 +162,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
         users.DELETE("/:user_id/clients/:client_id/revoke", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            var userUUID string = c.Param("user_id")
-            var clientUUID string = c.Param("client_id")
+            var userUUID = c.Param("user_id")
+            var clientUUID = c.Param("client_id")
 
             if !security.ValidUUID(userUUID) || !security.ValidUUID(clientUUID) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -189,7 +191,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
         users.GET("/:id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            var uuid string = c.Param("id")
+            var uuid = c.Param("id")
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -221,12 +223,12 @@ func ExposeRoutes(router *gin.RouterGroup) {
     {
         // Requires X-Requested-By and Origin (same-origin policy)
         sessions.POST("/create", requiresConformance, func(c *gin.Context) {
-            var holder string = c.PostForm("holder")
-            var state string = c.PostForm("state")
+            var holder = c.PostForm("holder")
+            var state = c.PostForm("state")
 
-            var Ip string = c.Request.RemoteAddr
-            var userID string = Ip
-            var statusSignInAttempts = policy.SignInAttemptStatus(Ip)
+            var IP = c.Request.RemoteAddr
+            var userID = IP
+            var statusSignInAttempts = policy.SignInAttemptStatus(IP)
 
             if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -250,11 +252,11 @@ func ExposeRoutes(router *gin.RouterGroup) {
                         go logger.LogAction("session.created", utils.H{
                             "Email": user.Email,
                             "FirstName": user.FirstName,
-                            "Ip": session.Ip,
+                            "IP": session.IP,
                             "CreatedAt": session.CreatedAt.Format(time.RFC850),
                         })
                         policy.RegisterSuccessfulSignIn(user.UUID)
-                        policy.RegisterSuccessfulSignIn(Ip)
+                        policy.RegisterSuccessfulSignIn(IP)
                         c.JSON(http.StatusOK, utils.H{
                             "_status": "created",
                             "_message": "Session was created",
@@ -279,7 +281,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Authorization type: Basic (for OAuth clients use)
         sessions.POST("/introspect", clientBasicAuthorization, func(c *gin.Context) {
-            var token string = c.PostForm("access_token")
+            var token = c.PostForm("access_token")
 
             if !security.ValidToken(token) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -305,7 +307,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Authorization type: Basic (for OAuth clients use)
         sessions.POST("/invalidate", clientBasicAuthorization, func(c *gin.Context) {
-            var token string = c.PostForm("access_token")
+            var token = c.PostForm("access_token")
 
             if !security.ValidToken(token) {
                 c.JSON(http.StatusBadRequest, utils.H{

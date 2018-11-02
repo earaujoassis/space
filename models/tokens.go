@@ -7,6 +7,8 @@ const (
     shortestExpirationLength   int64 = 300  //  5 min
 )
 
+// Tokens interface defines methods/actions for checking session-tokens
+//      time-based validity
 type Tokens interface {
     WithinExpirationWindow()
 }

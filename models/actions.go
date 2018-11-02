@@ -8,6 +8,7 @@ import (
     "github.com/earaujoassis/space/memstore"
 )
 
+// Action is a model/struct used to represent ephemeral actions/sessions in the application
 type Action struct {
     UUID string                 `validate:"omitempty,uuid4" json:"uuid"`
     User User                   `validate:"exists" json:"-"`
@@ -16,13 +17,14 @@ type Action struct {
     ClientID uint               `json:"client_id"`
     Moment int64                `json:"moment"`
     ExpiresIn int64             `json:"expires_in"`
-    Ip string                   `validate:"required" json:"ip"`
+    IP string                   `validate:"required" json:"ip"`
     UserAgent string            `validate:"required" json:"user_agent"`
     Token string                `validate:"omitempty,alphanum" json:"token"`
     Scopes string               `validate:"required,scope" json:"scopes"`
     CreatedAt time.Time         `json:"created_at"`
 }
 
+// Save saves an Action entry in a memory store (Redis)
 func (action *Action) Save() error {
     action.UserID = action.User.ID
     action.ClientID = action.Client.ID
@@ -36,13 +38,14 @@ func (action *Action) Save() error {
     }
     memstore.Start()
     defer memstore.Close()
-    actionJson, _ := json.Marshal(action)
-    memstore.Do("HSET", "models.actions", action.UUID, actionJson)
+    actionJSON, _ := json.Marshal(action)
+    memstore.Do("HSET", "models.actions", action.UUID, actionJSON)
     memstore.Do("HSET", "models.actions.indexes", action.Token, action.UUID)
     memstore.Do("ZADD", "models.actions.rank", action.Moment, action.UUID)
     return nil
 }
 
+// Delete deletes an Action entry in a memory store (Redis)
 func (action *Action) Delete() {
     memstore.Start()
     defer memstore.Close()
@@ -54,11 +57,13 @@ func (action *Action) Delete() {
     memstore.Do("ZREM", "models.actions.rank", action.UUID)
 }
 
+// WithinExpirationWindow checks if a Action entry is still valid (time-based)
 func (action *Action) WithinExpirationWindow() bool {
     now := time.Now().UTC().Unix()
     return action.ExpiresIn == eternalExpirationLength || action.Moment + action.ExpiresIn >= now
 }
 
+// RetrieveActionByUUID obtains an Action entry from its UUID
 func RetrieveActionByUUID(uuid string) Action {
     var action Action
     memstore.Start()
@@ -73,6 +78,7 @@ func RetrieveActionByUUID(uuid string) Action {
     return action
 }
 
+// RetrieveActionByToken obtains an Action entry from its token-string
 func RetrieveActionByToken(token string) Action {
     memstore.Start()
     defer memstore.Close()
