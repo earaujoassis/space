@@ -5,6 +5,7 @@ import (
     "github.com/earaujoassis/space/memstore"
 )
 
+// SignInAttemptStatus checks and controls sign-in attempts from a Web browser/User
 func SignInAttemptStatus(id string) string {
     memstore.Start()
     defer memstore.Close()
@@ -26,6 +27,7 @@ func SignInAttemptStatus(id string) string {
     return Clear
 }
 
+// SignUpAttemptStatus checks and controls sign-up attempts from a Web browser/User
 func SignUpAttemptStatus(id string) string {
     memstore.Start()
     defer memstore.Close()

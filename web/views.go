@@ -31,6 +31,8 @@ func createCustomRender() multitemplate.Render {
     return render
 }
 
+// ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
+//      in the WEB escope
 func ExposeRoutes(router *gin.Engine) {
     router.LoadHTMLGlob("web/templates/*.html")
     router.HTMLRender = createCustomRender()
@@ -75,9 +77,9 @@ func ExposeRoutes(router *gin.Engine) {
         views.GET("/signout", func(c *gin.Context) {
             session := sessions.Default(c)
 
-            userPublicId := session.Get("userPublicId")
-            if userPublicId != nil {
-                session.Delete("userPublicId")
+            userPublicID := session.Get("userPublicID")
+            if userPublicID != nil {
+                session.Delete("userPublicID")
                 session.Save()
             }
 
@@ -87,21 +89,21 @@ func ExposeRoutes(router *gin.Engine) {
         views.GET("/session", func(c *gin.Context) {
             session := sessions.Default(c)
 
-            userPublicId := session.Get("userPublicId")
-            if userPublicId != nil {
+            userPublicID := session.Get("userPublicID")
+            if userPublicID != nil {
                 c.Redirect(http.StatusFound, "/")
                 return
             }
 
-            var nextPath string = "/"
-            var scope string = c.Query("scope")
-            var grantType string = c.Query("grant_type")
-            var code string = c.Query("code")
-            var clientId string = c.Query("client_id")
-            var _nextPath string = c.Query("_")
+            var nextPath = "/"
+            var scope = c.Query("scope")
+            var grantType = c.Query("grant_type")
+            var code = c.Query("code")
+            var clientID = c.Query("client_id")
+            var _nextPath = c.Query("_")
             //var state string = c.Query("state")
 
-            if scope == "" || grantType == "" || code == "" || clientId == "" {
+            if scope == "" || grantType == "" || code == "" || clientID == "" {
                 // Original response:
                 // c.String(http.StatusMethodNotAllowed, "Missing required parameters")
                 c.Redirect(http.StatusFound, "/signin")
@@ -114,10 +116,10 @@ func ExposeRoutes(router *gin.Engine) {
             }
 
             client := services.FindOrCreateClient("Jupiter")
-            if client.Key == clientId && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
+            if client.Key == clientID && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
                 grantToken := services.FindSessionByToken(code, models.GrantToken)
                 if grantToken.ID != 0 {
-                    session.Set("userPublicId", grantToken.User.PublicId)
+                    session.Set("userPublicID", grantToken.User.PublicID)
                     session.Save()
                     services.InvalidateSession(grantToken)
                     c.Redirect(http.StatusFound, nextPath)
@@ -141,7 +143,7 @@ func ExposeRoutes(router *gin.Engine) {
         })
 
         views.POST("/token", func(c *gin.Context) {
-            var grantType string = c.PostForm("grant_type")
+            var grantType = c.PostForm("grant_type")
 
             authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
             client := oauth.ClientAuthentication(authorizationBasic)
@@ -167,17 +169,15 @@ func ExposeRoutes(router *gin.Engine) {
                         "error": result["error"],
                     })
                     return
-                } else {
-                    c.JSON(http.StatusOK, utils.H{
-                        "user_id": result["user_id"],
-                        "access_token": result["access_token"],
-                        "token_type": result["token_type"],
-                        "expires_in": result["expires_in"],
-                        "refresh_token": result["refresh_token"],
-                        "scope": result["scope"],
-                    })
-                    return
                 }
+                c.JSON(http.StatusOK, utils.H{
+                    "user_id": result["user_id"],
+                    "access_token": result["access_token"],
+                    "token_type": result["token_type"],
+                    "expires_in": result["expires_in"],
+                    "refresh_token": result["refresh_token"],
+                    "scope": result["scope"],
+                })
                 return
             // Refreshing an Access Token
             case oauth.RefreshToken:
@@ -192,17 +192,15 @@ func ExposeRoutes(router *gin.Engine) {
                         "error": result["error"],
                     })
                     return
-                } else {
-                    c.JSON(http.StatusOK, utils.H{
-                        "user_id": result["user_id"],
-                        "access_token": result["access_token"],
-                        "token_type": result["token_type"],
-                        "expires_in": result["expires_in"],
-                        "refresh_token": result["refresh_token"],
-                        "scope": result["scope"],
-                    })
-                    return
                 }
+                c.JSON(http.StatusOK, utils.H{
+                    "user_id": result["user_id"],
+                    "access_token": result["access_token"],
+                    "token_type": result["token_type"],
+                    "expires_in": result["expires_in"],
+                    "refresh_token": result["refresh_token"],
+                    "scope": result["scope"],
+                })
                 return
             // Resource Owner Password Credentials Grant
             // Client Credentials Grant
@@ -223,13 +221,13 @@ func ExposeRoutes(router *gin.Engine) {
 
 func jupiterHandler(c *gin.Context) {
     session := sessions.Default(c)
-    userPublicId := session.Get("userPublicId")
-    if userPublicId == nil {
+    userPublicID := session.Get("userPublicID")
+    if userPublicID == nil {
         c.Redirect(http.StatusFound, "/signin")
         return
     }
     client := services.FindOrCreateClient("Jupiter")
-    user := services.FindUserByPublicId(userPublicId.(string))
+    user := services.FindUserByPublicID(userPublicID.(string))
     actionToken := services.CreateAction(user, client,
         c.Request.RemoteAddr,
         c.Request.UserAgent(),
@@ -248,22 +246,22 @@ func jupiterHandler(c *gin.Context) {
 func authorizeHandler(c *gin.Context) {
     var location string
     var responseType string
-    var clientId string
+    var clientID string
     var redirectURI string
     var scope string
     var state string
 
     session := sessions.Default(c)
-    userPublicId := session.Get("userPublicId")
+    userPublicID := session.Get("userPublicID")
     nextPath := url.QueryEscape(fmt.Sprintf("%s?%s", c.Request.URL.Path, c.Request.URL.RawQuery))
-    if userPublicId == nil {
+    if userPublicID == nil {
         location = fmt.Sprintf("/signin?_=%s", nextPath)
         c.Redirect(http.StatusFound, location)
         return
     }
-    user := services.FindUserByPublicId(userPublicId.(string))
+    user := services.FindUserByPublicID(userPublicID.(string))
     if user.ID == 0 {
-        session.Delete("userPublicId")
+        session.Delete("userPublicID")
         session.Save()
         location = fmt.Sprintf("/signin?_=%s", nextPath)
         c.Redirect(http.StatusFound, location)
@@ -271,7 +269,7 @@ func authorizeHandler(c *gin.Context) {
     }
 
     responseType = c.Query("response_type")
-    clientId = c.Query("client_id")
+    clientID = c.Query("client_id")
     redirectURI = c.Query("redirect_uri")
     scope = c.Query("scope")
     state = c.Query("state")
@@ -280,7 +278,7 @@ func authorizeHandler(c *gin.Context) {
         redirectURI = "/error"
     }
 
-    client := services.FindClientByKey(clientId)
+    client := services.FindClientByKey(clientID)
     if client.ID == 0 {
         redirectURI = "/error"
         location = fmt.Sprintf("%s?error=%s&state=%s",

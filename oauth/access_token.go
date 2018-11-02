@@ -8,6 +8,8 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
+// AccessTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
+//      basically, a `code` from `AuthorizationCodeGrant`
 func AccessTokenRequest(data utils.H) (utils.H, error) {
     var user models.User
     var client models.Client
@@ -29,7 +31,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
         return invalidGrantResult("")
     }
     user = authorizationSession.User
-    user = services.FindUserByPublicId(user.PublicId)
+    user = services.FindUserByPublicID(user.PublicID)
     if authorizationSession.Client.ID != client.ID {
         return invalidGrantResult("")
     }
@@ -39,13 +41,13 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 
     accessToken := services.CreateSession(user,
         client,
-        authorizationSession.Ip,
+        authorizationSession.IP,
         authorizationSession.UserAgent,
         authorizationSession.Scopes,
         models.AccessToken)
     refreshToken := services.CreateSession(user,
         client,
-        authorizationSession.Ip,
+        authorizationSession.IP,
         authorizationSession.UserAgent,
         authorizationSession.Scopes,
         models.RefreshToken)
@@ -55,7 +57,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
     }
 
     return utils.H{
-        "user_id": user.PublicId,
+        "user_id": user.PublicID,
         "access_token": accessToken.Token,
         "token_type": "Bearer",
         "expires_in": accessToken.ExpiresIn,
@@ -64,6 +66,8 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
     }, nil
 }
 
+// RefreshTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
+//      basically, a `refresh token` from `AccessTokenRequest`
 func RefreshTokenRequest(data utils.H) (utils.H, error) {
     var user models.User
     var client models.Client
@@ -85,7 +89,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
         return invalidGrantResult("")
     }
     user = refreshSession.User
-    user = services.FindUserByPublicId(user.PublicId)
+    user = services.FindUserByPublicID(user.PublicID)
     if refreshSession.Client.ID != client.ID {
         return invalidGrantResult("")
     }
@@ -95,13 +99,13 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 
     accessToken := services.CreateSession(user,
         client,
-        refreshSession.Ip,
+        refreshSession.IP,
         refreshSession.UserAgent,
         scope,
         models.AccessToken)
     refreshToken := services.CreateSession(user,
         client,
-        refreshSession.Ip,
+        refreshSession.IP,
         refreshSession.UserAgent,
         scope,
         models.RefreshToken)
@@ -111,7 +115,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
     }
 
     return utils.H{
-        "user_id": user.PublicId,
+        "user_id": user.PublicID,
         "access_token": accessToken.Token,
         "token_type": "Bearer",
         "expires_in": accessToken.ExpiresIn,

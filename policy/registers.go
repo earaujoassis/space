@@ -7,6 +7,7 @@ import (
     "github.com/earaujoassis/space/memstore"
 )
 
+// RegisterSignInAttempt records a sign-in attempt (in order to control it)
 func RegisterSignInAttempt(id string) {
     memstore.Start()
     defer memstore.Close()
@@ -31,6 +32,7 @@ func RegisterSignInAttempt(id string) {
     }
 }
 
+// RegisterSuccessfulSignIn records a successful sign-in attempt (in order to clear it)
 func RegisterSuccessfulSignIn(id string) {
     memstore.Start()
     defer memstore.Close()
@@ -39,6 +41,7 @@ func RegisterSuccessfulSignIn(id string) {
     memstore.Do("HDEL", "sign-in.blocked", id)
 }
 
+// RegisterSignUpAttempt records a sign-up attempt (in order to control it)
 func RegisterSignUpAttempt(id string) {
     memstore.Start()
     defer memstore.Close()
@@ -63,6 +66,7 @@ func RegisterSignUpAttempt(id string) {
     }
 }
 
+// RegisterSuccessfulSignUp records a successful sign-up attempt (in order to clear it)
 func RegisterSuccessfulSignUp(id string) {
     memstore.Start()
     defer memstore.Close()
