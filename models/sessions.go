@@ -7,15 +7,22 @@ import (
 )
 
 const (
+    // AccessToken token type
     AccessToken               string = "access_token"
+    // RefreshToken token type
     RefreshToken              string = "refresh_token"
+    // GrantToken token type
     GrantToken                string = "grant_token"
 
+    // PublicScope session scope
     PublicScope               string = "public"
+    // ReadScope session scope
     ReadScope                 string = "read"
+    // ReadWriteScope session scope
     ReadWriteScope            string = "read_write"
 )
 
+// Session model/struct
 type Session struct {
     Model
     UUID string                 `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"-"`
@@ -25,7 +32,7 @@ type Session struct {
     ClientID uint               `gorm:"not null" json:"-"`
     Moment int64                `gorm:"not null" json:"moment"`
     ExpiresIn int64             `gorm:"not null;default:0" json:"expires_in"`
-    Ip string                   `gorm:"not null;index" validate:"required" json:"-"`
+    IP string                   `gorm:"not null;index" validate:"required" json:"-"`
     UserAgent string            `gorm:"not null" validate:"required" json:"-"`
     Invalidated bool            `gorm:"not null;default:false"`
     Token string                `gorm:"not null;unique;index" validate:"omitempty,alphanum" json:"token"`
@@ -62,10 +69,12 @@ func expirationLengthForTokenType(tokenType string) int64 {
     }
 }
 
+// BeforeSave Session model/struct hook
 func (session *Session) BeforeSave(scope *gorm.Scope) error {
     return validateModel("validate", session)
 }
 
+// BeforeCreate Session model/struct hook
 func (session *Session) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("Token", GenerateRandomString(64))
     scope.SetColumn("UUID", generateUUID())
@@ -74,6 +83,7 @@ func (session *Session) BeforeCreate(scope *gorm.Scope) error {
     return nil
 }
 
+// WithinExpirationWindow checks if a Session entry is still valid (time-based)
 func (session *Session) WithinExpirationWindow() bool {
     now := time.Now().UTC().Unix()
     return session.ExpiresIn == eternalExpirationLength || session.Moment + session.ExpiresIn >= now

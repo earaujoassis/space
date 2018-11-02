@@ -5,11 +5,12 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
+// CreateSession creates a session entry
 func CreateSession(user models.User, client models.Client, ip, userAgent, scopes, tokenType string) models.Session {
     var session models.Session = models.Session{
         User: user,
         Client: client,
-        Ip: ip,
+        IP: ip,
         UserAgent: userAgent,
         Scopes: scopes,
         TokenType: tokenType,
@@ -22,14 +23,17 @@ func CreateSession(user models.User, client models.Client, ip, userAgent, scopes
     return models.Session{}
 }
 
+// SessionGrantsReadAbility checks if a session entry has read-ability
 func SessionGrantsReadAbility(session models.Session) bool {
     return session.Scopes == models.ReadScope || session.Scopes == models.ReadWriteScope
 }
 
+// SessionGrantsWriteAbility checks if a session entry has write-ability
 func SessionGrantsWriteAbility(session models.Session) bool {
     return session.Scopes == models.ReadWriteScope
 }
 
+// FindSessionByUUID gets a session entry by its UUID
 func FindSessionByUUID(uuid string) models.Session {
     var session models.Session
     dataStoreSession := datastore.GetDataStoreConnection()
@@ -49,6 +53,7 @@ func FindSessionByUUID(uuid string) models.Session {
     return session
 }
 
+// FindSessionByToken gets a session entry by its token string
 func FindSessionByToken(token, tokenType string) models.Session {
     var session models.Session
     dataStoreSession := datastore.GetDataStoreConnection()
@@ -68,11 +73,13 @@ func FindSessionByToken(token, tokenType string) models.Session {
     return session
 }
 
+// InvalidateSession invalidates a session entry
 func InvalidateSession(session models.Session) {
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.Model(&session).Select("invalidated").Update("invalidated", true)
 }
 
+// ActiveSessionsForClient gets the number of active sessions for a given user in a client application
 func ActiveSessionsForClient(clientIID, userIID uint) int64 {
     var count struct{
         Count int64
@@ -87,6 +94,7 @@ func ActiveSessionsForClient(clientIID, userIID uint) int64 {
     return count.Count
 }
 
+// RevokeClientAccess revokes client application access to user's data
 func RevokeClientAccess(clientIID, userIID uint) {
     dataStoreSession := datastore.GetDataStoreConnection()
     dataStoreSession.
