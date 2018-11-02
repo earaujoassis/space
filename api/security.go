@@ -19,9 +19,9 @@ func scheme(request *http.Request) string {
     }
     if request.TLS == nil {
         return "http"
-    } else {
-        return "https"
     }
+
+    return "https"
 }
 
 func requiresConformance(c *gin.Context) {
