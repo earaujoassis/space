@@ -1,2 +1,5 @@
-node_modules
+web/node_modules
+web/public/vendor
+web/public/css/*.css
+web/public/js/*.min.js
 *.log

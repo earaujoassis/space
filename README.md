@@ -25,7 +25,7 @@ Please make sure to place this project inside the `$GOPATH`. Once that is done:
 
 ```sh
 $ bin/dev-setup
-$ goreman start
+$ go run main.go serve
 $ open http://localhost:8080
 ```
 
