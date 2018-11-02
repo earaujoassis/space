@@ -6,17 +6,14 @@
 
 ```sh
 $ brew install chromedriver
-$ go get github.com/sclevine/agouti
-$ go get github.com/onsi/ginkgo/ginkgo
-$ go get github.com/onsi/gomega
-$ go get github.com/sclevine/agouti/matchers
-$ go get github.com/manveru/faker
+$ go get github.com/tools/godep
+$ godep restore
 ```
 
 ## Testing
 
 ```sh
-$ ENV=testing go test ./...
+$ ENV=testing go test -cover ./...
 ```
 
 ## Generate new test case
