@@ -1,5 +1,4 @@
 node_modules
-public/vendor
 public/css/*.css
 public/js/*.min.js
 npm-debug.log
