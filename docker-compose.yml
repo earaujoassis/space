@@ -1,0 +1,43 @@
+version: '3.4'
+services:
+  space-redis:
+    image: 'redis:5.0.0'
+    container_name: wallet-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: space-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - space-redis-data:/data
+
+  space-postgres:
+    image: 'postgres:9.6.10'
+    container_name: space-postgres
+    hostname: space-postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - space-postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: space-postgres
+      POSTGRES_PASSWORD: 8GWbz2JF4FMe1Q8X
+      POSTGRES_DB: space_development
+
+  space:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+        GIN_MODE: debug
+        ENV: development
+    container_name: space
+    image: space
+    ports:
+      - "5000:80"
+    env_file: .env
+
+volumes:
+  space-redis-data:
+  space-postgres-data:
