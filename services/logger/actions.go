@@ -9,6 +9,8 @@ import (
     "github.com/earaujoassis/space/utils"
 )
 
+// LogAction is used to Log actions throughout the application;
+//      using e-mail messages (production-only) or stdout (development-only)
 func LogAction(name string, data utils.H) {
     if config.IsEnvironment("production") {
         switch name {

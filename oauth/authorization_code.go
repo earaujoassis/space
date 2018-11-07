@@ -8,6 +8,7 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
+// AuthorizationCodeGrant returns an OAuth 2 authorization code grant, given the right details
 func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
     var redirectURI string
     var scope string
@@ -62,7 +63,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
             "state": state,
             "scope": scope,
         }, nil
-    } else {
-        return serverErrorResult(state)
     }
+
+    return serverErrorResult(state)
 }

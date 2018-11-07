@@ -1,4 +1,9 @@
 .DS_Store
 .env
+c.out
+coverage.html
+coverage.txt
+
+vendor
 Godeps/*
 !Godeps/Godeps.json

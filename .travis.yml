@@ -1,0 +1,19 @@
+language: go
+go:
+  - "1.11.1"
+services:
+  - postgresql
+env:
+  - ENV=testing
+before_install:
+  - go get github.com/tools/godep
+  - go get golang.org/x/lint/golint
+install:
+  - godep restore
+before_script:
+  - psql -c 'create database space_test;' -U postgres
+script:
+  - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+  - golint ./...
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

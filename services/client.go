@@ -5,6 +5,7 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
+// CreateNewClient creates a new client application entry
 func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectURI string) models.Client {
     var client models.Client = models.Client{
         Name: name,
@@ -21,6 +22,7 @@ func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectUR
     return client
 }
 
+// FindOrCreateClient attempts to find a client application by its name; otherwise, it creates a new one
 func FindOrCreateClient(name string) models.Client {
     var client models.Client
 
@@ -40,6 +42,7 @@ func FindOrCreateClient(name string) models.Client {
     return client
 }
 
+// FindClientByKey gets a client application by its key
 func FindClientByKey(key string) models.Client {
     var client models.Client
 
@@ -48,6 +51,7 @@ func FindClientByKey(key string) models.Client {
     return client
 }
 
+// FindClientByUUID gets a client application by its UUID
 func FindClientByUUID(uuid string) models.Client {
     var client models.Client
 
@@ -56,6 +60,7 @@ func FindClientByUUID(uuid string) models.Client {
     return client
 }
 
+// ClientAuthentication gets a client application by its key-secret pair
 func ClientAuthentication(key, secret string) models.Client {
     var client models.Client
 
@@ -64,17 +69,4 @@ func ClientAuthentication(key, secret string) models.Client {
         return client
     }
     return models.Client{}
-}
-
-func ActiveClientsForUser(userIID uint) []models.Client {
-    var clients []models.Client
-
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.
-        Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.canonical_uri " +
-            "FROM clients JOIN sessions ON clients.id = sessions.client_id " +
-            "WHERE sessions.token_type IN ('access_token', 'refresh_token') AND sessions.invalidated = false AND " +
-            "sessions.user_id = ?;", userIID).
-        Scan(&clients)
-    return clients
 }
