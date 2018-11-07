@@ -7,7 +7,7 @@ import (
     "testing"
 )
 
-func TestAcceptance(t *testing.T) {
+func _TestAcceptance(t *testing.T) {
     RegisterFailHandler(Fail)
     RunSpecs(t, "Acceptance Suite")
 }

@@ -10,6 +10,7 @@ import (
 
 var memoryStore redis.Conn
 
+// Start is used to setup a connection with a Redis datastore
 func Start() {
     var err error
     var storeURI string
@@ -31,10 +32,12 @@ func Start() {
     }
 }
 
+// Do is used to send commands to a Redis datastore, throguh an active connection
 func Do(commandName string, args ...interface{}) (reply interface{}, err error) {
     return memoryStore.Do(commandName, args...)
 }
 
+// Close is used to end a connection to a Redis datastore; given an active connection
 func Close() {
     if memoryStore != nil {
         memoryStore.Close()
