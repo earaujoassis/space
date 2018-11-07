@@ -1,4 +1,4 @@
-# Space [![Build Status](https://travis-ci.com/earaujoassis/space.svg?branch=master)](https://travis-ci.com/earaujoassis/space)
+# Space [![Build Status](https://travis-ci.com/earaujoassis/space.svg?branch=master)](https://travis-ci.com/earaujoassis/space) [![codecov](https://codecov.io/gh/earaujoassis/space/branch/master/graph/badge.svg)](https://codecov.io/gh/earaujoassis/space)
 
 > A user management microservice; OAuth 2 provider
 
