@@ -3,6 +3,7 @@ package datastore
 import (
     "fmt"
     "github.com/jinzhu/gorm"
+    // Uses Postgres for GORM setup
     _ "github.com/jinzhu/gorm/dialects/postgres"
 
     "github.com/earaujoassis/space/models"
@@ -11,6 +12,7 @@ import (
 
 var dataStore *gorm.DB
 
+// Start is used to setup the models within the application
 func Start() {
     GetDataStoreConnection().AutoMigrate(&models.Client{},
         &models.Language{},
@@ -18,6 +20,8 @@ func Start() {
         &models.Session{})
 }
 
+// GetDataStoreConnection is used to obtain a connection with
+//      the Postgres datastore
 func GetDataStoreConnection() *gorm.DB {
     if dataStore != nil {
         return dataStore
