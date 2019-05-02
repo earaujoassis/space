@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 
 import SessionStore from '../stores/sessions'
 import SessionsActions from '../actions/sessions'
@@ -11,22 +10,22 @@ import { getParameterByName } from '../../core/utils/url'
 const StepsOrder = ['access', 'secrecy', 'code']
 const StepsData = {
     access: {
-        className: "unknown",
-        name: "holder",
-        type: "text",
-        placeholder: "Access holder"
+        className: 'unknown',
+        name: 'holder',
+        type: 'text',
+        placeholder: 'Access holder'
     },
     secrecy: {
-        className: "secrecy",
-        name: "password",
-        type: "password",
-        placeholder: "Passphrase"
+        className: 'secrecy',
+        name: 'password',
+        type: 'password',
+        placeholder: 'Passphrase'
     },
     code: {
-        className: "code",
-        name: "passcode",
-        type: "text",
-        placeholder: "Code"
+        className: 'code',
+        name: 'passcode',
+        type: 'text',
+        placeholder: 'Code'
 
     }
 }
@@ -75,7 +74,7 @@ export default class SignIn extends React.Component {
                             ) : null
                         }
                         <form action="." method="post">
-                            <input ref="input" type={step.type}
+                            <input ref={(r) => this.inputRef = r} type={step.type}
                                 name={step.name}
                                 placeholder={step.placeholder}
                                 value={this.state.form[step.name]}
@@ -129,7 +128,7 @@ export default class SignIn extends React.Component {
         let state = {}
         let form = this.state.form
         let name = StepsData[StepsOrder[this.state.currentStepIndex]].name
-        form[name] = ReactDOM.findDOMNode(this.refs.input).value
+        form[name] = this.inputRef.value
         if (this.state.currentStepIndex + 1 < 3) {
             state = Object.assign({}, this.state, {form: form, currentStepIndex: this.state.currentStepIndex + 1})
         } else {
@@ -155,7 +154,7 @@ export default class SignIn extends React.Component {
             window.location.href = location
         } else {
             let error = SessionStore.getState().payload
-            if (error.attempts === "blocked") {
+            if (error.attempts === 'blocked') {
                 this.setState({blocked: true, form: this._initialForm(), disableSubmit: true, currentStepIndex: 0})
                 return
             }
