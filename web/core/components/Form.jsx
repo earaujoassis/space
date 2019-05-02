@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import Row from './Row.jsx'
 import Columns from './Columns.jsx'
@@ -6,9 +7,9 @@ import Columns from './Columns.jsx'
 export class Entry extends React.Component {
     static get propTypes() {
         return {
-            field: React.PropTypes.string.isRequired,
-            value: React.PropTypes.string.isRequired,
-            editable: React.PropTypes.bool
+            field: PropTypes.string.isRequired,
+            value: PropTypes.string.isRequired,
+            editable: PropTypes.bool
         }
     }
 

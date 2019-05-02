@@ -58,9 +58,10 @@ func ExposeRoutes(router *gin.Engine) {
                 "AssetsEndpoint": spaceCDN,
                 "Title": " - Sign up",
                 "Satellite": "io",
+                "UserCreateEnabled": feature.IsActive("user.create"),
                 "Data": utils.H{
                     "feature.gates": utils.H{
-                        "user.create": feature.Active("user.create"),
+                        "user.create": feature.IsActive("user.create"),
                     },
                 },
             })
@@ -71,6 +72,7 @@ func ExposeRoutes(router *gin.Engine) {
                 "AssetsEndpoint": spaceCDN,
                 "Title": " - Sign in",
                 "Satellite": "ganymede",
+                "UserCreateEnabled": feature.IsActive("user.create"),
             })
         })
 
@@ -236,6 +238,7 @@ func jupiterHandler(c *gin.Context) {
         "AssetsEndpoint": spaceCDN,
         "Title": " - Mission control",
         "Satellite": "europa",
+        "Internal": true,
         "Data": utils.H {
             "action_token": actionToken.Token,
             "user_id": user.UUID,
@@ -300,6 +303,7 @@ func authorizeHandler(c *gin.Context) {
                 "AssetsEndpoint": spaceCDN,
                 "Title": " - Authorize",
                 "Satellite": "callisto",
+                "Internal": true,
                 "Data": utils.H{
                     "first_name": user.FirstName,
                     "last_name": user.LastName,

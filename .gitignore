@@ -1,9 +1,15 @@
 .DS_Store
-.env
+.env*
+!.env
 c.out
 coverage.html
 coverage.txt
+*.log
 
 vendor
 Godeps/*
 !Godeps/Godeps.json
+
+node_modules
+web/public/css/*.css
+web/public/js/*.min.js
