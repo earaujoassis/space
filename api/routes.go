@@ -31,7 +31,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             var buf bytes.Buffer
             var imageData string
 
-            if !feature.Active("user.create") {
+            if !feature.IsActive("user.create") {
                 c.JSON(http.StatusForbidden, utils.H{
                     "_status": "error",
                     "_message": "User was not created",
