@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint -c .eslintrc.json ./web/{callisto,core,europa,ganymede,io}/**/*.jsx",
     "build": "gulp"
   },
   "repository": {
@@ -23,6 +24,8 @@
     "@babel/preset-react": "^7.0.0",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.12.4",
     "flux": "^3.1.3",
     "foundation-sites": "^6.2.3",
     "gulp": "^4.0.0",
