@@ -59,15 +59,15 @@ export default class Applications extends React.Component {
             applications.push(
                 <Columns className="small-12" key={i}>
                     <div className="application-card">
-                        <p className="title">{client.name} <small>(<a href={client.uri} target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small></p>
+                        <p className="title">{client.name} <small>(<a href={client.uri} rel="noopener noreferrer" target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small></p>
                         <p className="action"><button className="button" onClick={this._revokeAccess.bind(client)}>Revoke Access</button></p>
                         <p className="scope">{client.description}</p>
                         <p className="last-access"><em>Last access:</em> ?</p>
                     </div>
                 </Columns>
-            );
+            )
         }
-        return applications;
+        return applications
     }
 
     _revokeAccess(e) {
