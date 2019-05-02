@@ -2,9 +2,12 @@
   "env": {
     "es6": true,
     "node": true,
-    "jsx": true
+    "browser": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
   "parserOptions": {
     "sourceType": "module"
   },
@@ -23,7 +26,8 @@
     ],
     "semi": [
       "error",
-      "always"
-    ]
+      "never"
+    ],
+    "react/prop-types": 0
   }
 }

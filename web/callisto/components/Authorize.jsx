@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
@@ -59,27 +58,27 @@ export default class Authorize extends React.Component {
 
     _requestedData(scope) {
         switch(scope) {
-            case "public":
-                return [
-                    "Authentication data for that given application"
-                ]
-            case "read":
-                return [
-                    "Authentication data for that given application",
-                    "Your profile data (including e-mail and first and last names)"
-                ]
-            case "read_write":
-                return [
-                    "Authentication data for that given application",
-                    "Your profile data (including e-mail and first and last names)",
-                    "Update your profile data (including e-mail and first and last names)"
-                ]
+        case 'public':
+            return [
+                'Authentication data for that given application'
+            ]
+        case 'read':
+            return [
+                'Authentication data for that given application',
+                'Your profile data (including e-mail and first and last names)'
+            ]
+        case 'read_write':
+            return [
+                'Authentication data for that given application',
+                'Your profile data (including e-mail and first and last names)',
+                'Update your profile data (including e-mail and first and last names)'
+            ]
         }
     }
 
     _loadData() {
-        if (document.getElementById("data")) {
-            let data = JSON.parse(document.getElementById("data").innerHTML)
+        if (document.getElementById('data')) {
+            let data = JSON.parse(document.getElementById('data').innerHTML)
             return data
         }
         return {}
