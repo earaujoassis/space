@@ -5,9 +5,11 @@ body {
   min-height: 100%;
 }
 .wrapper {
-  min-height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 .site-header {
   padding: 20px 0;
@@ -90,6 +92,11 @@ form {
 }
 .inline-list {
   list-style: none;
+
+  > li {
+    display: inline-block;
+    padding: 0 5px;
+  }
 }
 .inline-list.align-right {
   float: right;
