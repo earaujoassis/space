@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types'
 
 export default class Columns extends React.Component {
     static get propTypes() {
         return {
-            className: React.PropTypes.string
+            className: PropTypes.string
         }
     }
 

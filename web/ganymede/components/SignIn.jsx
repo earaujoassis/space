@@ -79,7 +79,6 @@ export default class SignIn extends React.Component {
                                 name={step.name}
                                 placeholder={step.placeholder}
                                 value={this.state.form[step.name]}
-                                defaultValue={this.state.form[step.name]}
                                 onChange={this._updateStepValue}
                                 required={true}
                                 disabled={this.state.disableSubmit} />
