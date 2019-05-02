@@ -1,15 +1,17 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default class Row extends React.Component {
     static get propTypes() {
         return {
-            className: React.PropTypes.string
+            className: PropTypes.string,
+            children: PropTypes.node
         }
     }
 
     static get defaultProps() {
         return {
-            className: ""
+            className: ''
         }
     }
 
