@@ -1,3 +1,5 @@
 #!/bin/bash
 
-#cd web && node_modules/.bin/eslint .
+npm run lint
+go get golang.org/x/lint/golint
+golint ./...
