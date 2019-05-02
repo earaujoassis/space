@@ -30,7 +30,7 @@ export default class Success extends React.Component {
                         </p>
                         <p>We hope to make your account as secure as possible using these settings.</p>
                         <p>Kindly,</p>
-                        <p>The QuatroLabs Team.</p>
+                        <p>The quatroLABS Team.</p>
                     </Columns>
                 </Row>
             </div>

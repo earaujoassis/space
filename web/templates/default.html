@@ -23,10 +23,12 @@
     {{ template "content" . }}
     <footer class="site-footer row">
       <div class="medium-6 small-9 columns">
-        <p>Space is part of the <a href="//quatrolabs.com">QuatroLabs</a> projects.</p>
+        <p>Space is part of the <a href="//quatrolabs.com">quatroLABS</a> projects.</p>
       </div>
       <div class="medium-6 small-3 columns">
-        <ul class="inline-list align-right">
+        <ul class="inline-list align-right">{{ if not .Internal }}
+            <li><a href="/signin">Sign in</a></li>{{ if .UserCreateEnabled }}
+          <li><a href="/signup">Sign up</a></li>{{ end }}{{ end }}
           <li><a href="//quatrolabs.com/about" rel="external">#about</a></li>
         </ul>
       </div>
