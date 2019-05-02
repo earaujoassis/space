@@ -20,6 +20,8 @@ It is not planned to implement all authorisation methods described in RFC 6749 b
 4.1 and [4.3](https://tools.ietf.org/html/rfc6749#section-4.3), the "Resource Owner Password
 Credentials Grant".
 
+Space is based on a set of [feature flags](feature/features.md).
+
 ## Setup & running
 
 Space is build on top of Golang and Node.js; both are manageable on top of [`asdf`](https://github.com/asdf-vm/asdf) –
@@ -29,10 +31,9 @@ simply *go getting* this like `$ go get github.com/earaujoassis/space`) and to c
 file like the `.sample.env` one. Once those requirements are met, you may run:
 
 ```sh
-$ cd web && npm install && npm run build && cd ..
-$ go get github.com/tools/godep
-$ godep restore
-$ go run main.go serve
+$ npm install && npm run build
+$ go get github.com/mattn/goreman
+$ goreman start
 $ open http://localhost:8080
 ```
 
@@ -42,14 +43,9 @@ If you're planning to setup it for development, ideally you should run:
 
 ```sh
 $ bin/dev-setup
-$ go run main.go serve
+$ go get github.com/mattn/goreman
+$ goreman start
 $ open http://localhost:8080
-```
-
-If any new dependency is used within the project, it should be tracked through:
-
-```sh
-$ godep save ./...
 ```
 
 ## Testing & Linting
