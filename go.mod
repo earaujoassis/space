@@ -33,6 +33,7 @@ require (
 	github.com/tools/godep v0.0.0-20180126220526-ce0bfadeb516 // indirect
 	github.com/urfave/cli v0.0.0-20160716161136-11c134509d89
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
 	golang.org/x/net v0.0.0-20190311183353-d8887717615a
 	golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a
 	golang.org/x/text v0.3.0
