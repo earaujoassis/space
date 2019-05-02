@@ -1,9 +1,14 @@
 #!/bin/bash
 
-ln -s -f $PWD/hooks/pre-commit .git/hooks/pre-commit
-cd web && npm install && npm run build && cd ..
-go get github.com/tools/godep
-godep restore
+set -xe
+
+git config core.hooksPath hooks
+npm install && npm run build
+
+if [ ! -f .env ]; then
+  cp .env.sample .env
+  echo ".env file created; please fill it with the details"
+fi
 
 echo ""
 echo "Setup completed. You may run 'go run main.go serve' to start the server"
