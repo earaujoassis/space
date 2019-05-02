@@ -47,6 +47,15 @@ func main() {
                 },
             },
         },
+        {
+            Name: "feature",
+            Aliases: []string{"c"},
+            Usage:   "Toggle features flags ON/OFF",
+            Action:  func(c *cli.Context) error {
+                tasks.ToggleFeature()
+                return nil
+            },
+        },
     }
 
     app.Run(os.Args)

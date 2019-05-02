@@ -14,53 +14,56 @@ var environment = process.env.NODE_ENV;
 gulp.task('styles', function () {
   return gulp
     .src([
-        './core/styles/amalthea.scss', // Formely known as error.scss
-        './ganymede/styles/ganymede.scss',
-        './io/styles/io.scss',
-        './europa/styles/europa.scss',
-        './callisto/styles/callisto.scss',
+        './web/core/styles/amalthea.scss', // Formely known as error.scss
+        './web//ganymede/styles/ganymede.scss',
+        './web//io/styles/io.scss',
+        './web//europa/styles/europa.scss',
+        './web//callisto/styles/callisto.scss',
     ])
     .pipe(sass({
             includePaths: [
                 'node_modules/foundation-sites/scss',
                 'node_modules/normalize.scss',
-                'core/styles'
+                'web/core/styles',
+                'web'
             ],
             outputStyle: environment == 'production' ? 'compressed' : 'nested'
         }).on('error', sass.logError))
-    .pipe(gulp.dest('./public/css/'));
+    .pipe(gulp.dest('./web/public/css/'));
 });
 
 Array.prototype.forEach.call(satellites, function(satellite) {
     if (environment == 'production') {
         gulp.task(satellite, function() {
-            return browserify('./' + satellite + '/index.jsx')
-                .transform(babelify, {presets: ['es2015', 'react']})
+            return browserify('./web/' + satellite + '/index.jsx')
+                .transform(babelify, {presets: ['@babel/preset-env', '@babel/react']})
                 .bundle()
                 .pipe(source('index.jsx'))
                 .pipe(buffer())
                 .pipe(rename(satellite + '.min.js'))
                 .pipe(uglify())
-                .pipe(gulp.dest('./public/js/'));
+                .pipe(gulp.dest('./web/public/js/'));
         });
     } else {
         gulp.task(satellite, function() {
-            return browserify('./' + satellite + '/index.jsx')
-                .transform(babelify, {presets: ['es2015', 'react']})
+            return browserify('./web/' + satellite + '/index.jsx')
+                .transform(babelify, {presets: ['@babel/preset-env', '@babel/react']})
                 .bundle()
                 .pipe(source('index.jsx'))
                 .pipe(buffer())
                 .pipe(rename(satellite + '.min.js'))
-                .pipe(gulp.dest('./public/js/'));
+                .pipe(gulp.dest('./web/public/js/'));
         });
     }
 });
 
-gulp.task('pump', ['scripts', 'styles'], function() {
-    var access = require('./bucket-config');
+gulp.task('scripts', gulp.series(satellites));
+
+gulp.task('upload', function() {
+    var access = require('./web/bucket-config');
     if (environment == 'production' && access.accessKeyId && access.secretAccessKey) {
         s3 = s3(access);
-        gulp.src("./public/**")
+        gulp.src("./web/public/**")
             .pipe(s3({
                 Bucket: process.env.SPACE_BUCKET,
                 ACL: 'public-read'
@@ -68,5 +71,6 @@ gulp.task('pump', ['scripts', 'styles'], function() {
     }
 });
 
-gulp.task('scripts', satellites);
-gulp.task('default', ['scripts', 'styles', 'pump']);
+gulp.task('pump', gulp.series('scripts', 'styles', 'upload'));
+
+gulp.task('default', gulp.series('scripts', 'styles'));

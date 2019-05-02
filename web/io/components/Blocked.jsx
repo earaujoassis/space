@@ -13,7 +13,7 @@ export default class Success extends React.Component {
                         <p>Unfortunately, we are not accepting any new user sign up at this time. Please make sure
                         to check that back soon.</p>
                         <p>Kindly,</p>
-                        <p>The QuatroLabs Team.</p>
+                        <p>The quatroLABS Team.</p>
                     </Columns>
                 </Row>
             </div>
