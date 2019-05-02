@@ -3,9 +3,6 @@ import React from 'react'
 import FeaturesStore from '../../core/stores/features'
 import UserStore from '../stores/users'
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
-
 import Blocked from './Blocked.jsx'
 import SignUp from './SignUp.jsx'
 import Success from './Success.jsx'
@@ -26,7 +23,7 @@ export default class Root extends React.Component {
     }
 
     render() {
-        if (!FeaturesStore.isFeatureActive("user.create")) {
+        if (!FeaturesStore.isFeatureActive('user.create')) {
             return (<Blocked />)
         }
         if (!!this.state.recover_secret && !!this.state.code_secret_image) {
