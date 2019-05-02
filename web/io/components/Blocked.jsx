@@ -17,6 +17,6 @@ export default class Success extends React.Component {
                     </Columns>
                 </Row>
             </div>
-        );
+        )
     }
 }
