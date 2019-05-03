@@ -13,8 +13,9 @@ import (
 
 // SendEmail uses the AWS SES service to send e-mail messages
 func SendEmail(subject, body, mailTo string) error {
-    mailKey := strings.Split(config.GetConfig("SPACE_MAIL_ACCESS"), ":")
-    mailFrom := config.GetConfig("SPACE_MAIL_FROM")
+    var cfg config.Config = config.GetGlobalConfig()
+    mailKey := strings.Split(cfg.MailerAccess, ":")
+    mailFrom := cfg.MailFrom
     sess, err := session.NewSession(&aws.Config{
         Region:      aws.String(mailKey[2]),
         Credentials: credentials.NewStaticCredentials(mailKey[0], mailKey[1], ""),

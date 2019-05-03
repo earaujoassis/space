@@ -6,7 +6,7 @@ from subprocess import call
 
 
 def main(argv):
-    command = 'cd web && npm install'
+    command = 'npm install'
     print('> ' + command)
     sys.stdout.flush()
     r = call(command, shell=True)
