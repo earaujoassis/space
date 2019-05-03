@@ -1,0 +1,5 @@
+space:
+  configuration_store:
+    addr: scheme://domain.com:port
+    token: access.token
+    path: full/path

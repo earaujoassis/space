@@ -1,7 +1,7 @@
 .DS_Store
-.env*
-!.env.sample
 c.out
+.config.yml
+.config.local.json
 coverage.html
 coverage.txt
 *.log

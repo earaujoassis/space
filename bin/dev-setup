@@ -1,14 +1,9 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 git config core.hooksPath hooks
 npm install && npm run build
+go get github.com/mattn/goreman
 
-if [ ! -f .env ]; then
-  cp .env.sample .env
-  echo ".env file created; please fill it with the details"
-fi
-
-echo ""
-echo "Setup completed. You may run 'go run main.go serve' to start the server"
+echo "> Setup completed. You may run 'go run main.go serve' to start the server"

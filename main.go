@@ -8,13 +8,16 @@ import (
     "github.com/urfave/cli"
 
     "github.com/earaujoassis/space/tasks"
+    "github.com/earaujoassis/space/config"
 )
 
 func init() {
     err := godotenv.Load()
     if err != nil {
-        log.Fatal("The configuration file (.env) doesn't exist; exiting\n")
+        log.Printf("> The environment file (.env) doesn't exist; skipping .env\n")
     }
+
+    config.LoadConfig()
 }
 
 func main() {

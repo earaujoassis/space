@@ -1,4 +1,4 @@
-FROM golang:1.11.1-alpine3.8
+FROM golang:1.12.4-alpine3.9
 MAINTAINER Ewerton Assis <earaujoassis@gmail.com>
 
 ARG NODE_ENV=production
@@ -85,8 +85,6 @@ RUN apk update && \
 
 ENV PATH /usr/local/bin:$PATH
 
-RUN go get github.com/tools/godep
-
 RUN mkdir -p /go/src
 RUN mkdir -p /go/src/github.com
 RUN mkdir -p /go/src/github.com/earaujoassis
@@ -95,8 +93,7 @@ COPY . /go/src/github.com/earaujoassis/space
 
 WORKDIR /go/src/github.com/earaujoassis/space
 
-RUN godep restore
-RUN cd web && npm install && npm run build && cd ..
+RUN npm install && npm run build
 
 EXPOSE 80
 

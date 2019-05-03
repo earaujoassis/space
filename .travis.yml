@@ -1,21 +1,21 @@
 language: go
 go:
-  - "1.11.1"
+  - "1.12.4"
 services:
   - postgresql
   - redis-server
 env:
   global:
-    - ENV=testing
     - GO111MODULE=on
-    - SPACE_MEMORYSTORE_HOST=localhost
-    - SPACE_MEMORYSTORE_PORT=6379
-    - SPACE_MEMORYSTORE_INDEX=0
+    - ENV=testing
+    - GIN_MODE=test
+    - NODE_ENV=development
 install:
   - npm install
 before_script:
   - go version; go env
   - psql -c 'create database space_test;' -U postgres
+  - mv .config.local.sample.json .config.local.json
 script:
   - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
   - bin/linter
