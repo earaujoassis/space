@@ -1,6 +1,6 @@
 .DS_Store
 .env*
-!.env
+!.env.sample
 c.out
 coverage.html
 coverage.txt
