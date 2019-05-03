@@ -14,17 +14,18 @@ var memoryStore redis.Conn
 func Start() {
     var err error
     var storeURI string
+    var cfg config.Config = config.GetGlobalConfig()
     if config.IsEnvironment("production") {
         storeURI = fmt.Sprintf("redis://:%v@%v:%v/%v",
-            config.GetConfig("SPACE_MEMORYSTORE_PASSWORD"),
-            config.GetConfig("SPACE_MEMORYSTORE_HOST"),
-            config.GetConfig("SPACE_MEMORYSTORE_PORT"),
-            config.GetConfig("SPACE_MEMORYSTORE_INDEX"))
+            cfg.MemorystorePassword,
+            cfg.MemorystoreHost,
+            cfg.MemorystorePort,
+            cfg.MemorystoreIndex)
     } else {
         storeURI = fmt.Sprintf("redis://%v:%v/%v",
-            config.GetConfig("SPACE_MEMORYSTORE_HOST"),
-            config.GetConfig("SPACE_MEMORYSTORE_PORT"),
-            config.GetConfig("SPACE_MEMORYSTORE_INDEX"))
+            cfg.MemorystoreHost,
+            cfg.MemorystorePort,
+            cfg.MemorystoreIndex)
     }
     memoryStore, err = redis.DialURL(storeURI)
     if err != nil {

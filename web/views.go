@@ -34,15 +34,16 @@ func createCustomRender() multitemplate.Render {
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //      in the WEB escope
 func ExposeRoutes(router *gin.Engine) {
+    var cfg config.Config = config.GetGlobalConfig()
     router.LoadHTMLGlob("web/templates/*.html")
     router.HTMLRender = createCustomRender()
-    if config.IsEnvironment("production") && config.GetConfig("SPACE_CDN") != "" {
-        spaceCDN = config.GetConfig("SPACE_CDN")
+    if config.IsEnvironment("production") && cfg.CdnAddr != "" {
+        spaceCDN = cfg.CdnAddr
     } else {
         spaceCDN = "/public"
         router.Static("/public", "web/public")
     }
-    store := sessions.NewCookieStore([]byte(config.GetConfig("SPACE_SESSION_SECRET")))
+    store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
     store.Options(sessions.Options{
         Secure: config.IsEnvironment("production"),
         HttpOnly: true,

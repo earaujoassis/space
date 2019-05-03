@@ -21,7 +21,7 @@ func Server() {
     web.ExposeRoutes(router)
     restAPI := router.Group("/api")
     api.ExposeRoutes(restAPI)
-    router.Run(fmt.Sprintf(":%v", config.GetConfig("PORT")))
+    router.Run(fmt.Sprintf(":%v", config.GetEnvVar("PORT")))
 }
 
 // ToggleFeature is used to enable or disable a feature-gate

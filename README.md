@@ -2,33 +2,42 @@
 
 > A user management microservice; OAuth 2 provider
 
-Space (formely known as Jupiter) is an user authentication and authorisation
-microservice intended to be used across multiple client applications. Currently,
-I'm using it to provide OAuth 2 authorisation for the [earaujoassis/wallet](https://github.com/earaujoassis/wallet)
-and [earaujoassis/postal](https://github.com/earaujoassis/postal) projects.
-Though it is not intended to be used widely, it can be used as a reference implementation
-of a Go-based OAuth 2 provider.
+Space (formely known as Jupiter) is an user authentication and authorisation microservice intended to be used across
+multiple client applications. Currently, it's used to provide OAuth 2 authorisation for the
+[earaujoassis/wallet](https://github.com/earaujoassis/wallet) and [earaujoassis/postal](https://github.com/earaujoassis/postal)
+projects. Though it is not intended to be used widely, it can be used as a reference implementation of a Go-based
+OAuth 2 provider.
 
-It uses [Gin](https://gin-gonic.github.io/gin/) as the Web Framework and [GORM](http://gorm.io/)
-for Go's structure&ndash;relational design mapping. Redis is used as a memory store to keep
-track of users' atomic and ephemeral actions (like the whole authorisation process under the
-"Authorization Code Grant" method, described in [RFC 6749, section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1)).
-For the user's authentication process, it is mandatory to use Two-factor authentication (Time-based
-One-time Password).
+It uses [Gin](https://gin-gonic.github.io/gin/) as the Web Framework and [GORM](http://gorm.io/) for Go's
+structure&ndash;relational mapping. Redis is used as a memory store to keep track of users' atomic and ephemeral actions
+(like the whole authorisation process under the "Authorization Code Grant" method, described in
+[RFC 6749, section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1)). For the user's authentication process, it is
+mandatory to use Two-factor authentication (Time-based One-time Password).
 
-It is not planned to implement all authorisation methods described in RFC 6749 but sections
-4.1 and [4.3](https://tools.ietf.org/html/rfc6749#section-4.3), the "Resource Owner Password
-Credentials Grant".
+Additionally, the application supports the use of Hashicorp's Vault in order to obtain configuration information and
+secrets. It is planned to use Vault as a way to store clients keys and secrets, if the OAuth client application supports it.
 
-Space is based on a set of [feature flags](feature/features.md).
+It is not planned to implement all authorisation methods described in RFC 6749 but sections 4.1 and [4.3](https://tools.ietf.org/html/rfc6749#section-4.3), the "Resource Owner Password Credentials Grant".
+
+Space is based on a set of [feature flags](feature/features.md) enabled/disabled through the Redis store.
 
 ## Setup & running
 
 Space is build on top of Golang and Node.js; both are manageable on top of [`asdf`](https://github.com/asdf-vm/asdf) –
-a `.tool-versions` file is already provided. Space also uses Redis and Postgres as data stores.
+a `.tool-versions` file is already provided. Space also uses Redis and Postgres as data stores – and optionally Vault.
 Please make sure to place this project inside the `$GOPATH` (a symbolic link could solve this or
-simply *go getting* this like `$ go get github.com/earaujoassis/space`) and to create a `.env`
-file like the `.sample.env` one. Once those requirements are met, you may run:
+simply *go getting* this like `$ go get github.com/earaujoassis/space`) or to set the `GO111MODULE=on` env var. A `.env`
+file is used to load environment information for the application – `.env` is already available. The application
+needs a `PORT` env var in order to setup its socket (it is automatically provided by `goreman`).
+
+In order to setup the application, additional configuration is necessary. That could be delivered through Vault or through
+a local `.config.local.json` file. If you plan to use Vault, you need to fill the `.config.yml` file, according to the
+`.config.sample.yml`, and store a k/v secret according to the `.config.local.sample.json`. If don't plan to use Vault,
+just create a `.config.local.json` file according to `.config.local.sample.json`. The application will try to load the
+`.config.local.json` by default, if it is available; otherwise, it will attempt to load it from Vault. At least one of these
+configuration schemes is necessary.
+
+Once the configuration is complete, the following commands will run the server application locally:
 
 ```sh
 $ npm install && npm run build
@@ -36,8 +45,6 @@ $ go get github.com/mattn/goreman
 $ goreman start
 $ open http://localhost:8080
 ```
-
-## Developing & updating dependencies
 
 If you're planning to setup it for development, ideally you should run:
 

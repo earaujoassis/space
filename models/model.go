@@ -70,6 +70,6 @@ func IsValid(tagName string, model interface{}) bool {
 }
 
 func defaultKey() []byte {
-    keyString := config.GetConfig("SPACE_STORAGE_SECRET")
+    keyString := config.GetGlobalConfig().StorageSecret
     return []byte(keyString)
 }
