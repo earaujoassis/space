@@ -24,6 +24,7 @@ func Server() {
     router.Run(fmt.Sprintf(":%v", config.GetConfig("PORT")))
 }
 
+// ToggleFeature is used to enable or disable a feature-gate
 func ToggleFeature() {
     reader := bufio.NewReader(os.Stdin)
     fmt.Print("Feature key: ")

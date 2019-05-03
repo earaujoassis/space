@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 npm run lint
 go get golang.org/x/lint/golint
 golint ./...
