@@ -27,14 +27,15 @@ func GetDataStoreConnection() *gorm.DB {
         return dataStore
     }
     var err error
+    var cfg config.Config = config.GetGlobalConfig()
     var databaseName = fmt.Sprintf("%v_%v",
-        config.GetConfig("SPACE_DATASTORE_NAME_PREFIX"), config.Environment())
+        cfg.DatastoreNamePrefix, config.Environment())
     var databaseConnectionData = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s",
-        config.GetConfig("SPACE_DATASTORE_HOST"),
-        config.GetConfig("SPACE_DATASTORE_USER"),
+        cfg.DatastoreHost,
+        cfg.DatastoreUser,
         databaseName,
-        config.GetConfig("SPACE_DATASTORE_SSL_MODE"),
-        config.GetConfig("SPACE_DATASTORE_PASSWORD"),
+        cfg.DatastoreSslMode,
+        cfg.DatastorePassword,
     )
     fmt.Printf("Connected to the following data store: %v\n", databaseConnectionData)
     dataStore, err = gorm.Open("postgres", databaseConnectionData)
