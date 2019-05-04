@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 c.out
 .config.yml
 .config.local.json

@@ -1,4 +1,4 @@
-web/node_modules
+node_modules
 web/public/vendor
 web/public/css/*.css
 web/public/js/*.min.js
