@@ -1,7 +1,9 @@
 {
+  "project": "space",
+  "type": "containers",
   "number_of_instances": 2,
-  "baseport": 3000,
-  "exposed_port": 8080,
+  "exposed_port": 80,
+  "baseport": 4040,
   "env": {
     "ENV": "production",
     "NODE_ENV": "production",
