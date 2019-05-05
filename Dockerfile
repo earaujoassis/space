@@ -83,15 +83,15 @@ RUN apk update && \
       build-base \
       python
 
-ENV PATH /usr/local/bin:$PATH
+ENV PATH=/usr/local/bin:$PATH
 
-RUN mkdir -p /go/src
-RUN mkdir -p /go/src/github.com
-RUN mkdir -p /go/src/github.com/earaujoassis
+ENV GO111MODULE=on
 
-COPY . /go/src/github.com/earaujoassis/space
+RUN mkdir -p /app
 
-WORKDIR /go/src/github.com/earaujoassis/space
+WORKDIR /app
+
+COPY . /app
 
 RUN npm install && npm run build
 
