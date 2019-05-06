@@ -17,11 +17,11 @@ func LogAction(name string, data utils.H) {
         case "user.created":
             data["Year"] = time.Now().Year()
             message := mailer.CreateMessage("user.created.html", data)
-            mailer.SendEmail("Welcome to QuatroLabs services", message, data["Email"].(string))
+            mailer.SendEmail("Welcome to quatroLABS services", message, data["Email"].(string))
         case "session.created":
             data["Year"] = time.Now().Year()
             message := mailer.CreateMessage("session.created.html", data)
-            mailer.SendEmail("A new session created at QuatroLabs", message, data["Email"].(string))
+            mailer.SendEmail("A new session created at quatroLABS", message, data["Email"].(string))
         }
     }
     if config.IsEnvironment("development") {
