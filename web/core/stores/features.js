@@ -1,8 +1,5 @@
-import { ActionTypes } from '../constants'
-import dispatcher from '../dispatcher'
 import Store from './base'
 
-var _state = {}
 var _setupData = {}
 
 class FeaturesStoreBase extends Store {
@@ -11,12 +8,12 @@ class FeaturesStoreBase extends Store {
     }
 
     isFeatureActive(key) {
-        return _setupData["feature.gates"] && _setupData["feature.gates"][key]
+        return _setupData['feature.gates'] && _setupData['feature.gates'][key]
     }
 
     loadData() {
-        if (document.getElementById("data")) {
-            _setupData = JSON.parse(document.getElementById("data").innerHTML)
+        if (document.getElementById('data')) {
+            _setupData = JSON.parse(document.getElementById('data').innerHTML)
         }
     }
 }

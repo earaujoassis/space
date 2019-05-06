@@ -12,8 +12,6 @@ export function processResponse(response) {
 }
 
 export function processData(response) {
-    let data
-
     if (response.status !== 204) {
         try {
             return response.json()
