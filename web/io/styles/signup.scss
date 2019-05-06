@@ -48,3 +48,19 @@
     }
   }
 }
+
+.password-visibility {
+  position: relative;
+
+  .visibility-toggle {
+    position: absolute;
+    top: 0;
+    width: 35px;
+    height: 35px;
+    right: -40px;
+    background: transparent;
+    border: 0;
+    padding: 4px 0 2px;
+    box-shadow: none;
+  }
+}
