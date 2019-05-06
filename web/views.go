@@ -37,7 +37,7 @@ func ExposeRoutes(router *gin.Engine) {
     var cfg config.Config = config.GetGlobalConfig()
     router.LoadHTMLGlob("web/templates/*.html")
     router.HTMLRender = createCustomRender()
-    if config.IsEnvironment("production") && cfg.CdnAddr != "" {
+    if cfg.CdnAddr != "/public" {
         spaceCDN = cfg.CdnAddr
     } else {
         spaceCDN = "/public"
