@@ -10,17 +10,17 @@ class UserStoreBase extends Store {
         super()
         this.dispatchToken = dispatcher.register(function(action) {
             switch (action.type) {
-                case ActionTypes.SUCCESS:
-                    UserStore.setCommons(action)
-                    UserStore.emitChange()
-                    break
+            case ActionTypes.SUCCESS:
+                UserStore.setCommons(action)
+                UserStore.emitChange()
+                break
 
-                case ActionTypes.ERROR:
-                    UserStore.setCommons(action)
-                    UserStore.emitChange()
-                    break
+            case ActionTypes.ERROR:
+                UserStore.setCommons(action)
+                UserStore.emitChange()
+                break
             }
-        });
+        })
     }
 
     getState() {
@@ -36,8 +36,8 @@ class UserStoreBase extends Store {
     }
 
     loadData() {
-        if (document.getElementById("data")) {
-            _setupData = JSON.parse(document.getElementById("data").innerHTML)
+        if (document.getElementById('data')) {
+            _setupData = JSON.parse(document.getElementById('data').innerHTML)
         }
     }
 
@@ -49,6 +49,6 @@ class UserStoreBase extends Store {
     }
 }
 
-const UserStore = new UserStoreBase();
+const UserStore = new UserStoreBase()
 
-export default UserStore;
+export default UserStore
