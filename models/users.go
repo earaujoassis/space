@@ -59,7 +59,7 @@ func (user *User) UpdatePassword(password string) error {
 // GenerateCodeSecret generates a code secret for an user, in order to generate and validate passcodes
 func (user *User) GenerateCodeSecret() *otp.Key {
     key, err := totp.Generate(totp.GenerateOpts{
-        Issuer:      "QuatroLabs.com",
+        Issuer:      "quatroLABS.com",
         AccountName: user.Username,
     })
     codeSecret := key.Secret()
