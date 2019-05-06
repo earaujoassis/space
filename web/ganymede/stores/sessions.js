@@ -9,17 +9,17 @@ class SessionStoreBase extends Store {
         super()
         this.dispatchToken = dispatcher.register(function(action) {
             switch (action.type) {
-                case ActionTypes.SUCCESS:
-                    SessionStore.setCommons(action)
-                    SessionStore.emitChange()
-                    break
+            case ActionTypes.SUCCESS:
+                SessionStore.setCommons(action)
+                SessionStore.emitChange()
+                break
 
-                case ActionTypes.ERROR:
-                    SessionStore.setCommons(action)
-                    SessionStore.emitChange()
-                    break
+            case ActionTypes.ERROR:
+                SessionStore.setCommons(action)
+                SessionStore.emitChange()
+                break
             }
-        });
+        })
     }
 
     getState() {
@@ -34,6 +34,6 @@ class SessionStoreBase extends Store {
     }
 }
 
-const SessionStore = new SessionStoreBase();
+const SessionStore = new SessionStoreBase()
 
-export default SessionStore;
+export default SessionStore

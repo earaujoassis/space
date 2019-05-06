@@ -14,7 +14,7 @@ class SessionsActionFactory {
             .then(processHandler)
         return action.actionID()
     }
-};
+}
 
 const SessionsActions = new SessionsActionFactory()
 

@@ -4,6 +4,8 @@ import UsersActions from '../actions/users'
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
 
+import { extractDataForm } from '../../core/utils/forms.js'
+
 export default class SignUp extends React.Component {
     constructor() {
         super()
@@ -20,7 +22,7 @@ export default class SignUp extends React.Component {
                         <p>By clicking &quot;Sign Up&quot;, you agree to our <a href="//quatrolabs.com/terms-of-service">terms of service</a> and <a href="//quatrolabs.com/privacy-policy">privacy policy</a>. We will send you account related emails occasionally.</p>
                     </Columns>
                     <Columns className="small-5 end">
-                        <form className="form-sign-up" action="." method="post" ref={(r) => this.formRef = r} onSubmit={this._signUp}>
+                        <form className="form-sign-up" action="." method="post" onSubmit={this._signUp}>
                             {
                                 this.props.validationFailed ? (
                                     <p className="error-message">Validation failed</p>
@@ -38,7 +40,7 @@ export default class SignUp extends React.Component {
                             <input type="text" name="username" placeholder="Username" />
                             <input type="email" name="email" placeholder="Email" />
                             <input type="password" name="password" placeholder="Password" />
-                            <button type="submit" className="button expand" onClick={this._signUp}>Sign Up</button>
+                            <button type="submit" className="button expand">Sign Up</button>
                         </form>
                     </Columns>
                 </Row>
@@ -48,6 +50,7 @@ export default class SignUp extends React.Component {
 
     _signUp(e) {
         e.preventDefault()
-        UsersActions.signUp(new FormData(this.formRef.form))
+        const attrs = [ 'first_name', 'last_name', 'action_token', 'username', 'email', 'password' ]
+        UsersActions.signUp(extractDataForm(e.target, attrs))
     }
 }

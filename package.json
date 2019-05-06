@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint -c .eslintrc.json ./web/{callisto,core,europa,ganymede,io}/**/*.jsx",
+    "lint": "eslint -c .eslintrc.json ./web/{callisto,core,europa,ganymede,io}/**/*.js*",
     "build": "gulp"
   },
   "repository": {
