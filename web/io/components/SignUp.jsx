@@ -6,10 +6,16 @@ import Columns from '../../core/components/Columns.jsx'
 
 import { extractDataForm } from '../../core/utils/forms.js'
 
+const hideImg = '/public/imgs/eye-open.png'
+const displayImg = '/public/imgs/eye-blocked.png'
+
 export default class SignUp extends React.Component {
     constructor() {
         super()
         this._signUp = this._signUp.bind(this)
+        this.state = {
+            password: true
+        }
     }
 
     render() {
@@ -39,7 +45,17 @@ export default class SignUp extends React.Component {
                             <input type="hidden" name="action_token" value="" />
                             <input type="text" name="username" placeholder="Username" />
                             <input type="email" name="email" placeholder="Email" />
-                            <input type="password" name="password" placeholder="Password" />
+                            <div className="password-visibility">
+                                <input type={this.state.password ? 'password' : 'text'} name="password" placeholder="Password" />
+                                <button
+                                    className="visibility-toggle"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        this.setState({ password: !this.state.password })
+                                    }}>
+                                    <img src={this.state.password ? displayImg : hideImg} width="20" title="Toggle password visibility" alt="" />
+                                </button>
+                            </div>
                             <button type="submit" className="button expand">Sign Up</button>
                         </form>
                     </Columns>
