@@ -7,7 +7,7 @@ services:
 env:
   global:
     - GO111MODULE=on
-    - ENV=testing
+    - SPACE_ENV=testing
     - GIN_MODE=test
     - NODE_ENV=development
 install:

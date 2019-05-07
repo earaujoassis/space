@@ -37,7 +37,7 @@ var globalConfig Config
 var environment string
 
 func init() {
-    environment = strings.ToLower(os.Getenv("ENV"))
+    environment = strings.ToLower(os.Getenv("SPACE_ENV"))
     if environment == "" {
         environment = "development"
     }
