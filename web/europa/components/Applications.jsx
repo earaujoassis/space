@@ -46,7 +46,7 @@ export default class Applications extends React.Component {
 
     _applications() {
         if (this.state.loading) {
-            return []
+            return null
         }
 
         if (!this.state.clients.length) {
