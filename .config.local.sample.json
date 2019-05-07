@@ -1,5 +1,4 @@
 {
-  "cdn_address": "/public",
   "datastore_host": "localhost",
   "datastore_name_prefix": "space",
   "datastore_password": "",
