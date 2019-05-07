@@ -1,14 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
 
 import UserStore from '../stores/users'
 
+const pathToTitle = {
+    '/': 'Applications',
+    '/profile': 'Profile'
+}
+
 export default class Settings extends React.Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this._isActive = this._isActive.bind(this)
         this.state = {error: false}
         this._updateFromStore = this._updateFromStore.bind(this)
@@ -23,12 +28,14 @@ export default class Settings extends React.Component {
     }
 
     render() {
+        const { pathname } = this.props.location
+
         return (
             <Row className="settings-wrapper">
                 <Columns className="small-12 medium-3 large-2">
                     <ul className="side-nav">
-                        <li><Link to="/" className={this._isActive('Applications')}>Applications</Link></li>
-                        <li><Link to="/profile" className={this._isActive('Profile')}>Profile</Link></li>
+                        <li><Link to="/" className={this._isActive('/')}>Applications</Link></li>
+                        <li><Link to="/profile" className={this._isActive('/profile')}>Profile</Link></li>
                         <li className="divider"></li>
                         <li><a href="/signout">Sign out</a></li>
                     </ul>
@@ -37,20 +44,22 @@ export default class Settings extends React.Component {
                     <div className="breadcrumbs-custom">
                         <ul>
                             <li>Dashboard</li>
-                            <li>{this.props.routes[1].name}</li>
+                            <li>{pathToTitle[pathname]}</li>
                         </ul>
                     </div>
-                    {this.state.error ? (
-                        <div className="token-error">Your action token is expired. Please refresh your page.</div>
-                    ) : null}
+                    {
+                        this.state.error ? (
+                            <div className="token-error">Your action token is expired. Please refresh your page.</div>
+                        ) : null
+                    }
                     {this.props.children}
                 </Columns>
             </Row>
         )
     }
 
-    _isActive(name) {
-        return this.props.routes[1].name == name ? 'active' : ''
+    _isActive(path) {
+        return this.props.location.pathname === path ? 'active' : ''
     }
 
     _updateFromStore() {

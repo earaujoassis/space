@@ -1,24 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-export default class Row extends React.Component {
-    static get propTypes() {
-        return {
-            className: PropTypes.string,
-            children: PropTypes.node
-        }
-    }
+const row = ({ className, children }) => {
+    let finalClassName = `row ${className}`
 
-    static get defaultProps() {
-        return {
-            className: ''
-        }
-    }
-
-    render() {
-        let className = `row ${this.props.className}`
-        return (
-            <div className={className}>{this.props.children}</div>
-        )
-    }
+    return (
+        <div className={finalClassName}>{children}</div>
+    )
 }
+
+row.propTypes = {
+    className: PropTypes.string,
+    children: PropTypes.node
+}
+
+row.defaultProps = {
+    className: ''
+}
+
+export default row
