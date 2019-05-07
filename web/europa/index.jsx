@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 import UserStore from './stores/users'
 
@@ -10,11 +10,13 @@ import Applications from './components/Applications.jsx'
 import Profile from './components/Profile.jsx'
 
 const europa = (
-    <Router history={browserHistory}>
-        <Route path="/" component={Settings}>
-            <IndexRoute component={Applications} name="Applications" />
-            <Route path="profile" component={Profile} name="Profile" />
-        </Route>
+    <Router>
+        <Switch>
+            <Settings>
+                <Route path="/" exact component={Applications} />
+                <Route path="/profile" exact component={Profile} />
+            </Settings>
+        </Switch>
     </Router>
 )
 

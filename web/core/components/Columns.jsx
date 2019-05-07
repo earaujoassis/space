@@ -1,24 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-export default class Columns extends React.Component {
-    static get propTypes() {
-        return {
-            className: PropTypes.string,
-            children: PropTypes.node
-        }
-    }
+const columns = ({ className, children }) => {
+    const finalClassName = `columns ${className}`
 
-    static get defaultProps() {
-        return {
-            className: ''
-        }
-    }
-
-    render() {
-        let className = `columns ${this.props.className}`
-        return (
-            <div className={className}>{this.props.children}</div>
-        )
-    }
+    return (
+        <div className={finalClassName}>{children}</div>
+    )
 }
+
+columns.propTypes = {
+    className: PropTypes.string,
+    children: PropTypes.node
+}
+
+columns.defaultProps = {
+    className: ''
+}
+
+export default columns
