@@ -13,7 +13,7 @@ $ godep restore
 ## Testing
 
 ```sh
-$ ENV=testing go test -cover ./...
+$ SPACE_ENV=testing go test -cover ./...
 ```
 
 ## Generate new test case
