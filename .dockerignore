@@ -3,3 +3,4 @@ web/public/vendor
 web/public/css/*.css
 web/public/js/*.min.js
 *.log
+.env

@@ -5,7 +5,7 @@
   "exposed_port": 80,
   "baseport": 4040,
   "env": {
-    "ENV": "production",
+    "SPACE_ENV": "production",
     "NODE_ENV": "production",
     "GIN_MODE": "release"
   }
