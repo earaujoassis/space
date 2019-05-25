@@ -40,7 +40,7 @@ configuration schemes is necessary.
 Once the configuration is complete, the following commands will run the server application locally:
 
 ```sh
-$ npm install && npm run build
+$ yarn install && yarn build
 $ go get github.com/mattn/goreman
 $ goreman start
 $ open http://localhost:8080

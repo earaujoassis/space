@@ -2,6 +2,6 @@
 
 set -ex
 
-npm run lint
+yarn lint
 go get golang.org/x/lint/golint
 test -z "$(golint ./...)"

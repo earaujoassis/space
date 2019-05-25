@@ -17,7 +17,7 @@ const (
 
 // Config struct with configuration data for the application
 type Config struct {
-    CdnAddr string `json:"cdn_address"`
+    ApplicationKey string `json:"application_key"`
     DatastoreHost string `json:"datastore_host"`
     DatastoreNamePrefix string `json:"datastore_name_prefix"`
     DatastorePassword string `json:"datastore_password"`
