@@ -19,6 +19,7 @@ import (
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/feature"
     "github.com/earaujoassis/space/utils"
+    "github.com/earaujoassis/space/config"
 )
 
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
@@ -104,7 +105,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 })
                 return
             }
-
             session := c.MustGet("Session").(models.Session)
             user := services.FindUserByPublicID(publicID)
             if user.ID == 0 || user.ID != session.UserID {
@@ -122,20 +122,52 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.POST("/update", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        users.PATCH("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.POST("/deactivate", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        users.GET("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            var uuid = c.Param("user_id")
+
+            if !security.ValidUUID(uuid) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
+
+            action := c.MustGet("Action").(models.Action)
+            user := services.FindUserByUUID(uuid)
+            if user.ID == 0 || user.ID != action.UserID {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            c.JSON(http.StatusOK, utils.H{
+                "is_admin": user.Admin,
+                "username": user.Username,
+                "first_name": user.FirstName,
+                "last_name": user.LastName,
+                "email": user.Email,
+                "timezone_identifier": user.TimezoneIdentifier,
+            })
+        })
+
+        // Requires X-Requested-By and Origin (same-origin policy)
+        // Authorization type: action token / Bearer (for web use)
+        users.DELETE("/:user_id/deactivate", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.GET("/:id/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            var uuid = c.Param("id")
+        users.GET("/:user_id/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            var uuid = c.Param("user_id")
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -190,8 +222,28 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.GET("/:id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            var uuid = c.Param("id")
+        users.PATCH("/:user_id/adminify", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            var cfg config.Config = config.GetGlobalConfig()
+            var uuid = c.Param("user_id")
+            var providedApplicationKey = c.PostForm("application_key")
+
+            if !feature.IsActive("user.adminify") {
+                c.JSON(http.StatusForbidden, utils.H{
+                    "_status": "error",
+                    "_message": "User was not updated",
+                    "error": "Feature is not available at this time",
+                })
+                return
+            }
+
+            if providedApplicationKey != cfg.ApplicationKey {
+                c.JSON(http.StatusForbidden, utils.H{
+                    "_status": "error",
+                    "_message": "User was not updated",
+                    "error": "Application key is incorrect",
+                })
+                return
+            }
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -210,13 +262,11 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            c.JSON(http.StatusOK, utils.H{
-                "username": user.Username,
-                "first_name": user.FirstName,
-                "last_name": user.LastName,
-                "email": user.Email,
-                "timezone_identifier": user.TimezoneIdentifier,
-            })
+            dataStore := datastore.GetDataStoreConnection()
+            user.Admin = true
+            dataStore.Save(&user)
+
+            c.JSON(http.StatusNoContent, nil)
         })
     }
     sessions := router.Group("/sessions")

@@ -93,7 +93,8 @@ WORKDIR /app
 
 COPY . /app
 
-RUN npm install && npm run build
+RUN npm install -g yarn
+RUN yarn install && yarn build
 
 EXPOSE 80
 

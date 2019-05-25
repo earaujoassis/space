@@ -8,6 +8,7 @@ const actionProxy = (name) => {
     let token = UserStore.getActionToken()
     let id = UserStore.getUserId()
     let action = new ActionCreator()
+
     action.setUUID()
     action.dispatch({type: ActionTypes.SEND_DATA})
     SpaceApi[name](id, token)
@@ -26,10 +27,31 @@ class UsersActionFactory {
         return actionProxy('fetchActiveClients')
     }
 
+    adminify(key) {
+        let token = UserStore.getActionToken()
+        let id = UserStore.getUserId()
+        let action = new ActionCreator()
+        let data = new FormData()
+
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        data.append('application_key', key)
+        SpaceApi.adminify(id, token, data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandler)
+            .then(() => {
+                UsersActions.fetchProfile()
+            })
+        return action.actionID()
+
+    }
+
     revokeActiveClient(key) {
         let token = UserStore.getActionToken()
         let id = UserStore.getUserId()
         let action = new ActionCreator()
+
         action.setUUID()
         action.dispatch({type: ActionTypes.SEND_DATA})
         SpaceApi['revokeActiveClient'](id, key, token)
