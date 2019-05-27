@@ -3,25 +3,24 @@ import dispatcher from '../../core/dispatcher'
 import Store from '../../core/stores/base'
 
 var _state = {}
-var _setupData = {}
 var _actions = new Set()
 
-class UserStoreBase extends Store {
+class ClientStoreBase extends Store {
     constructor() {
         super()
         this.dispatchToken = dispatcher.register(function(action) {
             switch (action.type) {
             case ActionTypes.SUCCESS:
                 if (_actions.has(action.actionUUID)) {
-                    UserStore.setCommons(action)
-                    UserStore.emitChange()
+                    ClientStore.setCommons(action)
+                    ClientStore.emitChange()
                 }
                 break
 
             case ActionTypes.ERROR:
                 if (_actions.has(action.actionUUID)) {
-                    UserStore.setCommons(action)
-                    UserStore.emitChange()
+                    ClientStore.setCommons(action)
+                    ClientStore.emitChange()
                 }
                 break
             }
@@ -30,29 +29,6 @@ class UserStoreBase extends Store {
 
     getState() {
         return _state
-    }
-
-    getActionToken() {
-        return _setupData['action_token']
-    }
-
-    getUserId() {
-        return _setupData['user_id']
-    }
-
-    isFeatureGateActive(key) {
-        return _setupData['feature.gates'] && _setupData['feature.gates'][key]
-    }
-
-    isCurrentUserAdmin() {
-        return _state.payload && _state.payload.is_admin !== undefined ?
-            _state.payload.is_admin : _setupData['user_is_admin'] === true
-    }
-
-    loadData() {
-        if (document.getElementById('data')) {
-            _setupData = JSON.parse(document.getElementById('data').innerHTML)
-        }
     }
 
     setCommons(action) {
@@ -67,6 +43,6 @@ class UserStoreBase extends Store {
     }
 }
 
-const UserStore = new UserStoreBase()
+const ClientStore = new ClientStoreBase()
 
-export default UserStore
+export default ClientStore
