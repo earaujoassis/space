@@ -1,5 +1,7 @@
 FROM golang:1.12.4-alpine3.9
-MAINTAINER Ewerton Assis <earaujoassis@gmail.com>
+
+LABEL "com.quatrolabs.space"="quatroLABS Space"
+LABEL "description"="A user management microservice; OAuth 2 provider"
 
 ARG NODE_ENV=production
 ARG GIN_MODE=release
