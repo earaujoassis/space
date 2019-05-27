@@ -7,8 +7,8 @@ import Columns from '../../core/components/Columns.jsx'
 import UserStore from '../stores/users'
 
 const pathToTitle = {
-    '/': 'Applications',
-    '/profile': 'Profile'
+    '/applications': 'Applications',
+    '/profile': 'Profile',
 }
 
 export default class Settings extends React.Component {
@@ -34,9 +34,10 @@ export default class Settings extends React.Component {
             <Row className="settings-wrapper">
                 <Columns className="small-12 medium-3 large-2">
                     <ul className="side-nav">
-                        <li><Link to="/" className={this._isActive('/')}>Applications</Link></li>
-                        <li><Link to="/profile" className={this._isActive('/profile')}>Profile</Link></li>
-                        <li className="divider"></li>
+                        <li><Link to="/applications" className={this._isActive('/applications')}>Applications</Link></li>
+                        <li className="divider">
+                            <Link to="/profile" className={this._isActive('/profile')}>Profile</Link>
+                        </li>
                         <li><a href="/signout">Sign out</a></li>
                     </ul>
                 </Columns>
@@ -47,11 +48,9 @@ export default class Settings extends React.Component {
                             <li>{pathToTitle[pathname]}</li>
                         </ul>
                     </div>
-                    {
-                        this.state.error ? (
-                            <div className="token-error">Your action token is expired. Please refresh your page.</div>
-                        ) : null
-                    }
+                    {this.state.error && (
+                        <div className="token-error">Your action token is expired. Please refresh your page.</div>
+                    )}
                     {this.props.children}
                 </Columns>
             </Row>
@@ -63,6 +62,6 @@ export default class Settings extends React.Component {
     }
 
     _updateFromStore() {
-        this.setState({error: UserStore.getState().payload.error === 'access_denied'})
+        this.setState({ error: UserStore.getState().payload.error === 'access_denied' })
     }
 }

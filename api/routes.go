@@ -9,6 +9,7 @@ import (
     "time"
 
     "github.com/gin-gonic/gin"
+    "github.com/gin-gonic/contrib/sessions"
 
     "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/models"
@@ -25,10 +26,10 @@ import (
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //      in the REST API escope
 func ExposeRoutes(router *gin.RouterGroup) {
-    users := router.Group("/users")
+    usersRoutes := router.Group("/users")
     {
         // Requires X-Requested-By and Origin (same-origin policy)
-        users.POST("/create", requiresConformance, func(c *gin.Context) {
+        usersRoutes.POST("/create", requiresConformance, func(c *gin.Context) {
             var buf bytes.Buffer
             var imageData string
 
@@ -96,7 +97,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
         })
 
         // Authorization type: access session / Bearer (for OAuth sessions)
-        users.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
             var publicID = c.PostForm("user_id")
 
             if !security.ValidRandomString(publicID) {
@@ -122,13 +123,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.PATCH("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.PATCH("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.GET("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.GET("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             var uuid = c.Param("user_id")
 
             if !security.ValidUUID(uuid) {
@@ -160,13 +161,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.DELETE("/:user_id/deactivate", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.DELETE("/:user_id/deactivate", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.GET("/:user_id/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.GET("/:user_id/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             var uuid = c.Param("user_id")
 
             if !security.ValidUUID(uuid) {
@@ -193,7 +194,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.DELETE("/:user_id/clients/:client_id/revoke", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.DELETE("/:user_id/clients/:client_id/revoke", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             var userUUID = c.Param("user_id")
             var clientUUID = c.Param("client_id")
 
@@ -222,7 +223,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
-        users.PATCH("/:user_id/adminify", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+        usersRoutes.PATCH("/:user_id/adminify", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             var cfg config.Config = config.GetGlobalConfig()
             var uuid = c.Param("user_id")
             var providedApplicationKey = c.PostForm("application_key")
@@ -269,10 +270,10 @@ func ExposeRoutes(router *gin.RouterGroup) {
             c.JSON(http.StatusNoContent, nil)
         })
     }
-    sessions := router.Group("/sessions")
+    sessionsRoutes := router.Group("/sessions")
     {
         // Requires X-Requested-By and Origin (same-origin policy)
-        sessions.POST("/create", requiresConformance, func(c *gin.Context) {
+        sessionsRoutes.POST("/create", requiresConformance, func(c *gin.Context) {
             var holder = c.PostForm("holder")
             var state = c.PostForm("state")
 
@@ -330,7 +331,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
         })
 
         // Authorization type: Basic (for OAuth clients use)
-        sessions.POST("/introspect", clientBasicAuthorization, func(c *gin.Context) {
+        sessionsRoutes.POST("/introspect", clientBasicAuthorization, func(c *gin.Context) {
             var token = c.PostForm("access_token")
 
             if !security.ValidToken(token) {
@@ -356,7 +357,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
         })
 
         // Authorization type: Basic (for OAuth clients use)
-        sessions.POST("/invalidate", clientBasicAuthorization, func(c *gin.Context) {
+        sessionsRoutes.POST("/invalidate", clientBasicAuthorization, func(c *gin.Context) {
             var token = c.PostForm("access_token")
 
             if !security.ValidToken(token) {
@@ -382,6 +383,69 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 "client_id": session.Client.Key,
                 "token_type": "Bearer",
             })
+        })
+    }
+    clientsRoutes := router.Group("/clients")
+    {
+        // Requires X-Requested-By and Origin (same-origin policy)
+        // Authorization type: action token / Bearer (for web use)
+        clientsRoutes.GET("/", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            session := sessions.Default(c)
+
+            action := c.MustGet("Action").(models.Action)
+            userPublicID := session.Get("userPublicID")
+            user := services.FindUserByPublicID(userPublicID.(string))
+            if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            c.JSON(http.StatusOK, utils.H{
+                "clients": services.ActiveClients(),
+            })
+        })
+
+        // Requires X-Requested-By and Origin (same-origin policy)
+        // Authorization type: action token / Bearer (for web use)
+        clientsRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            session := sessions.Default(c)
+
+            action := c.MustGet("Action").(models.Action)
+            userPublicID := session.Get("userPublicID")
+            user := services.FindUserByPublicID(userPublicID.(string))
+            if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            clientName := c.PostForm("name")
+            clientDescription := c.PostForm("description")
+            clientSecret := models.GenerateRandomString(64)
+            clientScope := "public"
+            canonicalURI := c.PostForm("canonical_uri")
+            redirectURI := c.PostForm("redirect_uri")
+
+            client := services.CreateNewClient(clientName,
+                clientDescription,
+                clientSecret,
+                clientScope,
+                canonicalURI,
+                redirectURI)
+
+            if client.ID == 0 {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "The client was not created",
+                    "client": client,
+                })
+            } else {
+                c.JSON(http.StatusNoContent, nil)
+            }
         })
     }
 }

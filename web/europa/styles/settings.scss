@@ -94,3 +94,67 @@ table {
     color: inherit;
   }
 }
+.blank-list {
+  text-align: center;
+}
+.jupiter-accordion {
+  .jupiter-accordion-title {
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: normal;
+    border-bottom: 1px solid #e6e6e6;
+    margin: 0;
+
+    a {
+      display: block;
+      color: inherit;
+      padding: 6px 8px;
+      padding-left: 26px;
+
+      &::before {
+        content: "\f107";
+        position: absolute;
+        left: 6px;
+        font-family: "Font Awesome 5 Free";
+        font-style: normal;
+        font-weight: 900;
+      }
+    }
+  }
+
+  .jupiter-accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.5s ease;
+  }
+
+  .jupiter-accordion-child.open {
+    .jupiter-accordion-title {
+      a::before {
+        content: "\f106";
+      }
+    }
+
+    .jupiter-accordion-body {
+      padding: 16px 12px;
+      max-height: initial;
+      transition: 0.5s ease;
+    }
+  }
+}
+.new-application {
+  border-top: 1px solid #2199e8;
+  padding-top: 12px;
+
+  .title {
+    font-weight: 300;
+    font-size: 1.75rem;
+  }
+
+  .description {
+    text-align: right;
+  }
+}
+.applications-listing {
+  margin-bottom: 20px;
+}
