@@ -35,6 +35,10 @@ class UserStoreBase extends Store {
         return _setupData['user_id']
     }
 
+    isFeatureGateActive(key) {
+        return _setupData['feature.gates'] && _setupData['feature.gates'][key]
+    }
+
     loadData() {
         if (document.getElementById('data')) {
             _setupData = JSON.parse(document.getElementById('data').innerHTML)

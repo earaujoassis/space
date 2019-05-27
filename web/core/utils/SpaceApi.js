@@ -1,4 +1,4 @@
-let SpaceApi = {
+const SpaceApi = {
     createUser(data) {
         return fetch('/api/users/create', {
             method: 'POST',
@@ -47,6 +47,18 @@ let SpaceApi = {
         return fetch('/api/sessions/create', {
             method: 'POST',
             headers: {
+                'X-Requested-By': 'SpaceApi',
+                Accept: 'application/vnd.space.v1+json'
+            },
+            body: data
+        })
+    },
+
+    adminify(id, token, data) {
+        return fetch(`/api/users/${id}/adminify`, {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${token}`,
                 'X-Requested-By': 'SpaceApi',
                 Accept: 'application/vnd.space.v1+json'
             },

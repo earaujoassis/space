@@ -3,7 +3,8 @@
 set -e
 
 git config core.hooksPath hooks
-npm install && npm run build
+npm install -g yarn
+yarn install && yarn build
 go get github.com/mattn/goreman
 
 echo "> Setup completed. You may run 'go run main.go serve' to start the server"
