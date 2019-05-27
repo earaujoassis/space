@@ -14,3 +14,4 @@ Godeps/*
 node_modules
 web/public/css/*.css
 web/public/js/*.min.js
+package-lock.json

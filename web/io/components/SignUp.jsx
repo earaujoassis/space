@@ -10,7 +10,7 @@ const hideImg = '/public/imgs/eye-open.png'
 const displayImg = '/public/imgs/eye-blocked.png'
 
 const signUp = ({ validationFailed }) => {
-    const [password, setPassword] = useState(true)
+    const [showPassword, setShowPassword] = useState(true)
 
     return (
         <div className="signup-content">
@@ -54,15 +54,15 @@ const signUp = ({ validationFailed }) => {
                         <input type="text" name="username" placeholder="Username" />
                         <input type="email" name="email" placeholder="Email" />
                         <div className="password-visibility">
-                            <input type={password ? 'password' : 'text'} name="password" placeholder="Password" />
+                            <input type={showPassword ? 'password' : 'text'} name="password" placeholder="Password" />
                             <button
                                 className="visibility-toggle"
                                 onClick={(e) => {
                                     e.preventDefault()
-                                    setPassword(!password)
+                                    setShowPassword(!showPassword)
                                 }}>
                                 <img
-                                    src={password ? displayImg : hideImg}
+                                    src={showPassword ? displayImg : hideImg}
                                     width="20"
                                     title="Toggle password visibility"
                                     alt="" />

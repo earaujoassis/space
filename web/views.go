@@ -232,6 +232,9 @@ func jupiterHandler(c *gin.Context) {
         "Data": utils.H {
             "action_token": actionToken.Token,
             "user_id": user.UUID,
+            "feature.gates": utils.H{
+                "user.adminify": feature.IsActive("user.adminify"),
+            },
         },
     })
 }

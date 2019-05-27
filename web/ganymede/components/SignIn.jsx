@@ -79,7 +79,7 @@ export default class SignIn extends React.Component {
                                 placeholder={step.placeholder}
                                 value={this.state.form[step.name]}
                                 onChange={this._updateStepValue}
-                                required={true}
+                                required
                                 disabled={this.state.disableSubmit} />
                             <button type="submit" className="button expand"
                                 disabled={this.state.disableSubmit}
