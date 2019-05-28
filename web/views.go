@@ -44,7 +44,10 @@ func ExposeRoutes(router *gin.Engine) {
     router.Use(sessions.Sessions("jupiter.session", store))
     views := router.Group("/")
     {
-        views.GET("/", jupiterHandler)
+        views.GET("/", func(c *gin.Context) {
+            c.Redirect(http.StatusFound, "/applications")
+        })
+        views.GET("/applications", jupiterHandler)
         views.GET("/profile", jupiterHandler)
 
         views.GET("/signup", func(c *gin.Context) {
@@ -232,6 +235,7 @@ func jupiterHandler(c *gin.Context) {
         "Data": utils.H {
             "action_token": actionToken.Token,
             "user_id": user.UUID,
+            "user_is_admin": user.Admin,
             "feature.gates": utils.H{
                 "user.adminify": feature.IsActive("user.adminify"),
             },

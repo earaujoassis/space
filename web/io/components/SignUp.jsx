@@ -4,7 +4,7 @@ import UsersActions from '../actions/users'
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
 
-import { extractDataForm } from '../../core/utils/forms.js'
+import { extractDataForm } from '../../core/utils/forms'
 
 const hideImg = '/public/imgs/eye-open.png'
 const displayImg = '/public/imgs/eye-blocked.png'
@@ -29,7 +29,7 @@ const signUp = ({ validationFailed }) => {
                 </Columns>
                 <Columns className="small-5 end">
                     <form
-                        className="form-sign-up"
+                        className="form-common"
                         action="."
                         method="post"
                         onSubmit={(e) => {
@@ -44,17 +44,17 @@ const signUp = ({ validationFailed }) => {
                         }
                         <Row>
                             <Columns className="small-6">
-                                <input type="text" name="first_name" placeholder="First Name" />
+                                <input type="text" name="first_name" placeholder="First Name" required />
                             </Columns>
                             <Columns className="small-6">
-                                <input type="text" name="last_name" placeholder="Last Name" />
+                                <input type="text" name="last_name" placeholder="Last Name" required />
                             </Columns>
                         </Row>
                         <input type="hidden" name="action_token" value="" />
-                        <input type="text" name="username" placeholder="Username" />
-                        <input type="email" name="email" placeholder="Email" />
+                        <input type="text" name="username" placeholder="Username" required />
+                        <input type="email" name="email" placeholder="Email" required />
                         <div className="password-visibility">
-                            <input type={showPassword ? 'password' : 'text'} name="password" placeholder="Password" />
+                            <input type={showPassword ? 'password' : 'text'} name="password" placeholder="Password" required />
                             <button
                                 className="visibility-toggle"
                                 onClick={(e) => {

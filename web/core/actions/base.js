@@ -36,6 +36,18 @@ export function processHandler(data) {
     return action
 }
 
+export function processHandlerClojure(action) {
+    return function processHandler(data) {
+        if (data.error) {
+            action.dispatch({type: ActionTypes.ERROR, payload: data})
+            return action
+        }
+
+        action.dispatch({type: ActionTypes.SUCCESS, payload: data})
+        return action
+    }
+}
+
 export class ActionCreator {
     constructor() {
         this._actionUUID = null
