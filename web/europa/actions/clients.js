@@ -13,13 +13,10 @@ class ClientsActionFactory {
         action.setUUID()
         ClientStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        SpaceApi['createClient'](token, data)
+        return SpaceApi['createClient'](token, data)
             .then(processResponse)
             .then(processData)
-            .then(processHandlerClojure(action)).then(() => {
-                ClientsActions.fetchClients()
-            })
-        return action.actionID()
+            .then(processHandlerClojure(action))
     }
 
     fetchClients() {
@@ -29,11 +26,10 @@ class ClientsActionFactory {
         action.setUUID()
         ClientStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        SpaceApi['fetchClients'](token)
+        return SpaceApi['fetchClients'](token)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
-        return action.actionID()
     }
 }
 
