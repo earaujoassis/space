@@ -78,6 +78,18 @@ const SpaceApi = {
         })
     },
 
+    updateClient(id, token, data) {
+        return fetch(`/api/clients/${id}/profile`, {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'X-Requested-By': 'SpaceApi',
+                Accept: 'application/vnd.space.v1+json'
+            },
+            body: data
+        })
+    },
+
     fetchClients(token) {
         return fetch('/api/clients', {
             method: 'GET',
