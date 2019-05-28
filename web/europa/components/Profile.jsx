@@ -34,15 +34,17 @@ export default class Profile extends React.Component {
             )
         }
 
+        const { user } = this.state
+
         return (
             <Row>
                 <Columns className="small-offset-1 small-10 end">
                     <Row className="profile">
                         <Columns className="small-12">
-                            <Entry field="Name" value={`${this.state.first_name} ${this.state.last_name}`} />
-                            <Entry field="Username" value={this.state.username} />
-                            <Entry field="Email" value={this.state.email} />
-                            <Entry field="Timezone" value={this.state.timezone_identifier} />
+                            <Entry field="Name" value={`${user.first_name} ${user.last_name}`} />
+                            <Entry field="Username" value={user.username} />
+                            <Entry field="Email" value={user.email} />
+                            <Entry field="Timezone" value={user.timezone_identifier} />
                             {!UserStore.isCurrentUserAdmin() && UserStore.isFeatureGateActive('user.adminify') && (
                                 <Row className="profile-entry">
                                     <Columns className="columns small-11 small-offset-1 field">

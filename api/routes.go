@@ -7,6 +7,7 @@ import (
     "encoding/base64"
     "image/png"
     "time"
+    "strings"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-gonic/contrib/sessions"
@@ -150,12 +151,14 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
 
             c.JSON(http.StatusOK, utils.H{
-                "is_admin": user.Admin,
-                "username": user.Username,
-                "first_name": user.FirstName,
-                "last_name": user.LastName,
-                "email": user.Email,
-                "timezone_identifier": user.TimezoneIdentifier,
+                "user": utils.H{
+                    "is_admin": user.Admin,
+                    "username": user.Username,
+                    "first_name": user.FirstName,
+                    "last_name": user.LastName,
+                    "email": user.Email,
+                    "timezone_identifier": user.TimezoneIdentifier,
+                },
             })
         })
 
@@ -390,9 +393,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Requires X-Requested-By and Origin (same-origin policy)
         // Authorization type: action token / Bearer (for web use)
         clientsRoutes.GET("/", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            session := sessions.Default(c)
-
             action := c.MustGet("Action").(models.Action)
+            session := sessions.Default(c)
             userPublicID := session.Get("userPublicID")
             user := services.FindUserByPublicID(userPublicID.(string))
             if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
@@ -446,6 +448,48 @@ func ExposeRoutes(router *gin.RouterGroup) {
             } else {
                 c.JSON(http.StatusNoContent, nil)
             }
+        })
+
+        // In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
+        // TODO Improve security for this endpoint avoiding any overhead
+        clientsRoutes.GET("/:client_id/credentials", func(c *gin.Context) {
+            var clientUUID = c.Param("client_id")
+
+            session := sessions.Default(c)
+            userPublicID := session.Get("userPublicID")
+            user := services.FindUserByPublicID(userPublicID.(string))
+            if userPublicID == nil || user.ID == 0 || user.Admin != true {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            if !security.ValidUUID(clientUUID) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
+
+            client := services.FindClientByUUID(clientUUID)
+            // For security reasons, the client's secret is regenerated
+            clientSecret := models.GenerateRandomString(64)
+            client.UpdateSecret(clientSecret)
+            dataStore := datastore.GetDataStoreConnection()
+            dataStore.Save(&client)
+
+            contentString := fmt.Sprintf("name,client_key,client_secret\n%s,%s,%s\n", client.Name, client.Key, clientSecret)
+            content := strings.NewReader(contentString)
+            contentLength := int64(len(contentString))
+            contentType := "text/csv"
+
+            extraHeaders := map[string]string{
+                "Content-Disposition": `attachment; filename="credentials.csv"`,
+            }
+
+            c.DataFromReader(http.StatusOK, contentLength, contentType, content, extraHeaders)
         })
     }
 }

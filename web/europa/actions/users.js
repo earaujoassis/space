@@ -12,11 +12,10 @@ const actionProxy = (name) => {
     action.setUUID()
     UserStore.associateAction(action.actionID())
     action.dispatch({type: ActionTypes.SEND_DATA})
-    SpaceApi[name](id, token)
+    return SpaceApi[name](id, token)
         .then(processResponse)
         .then(processData)
         .then(processHandlerClojure(action))
-    return action.actionID()
 }
 
 class UsersActionFactory {
@@ -38,14 +37,13 @@ class UsersActionFactory {
         UserStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
         data.append('application_key', key)
-        SpaceApi.adminify(id, token, data)
+        return SpaceApi.adminify(id, token, data)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
             .then(() => {
                 UsersActions.fetchProfile()
             })
-        return action.actionID()
     }
 
     revokeActiveClient(key) {
@@ -56,14 +54,13 @@ class UsersActionFactory {
         action.setUUID()
         UserStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        SpaceApi['revokeActiveClient'](id, key, token)
+        return SpaceApi['revokeActiveClient'](id, key, token)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
             .then(() => {
                 UsersActions.fetchActiveClients()
             })
-        return action.actionID()
     }
 }
 

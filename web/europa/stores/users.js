@@ -45,8 +45,8 @@ class UserStoreBase extends Store {
     }
 
     isCurrentUserAdmin() {
-        return _state.payload && _state.payload.is_admin !== undefined ?
-            _state.payload.is_admin : _setupData['user_is_admin'] === true
+        return _state.payload && _state.payload.user && _state.payload.user.is_admin !== undefined ?
+            _state.payload.user.is_admin : _setupData['user_is_admin'] === true
     }
 
     loadData() {
