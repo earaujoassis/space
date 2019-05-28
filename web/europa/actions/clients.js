@@ -19,6 +19,19 @@ class ClientsActionFactory {
             .then(processHandlerClojure(action))
     }
 
+    updateClient(id, data) {
+        let token = UserStore.getActionToken()
+        let action = new ActionCreator()
+
+        action.setUUID()
+        ClientStore.associateAction(action.actionID())
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        return SpaceApi['updateClient'](id, token, data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandlerClojure(action))
+    }
+
     fetchClients() {
         let token = UserStore.getActionToken()
         let action = new ActionCreator()

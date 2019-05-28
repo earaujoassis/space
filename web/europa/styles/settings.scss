@@ -6,11 +6,6 @@
     margin-bottom: 1rem;
   }
 }
-.applications {
-  .columns ~ .columns {
-    margin-top: 15px;
-  }
-}
 .application-card {
   padding: 15px 15px;
   border: 1px solid rgba(0, 0, 0, 0.5);
@@ -180,4 +175,11 @@ table {
   border-top: 1px solid #2199e8;
   padding-top: 12px;
   margin-top: 30px;
+}
+.form-common.internal {
+  padding: 12px 0;
+
+  .button-anchor {
+    margin-top: 34px;
+  }
 }

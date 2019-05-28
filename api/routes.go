@@ -414,7 +414,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Authorization type: action token / Bearer (for web use)
         clientsRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
             session := sessions.Default(c)
-
             action := c.MustGet("Action").(models.Action)
             userPublicID := session.Get("userPublicID")
             user := services.FindUserByPublicID(userPublicID.(string))
@@ -448,6 +447,39 @@ func ExposeRoutes(router *gin.RouterGroup) {
             } else {
                 c.JSON(http.StatusNoContent, nil)
             }
+        })
+
+        // In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
+        // TODO Improve security for this endpoint avoiding any overhead
+        clientsRoutes.PATCH("/:client_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            var clientUUID = c.Param("client_id")
+
+            session := sessions.Default(c)
+            action := c.MustGet("Action").(models.Action)
+            userPublicID := session.Get("userPublicID")
+            user := services.FindUserByPublicID(userPublicID.(string))
+            if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            if !security.ValidUUID(clientUUID) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
+
+            client := services.FindClientByUUID(clientUUID)
+            client.CanonicalURI = c.PostForm("canonical_uri")
+            client.RedirectURI = c.PostForm("redirect_uri")
+            dataStore := datastore.GetDataStoreConnection()
+            dataStore.Save(&client)
+
+            c.JSON(http.StatusNoContent, nil)
         })
 
         // In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security

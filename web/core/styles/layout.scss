@@ -136,6 +136,10 @@ button,.button {
 .form-common {
   position: relative;
 
+  label {
+    text-transform: uppercase;
+  }
+
   .error-message {
     position: absolute;
     top: -60px;

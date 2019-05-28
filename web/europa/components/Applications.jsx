@@ -118,14 +118,12 @@ class AllApplications extends React.Component {
             return null
         }
 
-        if (!this.state.clients.length) {
+        if (!this.state.clients || !this.state.clients.length) {
             return (<p className="blank-list">No applications available yet.</p>)
         }
 
-        let applications = []
-        for (var i = 0; i < this.state.clients.length; i++) {
-            let client = this.state.clients[i]
-            applications.push(
+        let applications = this.state.clients.map((client, i) => {
+            return (
                 <div className="application-card" key={i}>
                     <p className="title">
                         {client.name}
@@ -133,9 +131,53 @@ class AllApplications extends React.Component {
                         <small>(<a href={client.uri} rel="noopener noreferrer" target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small>
                     </p>
                     <p className="description">{client.description}</p>
+                    {this.state.editingId === client.id && (
+                        <form
+                            className="form-common internal"
+                            action="."
+                            method="post"
+                            onSubmit={(e) => {
+                                e.preventDefault()
+                                const attrs = [ 'canonical_uri', 'redirect_uri' ]
+                                ClientsActions.updateClient(client.id, extractDataForm(e.target, attrs)).then(() => {
+                                    ClientsActions.fetchClients()
+                                    this.setState({editingId: null})
+                                })
+                            }}>
+                            <Row className="new-application">
+                                <Columns className="small-5">
+                                    <label htmlFor="canonical_uri">Canonical URI</label>
+                                    <input type="url"
+                                        id="canonical_uri"
+                                        name="canonical_uri"
+                                        placeholder="Canonical URI"
+                                        pattern="https://.*"
+                                        defaultValue={client.uri}
+                                        required />
+                                </Columns>
+                                <Columns className="small-5">
+                                    <label htmlFor="redirect_uri">Redirect URI</label>
+                                    <input type="url"
+                                        id="redirect_uri"
+                                        name="redirect_uri"
+                                        placeholder="Redirect URI"
+                                        pattern="https://.*"
+                                        defaultValue={client.redirect}
+                                        required />
+                                </Columns>
+                                <Columns className="small-2 end">
+                                    <button className="button-anchor" type="submit">Save</button>
+                                </Columns>
+                            </Row>
+                        </form>
+                    )}
                     <ul className="inline-list all-applications-options">
                         <li>
-                            <a href="#edit">Edit</a>
+                            <a href="#edit"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    this.setState({editingId: client.id})
+                                }}>Edit</a>
                         </li>
                         <li>
                             <a href={`/api/clients/${client.id}/credentials`}
@@ -146,7 +188,8 @@ class AllApplications extends React.Component {
                     </ul>
                 </div>
             )
-        }
+        })
+
         return applications
     }
 
@@ -171,7 +214,7 @@ const NewApplication = () => {
             </Columns>
             <Columns className="small-6">
                 <form
-                    className="form-sign-up"
+                    className="form-common"
                     action="."
                     method="post"
                     onSubmit={(e) => {
