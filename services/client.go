@@ -70,3 +70,15 @@ func ClientAuthentication(key, secret string) models.Client {
     }
     return models.Client{}
 }
+
+// ActiveClients lists all client applications
+func ActiveClients() []models.Client {
+    var clients []models.Client
+
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.
+        Raw("SELECT clients.uuid, clients.name, clients.description, clients.canonical_uri, clients.redirect_uri FROM clients " +
+        "WHERE clients.name != 'Jupiter' ORDER BY clients.created_at ASC").
+        Scan(&clients)
+    return clients
+}

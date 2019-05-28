@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import UserStore from './stores/users'
 
 import Settings from './components/Settings.jsx'
-
 import Applications from './components/Applications.jsx'
 import Profile from './components/Profile.jsx'
 
@@ -13,7 +12,7 @@ const europa = (
     <Router>
         <Switch>
             <Settings>
-                <Route path="/" exact component={Applications} />
+                <Route path="/applications" exact component={Applications} />
                 <Route path="/profile" exact component={Profile} />
             </Settings>
         </Switch>

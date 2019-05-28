@@ -24,7 +24,7 @@ type Client struct {
     Secret string               `gorm:"not null" validate:"required" json:"-"`
     Scopes string               `gorm:"not null" validate:"required" json:"-"`
     CanonicalURI string         `gorm:"not null" validate:"required" json:"uri"`
-    RedirectURI string          `gorm:"not null" validate:"required" json:"-"`
+    RedirectURI string          `gorm:"not null" validate:"required" json:"redirect"`
     Type string                 `gorm:"not null" validate:"required,client" json:"-"`
 }
 
