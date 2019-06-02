@@ -11,6 +11,7 @@ ENV PORT=80
 ENV NODE_ENV=$NODE_ENV
 ENV GIN_MODE=$GIN_MODE
 ENV ENV=$ENV
+ENV GO111MODULE=on
 
 ENV NODE_VERSION 8.12.0
 
@@ -87,15 +88,12 @@ RUN apk update && \
 
 ENV PATH=/usr/local/bin:$PATH
 
-ENV GO111MODULE=on
-
 RUN mkdir -p /app
 
 WORKDIR /app
 
 COPY . /app
 
-RUN npm install -g yarn
 RUN yarn install && yarn build
 
 EXPOSE 80
