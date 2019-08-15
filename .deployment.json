@@ -1,12 +1,8 @@
 {
   "project": "space",
-  "type": "containers",
-  "number_of_instances": 2,
-  "exposed_port": 80,
-  "baseport": 4040,
-  "env": {
-    "SPACE_ENV": "production",
-    "NODE_ENV": "production",
-    "GIN_MODE": "release"
+  "type": "docker-compose",
+  "scripts": {
+    "deploy": "bin/deploy.sh",
+    "redeploy": "bin/deploy.sh -u"
   }
 }

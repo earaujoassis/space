@@ -21,17 +21,13 @@ services:
     volumes:
       - space-postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: space-postgres
+      POSTGRES_USER: space
       POSTGRES_PASSWORD: 8GWbz2JF4FMe1Q8X
-      POSTGRES_DB: space_development
+      POSTGRES_DB: space_production
 
   space:
     build:
       context: .
-      args:
-        NODE_ENV: development
-        GIN_MODE: debug
-        SPACE_ENV: development
     container_name: space
     image: space
     ports:

@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -ex
 
-git config core.hooksPath hooks
+git config core.hooksPath .githooks
 npm install -g yarn
 yarn install && yarn build
 go get github.com/mattn/goreman
