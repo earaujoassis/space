@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -ex
 
-yarn lint
+
 go get golang.org/x/lint/golint
 test -z "$(golint ./...)"
+
+# yarn lint

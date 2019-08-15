@@ -1,7 +1,6 @@
 .DS_Store
 .vscode
 c.out
-.config.local.json
 coverage.html
 coverage.txt
 node_modules
@@ -11,4 +10,6 @@ web/public/js/*.min.js
 *.log
 .env
 Dockerfile
-.config.local.json
+.config.local.sample.json
+.config.sample.yml
+.config.travis.json
