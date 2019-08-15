@@ -88,4 +88,4 @@ If you have any question, comment or an issue, please take a look at [/issues](h
 
 ## License
 
-[MIT License](http://earaujoassis.mit-license.org/) &copy; Ewerton Assis
+[MIT License](http://earaujoassis.mit-license.org/) &copy; Ewerton Carlos Assis

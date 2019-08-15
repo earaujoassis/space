@@ -1,3 +1,0 @@
-#!/bin/bash
-
-read -sp "String:" ; [[ ${#REPLY} == 32 ]] && echo "$(echo -n "$REPLY" | base64)" || (>&2 echo -e "\nERROR:Wrong Size"; false)
