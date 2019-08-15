@@ -4,12 +4,18 @@
     "node": true,
     "browser": true
   },
+  "plugins": [
+    "react"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended"
   ],
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "rules": {
     "indent": [
