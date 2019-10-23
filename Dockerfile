@@ -1,4 +1,4 @@
-FROM golang:1.12.4-alpine3.10
+FROM golang:1.12.12-alpine3.10
 
 LABEL "com.quatrolabs.space"="quatroLABS Space"
 LABEL "description"="A user management microservice; OAuth 2 provider"
@@ -16,7 +16,8 @@ RUN apk add --update --no-cache \
     postgresql \
     postgresql-contrib \
     postgresql-libs \
-    postgresql-dev
+    postgresql-dev \
+    git
 
 RUN apk add --update --no-cache nodejs
 RUN apk add --update --no-cache yarn
@@ -26,7 +27,7 @@ ENV PATH=/usr/local/bin:$PATH
 ENV PORT=80
 ENV NODE_ENV=production
 ENV GIN_MODE=release
-ENV ENV=production
+ENV SPACE_ENV=production
 ENV GO111MODULE=on
 
 RUN mkdir -p /app
