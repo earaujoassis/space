@@ -12,5 +12,6 @@
   "memory_store_password": "",
   "memory_store_port": 6379,
   "session_secret": "",
+  "session_secure": false,
   "storage_secret": ""
 }
