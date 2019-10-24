@@ -38,7 +38,7 @@ func ExposeRoutes(router *gin.Engine) {
     router.Static("/public", "web/public")
     store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
     store.Options(sessions.Options{
-        Secure: config.IsEnvironment("production"),
+        Secure: (config.IsEnvironment("production") && cfg.SessionSecure),
         HttpOnly: true,
     })
     router.Use(sessions.Sessions("jupiter.session", store))
