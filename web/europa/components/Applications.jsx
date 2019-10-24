@@ -151,7 +151,7 @@ class AllApplications extends React.Component {
                                         id="canonical_uri"
                                         name="canonical_uri"
                                         placeholder="Canonical URI"
-                                        pattern="https://.*"
+                                        pattern="https?://.*"
                                         defaultValue={client.uri}
                                         required />
                                 </Columns>
@@ -161,7 +161,7 @@ class AllApplications extends React.Component {
                                         id="redirect_uri"
                                         name="redirect_uri"
                                         placeholder="Redirect URI"
-                                        pattern="https://.*"
+                                        pattern="https?://.*"
                                         defaultValue={client.redirect}
                                         required />
                                 </Columns>
