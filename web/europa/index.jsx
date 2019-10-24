@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import UserStore from './stores/users'
 
 import Settings from './components/Settings.jsx'
-import Applications from './components/Applications.jsx'
+import Applications from './components/Applications'
 import Profile from './components/Profile.jsx'
 
 const europa = (
