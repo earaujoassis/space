@@ -201,7 +201,7 @@ class AllApplications extends React.Component {
     }
 }
 
-const NewApplication = () => {
+const NewApplication = ({ postCreation }) => {
     return (
         <Row className="new-application">
             <Columns className="small-6">
@@ -223,6 +223,9 @@ const NewApplication = () => {
                         const attrs = [ 'name', 'description', 'canonical_uri', 'redirect_uri' ]
                         ClientsActions.createClient(extractDataForm(e.target, attrs)).then(() => {
                             ClientsActions.fetchClients()
+                            if (postCreation) {
+                                postCreation()
+                            }
                             e.target.reset()
                         })
                     }}>
@@ -246,7 +249,7 @@ const Applications = () => {
             {UserStore.isCurrentUserAdmin() && (
                 <Row>
                     <Columns className="small-12">
-                        <NewApplication />
+                        <NewApplication postCreation={() => setOpenAccordion('all')} />
                     </Columns>
                 </Row>
             )}
