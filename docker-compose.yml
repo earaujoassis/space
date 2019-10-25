@@ -14,8 +14,8 @@ services:
     container_name: space-redis
     command: ["redis-server", "--appendonly", "yes"]
     hostname: space-redis
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     restart: always
     volumes:
       - space-redis-data:/data
@@ -26,8 +26,8 @@ services:
     image: 'postgres:9.6.10'
     container_name: space-postgres
     hostname: space-postgres
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     restart: always
     volumes:
       - space-postgres-data:/var/lib/postgresql/data
@@ -44,7 +44,7 @@ services:
     container_name: space
     image: space
     ports:
-      - "8080:80"
+      - "8484:80"
     networks:
       - projects
 
