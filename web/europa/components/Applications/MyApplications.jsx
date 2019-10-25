@@ -3,7 +3,7 @@ import React from 'react'
 import UserStore from '../../stores/users'
 import UsersActions from '../../actions/users'
 
-class MyApplications extends React.Component {
+export default class MyApplications extends React.Component {
     constructor() {
         super()
         this.state = {loading: true}
@@ -78,5 +78,3 @@ class MyApplications extends React.Component {
         }
     }
 }
-
-export default MyApplications
