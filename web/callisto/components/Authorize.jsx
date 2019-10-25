@@ -18,7 +18,7 @@ export default class Authorize extends React.Component {
                         <h2>{`${this.state.first_name} ${this.state.last_name}`}</h2>
                     </Columns>
                     <Columns className="small-4 end client">
-                        <h2>{this.state.client_name}<br /><small>({this.state.client_uri})</small></h2>
+                        <h2>{this.state.client_name}</h2>
                     </Columns>
                 </Row>
                 <Row className="separator">

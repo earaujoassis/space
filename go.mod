@@ -24,7 +24,7 @@ require (
 	github.com/ugorji/go v1.1.4 // indirect
 	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734
-	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
+	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
 	gopkg.in/bluesuncorp/validator.v5 v5.10.3
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/yaml.v2 v2.2.2

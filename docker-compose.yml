@@ -1,4 +1,13 @@
-version: '3.4'
+version: '3.5'
+
+networks:
+  projects:
+    name: quatrolabs-projects-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.177.57.0/24
+
 services:
   space-redis:
     image: 'redis:5.0.0'
@@ -10,6 +19,8 @@ services:
     restart: always
     volumes:
       - space-redis-data:/data
+    networks:
+      - projects
 
   space-postgres:
     image: 'postgres:9.6.10'
@@ -24,6 +35,8 @@ services:
       POSTGRES_USER: space
       POSTGRES_PASSWORD: 8GWbz2JF4FMe1Q8X
       POSTGRES_DB: space_production
+    networks:
+      - projects
 
   space:
     build:
@@ -32,7 +45,8 @@ services:
     image: space
     ports:
       - "8080:80"
-    env_file: .env
+    networks:
+      - projects
 
 volumes:
   space-redis-data:

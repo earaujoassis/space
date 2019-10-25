@@ -1,7 +1,9 @@
 package models
 
 import (
+    "fmt"
     "strings"
+    "net/url"
 
     "github.com/jinzhu/gorm"
     "golang.org/x/crypto/bcrypt"
@@ -23,8 +25,8 @@ type Client struct {
     Key string                  `gorm:"not null;unique;index" json:"-"`
     Secret string               `gorm:"not null" validate:"required" json:"-"`
     Scopes string               `gorm:"not null" validate:"required" json:"-"`
-    CanonicalURI string         `gorm:"not null" validate:"required" json:"uri"`
-    RedirectURI string          `gorm:"not null" validate:"required" json:"redirect"`
+    CanonicalURI string         `gorm:"not null" validate:"required,canonical" json:"uri"`
+    RedirectURI string          `gorm:"not null" validate:"required,redirect" json:"redirect"`
     Type string                 `gorm:"not null" validate:"required,client" json:"-"`
 }
 
@@ -33,6 +35,62 @@ func validClientType(top interface{}, current interface{}, field interface{}, pa
     if typeField != PublicClient && typeField != ConfidentialClient {
         return false
     }
+    return true
+}
+
+func validCanonicalURIs(top interface{}, current interface{}, field interface{}, param string) bool {
+    canonicalURIField := field.(string)
+
+    // Unfortunately, the Jupiter (internal client) is created with the following value
+    if canonicalURIField == "localhost" {
+        return true
+    }
+
+    entries := strings.Split(canonicalURIField, "\n")
+    for i := range entries {
+        currentEntry := entries[i]
+        u, err := url.Parse(currentEntry)
+        if err != nil {
+            return false
+        }
+
+        if !strings.Contains(u.Scheme, "http") || u.Path != "" || u.Host == "" {
+            return false
+        }
+    }
+
+    return true
+}
+
+func validRedirectURIs(top interface{}, current interface{}, field interface{}, param string) bool {
+    currentClient, ok := current.(Client)
+
+    // It's not a Client model
+    if !ok {
+        return true
+    }
+
+    canonicalURI := currentClient.CanonicalURI
+    redirectURI := currentClient.RedirectURI
+
+    // Unfortunately, the Jupiter (internal client) is created with the following values
+    if canonicalURI == "localhost" && redirectURI == "/" {
+        return true
+    }
+
+    entries := strings.Split(redirectURI, "\n")
+    for i := range entries {
+        currentEntry := entries[i]
+        u, err := url.Parse(currentEntry)
+        if err != nil {
+            return false
+        }
+        currentCanonical := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+        if !strings.Contains(canonicalURI, currentCanonical) {
+            return false
+        }
+    }
+
     return true
 }
 
