@@ -49,7 +49,9 @@ class MyApplications extends React.Component {
                     <p className="title">
                         {client.name}
                         &nbsp;
-                        <small>(<a href={client.uri} rel="noopener noreferrer" target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small>
+                        <small>(<a href={client.uri.split('\n')[0]}
+                            rel="noopener noreferrer"
+                            target="_blank">{client.uri.split('\n')[0].split(/:\/\//)[1]}</a>)</small>
                     </p>
                     <p className="description">{client.description}</p>
                     <ul className="inline-list all-applications-options">

@@ -53,6 +53,8 @@ func validateModel(tagName string, model interface{}) error {
     validate.AddFunction("client", validClientType)
     validate.AddFunction("scope", validScope)
     validate.AddFunction("token", validTokenType)
+    validate.AddFunction("canonical", validCanonicalURIs)
+    validate.AddFunction("redirect", validRedirectURIs)
     err := validate.Struct(model)
     if err != nil {
         return err

@@ -52,7 +52,9 @@ class AllApplications extends React.Component {
                     <p className="title">
                         {client.name}
                         &nbsp;
-                        <small>(<a href={client.uri} rel="noopener noreferrer" target="_blank">{client.uri.split(/:\/\//)[1]}</a>)</small>
+                        <small>(<a href={client.uri.split('\n')[0]}
+                            rel="noopener noreferrer"
+                            target="_blank">{client.uri.split('\n')[0].split(/:\/\//)[1]}</a>)</small>
                     </p>
                     <p className="description">{client.description}</p>
                     {this.state.editingId === client.id && (
@@ -71,26 +73,33 @@ class AllApplications extends React.Component {
                             <Row className="new-application">
                                 <Columns className="small-5">
                                     <label htmlFor="canonical_uri">Canonical URI</label>
-                                    <input type="url"
+                                    <textarea type="url"
                                         id="canonical_uri"
                                         name="canonical_uri"
                                         placeholder="Canonical URI"
-                                        pattern="https?://.*"
+                                        pattern="((https?://.*)(\n)?)+"
                                         defaultValue={client.uri}
-                                        required />
+                                        required></textarea>
                                 </Columns>
                                 <Columns className="small-5">
                                     <label htmlFor="redirect_uri">Redirect URI</label>
-                                    <input type="url"
+                                    <textarea type="url"
                                         id="redirect_uri"
                                         name="redirect_uri"
                                         placeholder="Redirect URI"
-                                        pattern="https?://.*"
+                                        pattern="((https?://.*)(\n)?)+"
                                         defaultValue={client.redirect}
-                                        required />
+                                        required></textarea>
                                 </Columns>
                                 <Columns className="small-2 end">
                                     <button className="button-anchor" type="submit">Save</button>
+                                </Columns>
+                            </Row>
+                            <Row>
+                                <Columns className="small-12">
+                                    <p className="form-warning">
+                                        Use one line for each redirect URI. Each redirect URI must be included as a canonical URI.
+                                    </p>
                                 </Columns>
                             </Row>
                         </form>
