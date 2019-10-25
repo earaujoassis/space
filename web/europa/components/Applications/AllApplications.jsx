@@ -8,7 +8,7 @@ import { extractDataForm } from '../../../core/utils/forms'
 import ClientStore from '../../stores/clients'
 import ClientsActions from '../../actions/clients'
 
-class AllApplications extends React.Component {
+export default class AllApplications extends React.Component {
     constructor() {
         super()
         this.state = {loading: true}
@@ -133,5 +133,3 @@ class AllApplications extends React.Component {
         }
     }
 }
-
-export default AllApplications
