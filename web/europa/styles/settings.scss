@@ -201,8 +201,12 @@ table {
 .form-common.internal {
   padding: 12px 0;
 
+  .button-wrapper {
+    margin-top: 20px;
+  }
+
   .button-anchor {
-    margin-top: 34px;
+    margin: 10px 0;
   }
 
   .form-warning {
