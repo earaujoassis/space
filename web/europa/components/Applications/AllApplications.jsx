@@ -92,7 +92,15 @@ export default class AllApplications extends React.Component {
                                         required></textarea>
                                 </Columns>
                                 <Columns className="small-2 end">
-                                    <button className="button-anchor" type="submit">Save</button>
+                                    <div className="button-wrapper">
+                                        <button className="button-anchor" type="submit">Save</button>
+                                    </div>
+                                    <div>
+                                        <button
+                                            onClick={() => this.setState({editingId: null})}
+                                            className="button-anchor"
+                                            type="button">Cancel</button>
+                                    </div>
                                 </Columns>
                             </Row>
                             <Row>
