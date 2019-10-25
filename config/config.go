@@ -30,6 +30,7 @@ type Config struct {
     MemorystorePassword string `json:"memory_store_password"`
     MemorystorePort int `json:"memory_store_port"`
     SessionSecret string `json:"session_secret"`
+    SessionSecure bool `json:"session_secure"`
     StorageSecret string `json:"storage_secret"`
 }
 

@@ -157,6 +157,7 @@ table {
     height: auto;
     padding: 0.25rem 0.5rem;
     margin: 0 0 0.75rem;
+    resize: none;
   }
 }
 .applications-listing {
@@ -172,14 +173,39 @@ table {
   }
 }
 .applications-divisor {
-  border-top: 1px solid #2199e8;
-  padding-top: 12px;
-  margin-top: 30px;
+  .applications-divisor-title {
+    color: #2199e8;
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: normal;
+    border-bottom: 1px solid #2199e8;
+    margin: 0 0 26px;
+
+    span {
+      display: block;
+      color: inherit;
+      padding: 6px 8px;
+      padding-left: 26px;
+
+      &::before {
+        content: "\f105";
+        position: absolute;
+        left: 7px;
+        font-family: "Font Awesome 5 Free";
+        font-style: normal;
+        font-weight: 900;
+      }
+    }
+  }
 }
 .form-common.internal {
   padding: 12px 0;
 
   .button-anchor {
     margin-top: 34px;
+  }
+
+  .form-warning {
+    font-size: 0.9rem;
   }
 }
