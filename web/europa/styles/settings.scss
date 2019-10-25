@@ -157,6 +157,7 @@ table {
     height: auto;
     padding: 0.25rem 0.5rem;
     margin: 0 0 0.75rem;
+    resize: none;
   }
 }
 .applications-listing {
@@ -202,5 +203,9 @@ table {
 
   .button-anchor {
     margin-top: 34px;
+  }
+
+  .form-warning {
+    font-size: 0.9rem;
   }
 }
