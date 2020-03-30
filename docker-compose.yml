@@ -43,6 +43,7 @@ services:
       context: .
     container_name: space
     image: space
+    restart: always
     ports:
       - "8484:80"
     networks:
