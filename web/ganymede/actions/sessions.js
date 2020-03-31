@@ -14,6 +14,18 @@ class SessionsActionFactory {
             .then(processHandler)
         return action.actionID()
     }
+
+    requestMagicLink(data) {
+        let action = new ActionCreator()
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        SpaceApi
+            .createMagicSession(data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandler)
+        return action.actionID()
+    }
 }
 
 const SessionsActions = new SessionsActionFactory()

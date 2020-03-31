@@ -36,7 +36,7 @@
   }
 
   .user-avatar {
-    &.unknown:before, &.secrecy:before, &.code:before {
+    &.unknown:before, &.secrecy:before, &.code:before, &.magic:before {
       display: block;
       position: absolute;
       color: #222;
@@ -62,6 +62,10 @@
       content: "\f10b";
     }
 
+    &.magic:before {
+      content: "\f0d0";
+    }
+
     position: relative;
     width: 125px;
     height: 125px;
@@ -85,4 +89,25 @@
   p {
     margin: 0;
   }
+
+  .requested {
+    position: absolute;
+    z-index: 100;
+    bottom: -60px;
+    left: -40px;
+    right: -40px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    background: #05A054;
+    color: #fff;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+}
+
+.ganymede-strategies {
+  width: 400px;
+  margin: auto;
+  margin-top: -20px;
 }

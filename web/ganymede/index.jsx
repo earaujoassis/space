@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import SignIn from './components/SignIn.jsx'
+import Root from './components/Root.jsx'
 
-ReactDOM.render(<SignIn />, document.getElementById('application-context'))
+ReactDOM.render(<Root />, document.getElementById('application-context'))
