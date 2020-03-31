@@ -66,6 +66,17 @@ const SpaceApi = {
         })
     },
 
+    createMagicSession(data) {
+        return fetch('/api/sessions/magic', {
+            method: 'POST',
+            headers: {
+                'X-Requested-By': 'SpaceApi',
+                Accept: 'application/vnd.space.v1+json'
+            },
+            body: data
+        })
+    },
+
     createClient(token, data) {
         return fetch('/api/clients/create', {
             method: 'POST',
