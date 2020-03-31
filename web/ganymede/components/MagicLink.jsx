@@ -4,6 +4,8 @@ import SessionsActions from '../actions/sessions'
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
 
+import { getParameterByName } from '../../core/utils/url'
+
 const magicLink = () => {
     const [lockedForm, setLockedForm] = useState(false)
     const [holder, setHolderValue] = useState('')
@@ -43,8 +45,12 @@ const magicLink = () => {
                                 if (e) e.preventDefault()
                                 setMagicLinkRequested(true)
                                 setLockedForm(true)
+                                let next = getParameterByName('_')
                                 let formData = new FormData()
                                 formData.append('holder', holder)
+                                if (next && next) {
+                                    formData.append('next', encodeURI(next))
+                                }
                                 SessionsActions.requestMagicLink(formData)
                             }}
                             disabled={lockedForm}>Request Magic Link</button>
