@@ -1,27 +1,27 @@
 package api
 
 import (
-    "net/http"
-    "fmt"
     "bytes"
     "encoding/base64"
+    "fmt"
     "image/png"
-    "time"
+    "net/http"
     "strings"
+    "time"
 
-    "github.com/gin-gonic/gin"
     "github.com/gin-gonic/contrib/sessions"
+    "github.com/gin-gonic/gin"
 
+    "github.com/earaujoassis/space/config"
     "github.com/earaujoassis/space/datastore"
+    "github.com/earaujoassis/space/feature"
     "github.com/earaujoassis/space/models"
+    "github.com/earaujoassis/space/oauth"
+    "github.com/earaujoassis/space/policy"
+    "github.com/earaujoassis/space/security"
     "github.com/earaujoassis/space/services"
     "github.com/earaujoassis/space/services/logger"
-    "github.com/earaujoassis/space/security"
-    "github.com/earaujoassis/space/policy"
-    "github.com/earaujoassis/space/oauth"
-    "github.com/earaujoassis/space/feature"
     "github.com/earaujoassis/space/utils"
-    "github.com/earaujoassis/space/config"
 )
 
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
@@ -36,27 +36,27 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !feature.IsActive("user.create") {
                 c.JSON(http.StatusForbidden, utils.H{
-                    "_status": "error",
+                    "_status":  "error",
                     "_message": "User was not created",
-                    "error": "Feature is not available at this time",
+                    "error":    "Feature is not available at this time",
                 })
                 return
             }
 
             dataStore := datastore.GetDataStoreConnection()
             user := models.User{
-                FirstName: c.PostForm("first_name"),
-                LastName: c.PostForm("last_name"),
-                Username: c.PostForm("username"),
-                Email: c.PostForm("email"),
+                FirstName:  c.PostForm("first_name"),
+                LastName:   c.PostForm("last_name"),
+                Username:   c.PostForm("username"),
+                Email:      c.PostForm("email"),
                 Passphrase: c.PostForm("password"),
             }
             if !models.IsValid("essential", user) {
                 c.JSON(http.StatusBadRequest, utils.H{
-                    "_status": "error",
+                    "_status":  "error",
                     "_message": "User was not created",
-                    "error": "Missing essential fields",
-                    "user": user,
+                    "error":    "Missing essential fields",
+                    "user":     user,
                 })
                 return
             }
@@ -80,19 +80,19 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if count := result.RowsAffected; count < 1 {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "error": fmt.Sprintf("%v", result.GetErrors()),
-                    "user": user,
+                    "user":  user,
                 })
             } else {
                 go logger.LogAction("user.created", utils.H{
-                    "Email": user.Email,
+                    "Email":     user.Email,
                     "FirstName": user.FirstName,
                 })
                 c.JSON(http.StatusOK, utils.H{
-                    "_status": "created",
-                    "_message": "User was created",
-                    "recover_secret": recoverSecret,
+                    "_status":           "created",
+                    "_message":          "User was created",
+                    "recover_secret":    recoverSecret,
                     "code_secret_image": imageData,
-                    "user": user,
+                    "user":              user,
                 })
             }
         })
@@ -152,11 +152,11 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             c.JSON(http.StatusOK, utils.H{
                 "user": utils.H{
-                    "is_admin": user.Admin,
-                    "username": user.Username,
-                    "first_name": user.FirstName,
-                    "last_name": user.LastName,
-                    "email": user.Email,
+                    "is_admin":            user.Admin,
+                    "username":            user.Username,
+                    "first_name":          user.FirstName,
+                    "last_name":           user.LastName,
+                    "email":               user.Email,
                     "timezone_identifier": user.TimezoneIdentifier,
                 },
             })
@@ -233,18 +233,18 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !feature.IsActive("user.adminify") {
                 c.JSON(http.StatusForbidden, utils.H{
-                    "_status": "error",
+                    "_status":  "error",
                     "_message": "User was not updated",
-                    "error": "Feature is not available at this time",
+                    "error":    "Feature is not available at this time",
                 })
                 return
             }
 
             if providedApplicationKey != cfg.ApplicationKey {
                 c.JSON(http.StatusForbidden, utils.H{
-                    "_status": "error",
+                    "_status":  "error",
                     "_message": "User was not updated",
-                    "error": "Application key is incorrect",
+                    "error":    "Application key is incorrect",
                 })
                 return
             }
@@ -304,22 +304,22 @@ func ExposeRoutes(router *gin.RouterGroup) {
                         models.GrantToken)
                     if session.ID != 0 {
                         go logger.LogAction("session.created", utils.H{
-                            "Email": user.Email,
+                            "Email":     user.Email,
                             "FirstName": user.FirstName,
-                            "IP": session.IP,
+                            "IP":        session.IP,
                             "CreatedAt": session.CreatedAt.Format(time.RFC850),
                         })
                         policy.RegisterSuccessfulSignIn(user.UUID)
                         policy.RegisterSuccessfulSignIn(IP)
                         c.JSON(http.StatusOK, utils.H{
-                            "_status": "created",
-                            "_message": "Session was created",
-                            "scope": session.Scopes,
-                            "grant_type": "authorization_code",
-                            "code": session.Token,
+                            "_status":      "created",
+                            "_message":     "Session was created",
+                            "scope":        session.Scopes,
+                            "grant_type":   "authorization_code",
+                            "code":         session.Token,
                             "redirect_uri": "/session",
-                            "client_id": client.Key,
-                            "state": state,
+                            "client_id":    client.Key,
+                            "state":        state,
                         })
                         return
                     }
@@ -327,9 +327,67 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
             policy.RegisterSignInAttempt(userID)
             c.JSON(http.StatusBadRequest, utils.H{
-                "error": oauth.AccessDenied,
+                "error":             oauth.AccessDenied,
                 "error_description": "Unauthentic user; authorization token was not created",
-                "attempts": statusSignInAttempts,
+                "attempts":          statusSignInAttempts,
+            })
+        })
+
+        // Requires X-Requested-By and Origin (same-origin policy)
+        sessionsRoutes.POST("/magic", requiresConformance, func(c *gin.Context) {
+            var holder = c.PostForm("holder")
+            var next = c.PostForm("next")
+            var state = c.PostForm("state")
+
+            var host = fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+
+            var IP = c.Request.RemoteAddr
+            var userID = IP
+            var statusSignInAttempts = policy.SignInAttemptStatus(IP)
+
+            if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid holder string",
+                })
+                return
+            }
+
+            user := services.FindUserByAccountHolder(holder)
+            client := services.FindOrCreateClient("Jupiter")
+            if user.ID != 0 && statusSignInAttempts != policy.Blocked {
+                userID = user.UUID
+                statusSignInAttempts = policy.SignInAttemptStatus(userID)
+                if statusSignInAttempts != policy.Blocked {
+                    session := services.CreateSession(user, client,
+                        c.Request.RemoteAddr,
+                        c.Request.UserAgent(),
+                        models.PublicScope,
+                        models.GrantToken)
+                    if session.ID != 0 {
+                        go logger.LogAction("session.magic", utils.H{
+                            "Email":     user.Email,
+                            "FirstName": user.FirstName,
+                            "IP":        session.IP,
+                            "CreatedAt": session.CreatedAt.Format(time.RFC850),
+                            "Callback": fmt.Sprintf("%s/session?client_id=%s&code=%s&grant_type=authorization_code&scope=%s&state=%s&_=%s",
+                                host, client.Key, session.Token, session.Scopes, state, next),
+                        })
+                        policy.RegisterSuccessfulSignIn(user.UUID)
+                        policy.RegisterSuccessfulSignIn(IP)
+                        c.JSON(http.StatusOK, utils.H{
+                            "_status":  "requested",
+                            "_message": "Magic Session was requested",
+                            "state":    state,
+                        })
+                        return
+                    }
+                }
+            }
+            policy.RegisterSignInAttempt(userID)
+            c.JSON(http.StatusOK, utils.H{
+                "_status":  "requested",
+                "_message": "Magic Session was requested",
+                "state":    state,
             })
         })
 
@@ -352,9 +410,9 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
             c.JSON(http.StatusOK, utils.H{
-                "active": true,
-                "scope": session.Scopes,
-                "client_id": session.Client.Key,
+                "active":     true,
+                "scope":      session.Scopes,
+                "client_id":  session.Client.Key,
                 "token_type": "Bearer",
             })
         })
@@ -379,11 +437,11 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
             services.InvalidateSession(session)
             c.JSON(http.StatusOK, utils.H{
-                "_status": "deleted",
-                "_message": "Session was deleted (soft)",
-                "active": false,
-                "scope": session.Scopes,
-                "client_id": session.Client.Key,
+                "_status":    "deleted",
+                "_message":   "Session was deleted (soft)",
+                "active":     false,
+                "scope":      session.Scopes,
+                "client_id":  session.Client.Key,
                 "token_type": "Bearer",
             })
         })
@@ -441,7 +499,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if client.ID == 0 {
                 c.JSON(http.StatusBadRequest, utils.H{
-                    "error": "The client was not created",
+                    "error":  "The client was not created",
                     "client": client,
                 })
             } else {
