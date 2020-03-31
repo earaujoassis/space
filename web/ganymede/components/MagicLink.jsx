@@ -26,8 +26,7 @@ const magicLink = () => {
                     <div className="user-avatar magic"></div>
                     {magicLinkRequested === true ? (
                         <div className="requested">
-                            <p>A Magic Link was successfully requested.<br />
-                            If the account holder is valid and active, you should receive an e-mail message in the next few minutes.</p>
+                            <p>If the account holder is valid and active, you should receive an e-mail message in the next few minutes.</p>
                         </div>
                     ) : null}
                     <form action="." method="post">
