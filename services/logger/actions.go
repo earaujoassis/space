@@ -22,6 +22,10 @@ func LogAction(name string, data utils.H) {
             data["Year"] = time.Now().Year()
             message := mailer.CreateMessage("session.created.html", data)
             mailer.SendEmail("A new session created at quatroLABS", message, data["Email"].(string))
+        case "session.magic":
+            data["Year"] = time.Now().Year()
+            message := mailer.CreateMessage("session.magic.html", data)
+            mailer.SendEmail("A magic link for a new session was requested at quatroLABS", message, data["Email"].(string))
         }
     }
     if config.IsEnvironment("development") {
