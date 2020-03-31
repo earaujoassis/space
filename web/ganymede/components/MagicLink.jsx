@@ -49,8 +49,9 @@ const magicLink = () => {
                                 let formData = new FormData()
                                 formData.append('holder', holder)
                                 if (next && next) {
-                                    formData.append('next', encodeURI(next))
+                                    formData.append('next', next)
                                 }
+                                console.log(next)
                                 SessionsActions.requestMagicLink(formData)
                             }}
                             disabled={lockedForm}>Request Magic Link</button>
