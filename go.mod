@@ -14,7 +14,7 @@ require (
 	github.com/hashicorp/vault/api v1.0.1
 	github.com/jinzhu/gorm v1.9.5
 	github.com/joho/godotenv v1.3.0
-	github.com/mattn/goreman v0.2.1 // indirect
+	github.com/mattn/goreman v0.3.5 // indirect
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/pquerna/otp v1.1.0
@@ -27,5 +27,5 @@ require (
 	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
 	gopkg.in/bluesuncorp/validator.v5 v5.10.3
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
-	gopkg.in/yaml.v2 v2.2.2
+	gopkg.in/yaml.v2 v2.2.4
 )
