@@ -1,6 +1,6 @@
 import { ActionTypes } from '../../core/constants'
 import { ActionCreator, processResponse, processData, processHandler } from '../../core/actions/base'
-import SpaceApi from '../../core/utils/SpaceApi'
+import SpaceApi from '../../core/utils/spaceApi'
 
 class SessionsActionFactory {
     signIn(data) {

@@ -3,7 +3,7 @@ import { ActionCreator, processResponse, processData, processHandler } from '../
 import SpaceApi from '../../core/utils/spaceApi'
 
 class UsersActionFactory {
-    signUp(data) {
+    updateResourceOwner(data) {
         let action = new ActionCreator()
         action.setUUID()
         action.dispatch({type: ActionTypes.SEND_DATA})

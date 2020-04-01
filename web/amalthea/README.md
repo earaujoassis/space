@@ -1,12 +1,12 @@
-# Space / Jupiter / Callisto
+# Space / Jupiter / Amalthea
 
 > An user management microservice
 
-## Callisto
+## Amalthea
 
-Callisto is the JavaScript (React + Flux) application responsible for user authorization.
+Amalthea is the JavaScript (React + Flux) application responsible for updating a user's password.
 It provides interfaces (HTML + CSS + JS) to ask for the resource owner's authorization over a
-client request of access.
+client request of access to update a user's password.
 
 ## Issues
 
