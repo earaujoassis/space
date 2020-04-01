@@ -50,6 +50,24 @@ func ExposeRoutes(router *gin.Engine) {
         views.GET("/applications", jupiterHandler)
         views.GET("/profile", jupiterHandler)
 
+        views.GET("/profile/password", func(c *gin.Context) {
+            var authorizationBearer = c.Query("_bearer")
+            var blockedAction = false
+            action := services.ActionAuthentication(authorizationBearer)
+            if action.UUID == "" || !services.ActionGrantsWriteAbility(action) {
+                blockedAction = true
+            }
+            c.HTML(http.StatusOK, "satellite", utils.H{
+                "Title": " - Update Resource Owner Credential",
+                "Satellite": "amalthea",
+                "Internal": true,
+                "Data": utils.H{
+                    "action_token": action.Token,
+                    "blocked_action": blockedAction,
+                },
+            })
+        })
+
         views.GET("/signup", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
                 "Title": " - Sign up",
