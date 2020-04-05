@@ -140,6 +140,59 @@ button,.button {
     text-transform: uppercase;
   }
 
+  .select-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0 0 0.75rem;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 1.175em;
+      right: 0.85em;
+      cursor: pointer;
+      -webkit-transition: 0.25s all ease;
+      -o-transition: 0.25s all ease;
+      transition: 0.25s all ease;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #2199e8;
+    }
+
+    &:hover:after {
+      color: #272727;
+    }
+  }
+
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    position: relative;
+    flex: 1;
+    padding: 0.5em;
+    display: flex;
+    width: 19.3em;
+    height: auto;
+    line-height: 1.5;
+    background: transparent;
+    color: #272727;
+    overflow: hidden;
+    border-radius: 0.25em;
+    border: 1px solid #2199e8;
+    margin: 0;
+    cursor: pointer;
+
+    &::-ms-expand {
+      display: none;
+    }
+  }
+
   .error-message {
     position: absolute;
     top: -60px;

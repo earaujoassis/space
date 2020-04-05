@@ -314,7 +314,7 @@ func authorizeHandler(c *gin.Context) {
     }
 
     if scope != models.PublicScope && scope != models.ReadScope && scope != models.ReadWriteScope {
-        scope = "public"
+        scope = models.PublicScope
     }
 
     switch responseType {
