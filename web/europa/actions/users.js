@@ -1,5 +1,5 @@
 import { ActionTypes } from '../../core/constants'
-import { ActionCreator, processResponse, processData, processHandlerClojure } from '../../core/actions/base'
+import { ActionCreator, processResponse, processData, processHandler, processHandlerClojure } from '../../core/actions/base'
 import SpaceApi from '../../core/utils/spaceApi'
 
 import UserStore from '../stores/users'
@@ -27,6 +27,16 @@ class UsersActionFactory {
         return actionProxy('fetchActiveClients')
     }
 
+    requestUpdate(data) {
+        let action = new ActionCreator()
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        return SpaceApi.requestUpdate(data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandler)
+    }
+
     adminify(key) {
         let token = UserStore.getActionToken()
         let action = new ActionCreator()
@@ -41,9 +51,7 @@ class UsersActionFactory {
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
-            .then(() => {
-                UsersActions.fetchProfile()
-            })
+            .then(() => UsersActions.fetchProfile())
     }
 
     revokeActiveClient(key) {
@@ -54,13 +62,11 @@ class UsersActionFactory {
         action.setUUID()
         UserStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        return SpaceApi['revokeActiveClient'](id, key, token)
+        return SpaceApi.revokeActiveClient(id, key, token)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
-            .then(() => {
-                UsersActions.fetchActiveClients()
-            })
+            .then(() => UsersActions.fetchActiveClients())
     }
 }
 
