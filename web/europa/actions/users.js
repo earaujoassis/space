@@ -29,15 +29,15 @@ class UsersActionFactory {
 
     adminify(key) {
         let token = UserStore.getActionToken()
-        let id = UserStore.getUserId()
         let action = new ActionCreator()
         let data = new FormData()
+        data.append('application_key', key)
+        data.append('user_id', UserStore.getUserId())
 
         action.setUUID()
         UserStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        data.append('application_key', key)
-        return SpaceApi.adminify(id, token, data)
+        return SpaceApi.adminify(token, data)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))

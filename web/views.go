@@ -26,6 +26,7 @@ func createCustomRender() multitemplate.Render {
     render := multitemplate.New()
     render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
     render.AddFromFiles("error", "web/templates/default.html", "web/templates/error.html")
+    render.AddFromFiles("error.password_update", "web/templates/default.html", "web/templates/error.password_update.html")
     return render
 }
 
@@ -51,19 +52,23 @@ func ExposeRoutes(router *gin.Engine) {
         views.GET("/profile", jupiterHandler)
 
         views.GET("/profile/password", func(c *gin.Context) {
-            var authorizationBearer = c.Query("_bearer")
-            var blockedAction = false
+            var authorizationBearer = c.Query("_")
             action := services.ActionAuthentication(authorizationBearer)
-            if action.UUID == "" || !services.ActionGrantsWriteAbility(action) {
-                blockedAction = true
+
+            if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() {
+                c.HTML(http.StatusUnauthorized, "error.password_update", utils.H{
+                    "Title": " - Update Resource Owner Credential",
+                    "Internal": true,
+                })
+                return
             }
+
             c.HTML(http.StatusOK, "satellite", utils.H{
                 "Title": " - Update Resource Owner Credential",
                 "Satellite": "amalthea",
                 "Internal": true,
                 "Data": utils.H{
                     "action_token": action.Token,
-                    "blocked_action": blockedAction,
                 },
             })
         })
@@ -152,6 +157,7 @@ func ExposeRoutes(router *gin.Engine) {
             errorReason := c.Query("response_type")
 
             c.HTML(http.StatusOK, "error", utils.H{
+                "Internal": true,
                 "errorReason": errorReason,
             })
         })
@@ -245,7 +251,9 @@ func jupiterHandler(c *gin.Context) {
     actionToken := services.CreateAction(user, client,
         c.Request.RemoteAddr,
         c.Request.UserAgent(),
-        models.ReadWriteScope)
+        models.ReadWriteScope,
+        models.NotSpecialAction,
+    )
     c.HTML(http.StatusOK, "satellite", utils.H{
         "Title": " - Mission control",
         "Satellite": "europa",

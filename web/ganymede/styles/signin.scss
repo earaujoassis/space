@@ -3,7 +3,7 @@
   color: #fff;
 
   .user-avatar {
-    &.unknown:before, &.secrecy:before, &.code:before, &.magic:before {
+    &.unknown:before, &.secrecy:before, &.code:before, &.magic:before, &.password:before {
       display: block;
       position: absolute;
       color: #222;
@@ -33,6 +33,10 @@
       content: "\f0d0";
     }
 
+    &.password:before {
+      content: "\f09c";
+    }
+
     position: relative;
     width: 125px;
     height: 125px;
@@ -58,8 +62,18 @@
   }
 }
 .ganymede-strategies {
+  display: flex;
+  flex-direction: row;
   margin: auto;
   margin-top: -20px;
   width: 400px;
   font-size: 0.9rem;
+
+  .strategy-sibling {
+    flex: 1;
+
+    &:last-of-type {
+      text-align: right;
+    }
+  }
 }

@@ -5,13 +5,14 @@ import (
 )
 
 // CreateAction creates an ephemeral Action entry
-func CreateAction(user models.User, client models.Client, ip, userAgent, scopes string) models.Action {
+func CreateAction(user models.User, client models.Client, ip, userAgent, scopes string, description string) models.Action {
     var action models.Action = models.Action{
         User: user,
         Client: client,
         IP: ip,
         UserAgent: userAgent,
         Scopes: scopes,
+        Description: description,
     }
     if err := action.Save(); err != nil {
         return models.Action{}

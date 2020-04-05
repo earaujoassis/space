@@ -62,7 +62,7 @@ body {
 }
 .centered-message {
   padding-top: 20px;
-  padding-bottom: 60px;
+  padding-bottom: 20px;
 }
 .section-title {
   margin-bottom: 20px;
@@ -167,6 +167,10 @@ button,.button {
     }
   }
 }
+.error-illustration {
+  text-align: center;
+  padding: 40px 0;
+}
 .middle-box {
   position: relative;
   @media screen and (min-width: 600px) {
@@ -217,4 +221,13 @@ button,.button {
   color: #fff;
   text-align: center;
   cursor: default;
+
+  .success-box-row {
+    flex: 1;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
 }

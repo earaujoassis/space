@@ -21,29 +21,27 @@ export function processData(response) {
 }
 
 export function processHandler(data) {
-    let action
+    let action = action = new ActionCreator()
+    action.setUUID()
 
     if (data.error) {
-        action = new ActionCreator()
-        action.setUUID()
         action.dispatch({type: ActionTypes.ERROR, payload: data})
-        return action
+    } else {
+        action.dispatch({type: ActionTypes.SUCCESS, payload: data})
     }
 
-    action = new ActionCreator()
-    action.setUUID()
-    action.dispatch({type: ActionTypes.SUCCESS, payload: data})
     return action
 }
 
+// This one uses the same action-flux loop to track the subscriber/dispatcher
 export function processHandlerClojure(action) {
     return function processHandler(data) {
         if (data.error) {
             action.dispatch({type: ActionTypes.ERROR, payload: data})
-            return action
+        } else {
+            action.dispatch({type: ActionTypes.SUCCESS, payload: data})
         }
 
-        action.dispatch({type: ActionTypes.SUCCESS, payload: data})
         return action
     }
 }

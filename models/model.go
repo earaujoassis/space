@@ -55,6 +55,7 @@ func validateModel(tagName string, model interface{}) error {
     validate.AddFunction("token", validTokenType)
     validate.AddFunction("canonical", validCanonicalURIs)
     validate.AddFunction("redirect", validRedirectURIs)
+    validate.AddFunction("action", validAction)
     err := validate.Struct(model)
     if err != nil {
         return err

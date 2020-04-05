@@ -97,6 +97,152 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
         })
 
+        // Requires X-Requested-By and Origin (same-origin policy)
+        // Authorization type: action token / Bearer (for web use)
+        usersRoutes.PATCH("/update/adminify", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+            var cfg config.Config = config.GetGlobalConfig()
+            var uuid = c.PostForm("user_id")
+            var providedApplicationKey = c.PostForm("application_key")
+
+            if !feature.IsActive("user.adminify") {
+                c.JSON(http.StatusForbidden, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not updated",
+                    "error":    "Feature is not available at this time",
+                })
+                return
+            }
+
+            if providedApplicationKey != cfg.ApplicationKey {
+                c.JSON(http.StatusForbidden, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not updated",
+                    "error":    "Application key is incorrect",
+                })
+                return
+            }
+
+            if !security.ValidUUID(uuid) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid UUID for identification",
+                })
+                return
+            }
+
+            action := c.MustGet("Action").(models.Action)
+            user := services.FindUserByUUID(uuid)
+            if user.ID == 0 || user.ID != action.UserID {
+                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": oauth.AccessDenied,
+                })
+                return
+            }
+
+            dataStore := datastore.GetDataStoreConnection()
+            user.Admin = true
+            dataStore.Save(&user)
+
+            c.JSON(http.StatusNoContent, nil)
+        })
+
+        // Requires X-Requested-By and Origin (same-origin policy)
+        usersRoutes.PATCH("/update/password", requiresConformance, func(c *gin.Context) {
+            var bearer = c.PostForm("_")
+            var new_password = c.PostForm("new_password")
+            var password_confirmation = c.PostForm("password_confirmation")
+
+            if !security.ValidRandomString(bearer) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid token string",
+                })
+                return
+            }
+
+            action := services.ActionAuthentication(bearer)
+            user := services.FindUserByID(action.UserID)
+            if user.ID == 0 {
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "error": "token string not valid",
+                })
+                return
+            }
+
+            if new_password != password_confirmation {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "new password and password confirmation must match each other",
+                })
+                return
+            }
+
+            user.UpdatePassword(new_password)
+            if !models.IsValid("essential", user) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not updated",
+                    "error":    "Invalid password update attempt",
+                    "user":     user,
+                })
+                return
+            }
+
+            dataStore := datastore.GetDataStoreConnection()
+            dataStore.Save(&user)
+            action.Delete()
+            c.JSON(http.StatusNoContent, nil)
+        })
+
+        // Requires X-Requested-By and Origin (same-origin policy)
+        usersRoutes.POST("/update/request", requiresConformance, func(c *gin.Context) {
+            var holder = c.PostForm("holder")
+            var requestType = c.PostForm("request_type")
+            var host = fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+
+            const (
+                passwordType = "password"
+            )
+
+            if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "must use valid holder string",
+                })
+                return
+            }
+
+            // TODO Use case/match for new request types
+            if requestType != passwordType {
+                c.JSON(http.StatusBadRequest, utils.H{
+                    "error": "request type not available",
+                })
+                return
+            }
+
+            user := services.FindUserByAccountHolder(holder)
+            client := services.FindOrCreateClient("Jupiter")
+            if user.ID != 0 {
+                actionToken := services.CreateAction(user, client,
+                    c.Request.RemoteAddr,
+                    c.Request.UserAgent(),
+                    models.ReadWriteScope,
+                    models.UpdateUserAction,
+                )
+                go logger.LogAction("session.magic", utils.H{
+                    "Email":     user.Email,
+                    "FirstName": user.FirstName,
+                    "Callback": fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
+                })
+                c.JSON(http.StatusOK, utils.H{
+                    "_status":  "requested",
+                    "_message": "Update password requested",
+                })
+                return
+            }
+            c.JSON(http.StatusOK, utils.H{
+                "_status":  "requested",
+                "_message": "Update password requested",
+            })
+        })
+
         // Authorization type: access session / Bearer (for OAuth sessions)
         usersRoutes.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
             var publicID = c.PostForm("user_id")
@@ -120,12 +266,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
             c.JSON(http.StatusOK, utils.H{
                 "user": user,
             })
-        })
-
-        // Requires X-Requested-By and Origin (same-origin policy)
-        // Authorization type: action token / Bearer (for web use)
-        usersRoutes.PATCH("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            c.String(http.StatusMethodNotAllowed, "Not implemented")
         })
 
         // Requires X-Requested-By and Origin (same-origin policy)
@@ -223,55 +363,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             c.Status(http.StatusNoContent)
         })
-
-        // Requires X-Requested-By and Origin (same-origin policy)
-        // Authorization type: action token / Bearer (for web use)
-        usersRoutes.PATCH("/:user_id/adminify", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-            var cfg config.Config = config.GetGlobalConfig()
-            var uuid = c.Param("user_id")
-            var providedApplicationKey = c.PostForm("application_key")
-
-            if !feature.IsActive("user.adminify") {
-                c.JSON(http.StatusForbidden, utils.H{
-                    "_status":  "error",
-                    "_message": "User was not updated",
-                    "error":    "Feature is not available at this time",
-                })
-                return
-            }
-
-            if providedApplicationKey != cfg.ApplicationKey {
-                c.JSON(http.StatusForbidden, utils.H{
-                    "_status":  "error",
-                    "_message": "User was not updated",
-                    "error":    "Application key is incorrect",
-                })
-                return
-            }
-
-            if !security.ValidUUID(uuid) {
-                c.JSON(http.StatusBadRequest, utils.H{
-                    "error": "must use valid UUID for identification",
-                })
-                return
-            }
-
-            action := c.MustGet("Action").(models.Action)
-            user := services.FindUserByUUID(uuid)
-            if user.ID == 0 || user.ID != action.UserID {
-                c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-                c.JSON(http.StatusUnauthorized, utils.H{
-                    "error": oauth.AccessDenied,
-                })
-                return
-            }
-
-            dataStore := datastore.GetDataStoreConnection()
-            user.Admin = true
-            dataStore.Save(&user)
-
-            c.JSON(http.StatusNoContent, nil)
-        })
     }
     sessionsRoutes := router.Group("/sessions")
     {
@@ -367,7 +458,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
                         go logger.LogAction("session.magic", utils.H{
                             "Email":     user.Email,
                             "FirstName": user.FirstName,
-                            "IP":        session.IP,
                             "CreatedAt": session.CreatedAt.Format(time.RFC850),
                             "Callback": fmt.Sprintf("%s/session?client_id=%s&code=%s&grant_type=authorization_code&scope=%s&state=%s&_=%s",
                                 host, client.Key, session.Token, session.Scopes, state, next),
