@@ -20,12 +20,33 @@ import (
 func Server() {
     datastore.Start()
     router := gin.Default()
-    web.ExposeRoutes(router)
-    restAPI := router.Group("/api")
-    api.ExposeRoutes(restAPI)
+    router.Use(func(c *gin.Context) {
+        defer func(c *gin.Context) {
+            // TODO It is not displaying/logging the error
+            if rec := recover(); rec != nil {
+                // var accept = c.Request.Header.Get("Accept")
+                // We're not checking Accept because there are only two paths for JSON responses: starting with /api and starting with /token
+                // We could check for X-Requested-With == 'XMLHttpRequest' as well
+                if path := c.Request.URL.Path; strings.HasPrefix(path, "/api") || strings.HasPrefix(path, "/token") {
+                    c.JSON(http.StatusInternalServerError, utils.H{
+                        "_status":  "error",
+                        "_message": "Bad server",
+                        "error": "The server found an error; aborting",
+                    })
+                } else {
+                    c.HTML(http.StatusInternalServerError, "error.internal", utils.H{
+                        "Title": " - Bad Server",
+                        "Internal": true,
+                    })
+                }
+            }
+        }(c)
+        c.Next()
+    })
     router.NoRoute(func(c *gin.Context) {
         // var accept = c.Request.Header.Get("Accept")
         // We're not checking Accept because there are only two paths for JSON responses: starting with /api and starting with /token
+        // We could check for X-Requested-With == 'XMLHttpRequest' as well
         if path := c.Request.URL.Path; strings.HasPrefix(path, "/api") || strings.HasPrefix(path, "/token") {
             c.JSON(http.StatusNotFound, utils.H{
                 "_status":  "error",
@@ -39,6 +60,9 @@ func Server() {
             })
         }
     })
+    web.ExposeRoutes(router)
+    restAPI := router.Group("/api")
+    api.ExposeRoutes(restAPI)
     router.Run(fmt.Sprintf(":%v", config.GetEnvVar("PORT")))
 }
 

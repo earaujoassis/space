@@ -29,6 +29,7 @@ func createCustomRender() multitemplate.Render {
     render.AddFromFiles("error.password_update", "web/templates/default.html", "web/templates/error.password_update.html")
     render.AddFromFiles("error.authorization", "web/templates/default.html", "web/templates/error.authorization.html")
     render.AddFromFiles("error.not_found", "web/templates/default.html", "web/templates/error.not_found.html")
+    render.AddFromFiles("error.internal", "web/templates/default.html", "web/templates/error.internal.html")
     return render
 }
 
