@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
 
 import SessionsActions from '../actions/sessions'
+import UsersActions from '../actions/users'
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
 import SuccessBox from '../../core/components/SuccessBox.jsx'
 
 import { getParameterByName } from '../../core/utils/url'
 
-const RequestForm = ({ onRequest }) => {
+// TODO Handle errors from Stores
+const RequestForm = ({ type, onRequest }) => {
     const [lockedForm, setLockedForm] = useState(false)
     const [holder, setHolderValue] = useState('')
 
@@ -25,7 +27,7 @@ const RequestForm = ({ onRequest }) => {
         <div className="middle-box signin-content">
             <Row>
                 <Columns className="small-12">
-                    <div className="user-avatar magic"></div>
+                    <div className={`user-avatar ${type}`}></div>
                     <form action="." method="post">
                         <input type="text"
                             name="holder"
@@ -39,42 +41,50 @@ const RequestForm = ({ onRequest }) => {
                             onClick={(e) => {
                                 if (e) e.preventDefault()
 
-                                let next = getParameterByName('_')
                                 let formData = new FormData()
-
                                 formData.append('holder', holder)
-                                if (next && next) {
-                                    formData.append('next', next)
+                                if (type === 'magic') {
+                                    let next = getParameterByName('_')
+                                    if (next && next) {
+                                        formData.append('next', next)
+                                    }
+                                    SessionsActions.requestMagicLink(formData)
+                                } else {
+                                    formData.append('request_type', 'password')
+                                    UsersActions.requestUpdate(formData)
                                 }
 
-                                SessionsActions.requestMagicLink(formData)
                                 setLockedForm(true)
                                 onRequest(true)
                             }}
-                            disabled={lockedForm}>Request Magic Link</button>
+                            disabled={lockedForm}>
+                            {type === 'magic' ? 'Request Magic Link' : 'Request to update password'}
+                        </button>
                     </form>
-                    <p className="upper-box">1<sub>min</sub> to request a magic link</p>
+                    <p className="upper-box">1<sub>min</sub> to make your request</p>
                 </Columns>
             </Row>
         </div>
     )
 }
 
-const magicLink = () => {
-    const [magicLinkRequested, setMagicLinkRequested] = useState(false)
+const userRequest = ({ type }) => {
+    const [requestedFulfilled, setRequestFulfilment] = useState(false)
 
     return (
         <div>
-            {magicLinkRequested === true ? (
+            {requestedFulfilled === true ? (
                 <SuccessBox>
                     <p>If the account holder is valid and active, you should receive an e-mail message in the next few minutes.</p>
                 </SuccessBox>
             ) : (
-                <RequestForm onRequest={setMagicLinkRequested} />
+                <RequestForm
+                    type={type}
+                    onRequest={setRequestFulfilment} />
             )}
 
         </div>
     )
 }
 
-export default magicLink
+export default userRequest

@@ -26,6 +26,18 @@ class SessionsActionFactory {
             .then(processHandler)
         return action.actionID()
     }
+
+    requestUpdate(data) {
+        let action = new ActionCreator()
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        SpaceApi
+            .requestUpdate(data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandler)
+        return action.actionID()
+    }
 }
 
 const SessionsActions = new SessionsActionFactory()
