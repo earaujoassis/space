@@ -52,6 +52,7 @@ func validateModel(tagName string, model interface{}) error {
     validate := validator.New(tagName, validator.BakedInValidators)
     validate.AddFunction("client", validClientType)
     validate.AddFunction("scope", validScope)
+    validate.AddFunction("restrict", validClientScopes)
     validate.AddFunction("token", validTokenType)
     validate.AddFunction("canonical", validCanonicalURIs)
     validate.AddFunction("redirect", validRedirectURIs)

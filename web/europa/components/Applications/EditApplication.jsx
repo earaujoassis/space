@@ -52,6 +52,19 @@ const editApplication = ({ client, onSubmit, onCancel }) => {
                     </p>
                 </Columns>
             </Row>
+            <Row>
+                <Columns className="small-12">
+                    <label htmlFor="scopes">Scope</label>
+                    <span className="select-wrapper">
+                        <select defaultValue={''} name="scopes">
+                            <option value="" disabled>Select new scope</option>
+                            <option value="public">Public</option>
+                            <option value="read">Read</option>
+                        </select>
+                    </span>
+                    <p className="form-warning">By default, all applications are created with &quot;Public&quot; scope</p>
+                </Columns>
+            </Row>
         </form>
     )
 }

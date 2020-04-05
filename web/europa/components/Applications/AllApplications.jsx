@@ -54,7 +54,7 @@ const allApplications = () => {
             <EditApplication client={client}
                 onCancel={() => setEditingId(null)}
                 onSubmit={(target) => {
-                    const attrs = ['canonical_uri', 'redirect_uri']
+                    const attrs = ['canonical_uri', 'redirect_uri', 'scopes']
                     ClientsActions.updateClient(client.id, extractDataForm(target, attrs)).then(() => {
                         ClientsActions.fetchClients()
                         setEditingId(null)
