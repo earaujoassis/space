@@ -73,12 +73,13 @@ func (action *Action) Delete() {
     memstore.Do("ZREM", "models.actions.rank", action.UUID)
 }
 
-// WithinExpirationWindow checks if a Action entry is still valid (time-based)
+// WithinExpirationWindow checks if an Action entry is still valid (time-based)
 func (action *Action) WithinExpirationWindow() bool {
     now := time.Now().UTC().Unix()
     return action.ExpiresIn == eternalExpirationLength || action.Moment + action.ExpiresIn >= now
 }
 
+// CanUpdateUser checks if an Action description is valid for user update actions
 func (action *Action) CanUpdateUser() bool {
     return action.Description == UpdateUserAction
 }

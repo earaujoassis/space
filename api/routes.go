@@ -149,8 +149,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
         // Requires X-Requested-By and Origin (same-origin policy)
         usersRoutes.PATCH("/update/password", requiresConformance, func(c *gin.Context) {
             var bearer = c.PostForm("_")
-            var new_password = c.PostForm("new_password")
-            var password_confirmation = c.PostForm("password_confirmation")
+            var newPassword = c.PostForm("new_password")
+            var passwordConfirmation = c.PostForm("password_confirmation")
 
             if !security.ValidRandomString(bearer) {
                 c.JSON(http.StatusBadRequest, utils.H{
@@ -168,14 +168,14 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            if new_password != password_confirmation {
+            if newPassword != passwordConfirmation {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "error": "new password and password confirmation must match each other",
                 })
                 return
             }
 
-            user.UpdatePassword(new_password)
+            user.UpdatePassword(newPassword)
             if !models.IsValid("essential", user) {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "_status":  "error",
