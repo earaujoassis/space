@@ -1,80 +1,67 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import UserStore from '../../stores/users'
 import UsersActions from '../../actions/users'
 
-export default class MyApplications extends React.Component {
-    constructor() {
-        super()
-        this.state = {loading: true}
-        this._updateFromStore = this._updateFromStore.bind(this)
-        this._applications = this._applications.bind(this)
-    }
+const myApplications = () => {
+    const [storeState, setStoreState] = useState({isLoading: true})
 
-    componentDidMount() {
-        UserStore.addChangeListener(this._updateFromStore)
+    useEffect(() => {
+        const updateLocalStoreState = () => {
+            if (UserStore.success()) {
+                const state = Object.assign({}, UserStore.getState().payload || {}, {isLoading: false})
+                setStoreState(state)
+            }
+        }
+
+        UserStore.addChangeListener(updateLocalStoreState)
         UsersActions.fetchActiveClients()
-    }
 
-    componentWillUnmount() {
-        UserStore.removeChangeListener(this._updateFromStore)
-    }
-
-    render() {
-        return (
-            <div className="applications-listing">
-                {this.state.loading ? (
-                    <p className="text-center">Loading...</p>
-                ) : (
-                    this._applications()
-                )}
-            </div>
-        )
-    }
-
-    _applications() {
-        if (this.state.loading) {
-            return null
+        return function cleanup() {
+            UserStore.removeChangeListener(updateLocalStoreState)
         }
+    }, [])
 
-        if (!this.state.clients.length) {
-            return (<p className="blank-list">No applications available yet.</p>)
-        }
+    const { isLoading, clients, id } = storeState
 
-        let applications = []
-        for (var i = 0; i < this.state.clients.length; i++) {
-            let client = this.state.clients[i]
-            applications.push(
-                <div className="application-card" key={i}>
-                    <p className="title">
-                        {client.name}
-                        &nbsp;
-                        <small>(<a href={client.uri.split('\n')[0]}
-                            rel="noopener noreferrer"
-                            target="_blank">{client.uri.split('\n')[0].split(/:\/\//)[1]}</a>)</small>
-                    </p>
-                    <p className="description">{client.description}</p>
-                    <ul className="inline-list all-applications-options">
-                        <li>
-                            <a href="#revoke"
-                                onClick={this._revokeAccess.bind(client)}>Revoke access</a>
-                        </li>
-                    </ul>
-                </div>
-            )
-        }
-        return applications
+    if (isLoading) {
+        return <div className="applications-listing">
+            <p className="text-center">Loading...</p>
+        </div>
     }
 
-    _revokeAccess(e) {
-        e.preventDefault()
-        UsersActions.revokeActiveClient(this.id)
+    if (!clients || !clients.length) {
+        return <div className="applications-listing">
+            <p className="blank-list">No applications available yet.</p>
+        </div>
     }
 
-    _updateFromStore() {
-        if (UserStore.success()) {
-            let state = Object.assign({}, UserStore.getState().payload || {}, {loading: false})
-            this.setState(state)
-        }
-    }
+    const applications = clients.map((client, i) =>
+        <div className="application-card" key={i}>
+            <p className="title">
+                {client.name}
+                &nbsp;
+                <small>(<a href={client.uri.split('\n')[0]}
+                    rel="noopener noreferrer"
+                    target="_blank">{client.uri.split('\n')[0].split(/:\/\//)[1]}</a>)</small>
+            </p>
+            <p className="description">{client.description}</p>
+            <ul className="inline-list all-applications-options">
+                <li>
+                    <a href="#revoke"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            UsersActions.revokeActiveClient(id)
+                        }}>Revoke access</a>
+                </li>
+            </ul>
+        </div>)
+
+
+    return <div className="applications-listing">
+        {applications}
+    </div>
+
 }
+
+export default myApplications
