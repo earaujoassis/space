@@ -28,6 +28,7 @@ func createCustomRender() multitemplate.Render {
     render.AddFromFiles("error.generic", "web/templates/default.html", "web/templates/error.generic.html")
     render.AddFromFiles("error.password_update", "web/templates/default.html", "web/templates/error.password_update.html")
     render.AddFromFiles("error.authorization", "web/templates/default.html", "web/templates/error.authorization.html")
+    render.AddFromFiles("error.not_found", "web/templates/default.html", "web/templates/error.not_found.html")
     return render
 }
 
@@ -76,7 +77,7 @@ func ExposeRoutes(router *gin.Engine) {
 
         views.GET("/signup", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
-                "Title": " - Sign up",
+                "Title": " - Sign Up",
                 "Satellite": "io",
                 "UserCreateEnabled": feature.IsActive("user.create"),
                 "Data": utils.H{
@@ -89,7 +90,7 @@ func ExposeRoutes(router *gin.Engine) {
 
         views.GET("/signin", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
-                "Title": " - Sign in",
+                "Title": " - Sign In",
                 "Satellite": "ganymede",
                 "UserCreateEnabled": feature.IsActive("user.create"),
             })
@@ -158,6 +159,7 @@ func ExposeRoutes(router *gin.Engine) {
             errorReason := c.Query("error")
 
             c.HTML(http.StatusOK, "error.generic", utils.H{
+                "Title": " - Unexpected Error",
                 "Internal": true,
                 "ErrorReason": errorReason,
             })
@@ -171,6 +173,8 @@ func ExposeRoutes(router *gin.Engine) {
             if client.ID == 0 {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status": "error",
+                    "_message": "Cannot fulfill token request",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -187,11 +191,15 @@ func ExposeRoutes(router *gin.Engine) {
                 })
                 if err != nil {
                     c.JSON(http.StatusMethodNotAllowed, utils.H{
+                        "_status": "error",
+                        "_message": "Cannot fulfill token request",
                         "error": result["error"],
                     })
                     return
                 }
                 c.JSON(http.StatusOK, utils.H{
+                    "_status":  "success",
+                    "_message": "Token granted",
                     "user_id": result["user_id"],
                     "access_token": result["access_token"],
                     "token_type": result["token_type"],
@@ -210,11 +218,15 @@ func ExposeRoutes(router *gin.Engine) {
                 })
                 if err != nil {
                     c.JSON(http.StatusMethodNotAllowed, utils.H{
+                        "_status": "error",
+                        "_message": "Cannot fulfill token request",
                         "error": result["error"],
                     })
                     return
                 }
                 c.JSON(http.StatusOK, utils.H{
+                    "_status":  "success",
+                    "_message": "Token granted",
                     "user_id": result["user_id"],
                     "access_token": result["access_token"],
                     "token_type": result["token_type"],
@@ -227,11 +239,15 @@ func ExposeRoutes(router *gin.Engine) {
             // Client Credentials Grant
             case oauth.Password, oauth.ClientCredentials:
                 c.JSON(http.StatusMethodNotAllowed, utils.H{
+                    "_status": "error",
+                    "_message": "Cannot fulfill token request",
                     "error": oauth.UnsupportedGrantType,
                 })
                 return
             default:
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status": "error",
+                    "_message": "Cannot fulfill token request",
                     "error": oauth.InvalidRequest,
                 })
                 return
@@ -256,7 +272,7 @@ func jupiterHandler(c *gin.Context) {
         models.NotSpecialAction,
     )
     c.HTML(http.StatusOK, "satellite", utils.H{
-        "Title": " - Mission control",
+        "Title": " - Mission Control",
         "Satellite": "europa",
         "Internal": true,
         "Data": utils.H {
