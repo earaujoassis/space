@@ -1,42 +1,9 @@
 .signin-content {
-  position: relative;
-  @media screen and (min-width: 600px) {
-    max-width: 400px;
-  }
-  @media screen and (max-width: 600px) {
-    max-width: 90%;
-    background: transparent;
-    box-shadow: none;
-    color: #111;
-    margin: 0 auto;
-    padding: 25px 40px;
-  }
-  margin: 35px auto;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  padding: 40px 40px;
   background: #323232;
   color: #fff;
 
-  &:before {
-    content: "";
-    z-index: -1;
-    position: absolute;
-    left: 0;
-    top: -13px;
-    display: block;
-    width: 400px;
-    height: 400px;
-    border: 11.3262379px solid #272727;
-    transform: rotate(11.32624deg);
-    opacity: 0.1;
-
-    @media screen and (max-width: 600px) {
-      display: none;
-    }
-  }
-
   .user-avatar {
-    &.unknown:before, &.secrecy:before, &.code:before, &.magic:before {
+    &.unknown:before, &.secrecy:before, &.code:before, &.magic:before, &.password:before {
       display: block;
       position: absolute;
       color: #222;
@@ -66,6 +33,10 @@
       content: "\f0d0";
     }
 
+    &.password:before {
+      content: "\f09c";
+    }
+
     position: relative;
     width: 125px;
     height: 125px;
@@ -89,25 +60,20 @@
   p {
     margin: 0;
   }
-
-  .requested {
-    position: absolute;
-    z-index: 100;
-    top: -55px;
-    left: -40px;
-    right: -40px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    background: #05A054;
-    color: #fff;
-    font-size: 0.9rem;
-    text-align: center;
-  }
 }
-
 .ganymede-strategies {
-  width: 400px;
+  display: flex;
+  flex-direction: row;
   margin: auto;
   margin-top: -20px;
+  width: 400px;
+  font-size: 0.9rem;
+
+  .strategy-sibling {
+    flex: 1;
+
+    &:last-of-type {
+      text-align: right;
+    }
+  }
 }

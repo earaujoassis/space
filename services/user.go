@@ -29,6 +29,14 @@ func FindUserByUUID(uuid string) models.User {
     return user
 }
 
+// FindUserByID gets an user by its ID (internal use only)
+func FindUserByID(id uint) models.User {
+    var user models.User
+    dataStoreSession := datastore.GetDataStoreConnection()
+    dataStoreSession.Preload("Client").Preload("Language").Where("id = ?", id).First(&user)
+    return user
+}
+
 // ActiveClientsForUser lists client applications for a given user
 func ActiveClientsForUser(userIID uint) []models.Client {
     var clients []models.Client

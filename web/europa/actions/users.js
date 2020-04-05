@@ -1,6 +1,6 @@
 import { ActionTypes } from '../../core/constants'
-import { ActionCreator, processResponse, processData, processHandlerClojure } from '../../core/actions/base'
-import SpaceApi from '../../core/utils/SpaceApi'
+import { ActionCreator, processResponse, processData, processHandler, processHandlerClojure } from '../../core/actions/base'
+import SpaceApi from '../../core/utils/spaceApi'
 
 import UserStore from '../stores/users'
 
@@ -27,23 +27,31 @@ class UsersActionFactory {
         return actionProxy('fetchActiveClients')
     }
 
+    requestUpdate(data) {
+        let action = new ActionCreator()
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        return SpaceApi.requestUpdate(data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandler)
+    }
+
     adminify(key) {
         let token = UserStore.getActionToken()
-        let id = UserStore.getUserId()
         let action = new ActionCreator()
         let data = new FormData()
+        data.append('application_key', key)
+        data.append('user_id', UserStore.getUserId())
 
         action.setUUID()
         UserStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        data.append('application_key', key)
-        return SpaceApi.adminify(id, token, data)
+        return SpaceApi.adminify(token, data)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
-            .then(() => {
-                UsersActions.fetchProfile()
-            })
+            .then(() => UsersActions.fetchProfile())
     }
 
     revokeActiveClient(key) {
@@ -54,13 +62,11 @@ class UsersActionFactory {
         action.setUUID()
         UserStore.associateAction(action.actionID())
         action.dispatch({type: ActionTypes.SEND_DATA})
-        return SpaceApi['revokeActiveClient'](id, key, token)
+        return SpaceApi.revokeActiveClient(id, key, token)
             .then(processResponse)
             .then(processData)
             .then(processHandlerClojure(action))
-            .then(() => {
-                UsersActions.fetchActiveClients()
-            })
+            .then(() => UsersActions.fetchActiveClients())
     }
 }
 

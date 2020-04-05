@@ -8,6 +8,13 @@ import (
     "github.com/earaujoassis/space/memstore"
 )
 
+const (
+    // NotSpecialAction action description, used for ephemeral actions with no special meaning
+    NotSpecialAction           string = "not_special"
+    // UpdateUserAction action description, user for ephemeral actions updating user data
+    UpdateUserAction           string = "update_user"
+)
+
 // Action is a model/struct used to represent ephemeral actions/sessions in the application
 type Action struct {
     UUID string                 `validate:"omitempty,uuid4" json:"uuid"`
@@ -21,7 +28,16 @@ type Action struct {
     UserAgent string            `validate:"required" json:"user_agent"`
     Token string                `validate:"omitempty,alphanum" json:"token"`
     Scopes string               `validate:"required,scope" json:"scopes"`
+    Description string          `validate:"required,action" json:"description"`
     CreatedAt time.Time         `json:"created_at"`
+}
+
+func validAction(top interface{}, current interface{}, field interface{}, param string) bool {
+    description := field.(string)
+    if description != NotSpecialAction && description != UpdateUserAction {
+        return false
+    }
+    return true
 }
 
 // Save saves an Action entry in a memory store (Redis)
@@ -57,10 +73,15 @@ func (action *Action) Delete() {
     memstore.Do("ZREM", "models.actions.rank", action.UUID)
 }
 
-// WithinExpirationWindow checks if a Action entry is still valid (time-based)
+// WithinExpirationWindow checks if an Action entry is still valid (time-based)
 func (action *Action) WithinExpirationWindow() bool {
     now := time.Now().UTC().Unix()
     return action.ExpiresIn == eternalExpirationLength || action.Moment + action.ExpiresIn >= now
+}
+
+// CanUpdateUser checks if an Action description is valid for user update actions
+func (action *Action) CanUpdateUser() bool {
+    return action.Description == UpdateUserAction
 }
 
 // RetrieveActionByUUID obtains an Action entry from its UUID

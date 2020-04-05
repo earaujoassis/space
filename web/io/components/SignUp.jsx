@@ -1,17 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import UsersActions from '../actions/users'
 import Row from '../../core/components/Row.jsx'
 import Columns from '../../core/components/Columns.jsx'
+import PasswordInput from '../../core/components/PasswordInput.jsx'
 
 import { extractDataForm } from '../../core/utils/forms'
 
-const hideImg = '/public/imgs/eye-open.png'
-const displayImg = '/public/imgs/eye-blocked.png'
-
 const signUp = ({ validationFailed }) => {
-    const [showPassword, setShowPassword] = useState(true)
-
     return (
         <div className="signup-content">
             <Row>
@@ -53,21 +49,7 @@ const signUp = ({ validationFailed }) => {
                         <input type="hidden" name="action_token" value="" />
                         <input type="text" name="username" placeholder="Username" required />
                         <input type="email" name="email" placeholder="Email" required />
-                        <div className="password-visibility">
-                            <input type={showPassword ? 'password' : 'text'} name="password" placeholder="Password" required />
-                            <button
-                                className="visibility-toggle"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    setShowPassword(!showPassword)
-                                }}>
-                                <img
-                                    src={showPassword ? displayImg : hideImg}
-                                    width="20"
-                                    title="Toggle password visibility"
-                                    alt="" />
-                            </button>
-                        </div>
+                        <PasswordInput />
                         <button type="submit" className="button expand">Sign Up</button>
                     </form>
                 </Columns>
