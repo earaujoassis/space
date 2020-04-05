@@ -25,8 +25,11 @@ const (
 func createCustomRender() multitemplate.Render {
     render := multitemplate.New()
     render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
-    render.AddFromFiles("error", "web/templates/default.html", "web/templates/error.html")
+    render.AddFromFiles("error.generic", "web/templates/default.html", "web/templates/error.generic.html")
     render.AddFromFiles("error.password_update", "web/templates/default.html", "web/templates/error.password_update.html")
+    render.AddFromFiles("error.authorization", "web/templates/default.html", "web/templates/error.authorization.html")
+    render.AddFromFiles("error.not_found", "web/templates/default.html", "web/templates/error.not_found.html")
+    render.AddFromFiles("error.internal", "web/templates/default.html", "web/templates/error.internal.html")
     return render
 }
 
@@ -75,7 +78,7 @@ func ExposeRoutes(router *gin.Engine) {
 
         views.GET("/signup", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
-                "Title": " - Sign up",
+                "Title": " - Sign Up",
                 "Satellite": "io",
                 "UserCreateEnabled": feature.IsActive("user.create"),
                 "Data": utils.H{
@@ -88,7 +91,7 @@ func ExposeRoutes(router *gin.Engine) {
 
         views.GET("/signin", func(c *gin.Context) {
             c.HTML(http.StatusOK, "satellite", utils.H{
-                "Title": " - Sign in",
+                "Title": " - Sign In",
                 "Satellite": "ganymede",
                 "UserCreateEnabled": feature.IsActive("user.create"),
             })
@@ -154,11 +157,12 @@ func ExposeRoutes(router *gin.Engine) {
         views.POST("/authorize", authorizeHandler)
 
         views.GET("/error", func(c *gin.Context) {
-            errorReason := c.Query("response_type")
+            errorReason := c.Query("error")
 
-            c.HTML(http.StatusOK, "error", utils.H{
+            c.HTML(http.StatusOK, "error.generic", utils.H{
+                "Title": " - Unexpected Error",
                 "Internal": true,
-                "errorReason": errorReason,
+                "ErrorReason": errorReason,
             })
         })
 
@@ -170,6 +174,8 @@ func ExposeRoutes(router *gin.Engine) {
             if client.ID == 0 {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status": "error",
+                    "_message": "Cannot fulfill token request",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -186,11 +192,15 @@ func ExposeRoutes(router *gin.Engine) {
                 })
                 if err != nil {
                     c.JSON(http.StatusMethodNotAllowed, utils.H{
+                        "_status": "error",
+                        "_message": "Cannot fulfill token request",
                         "error": result["error"],
                     })
                     return
                 }
                 c.JSON(http.StatusOK, utils.H{
+                    "_status":  "success",
+                    "_message": "Token granted",
                     "user_id": result["user_id"],
                     "access_token": result["access_token"],
                     "token_type": result["token_type"],
@@ -209,11 +219,15 @@ func ExposeRoutes(router *gin.Engine) {
                 })
                 if err != nil {
                     c.JSON(http.StatusMethodNotAllowed, utils.H{
+                        "_status": "error",
+                        "_message": "Cannot fulfill token request",
                         "error": result["error"],
                     })
                     return
                 }
                 c.JSON(http.StatusOK, utils.H{
+                    "_status":  "success",
+                    "_message": "Token granted",
                     "user_id": result["user_id"],
                     "access_token": result["access_token"],
                     "token_type": result["token_type"],
@@ -226,11 +240,15 @@ func ExposeRoutes(router *gin.Engine) {
             // Client Credentials Grant
             case oauth.Password, oauth.ClientCredentials:
                 c.JSON(http.StatusMethodNotAllowed, utils.H{
+                    "_status": "error",
+                    "_message": "Cannot fulfill token request",
                     "error": oauth.UnsupportedGrantType,
                 })
                 return
             default:
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status": "error",
+                    "_message": "Cannot fulfill token request",
                     "error": oauth.InvalidRequest,
                 })
                 return
@@ -255,7 +273,7 @@ func jupiterHandler(c *gin.Context) {
         models.NotSpecialAction,
     )
     c.HTML(http.StatusOK, "satellite", utils.H{
-        "Title": " - Mission control",
+        "Title": " - Mission Control",
         "Satellite": "europa",
         "Internal": true,
         "Data": utils.H {
@@ -306,10 +324,16 @@ func authorizeHandler(c *gin.Context) {
 
     client := services.FindClientByKey(clientID)
     if client.ID == 0 {
-        redirectURI = "/error"
-        location = fmt.Sprintf("%s?error=%s&state=%s",
-            redirectURI, oauth.UnauthorizedClient, state)
-        c.Redirect(http.StatusFound, location)
+        // REFACTOR This scenario is the trickiest one
+        // redirectURI = "/error"
+        // location = fmt.Sprintf("%s?error=%s&state=%s", redirectURI, oauth.UnauthorizedClient, state)
+        // Previous return: c.HTML(http.StatusFound, location)
+        c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
+            "Title": " - Authorization Error",
+            "Internal": true,
+            "ProceedTo": nil,
+            "ErrorCode": oauth.UnauthorizedClient,
+        })
         return
     }
 
@@ -337,6 +361,8 @@ func authorizeHandler(c *gin.Context) {
             return
         } else if c.Request.Method == "POST" || (activeSessions > 0 && c.Request.Method == "GET") {
             if c.PostForm("access_denied") == "true" {
+                // In this scenario, the user requested to deny access; it's not the client application's fault
+                // The client application is safe, so the user may proceed (client application must handle this)
                 location = fmt.Sprintf(errorURI, redirectURI, oauth.AccessDenied, state)
                 c.Redirect(http.StatusFound, location)
                 return
@@ -353,7 +379,13 @@ func authorizeHandler(c *gin.Context) {
             })
             if err != nil {
                 location = fmt.Sprintf(errorURI, redirectURI, result["error"], result["state"])
-                c.Redirect(http.StatusFound, location)
+                // Previous return: c.HTML(http.StatusFound, location)
+                c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
+                    "Title": " - Authorization Error",
+                    "Internal": true,
+                    "ProceedTo": location,
+                    "ErrorCode": result["error"],
+                })
             } else {
                 location = fmt.Sprintf("%s?code=%s&scope=%s&state=%s",
                     redirectURI, result["code"], result["scope"], result["state"])
@@ -364,14 +396,22 @@ func authorizeHandler(c *gin.Context) {
         }
     // Implicit Grant
     case oauth.Token:
-        location = fmt.Sprintf(errorURI,
-            redirectURI, oauth.UnsupportedResponseType, state)
-        c.Redirect(http.StatusFound, location)
-        return
+        location = fmt.Sprintf(errorURI, redirectURI, oauth.UnsupportedResponseType, state)
+        // Previous return: c.HTML(http.StatusFound, location)
+        c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
+            "Title": " - Authorization Error",
+            "Internal": true,
+            "ProceedTo": location,
+            "ErrorCode": oauth.UnsupportedResponseType,
+        })
     default:
-        location = fmt.Sprintf(errorURI,
-            redirectURI, oauth.InvalidRequest, state)
-        c.Redirect(http.StatusFound, location)
-        return
+        location = fmt.Sprintf(errorURI, redirectURI, oauth.InvalidRequest, state)
+        // Previous return: c.HTML(http.StatusFound, location)
+        c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
+            "Title": " - Authorization Error",
+            "Internal": true,
+            "ProceedTo": location,
+            "ErrorCode": oauth.InvalidRequest,
+        })
     }
 }

@@ -62,7 +62,7 @@ body {
 }
 .centered-message {
   padding-top: 20px;
-  padding-bottom: 20px;
+  padding-bottom: 0;
 }
 .section-title {
   margin-bottom: 20px;
@@ -223,6 +223,14 @@ button,.button {
 .error-illustration {
   text-align: center;
   padding: 40px 0;
+}
+.code-line {
+  display: inline-block;
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
 }
 .middle-box {
   position: relative;

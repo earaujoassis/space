@@ -38,7 +38,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 c.JSON(http.StatusForbidden, utils.H{
                     "_status":  "error",
                     "_message": "User was not created",
-                    "error":    "Feature is not available at this time",
+                    "error":    "feature is not available at this time",
                 })
                 return
             }
@@ -55,7 +55,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "_status":  "error",
                     "_message": "User was not created",
-                    "error":    "Missing essential fields",
+                    "error":    "missing essential fields",
                     "user":     user,
                 })
                 return
@@ -79,6 +79,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             result := dataStore.Create(&user)
             if count := result.RowsAffected; count < 1 {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not created",
                     "error": fmt.Sprintf("%v", result.GetErrors()),
                     "user":  user,
                 })
@@ -108,7 +110,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 c.JSON(http.StatusForbidden, utils.H{
                     "_status":  "error",
                     "_message": "User was not updated",
-                    "error":    "Feature is not available at this time",
+                    "error":    "feature is not available at this time",
                 })
                 return
             }
@@ -117,13 +119,15 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 c.JSON(http.StatusForbidden, utils.H{
                     "_status":  "error",
                     "_message": "User was not updated",
-                    "error":    "Application key is incorrect",
+                    "error":    "application key is incorrect",
                 })
                 return
             }
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not updated",
                     "error": "must use valid UUID for identification",
                 })
                 return
@@ -134,6 +138,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "User was not updated",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -142,7 +148,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
             dataStore := datastore.GetDataStoreConnection()
             user.Admin = true
             dataStore.Save(&user)
-
             c.JSON(http.StatusNoContent, nil)
         })
 
@@ -154,6 +159,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidRandomString(bearer) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User password was not updated",
                     "error": "must use valid token string",
                 })
                 return
@@ -163,6 +170,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             user := services.FindUserByID(action.UserID)
             if user.ID == 0 {
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "User password was not updated",
                     "error": "token string not valid",
                 })
                 return
@@ -170,6 +179,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if newPassword != passwordConfirmation {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User password was not updated",
                     "error": "new password and password confirmation must match each other",
                 })
                 return
@@ -179,8 +190,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if !models.IsValid("essential", user) {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "_status":  "error",
-                    "_message": "User was not updated",
-                    "error":    "Invalid password update attempt",
+                    "_message": "User password was not updated",
+                    "error":    "invalid password update attempt",
                     "user":     user,
                 })
                 return
@@ -204,6 +215,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "update request was not created",
                     "error": "must use valid holder string",
                 })
                 return
@@ -212,6 +225,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             // TODO Use case/match for new request types
             if requestType != passwordType {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "update request was not created",
                     "error": "request type not available",
                 })
                 return
@@ -231,16 +246,9 @@ func ExposeRoutes(router *gin.RouterGroup) {
                     "FirstName": user.FirstName,
                     "Callback": fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
                 })
-                c.JSON(http.StatusOK, utils.H{
-                    "_status":  "requested",
-                    "_message": "Update password requested",
-                })
-                return
             }
-            c.JSON(http.StatusOK, utils.H{
-                "_status":  "requested",
-                "_message": "Update password requested",
-            })
+            // No Content is the default response
+            c.JSON(http.StatusNoContent, nil)
         })
 
         // Authorization type: access session / Bearer (for OAuth sessions)
@@ -249,6 +257,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidRandomString(publicID) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User instropection failed",
                     "error": "must use valid identification string",
                 })
                 return
@@ -258,12 +268,16 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if user.ID == 0 || user.ID != session.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "User instropection failed",
                     "error": oauth.AccessDenied,
                 })
                 return
             }
 
             c.JSON(http.StatusOK, utils.H{
+                "_status":  "success",
+                "_message": "User instropection fulfilled",
                 "user": user,
             })
         })
@@ -275,6 +289,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User instropection failed",
                     "error": "must use valid UUID for identification",
                 })
                 return
@@ -285,12 +301,16 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "User instropection failed",
                     "error": oauth.AccessDenied,
                 })
                 return
             }
 
             c.JSON(http.StatusOK, utils.H{
+                "_status":  "success",
+                "_message": "User instropection fulfilled",
                 "user": utils.H{
                     "is_admin":            user.Admin,
                     "username":            user.Username,
@@ -315,6 +335,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidUUID(uuid) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "User's clients unavailable",
                     "error": "must use valid UUID for identification",
                 })
                 return
@@ -325,12 +347,16 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "User's clients unavailable",
                     "error": oauth.AccessDenied,
                 })
                 return
             }
 
             c.JSON(http.StatusOK, utils.H{
+                "_status":  "success",
+                "_message": "User's clients available",
                 "clients": services.ActiveClientsForUser(user.ID),
             })
         })
@@ -343,6 +369,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidUUID(userUUID) || !security.ValidUUID(clientUUID) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Client application irrevocable",
                     "error": "must use valid UUID for identification",
                 })
                 return
@@ -353,6 +381,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if user.ID == 0 || user.ID != action.UserID {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Client application irrevocable",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -360,8 +390,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             client := services.FindClientByUUID(clientUUID)
             services.RevokeClientAccess(client.ID, user.ID)
-
-            c.Status(http.StatusNoContent)
+            c.JSON(http.StatusNoContent, nil)
         })
     }
     sessionsRoutes := router.Group("/sessions")
@@ -377,6 +406,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Session was not created",
                     "error": "must use valid holder string",
                 })
                 return
@@ -418,9 +449,10 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
             policy.RegisterSignInAttempt(userID)
             c.JSON(http.StatusBadRequest, utils.H{
-                "error":             oauth.AccessDenied,
-                "error_description": "Unauthentic user; authorization token was not created",
-                "attempts":          statusSignInAttempts,
+                "_status":  "error",
+                "_message": "Session was not created",
+                "error":    oauth.AccessDenied,
+                "attempts": statusSignInAttempts,
             })
         })
 
@@ -438,6 +470,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Magic Session was not created",
                     "error": "must use valid holder string",
                 })
                 return
@@ -464,21 +498,13 @@ func ExposeRoutes(router *gin.RouterGroup) {
                         })
                         policy.RegisterSuccessfulSignIn(user.UUID)
                         policy.RegisterSuccessfulSignIn(IP)
-                        c.JSON(http.StatusOK, utils.H{
-                            "_status":  "requested",
-                            "_message": "Magic Session was requested",
-                            "state":    state,
-                        })
+                        c.JSON(http.StatusNoContent, nil)
                         return
                     }
                 }
             }
             policy.RegisterSignInAttempt(userID)
-            c.JSON(http.StatusOK, utils.H{
-                "_status":  "requested",
-                "_message": "Magic Session was requested",
-                "state":    state,
-            })
+            c.JSON(http.StatusNoContent, nil)
         })
 
         // Authorization type: Basic (for OAuth clients use)
@@ -487,6 +513,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidToken(token) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Session instropection failed",
                     "error": "must use valid token string",
                 })
                 return
@@ -495,11 +523,15 @@ func ExposeRoutes(router *gin.RouterGroup) {
             session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Session instropection failed",
                     "error": oauth.InvalidSession,
                 })
                 return
             }
             c.JSON(http.StatusOK, utils.H{
+                "_status":  "success",
+                "_message": "Session instropection fulfilled",
                 "active":     true,
                 "scope":      session.Scopes,
                 "client_id":  session.Client.Key,
@@ -513,6 +545,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidToken(token) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Session invalidation failed",
                     "error": "must use valid token string",
                 })
                 return
@@ -521,6 +555,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             session := services.FindSessionByToken(token, models.AccessToken)
             if session.ID == 0 {
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Session invalidation failed",
                     "error": oauth.InvalidSession,
                 })
                 return
@@ -548,12 +584,16 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Clients are not available",
                     "error": oauth.AccessDenied,
                 })
                 return
             }
 
             c.JSON(http.StatusOK, utils.H{
+                "_status":  "success",
+                "_message": "Clients are available",
                 "clients": services.ActiveClients(),
             })
         })
@@ -568,6 +608,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Client was not created",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -589,8 +631,10 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if client.ID == 0 {
                 c.JSON(http.StatusBadRequest, utils.H{
-                    "error":  "The client was not created",
-                    "client": client,
+                    "_status":  "error",
+                    "_message": "Client was not created",
+                    "error":    "cannot create Client",
+                    "client":   client,
                 })
             } else {
                 c.JSON(http.StatusNoContent, nil)
@@ -609,6 +653,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Client was not updated",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -616,6 +662,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidUUID(clientUUID) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Client was not updated",
                     "error": "must use valid UUID for identification",
                 })
                 return
@@ -635,7 +683,6 @@ func ExposeRoutes(router *gin.RouterGroup) {
             }
             dataStore := datastore.GetDataStoreConnection()
             dataStore.Save(&client)
-
             c.JSON(http.StatusNoContent, nil)
         })
 
@@ -650,6 +697,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
             if userPublicID == nil || user.ID == 0 || user.Admin != true {
                 c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
                 c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "Client credentials are not available",
                     "error": oauth.AccessDenied,
                 })
                 return
@@ -657,6 +706,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
             if !security.ValidUUID(clientUUID) {
                 c.JSON(http.StatusBadRequest, utils.H{
+                    "_status":  "error",
+                    "_message": "Client credentials are not available",
                     "error": "must use valid UUID for identification",
                 })
                 return
