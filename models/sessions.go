@@ -63,7 +63,7 @@ func expirationLengthForTokenType(tokenType string) int64 {
     case RefreshToken:
         return eternalExpirationLength
     case GrantToken:
-        return shortestExpirationLength
+        return machineryExpirationLength
     default:
         return defaultExpirationLength
     }

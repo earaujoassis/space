@@ -62,7 +62,7 @@ body {
 }
 .centered-message {
   padding-top: 20px;
-  padding-bottom: 60px;
+  padding-bottom: 20px;
 }
 .section-title {
   margin-bottom: 20px;
@@ -149,5 +149,85 @@ button,.button {
     border: 1px solid rgba(255, 0, 0, 0.25);
     border-radius: 2px;
     color: rgba(255, 0, 0, 0.5);
+  }
+
+  .password-visibility {
+    position: relative;
+
+    .visibility-toggle {
+      position: absolute;
+      top: 2px;
+      width: 35px;
+      height: 35px;
+      right: -35px;
+      background: transparent;
+      border: 0;
+      padding: 4px 0 2px;
+      box-shadow: none;
+    }
+  }
+}
+.error-illustration {
+  text-align: center;
+  padding: 40px 0;
+}
+.middle-box {
+  position: relative;
+  @media screen and (min-width: 600px) {
+    max-width: 400px;
+  }
+  @media screen and (max-width: 600px) {
+    max-width: 90%;
+    background: transparent;
+    box-shadow: none;
+    color: #111;
+    margin: 0 auto;
+    padding: 25px 40px;
+  }
+  margin: 35px auto;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  padding: 40px 40px;
+  min-height: 377px;
+
+  &:before {
+    content: "";
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    top: -13px;
+    display: block;
+    width: 400px;
+    height: 400px;
+    border: 11.3262379px solid #272727;
+    transform: rotate(11.32624deg);
+    opacity: 0.1;
+
+    @media screen and (max-width: 600px) {
+      display: none;
+    }
+  }
+}
+.middle-box.plain {
+  box-shadow: none;
+
+  &:before {
+    display: none;
+  }
+}
+.success-box {
+  display: flex;
+  align-items: center;
+  background: #05A054;
+  color: #fff;
+  text-align: center;
+  cursor: default;
+
+  .success-box-row {
+    flex: 1;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
   }
 }

@@ -1,6 +1,6 @@
 import { ActionTypes } from '../../core/constants'
 import { ActionCreator, processResponse, processData, processHandler } from '../../core/actions/base'
-import SpaceApi from '../../core/utils/SpaceApi'
+import SpaceApi from '../../core/utils/spaceApi'
 
 class SessionsActionFactory {
     signIn(data) {
@@ -21,6 +21,18 @@ class SessionsActionFactory {
         action.dispatch({type: ActionTypes.SEND_DATA})
         SpaceApi
             .createMagicSession(data)
+            .then(processResponse)
+            .then(processData)
+            .then(processHandler)
+        return action.actionID()
+    }
+
+    requestUpdate(data) {
+        let action = new ActionCreator()
+        action.setUUID()
+        action.dispatch({type: ActionTypes.SEND_DATA})
+        SpaceApi
+            .requestUpdate(data)
             .then(processResponse)
             .then(processData)
             .then(processHandler)

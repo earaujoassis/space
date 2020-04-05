@@ -59,7 +59,7 @@ export default class SignIn extends React.Component {
     render() {
         let step = StepsData[StepsOrder[this.state.currentStepIndex]]
         return (
-            <div className="signin-content">
+            <div className="middle-box signin-content">
                 <Row>
                     <Columns className="small-12">
                         <div className={`user-avatar ${step.className}`}></div>

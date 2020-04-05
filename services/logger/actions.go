@@ -18,6 +18,10 @@ func LogAction(name string, data utils.H) {
             data["Year"] = time.Now().Year()
             message := mailer.CreateMessage("user.created.html", data)
             mailer.SendEmail("Welcome to quatroLABS services", message, data["Email"].(string))
+        case "user.update.password":
+            data["Year"] = time.Now().Year()
+            message := mailer.CreateMessage("user.update.password.html", data)
+            mailer.SendEmail("A magic link to update your password was requested at quatroLABS", message, data["Email"].(string))
         case "session.created":
             data["Year"] = time.Now().Year()
             message := mailer.CreateMessage("session.created.html", data)

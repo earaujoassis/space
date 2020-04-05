@@ -21,8 +21,30 @@ const SpaceApi = {
         })
     },
 
-    adminify(id, token, data) {
-        return fetch(`/api/users/${id}/adminify`, {
+    requestUpdate(data) {
+        return fetch('/api/users/update/request', {
+            method: 'POST',
+            headers: {
+                'X-Requested-By': 'SpaceApi',
+                Accept: 'application/vnd.space.v1+json'
+            },
+            body: data
+        })
+    },
+
+    updatePassword(data) {
+        return fetch('/api/users/update/password', {
+            method: 'PATCH',
+            headers: {
+                'X-Requested-By': 'SpaceApi',
+                Accept: 'application/vnd.space.v1+json'
+            },
+            body: data
+        })
+    },
+
+    adminify(token, data) {
+        return fetch('/api/users/update/adminify', {
             method: 'PATCH',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -77,6 +99,17 @@ const SpaceApi = {
         })
     },
 
+    fetchClients(token) {
+        return fetch('/api/clients', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'X-Requested-By': 'SpaceApi',
+                Accept: 'application/vnd.space.v1+json'
+            }
+        })
+    },
+
     createClient(token, data) {
         return fetch('/api/clients/create', {
             method: 'POST',
@@ -98,17 +131,6 @@ const SpaceApi = {
                 Accept: 'application/vnd.space.v1+json'
             },
             body: data
-        })
-    },
-
-    fetchClients(token) {
-        return fetch('/api/clients', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'X-Requested-By': 'SpaceApi',
-                Accept: 'application/vnd.space.v1+json'
-            }
         })
     }
 }
