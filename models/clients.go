@@ -24,10 +24,19 @@ type Client struct {
     Description string          `json:"description"`
     Key string                  `gorm:"not null;unique;index" json:"-"`
     Secret string               `gorm:"not null" validate:"required" json:"-"`
-    Scopes string               `gorm:"not null" validate:"required" json:"-"`
+    Scopes string               `gorm:"not null" validate:"required,restrict" json:"-"`
     CanonicalURI string         `gorm:"not null" validate:"required,canonical" json:"uri"`
     RedirectURI string          `gorm:"not null" validate:"required,redirect" json:"redirect"`
     Type string                 `gorm:"not null" validate:"required,client" json:"-"`
+}
+
+func validClientScopes(top interface{}, current interface{}, field interface{}, param string) bool {
+    scopesField := field.(string)
+    // TODO A PublicClient can't have a ReadScope
+    if scopesField != PublicScope && scopesField != ReadScope {
+        return false
+    }
+    return true
 }
 
 func validClientType(top interface{}, current interface{}, field interface{}, param string) bool {

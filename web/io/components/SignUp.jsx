@@ -30,7 +30,7 @@ const signUp = ({ validationFailed }) => {
                         method="post"
                         onSubmit={(e) => {
                             e.preventDefault()
-                            const attrs = [ 'first_name', 'last_name', 'action_token', 'username', 'email', 'password' ]
+                            const attrs = ['first_name', 'last_name', 'action_token', 'username', 'email', 'password']
                             UsersActions.signUp(extractDataForm(e.target, attrs))
                         }}>
                         {

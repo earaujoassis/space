@@ -7,7 +7,7 @@ import { extractDataForm } from '../../../core/utils/forms'
 
 import ClientsActions from '../../actions/clients'
 
-const NewApplication = ({ postCreation }) => {
+const newApplication = ({ postCreation }) => {
     return (
         <Row className="new-application">
             <Columns className="small-6">
@@ -26,7 +26,7 @@ const NewApplication = ({ postCreation }) => {
                     onSubmit={(e) => {
                         e.persist()
                         e.preventDefault()
-                        const attrs = [ 'name', 'description', 'canonical_uri', 'redirect_uri' ]
+                        const attrs = ['name', 'description', 'canonical_uri', 'redirect_uri']
                         ClientsActions.createClient(extractDataForm(e.target, attrs)).then(() => {
                             ClientsActions.fetchClients()
                             if (postCreation) {
@@ -38,8 +38,8 @@ const NewApplication = ({ postCreation }) => {
                     <input type="hidden" name="action_token" value="" />
                     <input type="text" name="name" placeholder="Name" required />
                     <input type="text" name="description" placeholder="Description" required />
-                    <input type="url" name="canonical_uri" placeholder="Canonical URI" pattern="https://.*" required />
-                    <input type="url" name="redirect_uri" placeholder="Redirect URI" pattern="https://.*" required />
+                    <input type="url" name="canonical_uri" placeholder="Canonical URI" pattern="https?://.*" required />
+                    <input type="url" name="redirect_uri" placeholder="Redirect URI" pattern="https?://.*" required />
                     <button type="submit" className="button expand">Create Application</button>
                 </form>
             </Columns>
@@ -47,4 +47,4 @@ const NewApplication = ({ postCreation }) => {
     )
 }
 
-export default NewApplication
+export default newApplication

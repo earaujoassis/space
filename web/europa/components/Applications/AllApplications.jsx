@@ -1,143 +1,88 @@
-import React from 'react'
-
-import Row from '../../../core/components/Row.jsx'
-import Columns from '../../../core/components/Columns.jsx'
+import React, { useEffect, useState } from 'react'
 
 import { extractDataForm } from '../../../core/utils/forms'
 
 import ClientStore from '../../stores/clients'
 import ClientsActions from '../../actions/clients'
 
-export default class AllApplications extends React.Component {
-    constructor() {
-        super()
-        this.state = {loading: true}
-        this._updateFromStore = this._updateFromStore.bind(this)
-        this._applications = this._applications.bind(this)
-    }
+import EditApplication from './EditApplication.jsx'
 
-    componentDidMount() {
-        ClientStore.addChangeListener(this._updateFromStore)
+const allApplications = () => {
+    const [storeState, setStoreState] = useState({isLoading: true})
+    const [editingId, setEditingId] = useState(null)
+
+    useEffect(() => {
+        const updateLocalStoreState = () => {
+            if (ClientStore.success()) {
+                const state = Object.assign({}, ClientStore.getState().payload || {}, {isLoading: false})
+                setStoreState(state)
+            }
+        }
+
+        ClientStore.addChangeListener(updateLocalStoreState)
         ClientsActions.fetchClients()
-    }
 
-    componentWillUnmount() {
-        ClientStore.removeChangeListener(this._updateFromStore)
-    }
-
-    render() {
-        return (
-            <div className="applications-listing">
-                {this.state.loading ? (
-                    <p className="text-center">Loading...</p>
-                ) : (
-                    this._applications()
-                )}
-            </div>
-        )
-    }
-
-    _applications() {
-        if (this.state.loading) {
-            return null
+        return function cleanup() {
+            ClientStore.removeChangeListener(updateLocalStoreState)
         }
+    }, [])
 
-        if (!this.state.clients || !this.state.clients.length) {
-            return (<p className="blank-list">No applications available yet.</p>)
-        }
+    const { isLoading, clients } = storeState
 
-        let applications = this.state.clients.map((client, i) => {
-            return (
-                <div className="application-card" key={i}>
-                    <p className="title">
-                        {client.name}
-                        &nbsp;
-                        <small>(<a href={client.uri.split('\n')[0]}
-                            rel="noopener noreferrer"
-                            target="_blank">{client.uri.split('\n')[0].split(/:\/\//)[1]}</a>)</small>
-                    </p>
-                    <p className="description">{client.description}</p>
-                    {this.state.editingId === client.id && (
-                        <form
-                            className="form-common internal"
-                            action="."
-                            method="post"
-                            onSubmit={(e) => {
-                                e.preventDefault()
-                                const attrs = [ 'canonical_uri', 'redirect_uri' ]
-                                ClientsActions.updateClient(client.id, extractDataForm(e.target, attrs)).then(() => {
-                                    ClientsActions.fetchClients()
-                                    this.setState({editingId: null})
-                                })
-                            }}>
-                            <Row className="new-application">
-                                <Columns className="small-5">
-                                    <label htmlFor="canonical_uri">Canonical URI</label>
-                                    <textarea type="url"
-                                        id="canonical_uri"
-                                        name="canonical_uri"
-                                        placeholder="Canonical URI"
-                                        pattern="((https?://.*)(\n)?)+"
-                                        defaultValue={client.uri}
-                                        required></textarea>
-                                </Columns>
-                                <Columns className="small-5">
-                                    <label htmlFor="redirect_uri">Redirect URI</label>
-                                    <textarea type="url"
-                                        id="redirect_uri"
-                                        name="redirect_uri"
-                                        placeholder="Redirect URI"
-                                        pattern="((https?://.*)(\n)?)+"
-                                        defaultValue={client.redirect}
-                                        required></textarea>
-                                </Columns>
-                                <Columns className="small-2 end">
-                                    <div className="button-wrapper">
-                                        <button className="button-anchor" type="submit">Save</button>
-                                    </div>
-                                    <div>
-                                        <button
-                                            onClick={() => this.setState({editingId: null})}
-                                            className="button-anchor"
-                                            type="button">Cancel</button>
-                                    </div>
-                                </Columns>
-                            </Row>
-                            <Row>
-                                <Columns className="small-12">
-                                    <p className="form-warning">
-                                        Use one line for each redirect URI. Each redirect URI must be included as a canonical URI.
-                                    </p>
-                                </Columns>
-                            </Row>
-                        </form>
-                    )}
-                    <ul className="inline-list all-applications-options">
-                        <li>
-                            <a href="#edit"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    this.setState({editingId: client.id})
-                                }}>Edit</a>
-                        </li>
-                        <li>
-                            <a href={`/api/clients/${client.id}/credentials`}
-                                title="It regenerates the client's secret for security reasons"
-                                rel="noopener noreferrer"
-                                target="_blank">Download credentials</a>
-                        </li>
-                    </ul>
-                </div>
-            )
-        })
-
-        return applications
+    if (isLoading) {
+        return <div className="applications-listing">
+            <p className="text-center">Loading...</p>
+        </div>
     }
 
-    _updateFromStore() {
-        if (ClientStore.success()) {
-            let state = Object.assign({}, ClientStore.getState().payload || {}, {loading: false})
-            this.setState(state)
-        }
+    if (!clients || !clients.length) {
+        return <div className="applications-listing">
+            <p className="blank-list">No applications available yet.</p>
+        </div>
     }
+
+    const applications = clients.map((client, i) => <div className="application-card" key={i}>
+        <p className="title">
+            {client.name}
+            &nbsp;
+            <small>(<a href={client.uri.split('\n')[0]}
+                rel="noopener noreferrer"
+                target="_blank">{client.uri.split('\n')[0].split(/:\/\//)[1]}</a>)</small>
+        </p>
+        <p className="description">{client.description}</p>
+        {editingId === client.id && (
+            <EditApplication client={client}
+                onCancel={() => setEditingId(null)}
+                onSubmit={(target) => {
+                    const attrs = ['canonical_uri', 'redirect_uri', 'scopes']
+                    ClientsActions.updateClient(client.id, extractDataForm(target, attrs)).then(() => {
+                        ClientsActions.fetchClients()
+                        setEditingId(null)
+                    })
+                }} />
+        )}
+        <ul className="inline-list all-applications-options">
+            <li>
+                <a href="#edit"
+                    onClick={(e) => {
+                        e.preventDefault()
+                        setEditingId(client.id)
+                    }}>Edit</a>
+            </li>
+            <li>
+                <a href={`/api/clients/${client.id}/credentials`}
+                    title="It regenerates the client's secret for security reasons"
+                    rel="noopener noreferrer"
+                    target="_blank">Download credentials</a>
+            </li>
+        </ul>
+    </div>)
+
+    return (
+        <div className="applications-listing">
+            {applications}
+        </div>
+    )
 }
+
+export default allApplications

@@ -576,7 +576,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
             clientName := c.PostForm("name")
             clientDescription := c.PostForm("description")
             clientSecret := models.GenerateRandomString(64)
-            clientScope := "public"
+            clientScope := models.PublicScope
             canonicalURI := c.PostForm("canonical_uri")
             redirectURI := c.PostForm("redirect_uri")
 
@@ -621,9 +621,18 @@ func ExposeRoutes(router *gin.RouterGroup) {
                 return
             }
 
+            var newScopes = c.PostForm("scopes")
+            // Clients can only have read or public scopes
+            if (newScopes != models.PublicScope && newScopes != models.ReadScope) {
+                newScopes = ""
+            }
+
             client := services.FindClientByUUID(clientUUID)
             client.CanonicalURI = c.PostForm("canonical_uri")
             client.RedirectURI = c.PostForm("redirect_uri")
+            if (newScopes != "") {
+                client.Scopes = newScopes
+            }
             dataStore := datastore.GetDataStoreConnection()
             dataStore.Save(&client)
 

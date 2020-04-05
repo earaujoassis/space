@@ -9,8 +9,8 @@ import MyApplications from './MyApplications.jsx'
 
 import UserStore from '../../stores/users'
 
-const Applications = () => {
-    const [ openAccordion, setOpenAccordion ] = useState('none')
+const applications = () => {
+    const [openAccordion, setOpenAccordion] = useState('none')
 
     return (
         <div role="main">
@@ -84,4 +84,4 @@ const Applications = () => {
     )
 }
 
-export default Applications
+export default applications

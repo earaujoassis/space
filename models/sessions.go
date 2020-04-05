@@ -15,10 +15,13 @@ const (
     GrantToken                string = "grant_token"
 
     // PublicScope session scope
+    // This is used by public clients (they can't read or write user data)
     PublicScope               string = "public"
     // ReadScope session scope
+    // This is used by confidential clients (they can only read user data)
     ReadScope                 string = "read"
     // ReadWriteScope session scope
+    // No client is allowed to hold this scope (they can't write user data)
     ReadWriteScope            string = "read_write"
 )
 
