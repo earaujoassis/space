@@ -1,0 +1,26 @@
+{{ define "content" }}
+<div class="content">
+  <div class="centered-message">
+    <div class="row">
+      <div class="small-6 small-offset-3 end columns">
+        <div class="error-illustration">
+          <img width="300" src="/public/imgs/illustration.cancel.svg" />
+        </div>
+        <h2>Oh, snap</h2>
+        <p>It seems the client application is misconfigured. You may put yourself at risk in this path.</p>{{ if .ProceedTo }}
+        <p>If you're sure about the current situation, you can <a href="{{ .ProceedTo }}">proceed to the client application</a>.
+        If you feel unsure, you can <a href="/">start from the home page</a> in this website.</p>{{ else }}
+        <p>You may <a href="/">start from the home page</a> in the current website or
+        you can <a href="#back" onclick="history.back();">get back to the original (external) website</a>.</p>{{ end }}
+        <p>Error code: <span class="code-line">{{ .ErrorCode }}</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{ define "head" }}
+<link rel="stylesheet" href="/public/css/errors.css">
+{{ end }}
+
+{{define "front"}}{{end}}{{define "tail"}}{{end}}
