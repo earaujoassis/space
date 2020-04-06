@@ -5,6 +5,11 @@ import (
     "github.com/earaujoassis/space/models"
 )
 
+const (
+    // DefaultClient is the default (and internal) client application
+    DefaultClient = "Jupiter"
+)
+
 // CreateNewClient creates a new client application entry
 func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectURI string) models.Client {
     var client models.Client = models.Client{
