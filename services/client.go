@@ -6,6 +6,7 @@ import (
 )
 
 const (
+    // DefaultClient is the default (and internal) client application
     DefaultClient = "Jupiter"
 )
 
