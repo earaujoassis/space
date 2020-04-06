@@ -181,7 +181,7 @@ func ExposeRoutes(router *gin.Engine) {
                 }
             }
 
-            client := services.FindOrCreateClient("Jupiter")
+            client := services.FindOrCreateClient(services.DefaultClient)
             if client.Key == clientID && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
                 grantToken := services.FindSessionByToken(code, models.GrantToken)
                 if grantToken.ID != 0 {
@@ -307,7 +307,7 @@ func jupiterHandler(c *gin.Context) {
         c.Redirect(http.StatusFound, "/signin")
         return
     }
-    client := services.FindOrCreateClient("Jupiter")
+    client := services.FindOrCreateClient(services.DefaultClient)
     user := services.FindUserByPublicID(userPublicID.(string))
     actionToken := services.CreateAction(user, client,
         c.Request.RemoteAddr,

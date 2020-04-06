@@ -57,7 +57,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 return
             }
             if dataStore.NewRecord(user.Client) {
-                user.Client = services.FindOrCreateClient("Jupiter")
+                user.Client = services.FindOrCreateClient(services.DefaultClient)
             }
             if dataStore.NewRecord(user.Language) {
                 user.Language = services.FindOrCreateLanguage("English", "en-US")
@@ -231,7 +231,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
             switch requestType {
             case passwordType:
                 user := services.FindUserByAccountHolder(holder)
-                client := services.FindOrCreateClient("Jupiter")
+                client := services.FindOrCreateClient(services.DefaultClient)
                 if user.ID != 0 {
                     actionToken := services.CreateAction(user, client,
                         c.Request.RemoteAddr,
@@ -247,7 +247,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 }
             case secretsType:
                 user := services.FindUserByAccountHolder(holder)
-                client := services.FindOrCreateClient("Jupiter")
+                client := services.FindOrCreateClient(services.DefaultClient)
                 if user.ID != 0 {
                     actionToken := services.CreateAction(user, client,
                         c.Request.RemoteAddr,
