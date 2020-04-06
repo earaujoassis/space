@@ -40,7 +40,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
             }
 
             user := services.FindUserByAccountHolder(holder)
-            client := services.FindOrCreateClient("Jupiter")
+            client := services.FindOrCreateClient(services.DefaultClient)
             if user.ID != 0 && statusSignInAttempts != policy.Blocked {
                 userID = user.UUID
                 statusSignInAttempts = policy.SignInAttemptStatus(userID)
@@ -104,7 +104,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
             }
 
             user := services.FindUserByAccountHolder(holder)
-            client := services.FindOrCreateClient("Jupiter")
+            client := services.FindOrCreateClient(services.DefaultClient)
             if user.ID != 0 && statusSignInAttempts != policy.Blocked {
                 userID = user.UUID
                 statusSignInAttempts = policy.SignInAttemptStatus(userID)
