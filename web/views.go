@@ -1,7 +1,10 @@
 package web
 
 import (
+    "bytes"
+    "encoding/base64"
     "fmt"
+    "image/png"
     "net/http"
     "net/url"
     "strings"
@@ -11,6 +14,7 @@ import (
     "github.com/gin-gonic/contrib/sessions"
 
     "github.com/earaujoassis/space/config"
+    "github.com/earaujoassis/space/datastore"
     "github.com/earaujoassis/space/models"
     "github.com/earaujoassis/space/oauth"
     "github.com/earaujoassis/space/services"
@@ -25,8 +29,10 @@ const (
 func createCustomRender() multitemplate.Render {
     render := multitemplate.New()
     render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
+    render.AddFromFiles("user.update.secrets", "web/templates/default.html", "web/templates/user.update.secrets.html")
     render.AddFromFiles("error.generic", "web/templates/default.html", "web/templates/error.generic.html")
     render.AddFromFiles("error.password_update", "web/templates/default.html", "web/templates/error.password_update.html")
+    render.AddFromFiles("error.secrets_update", "web/templates/default.html", "web/templates/error.secrets_update.html")
     render.AddFromFiles("error.authorization", "web/templates/default.html", "web/templates/error.authorization.html")
     render.AddFromFiles("error.not_found", "web/templates/default.html", "web/templates/error.not_found.html")
     render.AddFromFiles("error.internal", "web/templates/default.html", "web/templates/error.internal.html")
@@ -73,6 +79,43 @@ func ExposeRoutes(router *gin.Engine) {
                 "Data": utils.H{
                     "action_token": action.Token,
                 },
+            })
+        })
+
+        views.GET("/profile/secrets", func(c *gin.Context) {
+            var authorizationBearer = c.Query("_")
+            var buf bytes.Buffer
+            var imageData string
+
+            action := services.ActionAuthentication(authorizationBearer)
+            user := services.FindUserByID(action.UserID)
+            if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() || user.ID == 0 {
+                c.HTML(http.StatusUnauthorized, "error.password_update", utils.H{
+                    "Title": " - Update Resource Owner Credential",
+                    "Internal": true,
+                })
+                return
+            }
+
+            codeSecretKey := user.GenerateCodeSecret()
+            recoverSecret, _ := user.GenerateRecoverSecret()
+            img, err := codeSecretKey.Image(200, 200)
+            if err != nil {
+                imageData = ""
+            } else {
+                png.Encode(&buf, img)
+                imageData = base64.StdEncoding.EncodeToString(buf.Bytes())
+            }
+
+            dataStore := datastore.GetDataStoreConnection()
+            dataStore.Save(&user)
+            action.Delete()
+            c.HTML(http.StatusOK, "user.update.secrets", utils.H{
+                "Title": " - Update Resource Owner Credential",
+                "Satellite": "amalthea",
+                "Internal": true,
+                "CodeSecretImage": imageData,
+                "RecoveryCode": strings.Split(recoverSecret, "-"),
             })
         })
 

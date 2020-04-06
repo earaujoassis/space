@@ -17,8 +17,8 @@ const success = ({ codeSecretImage, recoverSecret }) => {
                     <p>Thank you for your interest in joining us!</p>
                     <p>
                         Following is the secret code generator for the sign-in process. Please add it to
-                        one-time password providers, like Google Authenticator, OTP Auth etc. Two-factor
-                        authentication is a mandatory step in order to sign-in.
+                        one-time password providers, like Enpass, Authy, 1Password, Google Authenticator,
+                        OTP Auth, etc. Two-factor authentication is a mandatory step in order to sign-in.
                     </p>
                     <p className="attention-points">
                         <img src={`data:image/png;base64,${codeSecretImage}`} />
@@ -29,11 +29,9 @@ const success = ({ codeSecretImage, recoverSecret }) => {
                     </p>
                     <p className="attention-points">
                         <span className="recovery-code">
-                            {
-                                Array.prototype.map.call(recoverSecret.split(/\s*-\s*/), (piece) => {
-                                    return (<span key={piece} className="piece">{piece}</span>)
-                                })
-                            }
+                            {Array.prototype.map.call(
+                                recoverSecret.split(/\s*-\s*/),
+                                (piece) => <span key={piece} className="piece">{piece}</span>)}
                         </span>
                     </p>
                     <p>We hope to make your account as secure as possible using these settings.</p>

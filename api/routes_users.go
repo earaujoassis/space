@@ -63,7 +63,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 user.Language = services.FindOrCreateLanguage("English", "en-US")
             }
             codeSecretKey := user.GenerateCodeSecret()
-            recoverSecret := user.GenerateRecoverSecret()
+            recoverSecret, _ := user.GenerateRecoverSecret()
             img, err := codeSecretKey.Image(200, 200)
             if err != nil {
                 imageData = ""
@@ -163,6 +163,15 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
             }
 
             action := services.ActionAuthentication(bearer)
+            if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() {
+                c.JSON(http.StatusUnauthorized, utils.H{
+                    "_status":  "error",
+                    "_message": "User password was not updated",
+                    "error": "token string not valid",
+                })
+                return
+            }
+
             user := services.FindUserByID(action.UserID)
             if user.ID == 0 {
                 c.JSON(http.StatusUnauthorized, utils.H{
@@ -207,6 +216,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
             const (
                 passwordType = "password"
+                secretsType = "secrets"
             )
 
             if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
@@ -218,8 +228,40 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            // TODO Use case/match for new request types
-            if requestType != passwordType {
+            switch requestType {
+            case passwordType:
+                user := services.FindUserByAccountHolder(holder)
+                client := services.FindOrCreateClient("Jupiter")
+                if user.ID != 0 {
+                    actionToken := services.CreateAction(user, client,
+                        c.Request.RemoteAddr,
+                        c.Request.UserAgent(),
+                        models.ReadWriteScope,
+                        models.UpdateUserAction,
+                    )
+                    go logger.LogAction("session.magic", utils.H{
+                        "Email":     user.Email,
+                        "FirstName": user.FirstName,
+                        "Callback": fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
+                    })
+                }
+            case secretsType:
+                user := services.FindUserByAccountHolder(holder)
+                client := services.FindOrCreateClient("Jupiter")
+                if user.ID != 0 {
+                    actionToken := services.CreateAction(user, client,
+                        c.Request.RemoteAddr,
+                        c.Request.UserAgent(),
+                        models.ReadWriteScope,
+                        models.UpdateUserAction,
+                    )
+                    go logger.LogAction("session.magic", utils.H{
+                        "Email":     user.Email,
+                        "FirstName": user.FirstName,
+                        "Callback": fmt.Sprintf("%s/profile/secrets?_=%s", host, actionToken.Token),
+                    })
+                }
+            default:
                 c.JSON(http.StatusBadRequest, utils.H{
                     "_status":  "error",
                     "_message": "update request was not created",
@@ -228,21 +270,6 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            user := services.FindUserByAccountHolder(holder)
-            client := services.FindOrCreateClient("Jupiter")
-            if user.ID != 0 {
-                actionToken := services.CreateAction(user, client,
-                    c.Request.RemoteAddr,
-                    c.Request.UserAgent(),
-                    models.ReadWriteScope,
-                    models.UpdateUserAction,
-                )
-                go logger.LogAction("session.magic", utils.H{
-                    "Email":     user.Email,
-                    "FirstName": user.FirstName,
-                    "Callback": fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
-                })
-            }
             // No Content is the default response
             c.JSON(http.StatusNoContent, nil)
         })
