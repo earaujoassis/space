@@ -75,14 +75,18 @@ func (user *User) GenerateCodeSecret() *otp.Key {
 }
 
 // GenerateRecoverSecret generates a recover secret string for an user
-func (user *User) GenerateRecoverSecret() string {
+func (user *User) GenerateRecoverSecret() (string, error) {
     var secret = strings.ToUpper(fmt.Sprintf("%s-%s-%s-%s",
         GenerateRandomString(4),
         GenerateRandomString(4),
         GenerateRandomString(4),
         GenerateRandomString(4),))
-    user.RecoverSecret = secret
-    return secret
+    if cryptedRecoverSecret, err := bcrypt.GenerateFromPassword([]byte(secret), bcrypt.DefaultCost); err == nil {
+        user.RecoverSecret = string(cryptedRecoverSecret)
+    } else {
+        return secret, err
+    }
+    return secret, nil
 }
 
 // BeforeSave User model/struct hook
@@ -96,11 +100,6 @@ func (user *User) BeforeCreate(scope *gorm.Scope) error {
     scope.SetColumn("PublicID", GenerateRandomString(32))
     if cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Passphrase), bcrypt.DefaultCost); err == nil {
         scope.SetColumn("Passphrase", cryptedPassword)
-    } else {
-        return err
-    }
-    if cryptedRecoverSecret, err := bcrypt.GenerateFromPassword([]byte(user.RecoverSecret), bcrypt.DefaultCost); err == nil {
-        scope.SetColumn("RecoverSecret", cryptedRecoverSecret)
     } else {
         return err
     }
