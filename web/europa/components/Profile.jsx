@@ -10,6 +10,7 @@ import UsersActions from '../actions/users'
 const profile = () => {
     const [storeState, setStoreState] = useState({isLoading: true})
     const [updatePasswordRequested, setUpdatePasswordRequested] = useState(false)
+    const [secretCodesRequested, setSecretCodesRequested] = useState(false)
 
     useEffect(() => {
         let updateLocalStoreState = () => {
@@ -85,6 +86,20 @@ const profile = () => {
                                     setUpdatePasswordRequested(true)
                                 }}
                                 className="button-anchor">Update password</button></p>
+                        )}
+                        {secretCodesRequested ? (
+                            <p>You should receive an e-mail message in the next few minutes.</p>
+                        ) : (
+                            <p><button
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    let formData = new FormData()
+                                    formData.append('request_type', 'secrets')
+                                    formData.append('holder', user.username)
+                                    UsersActions.requestUpdate(formData)
+                                    setSecretCodesRequested(true)
+                                }}
+                                className="button-anchor">Recreate recovery code and secret code generator</button></p>
                         )}
                     </Columns>
                 </Row>

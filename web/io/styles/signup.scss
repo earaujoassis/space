@@ -13,23 +13,3 @@
     text-align: right;
   }
 }
-.attention-points {
-  text-align: center;
-}
-.recovery-code {
-  padding: 12px 24px;
-  display: inline-block;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-
-  .piece {
-    display: inline-block;
-
-    & ~ .piece {
-      &:before {
-        content: "-";
-        padding: 0 2px;
-        display: inline-block;
-      }
-    }
-  }
-}
