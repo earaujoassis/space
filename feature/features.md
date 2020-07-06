@@ -4,14 +4,19 @@ Following are described the feature-gates for the whole application. It relies o
 for that and it works on a toggle-based behaviour: when the key-field exists, the feature is available;
 when the key-field is not available at the memory store, the feature is not available.
 
-## `user.create`
+## Feature toggle
 
-It turns on the sign-up option throughout the entire application.
+Use the following command to toggle a feature-flag:
 
-## `user.adminify`
+```sh
+$ go run main.go feature
+```
 
-It turns on the option to make a given user (post-sign-in) to turn herself an admin,
-given the provided application-key for that.
+The following features are available:
+
+- `user.create`: it turns on the sign-up option throughout the entire application;
+- `user.adminify`: it turns on the option to make a given user (post-sign-in) to turn herself an admin,
+  given the provided application-key for that.
 
 ## License
 
