@@ -74,9 +74,9 @@ func ToggleFeature() {
     featureKey = strings.Trim(featureKey, "\n")
     if feature.IsActive(featureKey) {
         feature.Disable(featureKey)
-        fmt.Printf("Key `%s` was disabled\n", featureKey)
+        fmt.Printf("Key `%s` is disabled\n", featureKey)
     } else {
         feature.Enable(featureKey)
-        fmt.Printf("Key `%s` was enabled\n", featureKey)
+        fmt.Printf("Key `%s` is enabled\n", featureKey)
     }
 }
