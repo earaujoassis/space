@@ -6,4 +6,4 @@ set -ex
 go get golang.org/x/lint/golint
 test -z "$(golint ./...)"
 
-yarn lint
+# yarn lint
