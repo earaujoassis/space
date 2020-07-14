@@ -7,7 +7,7 @@ import (
     "io/ioutil"
     "log"
 
-	"github.com/hashicorp/vault/api"
+    "github.com/hashicorp/vault/api"
 )
 
 const (
