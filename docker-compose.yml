@@ -45,7 +45,7 @@ services:
     image: space
     restart: always
     ports:
-      - "8484:80"
+      - "8484:9000"
     networks:
       - projects
 
