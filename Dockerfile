@@ -24,7 +24,7 @@ RUN apk add --update --no-cache yarn
 
 ENV PATH=/usr/local/bin:$PATH
 
-ENV PORT=80
+ENV PORT=9000
 ENV NODE_ENV=production
 ENV GIN_MODE=release
 ENV SPACE_ENV=production
@@ -38,7 +38,7 @@ COPY . /app
 
 RUN yarn install && yarn build
 
-EXPOSE 80
+EXPOSE 9000
 
 ENTRYPOINT [ "go", "run", "main.go" ]
 CMD [ "serve" ]
