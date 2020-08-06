@@ -37,8 +37,9 @@ WORKDIR /app
 COPY . /app
 
 RUN yarn install && yarn build
+RUN go build -o space main.go
 
 EXPOSE 9000
 
-ENTRYPOINT [ "go", "run", "main.go" ]
+ENTRYPOINT [ "./space" ]
 CMD [ "serve" ]
