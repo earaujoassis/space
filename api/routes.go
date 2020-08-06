@@ -10,4 +10,5 @@ func ExposeRoutes(router *gin.RouterGroup) {
     exposeUsersRoutes(router)
     exposeSessionsRoutes(router)
     exposeClientsRoutes(router)
+    exposeHealthCheck(router)
 }
