@@ -1,6 +1,7 @@
 {
   "application_key": "",
   "datastore_host": "localhost",
+  "datastore_port": 5432,
   "datastore_name_prefix": "space",
   "datastore_password": "",
   "datastore_ssl_mode": "disable",

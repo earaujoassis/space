@@ -30,8 +30,9 @@ func GetDataStoreConnection() *gorm.DB {
     var cfg config.Config = config.GetGlobalConfig()
     var databaseName = fmt.Sprintf("%v_%v",
         cfg.DatastoreNamePrefix, config.Environment())
-    var databaseConnectionData = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=%s password=%s",
+    var databaseConnectionData = fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
         cfg.DatastoreHost,
+        cfg.DatastorePort,
         cfg.DatastoreUser,
         databaseName,
         cfg.DatastoreSslMode,
