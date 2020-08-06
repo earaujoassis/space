@@ -1,6 +1,7 @@
 {
   "application_key": "",
   "datastore_host": "space-postgres",
+  "datastore_port": 5432,
   "datastore_name_prefix": "space",
   "datastore_password": "8GWbz2JF4FMe1Q8X",
   "datastore_ssl_mode": "disable",
