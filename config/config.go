@@ -19,7 +19,7 @@ const (
 type Config struct {
     ApplicationKey string `json:"application_key"`
     DatastoreHost string `json:"datastore_host"`
-    DatastorePort string `json:"datastore_port"`
+    DatastorePort int `json:"datastore_port"`
     DatastoreNamePrefix string `json:"datastore_name_prefix"`
     DatastorePassword string `json:"datastore_password"`
     DatastoreSslMode string `json:"datastore_ssl_mode"`
