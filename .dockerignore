@@ -10,6 +10,7 @@ web/public/js/*.min.js
 *.log
 .env
 Dockerfile
+docker-compose.yml
 .config.local.sample.json
 .config.sample.yml
 .config.travis.json
