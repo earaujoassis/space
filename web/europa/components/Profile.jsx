@@ -15,7 +15,7 @@ const profile = () => {
     useEffect(() => {
         let updateLocalStoreState = () => {
             if (UserStore.success()) {
-                let state = Object.assign({}, UserStore.getState().payload || {}, {isLoading: false})
+                let state = Object.assign({isLoading: false}, UserStore.getState().payload || {})
                 setStoreState(state)
             }
         }
@@ -31,7 +31,7 @@ const profile = () => {
     const { user, isLoading } = storeState
     let inputKey
 
-    if (isLoading) {
+    if (isLoading || user === undefined) {
         return (
             <Row>
                 <Columns className="small-offset-1 small-10 end">
