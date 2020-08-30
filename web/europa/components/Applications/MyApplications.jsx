@@ -22,7 +22,7 @@ const myApplications = () => {
         }
     }, [])
 
-    const { isLoading, clients, id } = storeState
+    const { isLoading, clients } = storeState
 
     if (isLoading) {
         return <div className="applications-listing">
@@ -51,7 +51,7 @@ const myApplications = () => {
                     <a href="#revoke"
                         onClick={(e) => {
                             e.preventDefault()
-                            UsersActions.revokeActiveClient(id)
+                            UsersActions.revokeActiveClient(client.id)
                         }}>Revoke access</a>
                 </li>
             </ul>
