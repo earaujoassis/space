@@ -38,7 +38,13 @@ func GetDataStoreConnection() *gorm.DB {
         cfg.DatastoreSslMode,
         cfg.DatastorePassword,
     )
-    fmt.Printf("Connected to the following data store: %v\n", databaseConnectionData)
+    var safeDatabaseConnectionData = fmt.Sprintf("host=%s port=%d user=%s dbname=%s",
+        cfg.DatastoreHost,
+        cfg.DatastorePort,
+        cfg.DatastoreUser,
+        databaseName,
+    )
+    fmt.Printf("Connected to the following data store: %v\n", safeDatabaseConnectionData)
     dataStore, err = gorm.Open("postgres", databaseConnectionData)
     if err != nil {
         panic(fmt.Sprintf("Failed to connect datastore: %v\n", err))
