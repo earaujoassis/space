@@ -1,6 +1,6 @@
 language: go
 go:
-  - "1.12.12"
+  - "1.16.5"
 services:
   - postgresql
   - redis-server
@@ -18,6 +18,6 @@ before_script:
   - mv .config.travis.json .config.local.json
 script:
   - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
-  - bin/lint-all.sh
+  - scripts/lint-all.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)

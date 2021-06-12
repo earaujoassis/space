@@ -14,6 +14,8 @@ require (
 	github.com/hashicorp/vault/api v1.0.1
 	github.com/jinzhu/gorm v1.9.5
 	github.com/joho/godotenv v1.3.0
+	github.com/json-iterator/go v1.1.11 // indirect
+	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mattn/goreman v0.3.5 // indirect
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
