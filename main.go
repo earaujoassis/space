@@ -7,8 +7,8 @@ import (
     "github.com/joho/godotenv"
     "github.com/urfave/cli"
 
-    "github.com/earaujoassis/space/tasks"
-    "github.com/earaujoassis/space/config"
+    "github.com/earaujoassis/space/internal/config"
+    "github.com/earaujoassis/space/internal/tasks"
 )
 
 func init() {

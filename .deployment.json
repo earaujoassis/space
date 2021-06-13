@@ -1,8 +1,0 @@
-{
-  "project": "space",
-  "type": "docker-compose",
-  "scripts": {
-    "deploy": "bin/deploy.sh",
-    "redeploy": "bin/deploy.sh -u"
-  }
-}
