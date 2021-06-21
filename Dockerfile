@@ -12,7 +12,8 @@ RUN apk add --update --no-cache \
     libgcc \
     linux-headers \
     make \
-    python \
+    python3 \
+    python2 \
     postgresql \
     postgresql-contrib \
     postgresql-libs \
