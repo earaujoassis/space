@@ -1,6 +1,6 @@
 module github.com/earaujoassis/space
 
-go 1.12
+go 1.16
 
 require (
 	github.com/aws/aws-sdk-go v1.19.23
