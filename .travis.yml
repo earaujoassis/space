@@ -3,7 +3,7 @@ go:
   - "1.16.5"
 services:
   - postgresql
-  - redis-server
+  - redis
 env:
   global:
     - GO111MODULE=on
