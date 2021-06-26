@@ -44,8 +44,3 @@ func CreateClient() {
         fmt.Println("Client secret:", clientSecret)
     }
 }
-
-// UpdateClient task is used to update a client application
-func UpdateClient() {
-
-}
