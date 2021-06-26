@@ -1,26 +1,21 @@
-# Space
+# Deployment
 
-> A user management microservice; OAuth 2 provider
+## Deployment through a docker container
 
-## Tips and general commands for deployment in the Google Cloud Platform
-
-### Generating a 256-bit string in RFC 4648 standard base64
+The following commands will create a *docker image* and create a *docker container*:
 
 ```sh
-$ bin/gen-key
+$ docker build -t earaujoassis/space .
+$ docker run -d -p 8080:8080 earaujoassis/space
 ```
 
-### Connecting to VM instance
+The project also provides a *docker-compose* setup, which could be configured through:
 
 ```sh
-$ gcloud compute ssh ${MACHINE_ID}
+$ docker-compose up --build
 ```
 
-### Add the remote `production` to git project
-
-```sh
-$ git remote add production {REMOTE_USER}@{REMOTE_SERVER}:space
-```
+As describe in the *docker-compose* file, it relies on a Redis instance and a PostgreSQL database.
 
 ## License
 

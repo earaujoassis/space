@@ -35,3 +35,26 @@ func TestBasicAuthDecode(t *testing.T) {
     assert.NotEqual(t, secret, secretDecoded, "should not have returned correct secret")
     assert.Equal(t, fakeSecret, secretDecoded, "should have returned fake secret")
 }
+
+func TestBasicAuthDecodeWithNonEncodedData(t *testing.T) {
+    keyDecoded, secretDecoded := BasicAuthDecode("wrongstring")
+    assert.Equal(t, keyDecoded, "", "should have returned empty string")
+    assert.Equal(t, secretDecoded, "", "should have returned empty string")
+}
+
+func TestBasicAuthDecodeWithEncodedDataWithoutAColon(t *testing.T) {
+    encodedString := base64.StdEncoding.EncodeToString([]byte("wrongstring"))
+    keyDecoded, secretDecoded := BasicAuthDecode(encodedString)
+    assert.Equal(t, keyDecoded, "", "should have returned empty string")
+    assert.Equal(t, secretDecoded, "", "should have returned empty string")
+}
+
+func TestMustServeJSON(t *testing.T) {
+    assert.True(t, MustServeJSON("/api/users/instropect", ""), "should have return True to given path")
+    assert.True(t, MustServeJSON("/api/testing-only", ""), "should have return True to given path")
+    assert.False(t, MustServeJSON("/oauth/authorize", ""), "should have return False to given path")
+    assert.False(t, MustServeJSON("/authorize", ""), "should have return False to given path")
+    assert.True(t, MustServeJSON("/token", ""), "should have return True to given path")
+    assert.True(t, MustServeJSON("/oauth/token", ""), "should have return True to given path")
+    assert.False(t, MustServeJSON("/oauth", ""), "should have return False to given path")
+}
