@@ -24,10 +24,7 @@ func Server() {
         defer func(c *gin.Context) {
             // TODO It is not displaying/logging the error
             if rec := recover(); rec != nil {
-                // var accept = c.Request.Header.Get("Accept")
-                // We're not checking Accept because there are only two paths for JSON responses: starting with /api and starting with /token
-                // We could check for X-Requested-With == 'XMLHttpRequest' as well
-                if path := c.Request.URL.Path; strings.HasPrefix(path, "/api") || strings.HasPrefix(path, "/token") {
+                if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
                     c.JSON(http.StatusInternalServerError, utils.H{
                         "_status":  "error",
                         "_message": "Bad server",
@@ -44,10 +41,7 @@ func Server() {
         c.Next()
     })
     router.NoRoute(func(c *gin.Context) {
-        // var accept = c.Request.Header.Get("Accept")
-        // We're not checking Accept because there are only two paths for JSON responses: starting with /api and starting with /token
-        // We could check for X-Requested-With == 'XMLHttpRequest' as well
-        if path := c.Request.URL.Path; strings.HasPrefix(path, "/api") || strings.HasPrefix(path, "/token") {
+        if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
             c.JSON(http.StatusNotFound, utils.H{
                 "_status":  "error",
                 "_message": "Not found",
