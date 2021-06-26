@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 
-import Row from './Row.jsx'
-import Columns from './Columns.jsx'
+import Row from './Row.jsx';
+import Columns from './Columns.jsx';
 
 const successBox = ({ children }) => {
-    return (
+  return (
         <div className="middle-box success-box">
             <Row className="success-box-row">
                 <Columns className="small-12">
@@ -12,7 +12,7 @@ const successBox = ({ children }) => {
                 </Columns>
             </Row>
         </div>
-    )
-}
+  );
+};
 
-export default successBox
+export default successBox;

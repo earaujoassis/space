@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
+import Row from '../../core/components/Row.jsx';
+import Columns from '../../core/components/Columns.jsx';
 
 const success = ({ codeSecretImage, recoverSecret }) => {
-    return (
+  return (
         <div className="centered-message">
             <Row>
                 <Columns className="small-8 small-offset-2 end columns">
@@ -30,8 +30,8 @@ const success = ({ codeSecretImage, recoverSecret }) => {
                     <p className="attention-points">
                         <span className="recovery-code">
                             {Array.prototype.map.call(
-                                recoverSecret.split(/\s*-\s*/),
-                                (piece) => <span key={piece} className="piece">{piece}</span>)}
+                              recoverSecret.split(/\s*-\s*/),
+                              (piece) => <span key={piece} className="piece">{piece}</span>)}
                         </span>
                     </p>
                     <p>We hope to make your account as secure as possible using these settings.</p>
@@ -40,7 +40,7 @@ const success = ({ codeSecretImage, recoverSecret }) => {
                 </Columns>
             </Row>
         </div>
-    )
-}
+  );
+};
 
-export default success
+export default success;

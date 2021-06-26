@@ -1,21 +1,21 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const row = ({ className, children }) => {
-    let finalClassName = `row ${className}`
+  const finalClassName = `row ${className}`;
 
-    return (
+  return (
         <div className={finalClassName}>{children}</div>
-    )
-}
+  );
+};
 
 row.propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node
-}
+  className: PropTypes.string,
+  children: PropTypes.node
+};
 
 row.defaultProps = {
-    className: ''
-}
+  className: ''
+};
 
-export default row
+export default row;

@@ -1,14 +1,14 @@
-import React from 'react'
+import React from 'react';
 
-import UsersActions from '../actions/users'
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
-import PasswordInput from '../../core/components/PasswordInput.jsx'
+import UsersActions from '../actions/users';
+import Row from '../../core/components/Row.jsx';
+import Columns from '../../core/components/Columns.jsx';
+import PasswordInput from '../../core/components/PasswordInput.jsx';
 
-import { extractDataForm } from '../../core/utils/forms'
+import { extractDataForm } from '../../core/utils/forms';
 
 const signUp = ({ validationFailed }) => {
-    return (
+  return (
         <div className="signup-content">
             <Row>
                 <Columns className="small-offset-1 small-5 description">
@@ -29,14 +29,16 @@ const signUp = ({ validationFailed }) => {
                         action="."
                         method="post"
                         onSubmit={(e) => {
-                            e.preventDefault()
-                            const attrs = ['first_name', 'last_name', 'action_token', 'username', 'email', 'password']
-                            UsersActions.signUp(extractDataForm(e.target, attrs))
+                          e.preventDefault();
+                          const attrs = ['first_name', 'last_name', 'action_token', 'username', 'email', 'password'];
+                          UsersActions.signUp(extractDataForm(e.target, attrs));
                         }}>
                         {
-                            validationFailed ? (
+                            validationFailed
+                              ? (
                                 <p className="error-message">Validation failed</p>
-                            ) : null
+                                )
+                              : null
                         }
                         <Row>
                             <Columns className="small-6">
@@ -55,7 +57,7 @@ const signUp = ({ validationFailed }) => {
                 </Columns>
             </Row>
         </div>
-    )
-}
+  );
+};
 
-export default signUp
+export default signUp;

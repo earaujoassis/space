@@ -1,36 +1,36 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
+import Row from '../../core/components/Row.jsx';
+import Columns from '../../core/components/Columns.jsx';
 
-import UserStore from '../stores/users'
+import UserStore from '../stores/users';
 
 const pathToTitle = {
-    '/applications': 'Applications',
-    '/profile': 'Profile',
-}
+  '/applications': 'Applications',
+  '/profile': 'Profile'
+};
 
 export default class Settings extends React.Component {
-    constructor(props) {
-        super(props)
-        this._isActive = this._isActive.bind(this)
-        this.state = {error: false}
-        this._updateFromStore = this._updateFromStore.bind(this)
-    }
+  constructor (props) {
+    super(props);
+    this._isActive = this._isActive.bind(this);
+    this.state = { error: false };
+    this._updateFromStore = this._updateFromStore.bind(this);
+  }
 
-    componentDidMount() {
-        UserStore.addChangeListener(this._updateFromStore)
-    }
+  componentDidMount () {
+    UserStore.addChangeListener(this._updateFromStore);
+  }
 
-    componentWillUnmount() {
-        UserStore.removeChangeListener(this._updateFromStore)
-    }
+  componentWillUnmount () {
+    UserStore.removeChangeListener(this._updateFromStore);
+  }
 
-    render() {
-        const { pathname } = this.props.location
+  render () {
+    const { pathname } = this.props.location;
 
-        return (
+    return (
             <Row className="settings-wrapper">
                 <Columns className="small-12 medium-3 large-2">
                     <ul className="side-nav">
@@ -54,14 +54,14 @@ export default class Settings extends React.Component {
                     {this.props.children}
                 </Columns>
             </Row>
-        )
-    }
+    );
+  }
 
-    _isActive(path) {
-        return this.props.location.pathname === path ? 'active' : ''
-    }
+  _isActive (path) {
+    return this.props.location.pathname === path ? 'active' : '';
+  }
 
-    _updateFromStore() {
-        this.setState({ error: UserStore.getState().payload.error === 'access_denied' })
-    }
+  _updateFromStore () {
+    this.setState({ error: UserStore.getState().payload.error === 'access_denied' });
+  }
 }

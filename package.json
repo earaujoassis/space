@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint -c .eslintrc.json ./web/{callisto,core,europa,ganymede,io}/**/*.js*",
+    "lint": "eslint -c .eslintrc.json ./web/{amalthea,callisto,core,europa,ganymede,io}/**/*.js*",
     "build": "gulp"
   },
   "repository": {
@@ -19,19 +19,18 @@
   },
   "homepage": "https://github.com/earaujoassis/space#readme",
   "dependencies": {
-    "@babel/core": "^7.14.5",
-    "@babel/preset-env": "^7.14.5",
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
     "@babel/preset-react": "^7.14.5",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
-    "eslint": "^7.28.0",
-    "eslint-plugin-react": "^7.24.0",
     "flux": "^4.0.1",
     "foundation-sites": "^6.6.3",
     "gulp": "^4.0.2",
     "gulp-rename": "^2.0.0",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.0.0",
     "gulp-uglify": "^3.0.2",
+    "node-sass": "^6.0.1",
     "node-uuid": "^1.4.8",
     "normalize.scss": "^0.1.0",
     "prop-types": "^15.7.2",
@@ -42,5 +41,16 @@
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "whatwg-fetch": "^3.6.2"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.29.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-config-standard-react": "^11.0.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-standard": "^4.1.0"
   }
 }

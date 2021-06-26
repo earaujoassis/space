@@ -1,23 +1,23 @@
-import Store from './base'
+import Store from './base';
 
-var _setupData = {}
+let _setupData = {};
 
 class FeaturesStoreBase extends Store {
-    constructor() {
-        super()
-    }
+  constructor () {
+    super();
+  }
 
-    isFeatureActive(key) {
-        return _setupData['feature.gates'] && _setupData['feature.gates'][key]
-    }
+  isFeatureActive (key) {
+    return _setupData['feature.gates'] && _setupData['feature.gates'][key];
+  }
 
-    loadData() {
-        if (document.getElementById('data')) {
-            _setupData = JSON.parse(document.getElementById('data').innerHTML)
-        }
+  loadData () {
+    if (document.getElementById('data')) {
+      _setupData = JSON.parse(document.getElementById('data').innerHTML);
     }
+  }
 }
 
-const FeaturesStore = new FeaturesStoreBase()
+const FeaturesStore = new FeaturesStoreBase();
 
-export default FeaturesStore
+export default FeaturesStore;

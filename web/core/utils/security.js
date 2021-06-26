@@ -1,3 +1,3 @@
-const quirksMode = (top == self)
+const quirksMode = (top === self);
 
-export { quirksMode }
+export { quirksMode };

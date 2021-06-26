@@ -1,21 +1,21 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const columns = ({ className, children }) => {
-    const finalClassName = `columns ${className}`
+  const finalClassName = `columns ${className}`;
 
-    return (
+  return (
         <div className={finalClassName}>{children}</div>
-    )
-}
+  );
+};
 
 columns.propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node
-}
+  className: PropTypes.string,
+  children: PropTypes.node
+};
 
 columns.defaultProps = {
-    className: ''
-}
+  className: ''
+};
 
-export default columns
+export default columns;

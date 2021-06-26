@@ -1,17 +1,17 @@
-import React from 'react'
+import React from 'react';
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
+import Row from '../../core/components/Row.jsx';
+import Columns from '../../core/components/Columns.jsx';
 
 export default class Authorize extends React.Component {
-    constructor() {
-        super()
-        this.state = this._loadData()
-    }
+  constructor () {
+    super();
+    this.state = this._loadData();
+  }
 
-    render() {
-        let keyNumber = 0
-        return (
+  render () {
+    let keyNumber = 0;
+    return (
             <div className="authorize">
                 <Row className="separator">
                     <Columns className="small-offset-2 small-4 user">
@@ -27,7 +27,7 @@ export default class Authorize extends React.Component {
                         <ul className="">
                             {
                                 Array.prototype.map.call(this._requestedData(this.state.requested_scope), (message) => {
-                                    return (<li key={keyNumber++}>{message}</li>)
+                                  return (<li key={keyNumber++}>{message}</li>);
                                 })
                             }
                         </ul>
@@ -53,34 +53,34 @@ export default class Authorize extends React.Component {
                     </Columns>
                 </Row>
             </div>
-        )
-    }
+    );
+  }
 
-    _requestedData(scope) {
-        switch(scope) {
-        case 'public':
-            return [
-                'Authentication data for that given application'
-            ]
-        case 'read':
-            return [
-                'Authentication data for that given application',
-                'Your profile data (including e-mail and first and last names)'
-            ]
-        case 'read_write':
-            return [
-                'Authentication data for that given application',
-                'Your profile data (including e-mail and first and last names)',
-                'Update your profile data (including e-mail and first and last names)'
-            ]
-        }
+  _requestedData (scope) {
+    switch (scope) {
+      case 'public':
+        return [
+          'Authentication data for that given application'
+        ];
+      case 'read':
+        return [
+          'Authentication data for that given application',
+          'Your profile data (including e-mail and first and last names)'
+        ];
+      case 'read_write':
+        return [
+          'Authentication data for that given application',
+          'Your profile data (including e-mail and first and last names)',
+          'Update your profile data (including e-mail and first and last names)'
+        ];
     }
+  }
 
-    _loadData() {
-        if (document.getElementById('data')) {
-            let data = JSON.parse(document.getElementById('data').innerHTML)
-            return data
-        }
-        return {}
+  _loadData () {
+    if (document.getElementById('data')) {
+      const data = JSON.parse(document.getElementById('data').innerHTML);
+      return data;
     }
+    return {};
+  }
 }

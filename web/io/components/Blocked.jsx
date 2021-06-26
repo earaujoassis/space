@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
+import Row from '../../core/components/Row.jsx';
+import Columns from '../../core/components/Columns.jsx';
 
 const blocked = () => {
-    return (
+  return (
         <div className="centered-message">
             <Row>
                 <Columns className="small-6 small-offset-3 end columns">
@@ -18,7 +18,7 @@ const blocked = () => {
                 </Columns>
             </Row>
         </div>
-    )
-}
+  );
+};
 
-export default blocked
+export default blocked;
