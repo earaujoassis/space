@@ -1,13 +1,10 @@
-# Space / Acceptance tests
-
-> A user management microservice; OAuth 2 provider
+# Acceptance tests
 
 ## Setup
 
 ```sh
 $ brew install chromedriver
 $ go get github.com/tools/godep
-$ godep restore
 ```
 
 ## Testing
@@ -21,10 +18,6 @@ $ SPACE_ENV=testing go test -cover ./...
 ```sh
 $ ginkgo generate --agouti {description-file}
 ```
-
-## Limitations
-
-Currently, there is no dependency management
 
 ## License
 

@@ -5,10 +5,10 @@
 Space (formely known as Jupiter) is an user authentication and authorisation microservice intended to be used across
 multiple client applications. Currently, it's used to provide OAuth 2 authorisation for the
 [earaujoassis/wallet](https://github.com/earaujoassis/wallet) and [earaujoassis/postal](https://github.com/earaujoassis/postal)
-projects. Though it is not intended to be used widely, it can be used as a reference implementation of a Go-based
+projects. Though it is not intended to be used widely, it can be used as a reference implementation of a Golang-based
 OAuth 2 provider.
 
-It uses [Gin](https://gin-gonic.github.io/gin/) as the Web Framework and [GORM](http://gorm.io/) for Go's
+It uses [Gin](https://gin-gonic.github.io/gin/) as the Web Framework and [GORM](http://gorm.io/) for Golang's
 structure&ndash;relational mapping. Redis is used as a memory store to keep track of users' atomic and ephemeral actions
 (like the whole authorisation process under the "Authorization Code Grant" method, described in
 [RFC 6749, section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1)). For the user's authentication process, it is
@@ -19,7 +19,7 @@ secrets. It is planned to use Vault as a way to store clients keys and secrets, 
 
 It is not planned to implement all authorisation methods described in RFC 6749 but sections 4.1 and [4.3](https://tools.ietf.org/html/rfc6749#section-4.3), the "Resource Owner Password Credentials Grant".
 
-Space is based on a set of [feature flags](feature/features.md) enabled/disabled through the Redis store.
+Space is based on a set of [feature flags](docs/feature-gate.md) enabled/disabled through the Redis store.
 
 ## Setup & running
 
@@ -32,7 +32,7 @@ needs a `PORT` env var in order to setup its socket (it is automatically provide
 
 In order to setup the application, additional configuration is necessary. That could be delivered through Vault or through
 a local `.config.local.json` file. If you plan to use Vault, you need to fill the `.config.yml` file, according to the
-`.config.sample.yml`, and store a k/v secret according to the `.config.local.sample.json`. If don't plan to use Vault,
+`.config.sample.yml`, and store a k/v secret according to the `.config.local.sample.json`. If you don't plan to use Vault,
 just create a `.config.local.json` file according to `.config.local.sample.json`. The application will try to load the
 `.config.local.json` by default, if it is available; otherwise, it will attempt to load it from Vault. At least one of these
 configuration schemes is necessary.
@@ -49,7 +49,7 @@ $ open http://localhost:8080
 If you're planning to setup it for development, ideally you should run:
 
 ```sh
-$ bin/dev-setup
+$ scripts/dev-setup
 $ go get github.com/mattn/goreman
 $ goreman start
 $ open http://localhost:8080
@@ -64,22 +64,6 @@ $ go get -u golang.org/x/lint/golint
 $ SPACE_ENV=testing go test -race -coverprofile=c.out ./...
 $ go tool cover -html=c.out -o coverage.html
 $ golint ./...
-```
-
-## Deployment through a docker container
-
-The following commands will create a *docker image* and create a *docker container*:
-
-```sh
-$ docker build -t earaujoassis/space .
-$ docker run -d -p 8080:8080 earaujoassis/space
-$ docker images --quiet --filter=dangling=true | xargs docker rmi
-```
-
-The project also provides a *docker-compose* setup, which could be setup through:
-
-```sh
-$ docker-compose up --build
 ```
 
 ## Issues
