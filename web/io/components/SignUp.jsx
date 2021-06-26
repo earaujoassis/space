@@ -5,7 +5,7 @@ import Row from '../../core/components/Row.jsx';
 import Columns from '../../core/components/Columns.jsx';
 import PasswordInput from '../../core/components/PasswordInput.jsx';
 
-import { extractDataForm } from '../../core/utils/forms';
+import { extractFormData } from '../../core/utils/forms';
 
 const signUp = ({ validationFailed }) => {
   return (
@@ -31,7 +31,7 @@ const signUp = ({ validationFailed }) => {
                         onSubmit={(e) => {
                           e.preventDefault();
                           const attrs = ['first_name', 'last_name', 'action_token', 'username', 'email', 'password'];
-                          UsersActions.signUp(extractDataForm(e.target, attrs));
+                          UsersActions.signUp(extractFormData(e.target, attrs));
                         }}>
                         {
                             validationFailed

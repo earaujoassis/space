@@ -1,4 +1,4 @@
-const extractDataForm = (form, attributes) => {
+const extractFormData = (form, attributes) => {
   const data = new FormData();
 
   for (const attr of attributes) {
@@ -8,4 +8,4 @@ const extractDataForm = (form, attributes) => {
   return data;
 };
 
-export { extractDataForm };
+export { extractFormData };

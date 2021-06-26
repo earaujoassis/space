@@ -5,7 +5,7 @@ const row = ({ className, children }) => {
   const finalClassName = `row ${className}`;
 
   return (
-        <div className={finalClassName}>{children}</div>
+    <div className={finalClassName}>{children}</div>
   );
 };
 

@@ -1,51 +1,58 @@
-import { ActionTypes } from '../../core/constants';
-import { ActionCreator, processResponse, processData, processHandlerClojure } from '../../core/actions/base';
-import SpaceApi from '../../core/utils/spaceApi';
+/* eslint-disable quote-props */
+import fetch from '@core/actions/fetch';
+import { addLoadingContext, removeLoadingContext, errorHandler } from '@core/actions/internal';
+import { clientRecordStart, clientRecordSuccess, clientRecordError } from '@core/actions/clients';
 
-import ClientStore from '../stores/clients';
-import UserStore from '../stores/users';
+const CONTEXT = 'clients';
 
-class ClientsActionFactory {
-  createClient (data) {
-    const token = UserStore.getActionToken();
-    const action = new ActionCreator();
+export const fetchClients = (token) => {
+  return dispatch => {
+    dispatch(clientRecordStart());
+    dispatch(addLoadingContext(CONTEXT));
+    fetch.get('clients/', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(response => {
+        dispatch(removeLoadingContext(CONTEXT));
+        dispatch(clientRecordSuccess(response.data));
+      })
+      .catch(error => {
+        dispatch(removeLoadingContext(CONTEXT));
+        dispatch(clientRecordError(error));
+        dispatch(errorHandler(error));
+      });
+  };
+};
 
-    action.setUUID();
-    ClientStore.associateAction(action.actionID());
-    action.dispatch({ type: ActionTypes.SEND_DATA });
-    return SpaceApi.createClient(token, data)
-      .then(processResponse)
-      .then(processData)
-      .then(processHandlerClojure(action));
-  }
+export const createClient = (token, data, callbackSuccess = () => {}) => {
+  return dispatch => {
+    dispatch(clientRecordStart());
+    dispatch(addLoadingContext(CONTEXT));
+    fetch.post('clients/create', data, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(() => {
+        dispatch(fetchClients(token));
+        callbackSuccess();
+      })
+      .catch(error => {
+        dispatch(removeLoadingContext(CONTEXT));
+        dispatch(clientRecordError(error));
+        dispatch(errorHandler(error));
+      });
+  };
+};
 
-  updateClient (id, data) {
-    const token = UserStore.getActionToken();
-    const action = new ActionCreator();
-
-    action.setUUID();
-    ClientStore.associateAction(action.actionID());
-    action.dispatch({ type: ActionTypes.SEND_DATA });
-    return SpaceApi.updateClient(id, token, data)
-      .then(processResponse)
-      .then(processData)
-      .then(processHandlerClojure(action));
-  }
-
-  fetchClients () {
-    const token = UserStore.getActionToken();
-    const action = new ActionCreator();
-
-    action.setUUID();
-    ClientStore.associateAction(action.actionID());
-    action.dispatch({ type: ActionTypes.SEND_DATA });
-    return SpaceApi.fetchClients(token)
-      .then(processResponse)
-      .then(processData)
-      .then(processHandlerClojure(action));
-  }
-}
-
-const ClientsActions = new ClientsActionFactory();
-
-export default ClientsActions;
+export const updateClient = (token, id, data, callbackSuccess = () => {}) => {
+  return dispatch => {
+    dispatch(clientRecordStart());
+    dispatch(addLoadingContext(CONTEXT));
+    fetch.patch(`clients/${id}/profile`, data, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(() => {
+        dispatch(removeLoadingContext(CONTEXT));
+        dispatch(fetchClients(token));
+        callbackSuccess();
+      })
+      .catch(error => {
+        dispatch(removeLoadingContext(CONTEXT));
+        dispatch(clientRecordError(error));
+        dispatch(errorHandler(error));
+      });
+  };
+};

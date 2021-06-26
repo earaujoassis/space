@@ -12,6 +12,6 @@ Godeps/*
 !Godeps/Godeps.json
 
 node_modules
-web/public/css/*.css
-web/public/js/*.min.js
+web/public/css/*.css*
+web/public/js/*.min.js*
 package-lock.json

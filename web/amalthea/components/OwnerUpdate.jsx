@@ -5,13 +5,13 @@ import Columns from '../../core/components/Columns.jsx';
 import PasswordInput from '../../core/components/PasswordInput.jsx';
 import SuccessBox from '../../core/components/SuccessBox.jsx';
 
-import { extractDataForm } from '../../core/utils/forms';
+import { extractFormData } from '../../core/utils/forms';
 
 import UserStore from '../stores/users';
 import UsersActions from '../actions/users';
 
 const attemptPassworUpdate = (target) => {
-  const data = extractDataForm(target, ['new_password', 'password_confirmation']);
+  const data = extractFormData(target, ['new_password', 'password_confirmation']);
   data.append('_', UserStore.getActionToken());
   UsersActions.updatePassword(data);
 };

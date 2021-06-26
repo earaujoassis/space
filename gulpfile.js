@@ -7,7 +7,7 @@ const babelify = require('babelify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 
-const satellites = ['amalthea', 'callisto', 'europa', 'ganymede', 'io'];
+const satellites = ['amalthea', 'callisto', 'ganymede', 'io'];
 const environment = process.env.NODE_ENV;
 
 gulp.task('styles', function () {

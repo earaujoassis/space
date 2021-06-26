@@ -5,7 +5,7 @@ const columns = ({ className, children }) => {
   const finalClassName = `columns ${className}`;
 
   return (
-        <div className={finalClassName}>{children}</div>
+    <div className={finalClassName}>{children}</div>
   );
 };
 
