@@ -42,5 +42,6 @@ RUN go build -o space main.go
 
 EXPOSE 9000
 
+USER 1010
 ENTRYPOINT [ "./space" ]
 CMD [ "serve" ]
