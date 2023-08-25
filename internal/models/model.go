@@ -5,7 +5,7 @@ import (
     "math/rand"
 
     "github.com/satori/go.uuid"
-    "gopkg.in/bluesuncorp/validator.v5"
+    "github.com/go-playground/validator/v10"
 
     "github.com/earaujoassis/space/internal/config"
 )
@@ -49,14 +49,15 @@ func generateUUID() string {
 }
 
 func validateModel(tagName string, model interface{}) error {
-    validate := validator.New(tagName, validator.BakedInValidators)
-    validate.AddFunction("client", validClientType)
-    validate.AddFunction("scope", validScope)
-    validate.AddFunction("restrict", validClientScopes)
-    validate.AddFunction("token", validTokenType)
-    validate.AddFunction("canonical", validCanonicalURIs)
-    validate.AddFunction("redirect", validRedirectURIs)
-    validate.AddFunction("action", validAction)
+    validate := validator.New()
+    validate.SetTagName(tagName)
+    validate.RegisterValidation("client", validClientType)
+    validate.RegisterValidation("scope", validScope)
+    validate.RegisterValidation("restrict", validClientScopes)
+    validate.RegisterValidation("token", validTokenType)
+    validate.RegisterValidation("canonical", validCanonicalURIs)
+    validate.RegisterValidation("redirect", validRedirectURIs)
+    validate.RegisterValidation("action", validAction)
     err := validate.Struct(model)
     if err != nil {
         return err
@@ -76,4 +77,8 @@ func IsValid(tagName string, model interface{}) bool {
 func defaultKey() []byte {
     keyString := config.GetGlobalConfig().StorageSecret
     return []byte(keyString)
+}
+
+func (model Model) IsNewRecord() bool {
+    return model.ID == 0
 }

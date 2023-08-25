@@ -4,9 +4,11 @@ import (
     "fmt"
     "strings"
     "net/url"
+    "reflect"
 
-    "github.com/jinzhu/gorm"
+    "gorm.io/gorm"
     "golang.org/x/crypto/bcrypt"
+    "github.com/go-playground/validator/v10"
 )
 
 const (
@@ -30,8 +32,8 @@ type Client struct {
     Type string                 `gorm:"not null" validate:"required,client" json:"-"`
 }
 
-func validClientScopes(top interface{}, current interface{}, field interface{}, param string) bool {
-    scopesField := field.(string)
+func validClientScopes(fl validator.FieldLevel) bool {
+    scopesField := fl.Field().String()
     // TODO A PublicClient can't have a ReadScope
     if scopesField != PublicScope && scopesField != ReadScope {
         return false
@@ -39,16 +41,16 @@ func validClientScopes(top interface{}, current interface{}, field interface{}, 
     return true
 }
 
-func validClientType(top interface{}, current interface{}, field interface{}, param string) bool {
-    typeField := field.(string)
+func validClientType(fl validator.FieldLevel) bool {
+    typeField := fl.Field().String()
     if typeField != PublicClient && typeField != ConfidentialClient {
         return false
     }
     return true
 }
 
-func validCanonicalURIs(top interface{}, current interface{}, field interface{}, param string) bool {
-    canonicalURIField := field.(string)
+func validCanonicalURIs(fl validator.FieldLevel) bool {
+    canonicalURIField := fl.Field().String()
 
     // Unfortunately, the Jupiter (internal client) is created with the following value
     if canonicalURIField == "localhost" {
@@ -71,14 +73,13 @@ func validCanonicalURIs(top interface{}, current interface{}, field interface{},
     return true
 }
 
-func validRedirectURIs(top interface{}, current interface{}, field interface{}, param string) bool {
-    currentClient, ok := current.(Client)
-
+func validRedirectURIs(fl validator.FieldLevel) bool {
     // It's not a Client model
-    if !ok {
+    if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
         return true
     }
 
+    currentClient := fl.Top().Interface().(Client)
     canonicalURI := currentClient.CanonicalURI
     redirectURI := currentClient.RedirectURI
 
@@ -120,16 +121,16 @@ func (client *Client) UpdateSecret(secret string) error {
 }
 
 // BeforeSave Client model/struct hook
-func (client *Client) BeforeSave(scope *gorm.Scope) error {
+func (client *Client) BeforeSave(tx *gorm.DB) error {
     return validateModel("validate", client)
 }
 
 // BeforeCreate Client model/struct hook
-func (client *Client) BeforeCreate(scope *gorm.Scope) error {
-    scope.SetColumn("UUID", generateUUID())
-    scope.SetColumn("Key", GenerateRandomString(32))
+func (client *Client) BeforeCreate(tx *gorm.DB) error {
+    client.UUID = generateUUID()
+    client.Key = GenerateRandomString(32)
     if crypted, err := bcrypt.GenerateFromPassword([]byte(client.Secret), bcrypt.DefaultCost); err == nil {
-        scope.SetColumn("Secret", crypted)
+        client.Secret = string(crypted)
     } else {
         return err
     }

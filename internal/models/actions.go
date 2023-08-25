@@ -5,6 +5,7 @@ import (
     "encoding/json"
 
     "github.com/garyburd/redigo/redis"
+    "github.com/go-playground/validator/v10"
 
     "github.com/earaujoassis/space/internal/memstore"
 )
@@ -33,8 +34,8 @@ type Action struct {
     CreatedAt time.Time         `json:"created_at"`
 }
 
-func validAction(top interface{}, current interface{}, field interface{}, param string) bool {
-    description := field.(string)
+func validAction(fl validator.FieldLevel) bool {
+    description := fl.Field().String()
     if description != NotSpecialAction && description != UpdateUserAction {
         return false
     }

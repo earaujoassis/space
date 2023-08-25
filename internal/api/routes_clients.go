@@ -8,7 +8,6 @@ import (
     "github.com/gin-gonic/contrib/sessions"
     "github.com/gin-gonic/gin"
 
-    "github.com/earaujoassis/space/internal/datastore"
     "github.com/earaujoassis/space/internal/models"
     "github.com/earaujoassis/space/internal/oauth"
     "github.com/earaujoassis/space/internal/security"
@@ -128,8 +127,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
             if (newScopes != "") {
                 client.Scopes = newScopes
             }
-            dataStore := datastore.GetDataStoreConnection()
-            dataStore.Save(&client)
+            services.SaveClient(&client)
             c.JSON(http.StatusNoContent, nil)
         })
 
@@ -164,8 +162,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
             // For security reasons, the client's secret is regenerated
             clientSecret := models.GenerateRandomString(64)
             client.UpdateSecret(clientSecret)
-            dataStore := datastore.GetDataStoreConnection()
-            dataStore.Save(&client)
+            services.SaveClient(&client)
 
             contentString := fmt.Sprintf("name,client_key,client_secret\n%s,%s,%s\n", client.Name, client.Key, clientSecret)
             content := strings.NewReader(contentString)

@@ -10,6 +10,11 @@ const (
     DefaultClient = "Jupiter"
 )
 
+func SaveClient(client *models.Client) {
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Save(client)
+}
+
 // CreateNewClient creates a new client application entry
 func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectURI string) models.Client {
     var client models.Client = models.Client{
@@ -22,8 +27,8 @@ func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectUR
         Type: models.ConfidentialClient,
     }
 
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.Create(&client)
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Create(&client)
     return client
 }
 
@@ -31,9 +36,9 @@ func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectUR
 func FindOrCreateClient(name string) models.Client {
     var client models.Client
 
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.Where("name = ?", name).First(&client)
-    if dataStoreSession.NewRecord(client) {
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Where("name = ?", name).First(&client)
+    if client.IsNewRecord() {
         client = models.Client{
             Name: name,
             Secret: models.GenerateRandomString(64),
@@ -42,7 +47,7 @@ func FindOrCreateClient(name string) models.Client {
             Scopes: models.PublicScope,
             Type: models.PublicClient,
         }
-        dataStoreSession.Create(&client)
+        datastoreSession.Create(&client)
     }
     return client
 }
@@ -51,8 +56,8 @@ func FindOrCreateClient(name string) models.Client {
 func FindClientByKey(key string) models.Client {
     var client models.Client
 
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.Where("key = ?", key).First(&client)
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Where("key = ?", key).First(&client)
     return client
 }
 
@@ -60,8 +65,8 @@ func FindClientByKey(key string) models.Client {
 func FindClientByUUID(uuid string) models.Client {
     var client models.Client
 
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.Where("uuid = ?", uuid).First(&client)
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Where("uuid = ?", uuid).First(&client)
     return client
 }
 
@@ -80,8 +85,8 @@ func ClientAuthentication(key, secret string) models.Client {
 func ActiveClients() []models.Client {
     var clients []models.Client
 
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.
         Raw("SELECT clients.uuid, clients.name, clients.description, clients.canonical_uri, clients.redirect_uri FROM clients " +
         "WHERE clients.name != 'Jupiter' ORDER BY clients.created_at ASC").
         Scan(&clients)
