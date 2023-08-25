@@ -1,4 +1,4 @@
-# Space [![Build Status](https://travis-ci.com/earaujoassis/space.svg?branch=master)](https://travis-ci.com/earaujoassis/space) [![codecov](https://codecov.io/gh/earaujoassis/space/branch/master/graph/badge.svg)](https://codecov.io/gh/earaujoassis/space) [![Go Report Card](https://goreportcard.com/badge/github.com/earaujoassis/space)](https://goreportcard.com/report/github.com/earaujoassis/space)
+# Space [![CircleCI](https://dl.circleci.com/status-badge/img/gh/earaujoassis/space/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/earaujoassis/space/tree/master) [![codecov](https://codecov.io/gh/earaujoassis/space/branch/master/graph/badge.svg)](https://codecov.io/gh/earaujoassis/space) [![Go Report Card](https://goreportcard.com/badge/github.com/earaujoassis/space)](https://goreportcard.com/report/github.com/earaujoassis/space) [![Build Status](https://travis-ci.com/earaujoassis/space.svg?branch=master)](https://travis-ci.com/earaujoassis/space)
 
 > A user management microservice; OAuth 2 provider
 
