@@ -25,7 +25,7 @@ type Config struct {
 	DatastorePassword   string `json:"datastore_password" env:"SPACE_DATASTORE_PASSWORD"`
 	DatastoreSslMode    string `json:"datastore_ssl_mode" env:"SPACE_DATASTORE_SSL_MODE"`
 	DatastoreUser       string `json:"datastore_user" env:"SPACE_DATASTORE_USER"`
-	MailFrom            string `json:"mail_from" env="SPACE_MAIL_FROM"`
+	MailFrom            string `json:"mail_from" env:"SPACE_MAIL_FROM"`
 	MailerAccess        string `json:"mailer_access" env:"SPACE_MAILER_ACCESS"`
 	MemorystoreHost     string `json:"memory_store_host" env:"SPACE_MEMORY_STORE_HOST"`
 	MemorystoreIndex    int    `json:"memory_store_index" env:"SPACE_MEMORY_STORE_INDEX"`
