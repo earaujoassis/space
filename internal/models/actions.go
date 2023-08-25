@@ -4,9 +4,9 @@ import (
     "time"
     "encoding/json"
 
-    "github.com/garyburd/redigo/redis"
+    "github.com/go-playground/validator/v10"
 
-    "github.com/earaujoassis/space/internal/memstore"
+    "github.com/earaujoassis/space/internal/services/volatile"
 )
 
 const (
@@ -33,8 +33,8 @@ type Action struct {
     CreatedAt time.Time         `json:"created_at"`
 }
 
-func validAction(top interface{}, current interface{}, field interface{}, param string) bool {
-    description := field.(string)
+func validAction(fl validator.FieldLevel) bool {
+    description := fl.Field().String()
     if description != NotSpecialAction && description != UpdateUserAction {
         return false
     }
@@ -53,25 +53,25 @@ func (action *Action) Save() error {
     if err := validateModel("validate", action); err != nil {
         return err
     }
-    memstore.Start()
-    defer memstore.Close()
     actionJSON, _ := json.Marshal(action)
-    memstore.Do("HSET", "models.actions", action.UUID, actionJSON)
-    memstore.Do("HSET", "models.actions.indexes", action.Token, action.UUID)
-    memstore.Do("ZADD", "models.actions.rank", action.Moment, action.UUID)
+    volatile.TransactionsWrapper(func () {
+        volatile.SetFieldAtKey("models.actions", action.UUID, actionJSON)
+        volatile.SetFieldAtKey("models.actions.indexes", action.Token, action.UUID)
+        volatile.AddToSortedSetAtKey("models.actions.rank", action.Moment, action.UUID)
+    })
     return nil
 }
 
 // Delete deletes an Action entry in a memory store (Redis)
 func (action *Action) Delete() {
-    memstore.Start()
-    defer memstore.Close()
-    if actionExists, _ := redis.Bool(memstore.Do("HEXISTS", "models.actions", action.UUID)); !actionExists {
-        return
-    }
-    memstore.Do("HDEL", "models.actions.indexes", action.Token)
-    memstore.Do("HDEL", "models.actions", action.UUID)
-    memstore.Do("ZREM", "models.actions.rank", action.UUID)
+    volatile.TransactionsWrapper(func () {
+        if !volatile.CheckFieldExistence("models.actions", action.UUID) {
+            return
+        }
+        volatile.DeleteFieldAtKey("models.actions.indexes", action.Token)
+        volatile.DeleteFieldAtKey("models.actions", action.UUID)
+        volatile.RemoveFromSortedSetAtKey("models.actions.rank", action.UUID)
+    })
 }
 
 // WithinExpirationWindow checks if an Action entry is still valid (time-based)
@@ -88,25 +88,35 @@ func (action *Action) CanUpdateUser() bool {
 // RetrieveActionByUUID obtains an Action entry from its UUID
 func RetrieveActionByUUID(uuid string) Action {
     var action Action
-    memstore.Start()
-    defer memstore.Close()
-    if actionExists, _ := redis.Bool(memstore.Do("HEXISTS", "models.actions", uuid)); !actionExists {
-        return Action{}
-    }
-    actionString, _ := redis.String(memstore.Do("HGET", "models.actions", uuid))
-    if err := json.Unmarshal([]byte(actionString), &action); err != nil {
-        return Action{}
-    }
+
+    volatile.TransactionsWrapper(func () {
+        if !volatile.CheckFieldExistence("models.actions", uuid) {
+            action = Action{}
+            return
+        }
+        actionString := volatile.GetFieldAtKey("models.actions", uuid).ToString()
+        if err := json.Unmarshal([]byte(actionString), &action); err != nil {
+            action = Action{}
+            return
+        }
+    })
+
     return action
 }
 
 // RetrieveActionByToken obtains an Action entry from its token-string
 func RetrieveActionByToken(token string) Action {
-    memstore.Start()
-    defer memstore.Close()
-    if indexExists, _ := redis.Bool(memstore.Do("HEXISTS", "models.actions.indexes", token)); !indexExists {
-        return Action{}
-    }
-    actionUUID, _ := redis.String(memstore.Do("HGET", "models.actions.indexes", token))
-    return RetrieveActionByUUID(actionUUID)
+    var action Action
+
+    volatile.TransactionsWrapper(func () {
+        if !volatile.CheckFieldExistence("models.actions.indexes", token) {
+            action = Action{}
+            return
+        }
+
+        actionUUID := volatile.GetFieldAtKey("models.actions.indexes", token).ToString()
+        action = RetrieveActionByUUID(actionUUID)
+    })
+
+    return action
 }

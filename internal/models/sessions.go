@@ -3,7 +3,8 @@ package models
 import (
     "time"
 
-    "github.com/jinzhu/gorm"
+    "gorm.io/gorm"
+    "github.com/go-playground/validator/v10"
 )
 
 const (
@@ -43,16 +44,16 @@ type Session struct {
     Scopes string               `gorm:"not null" validate:"required,scope" json:"-"`
 }
 
-func validScope(top interface{}, current interface{}, field interface{}, param string) bool {
-    scope := field.(string)
+func validScope(fl validator.FieldLevel) bool {
+    scope := fl.Field().String()
     if scope != PublicScope && scope != ReadScope && scope != ReadWriteScope {
         return false
     }
     return true
 }
 
-func validTokenType(top interface{}, current interface{}, field interface{}, param string) bool {
-    tokenType := field.(string)
+func validTokenType(fl validator.FieldLevel) bool {
+    tokenType := fl.Field().String()
     if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken {
         return false
     }
@@ -73,16 +74,16 @@ func expirationLengthForTokenType(tokenType string) int64 {
 }
 
 // BeforeSave Session model/struct hook
-func (session *Session) BeforeSave(scope *gorm.Scope) error {
+func (session *Session) BeforeSave(tx *gorm.DB) error {
     return validateModel("validate", session)
 }
 
 // BeforeCreate Session model/struct hook
-func (session *Session) BeforeCreate(scope *gorm.Scope) error {
-    scope.SetColumn("Token", GenerateRandomString(64))
-    scope.SetColumn("UUID", generateUUID())
-    scope.SetColumn("Moment", time.Now().UTC().Unix())
-    scope.SetColumn("ExpiresIn", expirationLengthForTokenType(session.TokenType))
+func (session *Session) BeforeCreate(tx *gorm.DB) error {
+    session.Token = GenerateRandomString(64)
+    session.UUID = generateUUID()
+    session.Moment = time.Now().UTC().Unix()
+    session.ExpiresIn = expirationLengthForTokenType(session.TokenType)
     return nil
 }
 

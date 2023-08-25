@@ -5,7 +5,7 @@ import (
     "strings"
 
     "golang.org/x/crypto/bcrypt"
-    "github.com/jinzhu/gorm"
+    "gorm.io/gorm"
     "github.com/pquerna/otp"
     "github.com/pquerna/otp/totp"
 
@@ -90,16 +90,16 @@ func (user *User) GenerateRecoverSecret() (string, error) {
 }
 
 // BeforeSave User model/struct hook
-func (user *User) BeforeSave(scope *gorm.Scope) error {
+func (user *User) BeforeSave(tx *gorm.DB) error {
     return validateModel("validate", user)
 }
 
 // BeforeCreate User model/struct hook
-func (user *User) BeforeCreate(scope *gorm.Scope) error {
-    scope.SetColumn("UUID", generateUUID())
-    scope.SetColumn("PublicID", GenerateRandomString(32))
+func (user *User) BeforeCreate(tx *gorm.DB) error {
+    user.UUID = generateUUID()
+    user.PublicID = GenerateRandomString(32)
     if cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Passphrase), bcrypt.DefaultCost); err == nil {
-        scope.SetColumn("Passphrase", cryptedPassword)
+        user.Passphrase = string(cryptedPassword)
     } else {
         return err
     }

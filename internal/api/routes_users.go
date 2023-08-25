@@ -10,7 +10,6 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/earaujoassis/space/internal/config"
-    "github.com/earaujoassis/space/internal/datastore"
     "github.com/earaujoassis/space/internal/feature"
     "github.com/earaujoassis/space/internal/models"
     "github.com/earaujoassis/space/internal/oauth"
@@ -39,7 +38,6 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            dataStore := datastore.GetDataStoreConnection()
             user := models.User{
                 FirstName:  c.PostForm("first_name"),
                 LastName:   c.PostForm("last_name"),
@@ -56,12 +54,6 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 })
                 return
             }
-            if dataStore.NewRecord(user.Client) {
-                user.Client = services.FindOrCreateClient(services.DefaultClient)
-            }
-            if dataStore.NewRecord(user.Language) {
-                user.Language = services.FindOrCreateLanguage("English", "en-US")
-            }
             codeSecretKey := user.GenerateCodeSecret()
             recoverSecret, _ := user.GenerateRecoverSecret()
             img, err := codeSecretKey.Image(200, 200)
@@ -72,12 +64,13 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 imageData = base64.StdEncoding.EncodeToString(buf.Bytes())
             }
 
-            result := dataStore.Create(&user)
-            if count := result.RowsAffected; count < 1 {
+            ok, err := services.CreateNewUser(&user)
+
+            if !ok {
                 c.JSON(http.StatusBadRequest, utils.H{
                     "_status":  "error",
                     "_message": "User was not created",
-                    "error": fmt.Sprintf("%v", result.GetErrors()),
+                    "error": fmt.Sprintf("%v", err),
                     "user":  user,
                 })
             } else {
@@ -141,9 +134,8 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            dataStore := datastore.GetDataStoreConnection()
             user.Admin = true
-            dataStore.Save(&user)
+            services.SaveUser(&user)
             c.JSON(http.StatusNoContent, nil)
         })
 
@@ -202,8 +194,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
                 return
             }
 
-            dataStore := datastore.GetDataStoreConnection()
-            dataStore.Save(&user)
+            services.SaveUser(&user)
             action.Delete()
             c.JSON(http.StatusNoContent, nil)
         })
