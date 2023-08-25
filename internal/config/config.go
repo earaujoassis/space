@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -91,7 +90,7 @@ func LoadConfig() {
 
 	if _, jErr := os.Stat(localConfigurationFile); jErr == nil {
 		// .config.local.json exists
-		dataStream, err = ioutil.ReadFile(localConfigurationFile)
+		dataStream, err = os.ReadFile(localConfigurationFile)
 		if err != nil {
 			panic(err)
 		}

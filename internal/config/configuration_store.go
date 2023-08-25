@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -19,7 +19,7 @@ type Service struct {
 
 // LoadService loads a Vault secret
 func (s *Service) LoadService(filepath string) {
-	yamlFile, err := ioutil.ReadFile(filepath)
+	yamlFile, err := os.ReadFile(filepath)
 	if err != nil {
 		panic(err)
 	}
