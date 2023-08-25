@@ -15,8 +15,8 @@ func CreateSession(user models.User, client models.Client, ip, userAgent, scopes
         Scopes: scopes,
         TokenType: tokenType,
     }
-    dataStore := datastore.GetDataStoreConnection()
-    result := dataStore.Create(&session)
+    datastore := datastore.GetDatastoreConnection()
+    result := datastore.Create(&session)
     if count := result.RowsAffected; count > 0 {
         return session
     }
@@ -36,8 +36,8 @@ func SessionGrantsWriteAbility(session models.Session) bool {
 // FindSessionByUUID gets a session entry by its UUID
 func FindSessionByUUID(uuid string) models.Session {
     var session models.Session
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.
         Preload("Client").
         Preload("User").
         Preload("User.Client").
@@ -56,8 +56,8 @@ func FindSessionByUUID(uuid string) models.Session {
 // FindSessionByToken gets a session entry by its token string
 func FindSessionByToken(token, tokenType string) models.Session {
     var session models.Session
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.
         Preload("Client").
         Preload("User").
         Preload("User.Client").
@@ -75,8 +75,8 @@ func FindSessionByToken(token, tokenType string) models.Session {
 
 // InvalidateSession invalidates a session entry
 func InvalidateSession(session models.Session) {
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.Model(&session).Select("invalidated").Update("invalidated", true)
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Model(&session).Select("invalidated").Update("invalidated", true)
 }
 
 // ActiveSessionsForClient gets the number of active sessions for a given user in a client application
@@ -85,8 +85,8 @@ func ActiveSessionsForClient(clientIID, userIID uint) int64 {
         Count int64
     }
 
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.
         Raw("SELECT count(*) AS count " +
             "FROM sessions WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND " +
             "client_id = ? AND user_id = ?;", clientIID, userIID).
@@ -96,8 +96,8 @@ func ActiveSessionsForClient(clientIID, userIID uint) int64 {
 
 // RevokeClientAccess revokes client application access to user's data
 func RevokeClientAccess(clientIID, userIID uint) {
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.
         Exec("UPDATE sessions SET invalidated = true, updated_at = now() " +
             "WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND " +
             "client_id = ? AND user_id = ?;", clientIID, userIID)

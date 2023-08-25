@@ -13,7 +13,6 @@ import (
     "github.com/gin-gonic/contrib/sessions"
 
     "github.com/earaujoassis/space/internal/config"
-    "github.com/earaujoassis/space/internal/datastore"
     "github.com/earaujoassis/space/internal/feature"
     "github.com/earaujoassis/space/internal/models"
     "github.com/earaujoassis/space/internal/oauth"
@@ -102,8 +101,7 @@ func ExposeRoutes(router *gin.Engine) {
                 imageData = base64.StdEncoding.EncodeToString(buf.Bytes())
             }
 
-            dataStore := datastore.GetDataStoreConnection()
-            dataStore.Save(&user)
+            services.SaveUser(&user)
             action.Delete()
             c.HTML(http.StatusOK, "user.update.secrets", utils.H{
                 "Title": " - Update Resource Owner Credential",

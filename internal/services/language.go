@@ -9,11 +9,11 @@ import (
 //      if that's not available, it creates one
 func FindOrCreateLanguage(name, isoCode string) models.Language {
     var language models.Language
-    dataStoreSession := datastore.GetDataStoreConnection()
-    dataStoreSession.Where("name = ? AND iso_code = ?", name, isoCode).First(&language)
-    if dataStoreSession.NewRecord(language) {
+    datastoreSession := datastore.GetDatastoreConnection()
+    datastoreSession.Where("name = ? AND iso_code = ?", name, isoCode).First(&language)
+    if language.IsNewRecord() {
         language = models.Language{Name: name, IsoCode: isoCode}
-        dataStoreSession.Create(&language)
+        datastoreSession.Create(&language)
     }
     return language
 }

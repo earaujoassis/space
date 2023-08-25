@@ -1,4 +1,4 @@
-FROM golang:1.16.5-alpine3.13
+FROM golang:1.19.12-alpine3.18
 
 LABEL "com.quatrolabs.space"="quatroLABS Space"
 LABEL "description"="A user management microservice; OAuth 2 provider"
@@ -13,7 +13,6 @@ RUN apk add --update --no-cache \
     linux-headers \
     make \
     python3 \
-    python2 \
     postgresql \
     postgresql-contrib \
     postgresql-libs \

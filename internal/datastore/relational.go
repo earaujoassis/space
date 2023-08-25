@@ -2,29 +2,29 @@ package datastore
 
 import (
     "fmt"
-    "github.com/jinzhu/gorm"
-    // Uses Postgres for GORM setup
-    _ "github.com/jinzhu/gorm/dialects/postgres"
+
+    "gorm.io/gorm"
+    "gorm.io/driver/postgres"
 
     "github.com/earaujoassis/space/internal/config"
     "github.com/earaujoassis/space/internal/models"
 )
 
-var dataStore *gorm.DB
+var datastore *gorm.DB
 
 // Start is used to setup the models within the application
 func Start() {
-    GetDataStoreConnection().AutoMigrate(&models.Client{},
+    GetDatastoreConnection().AutoMigrate(&models.Client{},
         &models.Language{},
         &models.User{},
         &models.Session{})
 }
 
-// GetDataStoreConnection is used to obtain a connection with
+// GetDatastoreConnection is used to obtain a connection with
 //      the Postgres datastore
-func GetDataStoreConnection() *gorm.DB {
-    if dataStore != nil {
-        return dataStore
+func GetDatastoreConnection() *gorm.DB {
+    if datastore != nil {
+        return datastore
     }
     var err error
     var cfg config.Config = config.GetGlobalConfig()
@@ -45,9 +45,9 @@ func GetDataStoreConnection() *gorm.DB {
         databaseName,
     )
     fmt.Printf("Connected to the following data store: %v\n", safeDatabaseConnectionData)
-    dataStore, err = gorm.Open("postgres", databaseConnectionData)
+    datastore, err = gorm.Open(postgres.Open(databaseConnectionData), &gorm.Config{})
     if err != nil {
         panic(fmt.Sprintf("Failed to connect datastore: %v\n", err))
     }
-    return dataStore
+    return datastore
 }
