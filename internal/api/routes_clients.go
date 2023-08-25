@@ -28,7 +28,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			session := sessions.Default(c)
 			userPublicID := session.Get("userPublicID")
 			user := services.FindUserByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
+			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -52,7 +52,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			action := c.MustGet("Action").(models.Action)
 			userPublicID := session.Get("userPublicID")
 			user := services.FindUserByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
+			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -97,7 +97,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			action := c.MustGet("Action").(models.Action)
 			userPublicID := session.Get("userPublicID")
 			user := services.FindUserByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || user.Admin != true {
+			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -140,7 +140,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			session := sessions.Default(c)
 			userPublicID := session.Get("userPublicID")
 			user := services.FindUserByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.ID == 0 || user.Admin != true {
+			if userPublicID == nil || user.ID == 0 || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",

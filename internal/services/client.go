@@ -72,9 +72,7 @@ func FindClientByUUID(uuid string) models.Client {
 
 // ClientAuthentication gets a client application by its key-secret pair
 func ClientAuthentication(key, secret string) models.Client {
-	var client models.Client
-
-	client = FindClientByKey(key)
+	client := FindClientByKey(key)
 	if client.ID != 0 && client.Authentic(secret) {
 		return client
 	}

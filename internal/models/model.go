@@ -59,19 +59,13 @@ func validateModel(tagName string, model interface{}) error {
 	validate.RegisterValidation("redirect", validRedirectURIs)
 	validate.RegisterValidation("action", validAction)
 	err := validate.Struct(model)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // IsValid checks if a `model` entry is valid, given the `tagName` (scope) for validation
 func IsValid(tagName string, model interface{}) bool {
 	err := validateModel(tagName, model)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func defaultKey() []byte {
