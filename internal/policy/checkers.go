@@ -1,51 +1,55 @@
 package policy
 
 import (
-    "github.com/garyburd/redigo/redis"
-
-    "github.com/earaujoassis/space/internal/memstore"
+    "github.com/earaujoassis/space/internal/services/volatile"
 )
 
 // SignInAttemptStatus checks and controls sign-in attempts from a Web browser/User
 func SignInAttemptStatus(id string) string {
-    memstore.Start()
-    defer memstore.Close()
+    var result string
 
-    if blockExists, _ := redis.Bool(memstore.Do("HEXISTS", "sign-in.blocked", id)); blockExists {
-        return Blocked
-    }
-    if attemptExists, _ := redis.Bool(memstore.Do("HEXISTS", "sign-in.attempt", id)); attemptExists {
-        reply, _ := redis.Int(memstore.Do("HGET", "sign-in.attempt", id))
-        switch {
-        case reply > 0 && reply <= attemptsUntilPreblock:
-            return Clear
-        case reply > attemptsUntilPreblock && reply <= attemptsUntilBlock:
-            return Preblocked
-        case reply > attemptsUntilBlock:
-            return Blocked
+    volatile.TransactionsWrapper(func () {
+        if volatile.CheckFieldExistence("sign-in.blocked", id) {
+            result = Blocked
+        } else if volatile.CheckFieldExistence("sign-in.attempt", id) {
+            numberOfAttempts := volatile.GetFieldAtKey("sign-in.attempt", id).ToInt()
+            switch {
+            case numberOfAttempts > 0 && numberOfAttempts <= attemptsUntilPreblock:
+                result = Clear
+            case numberOfAttempts > attemptsUntilPreblock && numberOfAttempts <= attemptsUntilBlock:
+                result = Preblocked
+            case numberOfAttempts > attemptsUntilBlock:
+                result = Blocked
+            }
+        } else {
+            result = Clear
         }
-    }
-    return Clear
+    })
+
+    return result
 }
 
 // SignUpAttemptStatus checks and controls sign-up attempts from a Web browser/User
 func SignUpAttemptStatus(id string) string {
-    memstore.Start()
-    defer memstore.Close()
+    var result string
 
-    if blockExists, _ := redis.Bool(memstore.Do("HEXISTS", "sign-up.blocked", id)); blockExists {
-        return Blocked
-    }
-    if attemptExists, _ := redis.Bool(memstore.Do("HEXISTS", "sign-up.attempt", id)); attemptExists {
-        reply, _ := redis.Int(memstore.Do("HGET", "sign-up.attempt", id))
-        switch {
-        case reply > 0 && reply <= attemptsUntilPreblock:
-            return Clear
-        case reply > attemptsUntilPreblock && reply <= attemptsUntilBlock:
-            return Preblocked
-        case reply > attemptsUntilBlock:
-            return Blocked
+    volatile.TransactionsWrapper(func () {
+        if volatile.CheckFieldExistence("sign-up.blocked", id) {
+            result = Blocked
+        } else if volatile.CheckFieldExistence("sign-up.attempt", id) {
+            numberOfAttempts := volatile.GetFieldAtKey("sign-up.attempt", id).ToInt()
+            switch {
+            case numberOfAttempts > 0 && numberOfAttempts <= attemptsUntilPreblock:
+                result = Clear
+            case numberOfAttempts > attemptsUntilPreblock && numberOfAttempts <= attemptsUntilBlock:
+                result = Preblocked
+            case numberOfAttempts > attemptsUntilBlock:
+                result = Blocked
+            }
+        } else {
+            result = Clear
         }
-    }
-    return Clear
+    })
+
+    return result
 }
