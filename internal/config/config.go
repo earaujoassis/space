@@ -115,7 +115,7 @@ func LoadConfig() {
 		if err != nil {
 			panic(err)
 		}
-	} else if err = env.Parse(&globalConfig); err != nil {
+	} else if err = env.Parse(&globalConfig); err == nil {
 		log.Println("> Configuration obtained from environment; all good")
 	} else {
 		// no configuration option available
