@@ -94,6 +94,10 @@ func LoadConfig() {
 		if err != nil {
 			panic(err)
 		}
+		err = json.Unmarshal([]byte(dataStream), &globalConfig)
+		if err != nil {
+			panic(err)
+		}
 	} else if _, yErr := os.Stat(configurationStoreFile); yErr == nil && os.IsNotExist(jErr) {
 		// .config.yml exists
 		globalService.LoadService(configurationStoreFile)
@@ -110,6 +114,10 @@ func LoadConfig() {
 		}
 
 		dataStream, _ = json.Marshal(secret.Data)
+		err = json.Unmarshal([]byte(dataStream), &globalConfig)
+		if err != nil {
+			panic(err)
+		}
 	} else if err := godotenv.Load(); err == nil {
 		err = env.Parse(&globalConfig)
 		if err != nil {
@@ -120,10 +128,5 @@ func LoadConfig() {
 	} else {
 		// no configuration option available
 		log.Fatal("> No configuration option is available; fatal")
-	}
-
-	err = json.Unmarshal([]byte(dataStream), &globalConfig)
-	if err != nil {
-		panic(err)
 	}
 }
