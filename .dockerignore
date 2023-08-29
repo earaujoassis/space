@@ -3,6 +3,7 @@
 .vscode/
 .circleci/
 .githooks/
+cmd/
 docs/
 node_modules/
 scripts/
