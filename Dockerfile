@@ -37,10 +37,11 @@ WORKDIR /app
 COPY . /app
 
 RUN yarn install && yarn build
-RUN go build -o space main.go
+RUN rm -rf cmd && mkdir -p cmd
+RUN CGO_ENABLED=0 go build -o cmd/space main.go
 
 EXPOSE 9000
 
 USER 1010
-ENTRYPOINT [ "./space" ]
+ENTRYPOINT [ "cmd/space" ]
 CMD [ "serve" ]
