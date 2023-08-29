@@ -18,8 +18,8 @@ $ go run main.go feature
 or
 
 ```sh
-$ go build -o space main.go
-$ ./space feature
+$ go build -o cmd/space main.go
+$ cmd/space feature
 ```
 
 It will request for the feature key (as described below).

@@ -24,9 +24,9 @@ type User struct {
 	Passphrase         string   `gorm:"not null" validate:"required" essential:"required,min=10" json:"-"`
 	Active             bool     `gorm:"not null;default:false" json:"active"`
 	Admin              bool     `gorm:"not null;default:false" json:"-"`
-	Client             Client   `gorm:"not null" validate:"exists" json:"-"`
+	Client             Client   `gorm:"not null" validate:"required" json:"-"`
 	ClientID           uint     `gorm:"not null" json:"-"`
-	Language           Language `gorm:"not null" validate:"exists" json:"-"`
+	Language           Language `gorm:"not null" validate:"required" json:"-"`
 	LanguageID         uint     `gorm:"not null" json:"-"`
 	TimezoneIdentifier string   `gorm:"not null;default:'GMT'" json:"timezone_identifier"`
 	CodeSecret         string   `gorm:"not null" validate:"required" json:"-"`

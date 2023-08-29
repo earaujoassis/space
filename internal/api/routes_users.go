@@ -66,7 +66,6 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			ok, err := services.CreateNewUser(&user)
-
 			if !ok {
 				c.JSON(http.StatusBadRequest, utils.H{
 					"_status":  "error",

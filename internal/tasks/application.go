@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"log"
+	"errors"
+	"runtime/debug"
 
 	"github.com/earaujoassis/space/internal/api"
 	"github.com/earaujoassis/space/internal/config"
@@ -24,6 +27,8 @@ func Server() {
 		defer func(c *gin.Context) {
 			// TODO It is not displaying/logging the error
 			if rec := recover(); rec != nil {
+				log.Printf("Error: %+v", errors.New(fmt.Sprintf("%v", rec)))
+				log.Println(debug.Stack())
 				if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",

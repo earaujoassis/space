@@ -30,9 +30,9 @@ const (
 type Session struct {
 	Model
 	UUID        string `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"-"`
-	User        User   `gorm:"not null" validate:"exists" json:"-"`
+	User        User   `gorm:"not null" validate:"required" json:"-"`
 	UserID      uint   `gorm:"not null" json:"-"`
-	Client      Client `gorm:"not null" validate:"exists" json:"-"`
+	Client      Client `gorm:"not null" validate:"required" json:"-"`
 	ClientID    uint   `gorm:"not null" json:"-"`
 	Moment      int64  `gorm:"not null" json:"moment"`
 	ExpiresIn   int64  `gorm:"not null;default:0" json:"expires_in"`
