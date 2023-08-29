@@ -19,9 +19,9 @@ const (
 // Action is a model/struct used to represent ephemeral actions/sessions in the application
 type Action struct {
 	UUID        string    `validate:"omitempty,uuid4" json:"uuid"`
-	User        User      `validate:"exists" json:"-"`
+	User        User      `validate:"required" json:"-"`
 	UserID      uint      `json:"user_id"`
-	Client      Client    `validate:"exists" json:"-"`
+	Client      Client    `validate:"required" json:"-"`
 	ClientID    uint      `json:"client_id"`
 	Moment      int64     `json:"moment"`
 	ExpiresIn   int64     `json:"expires_in"`
