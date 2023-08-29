@@ -19,8 +19,7 @@ func CreateNewUser(user *models.User) (bool, error) {
 		user.Language = FindOrCreateLanguage("English", "en-US")
 	}
 	result := datastoreSession.Create(user)
-	count := result.RowsAffected
-	return count < 1, result.Error
+	return result.RowsAffected >= 1, result.Error
 }
 
 // FindUserByAccountHolder gets an user by its account holder (username or email)
