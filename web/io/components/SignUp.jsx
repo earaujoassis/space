@@ -47,8 +47,8 @@ const signUp = ({ validationFailed }) => {
                             </Columns>
                         </Row>
                         <input type="hidden" name="action_token" value="" />
-                        <input type="text" name="username" placeholder="Username" required />
-                        <input type="email" name="email" placeholder="Email" required />
+                        <input type="text" name="username" placeholder="Username" autoComplete="username" required />
+                        <input type="email" name="email" placeholder="Email" inputMode="email" required />
                         <PasswordInput />
                         <button type="submit" className="button expand">Sign Up</button>
                     </form>
