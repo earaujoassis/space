@@ -8,7 +8,12 @@ const passwordInput = ({ name='password', placeholder='Password' }) => {
 
     return (
         <div className="password-visibility">
-            <input type={showPassword ? 'password' : 'text'} name={name} placeholder={placeholder} required />
+            <input
+                type={showPassword ? 'password' : 'text'}
+                name={name}
+                placeholder={placeholder}
+                autoComplete="new-password"
+                required />
             <button
                 className="visibility-toggle"
                 onClick={(e) => {
