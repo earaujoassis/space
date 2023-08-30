@@ -13,20 +13,25 @@ const StepsData = {
         className: 'unknown',
         name: 'holder',
         type: 'text',
-        placeholder: 'Access holder'
+        placeholder: 'Access holder',
+        autocomplete: 'username',
+        inputmode: 'text'
     },
     secrecy: {
         className: 'secrecy',
         name: 'password',
         type: 'password',
-        placeholder: 'Passphrase'
+        placeholder: 'Passphrase',
+        autocomplete: 'current-password',
+        inputmode: 'text'
     },
     code: {
         className: 'code',
         name: 'passcode',
         type: 'text',
-        placeholder: 'Code'
-
+        placeholder: 'Code',
+        autocomplete: 'one-time-code',
+        inputmode: 'numeric'
     }
 }
 
@@ -76,7 +81,9 @@ export default class SignIn extends React.Component {
                         <form action="." method="post">
                             <input ref={(r) => this.inputRef = r} type={step.type}
                                 name={step.name}
+                                autoComplete={step.autocomplete}
                                 placeholder={step.placeholder}
+                                inputMode={step.inputmode}
                                 value={this.state.form[step.name]}
                                 onChange={this._updateStepValue}
                                 required

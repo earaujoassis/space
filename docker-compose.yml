@@ -1,5 +1,11 @@
 version: '3.5'
 
+networks:
+  quatrolabs-network:
+    driver: bridge
+  quatrolabs-space-network:
+    driver: bridge
+
 services:
   space-redis:
     image: 'redis:5.0.0'
@@ -11,6 +17,8 @@ services:
     restart: always
     volumes:
       - space-redis-data:/data
+    networks:
+      - quatrolabs-space-network
 
   space-postgres:
     image: 'postgres:9.6.10'
@@ -27,6 +35,8 @@ services:
       POSTGRES_DB: space_production
       POSTGRES_HOST_AUTH_METHOD: "trust"
       listen_addresses: "*"
+    networks:
+      - quatrolabs-space-network
 
   space:
     build:
@@ -35,9 +45,12 @@ services:
     image: space
     restart: always
     ports:
-      - "8484:9000"
+      - "9000:9000"
     volumes:
       - space-web-public:/app/web/public
+    networks:
+      - quatrolabs-space-network
+      - quatrolabs-network
 
 volumes:
   space-redis-data:
