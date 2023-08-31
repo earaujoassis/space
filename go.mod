@@ -9,6 +9,7 @@ require (
 	github.com/gin-gonic/contrib v0.0.0-20190408155029-b5986969cb50
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-playground/validator/v10 v10.15.1
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/hashicorp/vault/api v1.0.1
 	github.com/joho/godotenv v1.3.0
 	github.com/onsi/ginkgo v1.7.0
@@ -19,6 +20,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/urfave/cli v1.20.0
 	golang.org/x/crypto v0.8.0
+	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	gopkg.in/yaml.v2 v2.2.4
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.4
@@ -34,7 +36,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.1.3 // indirect
@@ -73,7 +74,7 @@ require (
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/ugorji/go v1.1.4 // indirect
 	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/genproto v0.0.0-20190404172233-64821d5d2107 // indirect
