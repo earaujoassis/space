@@ -12,8 +12,8 @@ func TestValidClientModel(t *testing.T) {
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
 		Scopes:       PublicScope,
-		CanonicalURI: "https://localhost:5000",
-		RedirectURI:  "https://localhost:5000/callback",
+		CanonicalURI: []string{"https://localhost:5000"},
+		RedirectURI:  []string{"https://localhost:5000/callback"},
 		Type:         PublicClient,
 	}
 
@@ -26,8 +26,8 @@ func TestInvalidClientMissingRequiredFields(t *testing.T) {
 		Description:  "", // this can be empty
 		Secret:       "",
 		Scopes:       "",
-		CanonicalURI: "",
-		RedirectURI:  "",
+		CanonicalURI: []string{""},
+		RedirectURI:  []string{""},
 		Type:         "",
 	}
 
@@ -40,8 +40,8 @@ func TestInvalidURIClientModel(t *testing.T) {
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
 		Scopes:       PublicScope,
-		CanonicalURI: "https://localhost:5000",
-		RedirectURI:  "https://localhost:4000/callback",
+		CanonicalURI: []string{"https://localhost:5000"},
+		RedirectURI:  []string{"https://localhost:4000/callback"},
 		Type:         PublicClient,
 	}
 
@@ -54,8 +54,8 @@ func TestInvalidCanonicalURIClientModel(t *testing.T) {
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
 		Scopes:       PublicScope,
-		CanonicalURI: "ftp://localhost:5000",
-		RedirectURI:  "ftp://localhost:5000/callback",
+		CanonicalURI: []string{"ftp://localhost:5000"},
+		RedirectURI:  []string{"ftp://localhost:5000/callback"},
 		Type:         PublicClient,
 	}
 

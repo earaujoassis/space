@@ -123,8 +123,8 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			}
 
 			client := services.FindClientByUUID(clientUUID)
-			client.CanonicalURI = c.PostForm("canonical_uri")
-			client.RedirectURI = c.PostForm("redirect_uri")
+			client.CanonicalURI = utils.TrimStrings(strings.Split(c.PostForm("canonical_uri"), "\n"))
+			client.RedirectURI = utils.TrimStrings(strings.Split(c.PostForm("redirect_uri"), "\n"))
 			if newScopes != "" {
 				client.Scopes = newScopes
 			}

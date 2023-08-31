@@ -1,7 +1,7 @@
 package oauth
 
 import (
-	"strings"
+	"golang.org/x/exp/slices"
 
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
@@ -36,7 +36,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 	if authorizationSession.Client.ID != client.ID {
 		return invalidGrantResult("")
 	}
-	if !strings.Contains(authorizationSession.Client.RedirectURI, redirectURI) {
+	if !slices.Contains(authorizationSession.Client.RedirectURI, redirectURI) {
 		return invalidGrantResult("")
 	}
 
