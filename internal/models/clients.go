@@ -5,10 +5,14 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"encoding/json"
+
+	"golang.org/x/exp/slices"
 
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"github.com/lib/pq"
 )
 
 const (
@@ -21,15 +25,15 @@ const (
 // Client is the client application model/struct
 type Client struct {
 	Model
-	UUID         string `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
-	Name         string `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
-	Description  string `json:"description"`
-	Key          string `gorm:"not null;unique;index" json:"-"`
-	Secret       string `gorm:"not null" validate:"required" json:"-"`
-	Scopes       string `gorm:"not null" validate:"required,restrict" json:"-"`
-	CanonicalURI string `gorm:"not null" validate:"required,canonical" json:"uri"`
-	RedirectURI  string `gorm:"not null" validate:"required,redirect" json:"redirect"`
-	Type         string `gorm:"not null" validate:"required,client" json:"-"`
+	UUID         string         `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
+	Name         string         `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
+	Description  string         `json:"description"`
+	Key          string         `gorm:"not null;unique;index" json:"-"`
+	Secret       string         `gorm:"not null" validate:"required" json:"-"`
+	Scopes       string         `gorm:"not null" validate:"required,restrict" json:"-"`
+	CanonicalURI pq.StringArray `gorm:"type:text[];not null" validate:"required,canonical" json:"uri"`
+	RedirectURI  pq.StringArray `gorm:"type:text[];not null" validate:"required,redirect" json:"redirect"`
+	Type         string         `gorm:"not null" validate:"required,client" json:"-"`
 }
 
 func validClientScopes(fl validator.FieldLevel) bool {
@@ -50,16 +54,19 @@ func validClientType(fl validator.FieldLevel) bool {
 }
 
 func validCanonicalURIs(fl validator.FieldLevel) bool {
-	canonicalURIField := fl.Field().String()
-
-	// Unfortunately, the Jupiter (internal client) is created with the following value
-	if canonicalURIField == "localhost" {
+	// It's not a Client model
+	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
 		return true
 	}
 
-	entries := strings.Split(canonicalURIField, "\n")
-	for i := range entries {
-		currentEntry := entries[i]
+	currentClient := fl.Top().Interface().(Client)
+	// Unfortunately, the Jupiter (internal client) is created with the following value
+	if len(currentClient.CanonicalURI) == 1 && currentClient.CanonicalURI[0] == "localhost" {
+		return true
+	}
+
+	for i := range currentClient.CanonicalURI {
+		currentEntry := currentClient.CanonicalURI[i]
 		u, err := url.Parse(currentEntry)
 		if err != nil {
 			return false
@@ -80,23 +87,22 @@ func validRedirectURIs(fl validator.FieldLevel) bool {
 	}
 
 	currentClient := fl.Top().Interface().(Client)
-	canonicalURI := currentClient.CanonicalURI
-	redirectURI := currentClient.RedirectURI
+	canonicalUri := currentClient.CanonicalURI
+	redirectUri := currentClient.RedirectURI
 
 	// Unfortunately, the Jupiter (internal client) is created with the following values
-	if canonicalURI == "localhost" && redirectURI == "/" {
+	if len(canonicalUri) == 1 && canonicalUri[0] == "localhost" && len(redirectUri) == 1 && redirectUri[0] == "/" {
 		return true
 	}
 
-	entries := strings.Split(redirectURI, "\n")
-	for i := range entries {
-		currentEntry := entries[i]
+	for i := range redirectUri {
+		currentEntry := redirectUri[i]
 		u, err := url.Parse(currentEntry)
 		if err != nil {
 			return false
 		}
 		currentCanonical := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-		if !strings.Contains(canonicalURI, currentCanonical) {
+		if !slices.Contains(canonicalUri, currentCanonical) {
 			return false
 		}
 	}
@@ -138,6 +144,27 @@ func (client *Client) BeforeCreate(tx *gorm.DB) error {
 }
 
 // DefaultRedirectURI gets the default (first) redirect URI/URL for a client application
+func (client *Client) DefaultCanonicalURI() string {
+	return client.CanonicalURI[0]
+}
+
+// DefaultRedirectURI gets the default (first) redirect URI/URL for a client application
 func (client *Client) DefaultRedirectURI() string {
-	return strings.Split(client.RedirectURI, "\n")[0]
+	return client.RedirectURI[0]
+}
+
+func (client Client) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct{
+		Id           string `json:"id"`
+		Name         string `json:"name"`
+		Description  string `json:"description"`
+		CanonicalURI string `json:"uri"`
+		RedirectURI  string `json:"redirect"`
+	}{
+		Id:           client.UUID,
+		Name:         client.Name,
+		Description:  client.Description,
+		CanonicalURI: strings.Join(client.CanonicalURI, "\n"),
+		RedirectURI:  strings.Join(client.RedirectURI, "\n"),
+	})
 }
