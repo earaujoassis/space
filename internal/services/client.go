@@ -1,6 +1,8 @@
 package services
 
 import (
+	"strings"
+
 	"github.com/earaujoassis/space/internal/datastore"
 	"github.com/earaujoassis/space/internal/models"
 )
@@ -22,8 +24,8 @@ func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectUR
 		Description:  description,
 		Secret:       secret,
 		Scopes:       scopes,
-		CanonicalURI: canonicalURI,
-		RedirectURI:  redirectURI,
+		CanonicalURI: strings.Split(canonicalURI, "\n"),
+		RedirectURI:  strings.Split(redirectURI, "\n"),
 		Type:         models.ConfidentialClient,
 	}
 
@@ -42,8 +44,8 @@ func FindOrCreateClient(name string) models.Client {
 		client = models.Client{
 			Name:         name,
 			Secret:       models.GenerateRandomString(64),
-			CanonicalURI: "localhost",
-			RedirectURI:  "/",
+			CanonicalURI: []string{"localhost"},
+			RedirectURI:  []string{"/"},
 			Scopes:       models.PublicScope,
 			Type:         models.PublicClient,
 		}
