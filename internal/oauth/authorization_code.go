@@ -3,6 +3,8 @@ package oauth
 import (
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
@@ -44,7 +46,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 		scope = data["scope"].(string)
 	}
 
-	if !strings.Contains(client.RedirectURI, redirectURI) {
+	if !slices.Contains(client.RedirectURI, redirectURI) {
 		return invalidRedirectURIResult(state)
 	}
 
