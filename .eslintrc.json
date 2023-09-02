@@ -4,6 +4,10 @@
     "node": true,
     "browser": true
   },
+  "globals": {
+    "NProgress": "readonly",
+    "__COMMIT_HASH__": "readonly"
+  },
   "plugins": [
     "react"
   ],
