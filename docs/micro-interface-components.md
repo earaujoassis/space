@@ -10,9 +10,14 @@ over a client request of access to update a user's password.
 It provides interfaces (HTML + CSS + JS) to ask for the resource owner's authorization over a
 client request of access.
 
-- *Europa* is the JavaScript (React + Flux) application responsible for user management. It
+- (DEPRECATED) *Europa* is the JavaScript (React + Flux) application responsible for user management. It
 provides interfaces (HTML + CSS + JS) to manage user data (profile), client applications
 and sessions.
+
+- *Himalia* is the JavaScript (React + Redux) application responsible for user management. It
+provides interfaces (HTML + CSS + JS) to manage user data (profile), client applications
+and sessions. It replaces *Europa*, since it is a more complex application, so it uses Redux
+instead of simply Flux, since it has a more complex architecture and functionalities.
 
 - *Ganymede* is the JavaScript (React + Flux) application responsible for user authentication
 (or sign in). There is three steps for user authentication: (1) provide access holder (username
