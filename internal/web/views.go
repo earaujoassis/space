@@ -49,14 +49,12 @@ func ExposeRoutes(router *gin.Engine) {
 	router.Use(sessions.Sessions("jupiter.session", store))
 
 	// TODO REMOVE THIS
-	router.GET("/himalia", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "satellite", utils.H{
-			"Title":     " - Mission Control",
-			"Satellite": "himalia",
-			"Internal":  true,
-			"Data": utils.H{},
-		})
-	})
+	router.GET("/himalia", himaliaHandler)
+	router.GET("/himalia/profile", himaliaHandler)
+	router.GET("/himalia/security", himaliaHandler)
+	router.GET("/himalia/applications", himaliaHandler)
+	router.GET("/himalia/clients", himaliaHandler)
+	router.GET("/himalia/notifications", himaliaHandler)
 	// TODO REMOVE THIS
 
 	views := router.Group("/")
