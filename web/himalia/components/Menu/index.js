@@ -1,40 +1,42 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useResolvedPath, Link } from 'react-router-dom'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import './style.css'
 
 const menu = () => {
+    const { pathname } = useResolvedPath()
+
     return (
         <div role="menu" className="menu-root">
             <h2 className="menu-root__header">User and application<br /> management</h2>
             <ul className="menu-root__list">
-                <li className="menu-root__list-selected">
+                <li className={pathname === '/himalia/profile' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'user'})} />
                     <Link to="/himalia/profile">Personal Info</Link>
                 </li>
-                <li>
+                <li className={pathname === '/himalia/security' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'shield-halved'})} />
-                    <a href="/himalia/security">Password & Security</a>
+                    <Link to="/himalia/security">Password & Security</Link>
                 </li>
-                <li>
+                <li className={pathname === '/himalia/applications' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'desktop'})} />
                     <a href="/himalia/applications">Applications</a>
                 </li>
-                <li>
+                <li className={pathname === '/himalia/clients' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'network-wired'})} />
                     <a href="/himalia/clients">Clients</a>
                 </li>
-                <li>
+                <li className={pathname === '/himalia/notifications' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'envelope-open-text'})} />
