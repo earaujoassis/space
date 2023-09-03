@@ -5,7 +5,7 @@ import './style.css'
 const personal = () => {
     return (
         <>
-            <h2 className="layout-root__corpus-header">Personal information</h2>
+            <h2>Personal information</h2>
             <div className="personal-root">
                 <div className="personal-root__siblings">
                     <div className="personal-root__input-wrapper">

@@ -9,6 +9,7 @@ import App from '@app'
 import reducers from '@stores/reducers'
 
 import 'public-css/core.css'
+import './globals.css'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 

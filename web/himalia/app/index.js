@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import Layout from '@containers/Layout'
 import Personal from '@components/Personal'
+import Security from '@components/Security'
 
 import './style.css'
 
@@ -15,6 +16,10 @@ const app = () => {
                 {
                     path: 'profile',
                     element: <Personal />,
+                },
+                {
+                    path: 'security',
+                    element: <Security />,
                 },
             ],
         }

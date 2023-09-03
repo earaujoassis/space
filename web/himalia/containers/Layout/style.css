@@ -14,10 +14,10 @@
 
 .layout-root__corpus-container {
   flex: 4;
-  padding: 40px 32px 32px;
+  padding: 40px 42px;
 }
 
-.layout-root__corpus-header {
+.layout-root__corpus-container > h2 {
   font-size: 1.8rem;
   font-weight: 500;
   margin-bottom: 24px;

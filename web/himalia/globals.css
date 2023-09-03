@@ -1,0 +1,15 @@
+/* globals used across the layout components */
+.globals__warning-box {
+  padding: 20px 22px;
+  background: #f8f8f8;
+  border-radius: 12px;
+}
+
+.globals__warning-box ~ .globals__warning-box {
+  margin-top: 16px;
+}
+
+.globals__warning-box > h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
