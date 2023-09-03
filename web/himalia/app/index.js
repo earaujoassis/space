@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import Layout from '@containers/Layout'
+import Personal from '@components/Personal'
 
 import './style.css'
 
@@ -9,17 +10,21 @@ const app = () => {
     const router = createBrowserRouter([
         {
             path: '/himalia',
-            element: <div style={{textAlign: 'center'}}>Hello world!</div>
+            element: <Layout />,
+            children: [
+                {
+                    path: 'profile',
+                    element: <Personal />,
+                },
+            ],
         }
     ])
 
     return (
         <React.StrictMode>
-            <Layout>
-                <Suspense fallback={<p>Pending...</p>}>
-                    <RouterProvider router={router} />
-                </Suspense>
-            </Layout>
+            <Suspense fallback={<p>Pending...</p>}>
+                <RouterProvider router={router} />
+            </Suspense>
         </React.StrictMode>
     )
 }

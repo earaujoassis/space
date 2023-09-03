@@ -1,0 +1,26 @@
+.layout-root {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  border-radius: 48px;
+  background-color: #fff;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.layout-root__menu-container {
+  flex: 1;
+  border-right: 1px solid #f3f7f8;
+}
+
+.layout-root__corpus-container {
+  flex: 4;
+  padding: 40px 32px 32px;
+}
+
+.layout-root__corpus-header {
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #fafafa;
+}
