@@ -13,6 +13,7 @@ var environment = process.env.NODE_ENV
 gulp.task('styles', function () {
     return gulp
         .src([
+            './web/core/styles/core.scss',
             './web/core/styles/errors.scss',
             './web/amalthea/styles/amalthea.scss',
             './web/callisto/styles/callisto.scss',
