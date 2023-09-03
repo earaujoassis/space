@@ -28,7 +28,7 @@ const menu = () => {
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'desktop'})} />
-                    <a href="/himalia/applications">Applications</a>
+                    <Link to="/himalia/applications">Applications</Link>
                 </li>
                 <li className={pathname === '/himalia/clients' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon

@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import Layout from '@containers/Layout'
+import Applications from '@components/Applications'
 import Personal from '@components/Personal'
 import Security from '@components/Security'
 
@@ -13,6 +14,10 @@ const app = () => {
             path: '/himalia',
             element: <Layout />,
             children: [
+                {
+                    path: 'applications',
+                    element: <Applications />,
+                },
                 {
                     path: 'profile',
                     element: <Personal />,
