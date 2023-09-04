@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import * as actions from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 import Menu from '@components/Menu'
+import Toast from '@components/Toast'
 
 import './style.css'
 
@@ -41,6 +42,7 @@ const layout = ({ bootstrapApplication, loading, application }) => {
             </div>
             <div className={`layout-root__corpus-container ${loadingStatus ? 'loading' : 'loaded'}`}>
                 {outlet}
+                <Toast />
             </div>
         </div>
     )

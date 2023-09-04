@@ -30,7 +30,7 @@ type Client struct {
 	Description  string         `json:"description"`
 	Key          string         `gorm:"not null;unique;index" json:"-"`
 	Secret       string         `gorm:"not null" validate:"required" json:"-"`
-	Scopes       string         `gorm:"not null" validate:"required,restrict" json:"-"`
+	Scopes       string         `gorm:"not null" validate:"required,restrict" json:"scopes"`
 	CanonicalURI pq.StringArray `gorm:"type:text[];not null" validate:"required,canonical" json:"uri"`
 	RedirectURI  pq.StringArray `gorm:"type:text[];not null" validate:"required,redirect" json:"redirect"`
 	Type         string         `gorm:"not null" validate:"required,client" json:"-"`
@@ -158,12 +158,14 @@ func (client Client) MarshalJSON() ([]byte, error) {
 		Id           string `json:"id"`
 		Name         string `json:"name"`
 		Description  string `json:"description"`
+		Scopes       string `json:"scopes"`
 		CanonicalURI string `json:"uri"`
 		RedirectURI  string `json:"redirect"`
 	}{
 		Id:           client.UUID,
 		Name:         client.Name,
 		Description:  client.Description,
+		Scopes:       client.Scopes,
 		CanonicalURI: strings.Join(client.CanonicalURI, "\n"),
 		RedirectURI:  strings.Join(client.RedirectURI, "\n"),
 	})
