@@ -5,8 +5,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import './style.css'
 
-const menu = () => {
+const menu = ({ isUserAdmin }) => {
     const { pathname } = useResolvedPath()
+
+    const clientMenuItem = isUserAdmin ? (
+        <li className={pathname.startsWith('/himalia/clients') ? 'menu-root__list-selected' : ''}>
+            <FontAwesomeIcon
+                className="menu-root__icon"
+                icon={icon({name: 'network-wired'})} />
+            <Link to="/himalia/clients">Clients</Link>
+        </li>
+    ) : null
 
     return (
         <div role="menu" className="menu-root">
@@ -30,12 +39,7 @@ const menu = () => {
                         icon={icon({name: 'desktop'})} />
                     <Link to="/himalia/applications">Applications</Link>
                 </li>
-                <li className={pathname.startsWith('/himalia/clients') ? 'menu-root__list-selected' : ''}>
-                    <FontAwesomeIcon
-                        className="menu-root__icon"
-                        icon={icon({name: 'network-wired'})} />
-                    <Link to="/himalia/clients">Clients</Link>
-                </li>
+                {clientMenuItem}
                 <li className={pathname === '/himalia/notifications' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"

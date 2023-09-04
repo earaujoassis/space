@@ -4,8 +4,9 @@ import axios from 'axios'
 const fetch = axios.create({
     baseURL: '/api/',
     headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'X-Requested-By': 'SpaceApi',
+        'Accept': 'application/vnd.space.v1+json',
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
 })
 

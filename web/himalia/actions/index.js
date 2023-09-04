@@ -1,2 +1,2 @@
-export { internalSetToastDisplay } from './internal'
+export { bootstrapApplication, internalSetToastDisplay } from './internal'
 export { fetchUser, updateUser } from './users'

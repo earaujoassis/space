@@ -21,6 +21,10 @@
   align-self: center;
 }
 
+.globals__error-message {
+  text-align: center;
+}
+
 .globals__radio-label {
   flex: 1;
   display: block;
