@@ -1,5 +1,7 @@
 import React from 'react'
 
+import RadioGroup from '@ui/RadioGroup'
+
 import Submenu from './submenu'
 
 const editClient = () => {
@@ -8,6 +10,16 @@ const editClient = () => {
             <h2>Edit client application</h2>
             <Submenu activeAction="edit-client" editingClient />
             <div className="clients-root">
+                <p>
+                    By default, all applications are created with &quot;Public&quot; scope, which
+                    can&apos;t instrospect user data (read user&apos;s full name, email etc.) If
+                    your application needs to read user data, you must set the &quot;Application scope&quot;
+                    to &quot;Read&quot;.
+                </p>
+                <RadioGroup
+                    label="Application scope:"
+                    leftOption="Public"
+                    rightOption="Read" />
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="new-client__name">Name</label>

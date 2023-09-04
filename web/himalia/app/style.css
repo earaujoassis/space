@@ -1,6 +1,6 @@
 /* override jupiter's defaults */
-.wrapper {
-  background-color: #fafafa;
+body {
+  background: #fafafa !important;
 }
 .content {
   display: flex;

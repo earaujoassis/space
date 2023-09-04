@@ -23,6 +23,18 @@ const security = () => {
                     </p>
                     <p><button className="button-anchor">Proceed to recreate recovery code and secret code generator</button></p>
                 </div>
+                <div className="globals__warning-box">
+                    <h3>Become an admin user</h3>
+                    <p>Using the application key, you can become an admin user.</p>
+                    <div className="globals__siblings">
+                        <div className="globals__input-wrapper">
+                            <label htmlFor="settings__application-key">Application key</label>
+                            <input id="settings__application-key" value="" type="text" />
+                        </div>
+                        <div className="globals__input-wrapper"></div>
+                    </div>
+                    <p><button className="button-anchor">Confirm application key and become an admin</button></p>
+                </div>
             </div>
         </>
     )

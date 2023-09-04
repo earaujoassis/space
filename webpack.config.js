@@ -18,7 +18,8 @@ module.exports = {
             '@actions': path.resolve(__dirname, 'web/himalia/actions'),
             '@components': path.resolve(__dirname, 'web/himalia/components'),
             '@containers': path.resolve(__dirname, 'web/himalia/containers'),
-            '@stores': path.resolve(__dirname, 'web/himalia/stores')
+            '@stores': path.resolve(__dirname, 'web/himalia/stores'),
+            '@ui': path.resolve(__dirname, 'web/himalia/ui'),
         }
     },
     devtool: 'cheap-module-source-map',
