@@ -7,7 +7,7 @@ const applications = () => {
         <>
             <h2>Applications</h2>
             <div className="applications-root">
-                <p>You can use (or and have been using) the following applications.</p>
+                <p>The following applications are associated with your user account.</p>
                 <ul className="applications-root__list">
                     <li>
                         <div className="applications-root__entry">
