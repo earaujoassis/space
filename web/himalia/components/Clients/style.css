@@ -1,0 +1,89 @@
+.clients-root__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.clients-root__list > li {
+  display: block;
+}
+
+.clients-root__list > li ~ li {
+  margin-top: 16px;
+}
+
+.clients-root__entry {
+  padding: 20px 22px;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+}
+
+.clients-root__entry > h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.clients-root__entry > h3 > span {
+  font-weight: 400;
+}
+
+.clients-root__entry > p:last-of-type {
+  margin: 0;
+}
+
+.clients-root__entry .button-anchor ~ .button-anchor {
+  margin-left: 12px;
+}
+
+.clients-root__list-urls {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+}
+
+.clients-root__list-urls li ~ li {
+  margin-top: 16px;
+}
+
+.clients-root__list-header {
+  font-size: 1rem;
+}
+
+.clients-root__list-entry {
+  position: relative;
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+}
+
+.clients-root__list-entry
+.clients-root__list-remove-entry {
+  position: absolute;
+  right: -10px;
+  top: -8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f8f8;
+  border: 1px solid #ececec;
+  border-radius: 50%;
+  color: #007095;
+}
+
+.clients-root__shared-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 16px;
+}
+
+.clients-root__shared-wrapper__field {
+  flex: 3;
+}
+
+.clients-root__shared-wrapper__action {
+  padding-top: 38px;
+}
