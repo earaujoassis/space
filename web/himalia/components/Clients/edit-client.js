@@ -86,7 +86,7 @@ const editClient = () => {
                 </div>
                 <div className="globals__siblings globals__form-actions">
                     <div className="globals__input-wrapper">
-                        <input type="submit" className="button" value="Create client application" />
+                        <input type="submit" className="button" value="Save client application" />
                         <button className="submit cancel">Cancel</button>
                     </div>
                 </div>
