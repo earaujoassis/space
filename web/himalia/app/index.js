@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import Layout from '@containers/Layout'
 import Applications from '@components/Applications'
+import { AllClients, EditClient, NewClient } from '@components/Clients'
 import Personal from '@components/Personal'
 import Security from '@components/Security'
 
@@ -17,6 +18,18 @@ const app = () => {
                 {
                     path: 'applications',
                     element: <Applications />,
+                },
+                {
+                    path: 'clients',
+                    element: <AllClients />,
+                },
+                {
+                    path: 'clients/edit',
+                    element: <EditClient />,
+                },
+                {
+                    path: 'clients/new',
+                    element: <NewClient />,
                 },
                 {
                     path: 'profile',

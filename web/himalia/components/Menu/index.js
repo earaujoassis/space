@@ -30,11 +30,11 @@ const menu = () => {
                         icon={icon({name: 'desktop'})} />
                     <Link to="/himalia/applications">Applications</Link>
                 </li>
-                <li className={pathname === '/himalia/clients' ? 'menu-root__list-selected' : ''}>
+                <li className={pathname.startsWith('/himalia/clients') ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'network-wired'})} />
-                    <a href="/himalia/clients">Clients</a>
+                    <Link to="/himalia/clients">Clients</Link>
                 </li>
                 <li className={pathname === '/himalia/notifications' ? 'menu-root__list-selected' : ''}>
                     <FontAwesomeIcon

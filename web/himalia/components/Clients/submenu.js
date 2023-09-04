@@ -1,0 +1,32 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+const submenu = ({ activeAction, editingClient }) => {
+    var clientEditingLink
+
+    if (editingClient) {
+        clientEditingLink = (
+            <li className={activeAction === 'edit-client' ? 'submenu__list-active' : ''}>
+                <span>Edit client</span>
+            </li>
+        )
+    } else {
+        clientEditingLink = null
+    }
+
+    return (
+        <>
+            <ul className="submenu__list">
+                <li className={activeAction === 'all-clients' ? 'submenu__list-active' : ''}>
+                    <Link to="/himalia/clients">All clients</Link>
+                </li>
+                <li className={activeAction === 'new-client' ? 'submenu__list-active' : ''}>
+                    <Link to="/himalia/clients/new">New client</Link>
+                </li>
+                {clientEditingLink}
+            </ul>
+        </>
+    )
+}
+
+export default submenu

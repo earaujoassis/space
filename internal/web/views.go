@@ -54,6 +54,8 @@ func ExposeRoutes(router *gin.Engine) {
 	router.GET("/himalia/security", himaliaHandler)
 	router.GET("/himalia/applications", himaliaHandler)
 	router.GET("/himalia/clients", himaliaHandler)
+	router.GET("/himalia/clients/edit", himaliaHandler)
+	router.GET("/himalia/clients/new", himaliaHandler)
 	router.GET("/himalia/notifications", himaliaHandler)
 	// TODO REMOVE THIS
 

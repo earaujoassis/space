@@ -1,4 +1,69 @@
 /* globals used across the layout components */
+
+.globals__siblings {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 52px;
+}
+
+.globals__form-actions {
+  padding-top: 16px;
+  border-top: 1px solid #fafafa;
+}
+
+.globals__input-wrapper {
+  flex: 1;
+}
+
+.globals__input-wrapper label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.globals__input-wrapper input,
+.globals__input-wrapper input:disabled {
+  background-color: inherit;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
+  padding: 18px 12px;
+}
+
+.globals__input-wrapper input[type="submit"],
+.globals__input-wrapper button.submit {
+  display: inline-block;
+  margin: 0;
+  padding: 18px 24px;
+  border-radius: 0;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.3);
+  cursor: pointer;
+  background-color: #2199e8;
+  color: #fefefe;
+  outline: 0;
+}
+
+.globals__input-wrapper button.submit {
+  position: relative;
+  top: 2px;
+}
+
+.globals__input-wrapper button.cancel {
+  background-color: #fafafa;
+  color: #272727;
+}
+
+.globals__input-wrapper input[type="submit"]:focus,
+.globals__input-wrapper button.submit:focus,
+.globals__input-wrapper input[type="submit"]:hover,
+.globals__input-wrapper button.submit:hover {
+  background-color: #14679e;
+  color: #fefefe;
+}
+
+.globals__input-wrapper input[type="submit"] ~ button.submit {
+  margin-left: 16px;
+}
+
 .globals__warning-box {
   padding: 20px 22px;
   background: #f8f8f8;
@@ -16,4 +81,28 @@
 
 .globals__warning-box > p:last-of-type {
   margin: 0;
+}
+
+.submenu__list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.submenu__list > li {
+  display: inline-block;
+  border-bottom: 2px solid transparent;
+}
+
+.submenu__list > li.submenu__list-active {
+  border-bottom: 2px solid #ececec;
+}
+
+.submenu__list > li ~ li {
+  margin-left: 24px;
+}
+
+.submenu__list span {
+  cursor: default;
 }
