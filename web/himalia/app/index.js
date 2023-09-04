@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from '@containers/Layout'
 import Applications from '@components/Applications'
 import { AllClients, EditClient, NewClient } from '@components/Clients'
+import Notifications from '@components/Notifications'
 import Personal from '@components/Personal'
 import Security from '@components/Security'
 
@@ -30,6 +31,10 @@ const app = () => {
                 {
                     path: 'clients/new',
                     element: <NewClient />,
+                },
+                {
+                    path: 'notifications',
+                    element: <Notifications />,
                 },
                 {
                     path: 'profile',
