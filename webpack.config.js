@@ -54,8 +54,7 @@ module.exports = {
                         options: {
                             url: false
                         }
-                    },
-                    'resolve-url-loader'
+                    }
                 ]
             }
         ]
