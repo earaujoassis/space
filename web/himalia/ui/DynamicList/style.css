@@ -34,6 +34,7 @@
   border: 1px solid #ececec;
   border-radius: 50%;
   color: #007095;
+  padding: 10px;
 }
 
 .dynamic-list__shared-wrapper {

@@ -5,6 +5,10 @@ import * as actions from '@actions'
 
 import './style.css'
 
+const processedRequestMessage = (
+    <p>You should receive an e-mail message in the next few minutes.</p>
+)
+
 const security = ({
     fetchUserProfile,
     requestResetPassword,
@@ -52,10 +56,6 @@ const security = ({
                 </button>
             </p>
         </div>
-    )
-
-    const processedRequestMessage = (
-        <p>You should receive an e-mail message in the next few minutes.</p>
     )
 
     const requestPasswordResetMessage = resetPasswordRequested ? (processedRequestMessage) : (

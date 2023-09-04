@@ -13,6 +13,7 @@
 }
 
 .layout-root__corpus-container {
+  position: relative;
   flex: 4;
   padding: 40px 42px;
 }

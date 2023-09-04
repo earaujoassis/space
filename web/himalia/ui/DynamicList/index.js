@@ -1,11 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import './style.css'
 
-const dynamicList = ({ label, labelPlural, removeTitle, id, onChange = null }) => {
+const convertListTopMap = (list) => {
+    const map = new Map()
+    list.forEach((value, index) => {
+        map.set(index, value)
+    })
+    return map
+}
+
+const dynamicList = ({ defaultList, label, labelPlural, removeTitle, id, onChange = null }) => {
     const [inputValue, setInputValue] = useState('')
-    const [counter, setCounter] = useState(0)
-    const [localList, setLocalList] = useState(new Map())
+    const [counter, setCounter] = useState(defaultList.length + 1)
+    const [localList, setLocalList] = useState(convertListTopMap(defaultList))
+
+    useEffect(() => {
+        setLocalList(convertListTopMap(defaultList))
+        setCounter(defaultList.length + 1)
+    }, [defaultList])
 
     const addEntry = (inputValue) => {
         if (inputValue.length === 0) {
@@ -17,7 +30,7 @@ const dynamicList = ({ label, labelPlural, removeTitle, id, onChange = null }) =
         setLocalList(new Map(localList))
         setInputValue('')
         if (onChange) {
-            onChange(localList)
+            onChange(Array.from(localList.values()))
         }
     }
 
@@ -27,7 +40,7 @@ const dynamicList = ({ label, labelPlural, removeTitle, id, onChange = null }) =
             localList.delete(key)
             setLocalList(new Map(localList))
             if (onChange) {
-                onChange(localList)
+                onChange(Array.from(localList.values()))
             }
         }
     }
@@ -54,6 +67,8 @@ const dynamicList = ({ label, labelPlural, removeTitle, id, onChange = null }) =
 
     const handleKeypress = (e) => {
         if (e.key === 'Enter') {
+            e.preventDefault()
+            e.stopPropagation()
             addEntry(inputValue)
         }
     }
@@ -79,6 +94,7 @@ const dynamicList = ({ label, labelPlural, removeTitle, id, onChange = null }) =
                 </div>
                 <div className="dynamic-list__shared-wrapper__action">
                     <button
+                        type="button"
                         onClick={() => addEntry(inputValue)}
                         className="button-anchor">Add entry</button>
                 </div>
