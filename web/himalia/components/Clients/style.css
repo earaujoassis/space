@@ -1,0 +1,36 @@
+.clients-root__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.clients-root__list > li {
+  display: block;
+}
+
+.clients-root__list > li ~ li {
+  margin-top: 16px;
+}
+
+.clients-root__entry {
+  padding: 20px 22px;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+}
+
+.clients-root__entry > h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.clients-root__entry > h3 > span {
+  font-weight: 400;
+}
+
+.clients-root__entry > p:last-of-type {
+  margin: 0;
+}
+
+.clients-root__entry .button-anchor ~ .button-anchor {
+  margin-left: 12px;
+}

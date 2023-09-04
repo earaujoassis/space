@@ -7,16 +7,16 @@ var babelify   = require('babelify')
 var source     = require('vinyl-source-stream')
 var buffer     = require('vinyl-buffer')
 
-var satellites = ['amalthea', 'callisto', 'europa', 'ganymede', 'io']
+var satellites = ['amalthea', 'callisto', 'ganymede', 'io']
 var environment = process.env.NODE_ENV
 
 gulp.task('styles', function () {
     return gulp
         .src([
+            './web/core/styles/core.scss',
             './web/core/styles/errors.scss',
             './web/amalthea/styles/amalthea.scss',
             './web/callisto/styles/callisto.scss',
-            './web/europa/styles/europa.scss',
             './web/ganymede/styles/ganymede.scss',
             './web/io/styles/io.scss',
         ])

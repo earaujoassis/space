@@ -1,6 +1,6 @@
 import { ActionTypes } from '../../core/constants'
 import { ActionCreator, processResponse, processData, processHandlerClojure } from '../../core/actions/base'
-import SpaceApi from '../../core/utils/spaceApi'
+import SpaceApi from '../../core/utils/space-api'
 
 import UserStore from '../stores/users'
 
