@@ -33,3 +33,52 @@ export const fetchUserProfile = (id, token) => {
             })
     }
 }
+
+export const adminifyUser = (id, key, token) => {
+    return dispatch => {
+        const data = new FormData()
+        data.append('user_id', id)
+        data.append('application_key', key)
+        dispatch(userRecordStart())
+        fetch.patch('users/update/adminify', data, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(response => {
+                dispatch(userRecordSuccess(response.data))
+                window.location.reload()
+            })
+            .catch(error => {
+                dispatch(userRecordError(error))
+            })
+    }
+}
+
+export const requestResetPassword = (username) => {
+    return dispatch => {
+        const data = new FormData()
+        data.append('request_type', 'password')
+        data.append('holder', username)
+        dispatch(userRecordStart())
+        fetch.post('users/update/request', data)
+            .then(response => {
+                dispatch(userRecordSuccess(response.data))
+            })
+            .catch(error => {
+                dispatch(userRecordError(error))
+            })
+    }
+}
+
+export const requestResetSecretCodes = (username) => {
+    return dispatch => {
+        const data = new FormData()
+        data.append('request_type', 'secrets')
+        data.append('holder', username)
+        dispatch(userRecordStart())
+        fetch.post('users/update/request', data)
+            .then(response => {
+                dispatch(userRecordSuccess(response.data))
+            })
+            .catch(error => {
+                dispatch(userRecordError(error))
+            })
+    }
+}

@@ -2,11 +2,11 @@ import * as actionTypes from '@actions/types'
 
 const initialState = {
     loading: [],
+    displayToast: false,
     application: undefined,
     user: undefined,
     error: undefined,
-    success: undefined,
-    displayToast: false
+    success: undefined
 }
 
 const addLoading = (state, entity) => {
@@ -56,7 +56,7 @@ const userRecordSuccess = (state, action) => {
         loading: reduceLoading(state, 'user'),
         success: true,
         error: null,
-        user: action.user || { error: true }
+        user: action.user || state.user || { error: true }
     })
 }
 
