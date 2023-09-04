@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/contrib/sessions"
 
-	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
@@ -18,13 +17,6 @@ import (
 //
 //	in the REST API escope, for the application resource
 func exposeApplicationRoutes(router *gin.RouterGroup) {
-	var cfg config.Config = config.GetGlobalConfig()
-	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
-	store.Options(sessions.Options{
-		Secure:   (config.IsEnvironment("production") && cfg.SessionSecure),
-		HttpOnly: true,
-	})
-	router.Use(sessions.Sessions("jupiter.session", store))
 	applicationRoutes := router.Group("/application")
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)

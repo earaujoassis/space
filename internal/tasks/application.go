@@ -2,11 +2,13 @@ package tasks
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"log"
 	"errors"
 	"runtime/debug"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/contrib/sessions"
 
 	"github.com/earaujoassis/space/internal/api"
 	"github.com/earaujoassis/space/internal/config"
@@ -19,6 +21,13 @@ import (
 func Server() {
 	datastore.Start()
 	router := gin.Default()
+	cfg := config.GetGlobalConfig()
+	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
+	store.Options(sessions.Options{
+		Secure:   (config.IsEnvironment("production") && cfg.SessionSecure),
+		HttpOnly: true,
+	})
+	router.Use(sessions.Sessions("jupiter.session", store))
 	router.Use(func(c *gin.Context) {
 		defer func(c *gin.Context) {
 			// TODO It is not displaying/logging the error
