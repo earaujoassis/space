@@ -1,0 +1,32 @@
+.applications-root__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.applications-root__list > li {
+  display: block;
+}
+
+.applications-root__list > li ~ li {
+  margin-top: 16px;
+}
+
+.applications-root__entry {
+  padding: 20px 22px;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+}
+
+.applications-root__entry > h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.applications-root__entry > h3 > span {
+  font-weight: 400;
+}
+
+.applications-root__entry > p:last-of-type {
+  margin: 0;
+}

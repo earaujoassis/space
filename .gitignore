@@ -3,7 +3,10 @@
 cmd/
 node_modules/
 web/public/css/*.css
+web/public/css/*.css.*
+web/public/css/*.min.css
 web/public/js/*.min.js
+web/public/js/*.min.js.*
 .config.yml
 .config.local.json
 c.out

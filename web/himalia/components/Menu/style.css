@@ -1,0 +1,37 @@
+.menu-root {
+  padding: 48px 0 48px 36px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.menu-root__header {
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.menu-root__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-root__list > li {
+  display: block;
+  padding: 6px 12px;
+}
+
+.menu-root__list > li ~ li {
+  margin-top: 12px;
+}
+
+.menu-root__list-selected {
+  border-radius: 16px 0 0 16px;
+  background-color: #f3f7f8;
+}
+
+.menu-root__icon {
+  display: inline-block;
+  margin: 2px 12px 2px 8px;
+}

@@ -1,0 +1,9 @@
+/* override jupiter's defaults */
+body {
+  background: #fafafa !important;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: 0 36px;
+}
