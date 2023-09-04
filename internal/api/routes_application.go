@@ -14,6 +14,7 @@ import (
 )
 
 // exposeApplicationRoutes defines and exposes HTTP routes for a given gin.RouterGroup
+// 	it represents API calls related to the UI application
 //
 //	in the REST API escope, for the application resource
 func exposeApplicationRoutes(router *gin.RouterGroup) {

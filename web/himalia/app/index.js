@@ -5,7 +5,7 @@ import Layout from '@containers/Layout'
 import Applications from '@components/Applications'
 import { AllClients, EditClient, NewClient } from '@components/Clients'
 import Notifications from '@components/Notifications'
-import Personal from '@components/Personal'
+import Profile from '@components/Profile'
 import Security from '@components/Security'
 
 import './style.css'
@@ -38,7 +38,7 @@ const app = () => {
                 },
                 {
                     path: 'profile',
-                    element: <Personal />,
+                    element: <Profile />,
                 },
                 {
                     path: 'security',
