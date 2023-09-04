@@ -4,12 +4,17 @@
     <p>If you're reading this, it means JavaScript is not enabled in your web browser.</p>
   </noscript>
 </div>
-<script id="data" type="application/json">{{ .Data }}</script>
-<script src="/public/js/{{ .Satellite }}.min.js"></script>
 {{ end }}
 
 {{ define "head" }}
+<link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
 <link rel="stylesheet" href="/public/css/{{ .Satellite }}.css">
 {{ end }}
 
-{{define "front"}}{{end}}{{define "tail"}}{{end}}
+{{define "tail"}}
+<script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+<script id="data" type="application/json">{{ .Data }}</script>
+<script src="/public/js/{{ .Satellite }}.min.js"></script>
+{{end}}
+
+{{define "front"}}{{end}}

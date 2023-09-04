@@ -1,0 +1,42 @@
+.spinning-square__wrapper {
+  width: 100px;
+  height: 140px;
+  margin: 0 auto;
+  text-transform: uppercase;
+  align-self: center;
+}
+
+@keyframes rescale {
+  0% {transform:rotate(0deg); width: 80px; height: 80px;}
+  5% {transform:rotate(18deg);}
+  10% {transform:rotate(36deg);}
+  15% {transform:rotate(54deg);}
+  20% {transform:rotate(72deg);}
+  25% {transform:rotate(90deg);}
+  30% {transform:rotate(108deg);}
+  35% {transform:rotate(126deg);}
+  40% {transform:rotate(144deg);}
+  45% {transform:rotate(162deg);}
+  50% {transform:rotate(180deg); width: 40px; height: 40px;}
+  55% {transform:rotate(198deg);}
+  60% {transform:rotate(216deg);}
+  65% {transform:rotate(234deg);}
+  70% {transform:rotate(252deg);}
+  75% {transform:rotate(270deg);}
+  80% {transform:rotate(288deg);}
+  85% {transform:rotate(306deg);}
+  90% {transform:rotate(334deg);}
+  95% {transform:rotate(352deg);}
+  100% {transform:rotate(360deg); width: 80px; height: 80px;}
+}
+
+.spinning-square {
+  background: #fafafa;
+  background-clip: padding-box;
+  width: 80px;
+  height: 80px;
+  margin: 20px 0 20px;
+  animation: rescale 1.5s infinite;
+  border-radius: 12px;
+  border: 5px solid #272727;
+}

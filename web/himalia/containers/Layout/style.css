@@ -15,6 +15,7 @@
 .layout-root__corpus-container {
   flex: 4;
   padding: 40px 42px;
+  display: flex;
 }
 
 .layout-root__corpus-container > h2 {

@@ -21,10 +21,17 @@ export const userRecordError = (error) => {
     }
 }
 
-export const fetchUser = () => {
+export const fetchUser = (id, token) => {
     return dispatch => {
         dispatch(userRecordStart())
-        fetch.get('users/')
+        fetch.get(`users/${id}/profile`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'X-Requested-By': 'SpaceApi',
+                'Accept': 'application/vnd.space.v1+json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
             .then(response => {
                 dispatch(userRecordSuccess(response.data))
             })
