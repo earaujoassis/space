@@ -12,7 +12,6 @@ import (
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/oauth"
@@ -37,16 +36,9 @@ func createCustomRender() multitemplate.Render {
 //
 //	in the WEB escope
 func ExposeRoutes(router *gin.Engine) {
-	var cfg config.Config = config.GetGlobalConfig()
 	router.LoadHTMLGlob("internal/web/templates/*.html")
 	router.HTMLRender = createCustomRender()
 	router.Static("/public", "web/public")
-	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
-	store.Options(sessions.Options{
-		Secure:   (config.IsEnvironment("production") && cfg.SessionSecure),
-		HttpOnly: true,
-	})
-	router.Use(sessions.Sessions("jupiter.session", store))
 	views := router.Group("/")
 	{
 		views.GET("/", satelliteHandler)
