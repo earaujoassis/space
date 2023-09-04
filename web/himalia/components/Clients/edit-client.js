@@ -1,6 +1,7 @@
 import React from 'react'
 
 import RadioGroup from '@ui/RadioGroup'
+import DynamicList from '@ui/DynamicList'
 
 import Submenu from './submenu'
 
@@ -17,6 +18,7 @@ const editClient = () => {
                     to &quot;Read&quot;.
                 </p>
                 <RadioGroup
+                    onChange={(v) => { v }}
                     label="Application scope:"
                     leftOption="Public"
                     rightOption="Read" />
@@ -32,70 +34,16 @@ const editClient = () => {
                         <input disabled id="new-client__description" value="" type="text" />
                     </div>
                 </div>
-                <div className="globals__siblings">
-                    <div className="globals__input-wrapper">
-                        <h4 className="clients-root__list-header">Canonical URIs</h4>
-                        <ul className="clients-root__list-urls">
-                            <li>
-                                <div className="clients-root__list-entry">
-                                    <button
-                                        className="clients-root__list-remove-entry"
-                                        title="Remove canonical URI">&times;</button>
-                                    <span>http://google.com</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="clients-root__list-entry">
-                                    <button
-                                        className="clients-root__list-remove-entry"
-                                        title="Remove canonical URI">&times;</button>
-                                    <span>http://google.org</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="globals__input-wrapper clients-root__shared-wrapper">
-                        <div className="clients-root__shared-wrapper__field">
-                            <label htmlFor="new-client__canonical-uri">Canonical URI</label>
-                            <input id="new-client__canonical-uri" value="" inputMode="url" type="text" />
-                        </div>
-                        <div className="clients-root__shared-wrapper__action">
-                            <button className="button-anchor">Add entry</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="globals__siblings">
-                    <div className="globals__input-wrapper">
-                        <h4 className="clients-root__list-header">Redirect URIs</h4>
-                        <ul className="clients-root__list-urls">
-                            <li>
-                                <div className="clients-root__list-entry">
-                                    <button
-                                        className="clients-root__list-remove-entry"
-                                        title="Remove redirect URI">&times;</button>
-                                    <span>http://google.com/ouath/callback</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="clients-root__list-entry">
-                                    <button
-                                        className="clients-root__list-remove-entry"
-                                        title="Remove redirect URI">&times;</button>
-                                    <span>http://google.org/ouath/callback</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="globals__input-wrapper clients-root__shared-wrapper">
-                        <div className="clients-root__shared-wrapper__field">
-                            <label htmlFor="new-client__redirect-uri">Redirect URI</label>
-                            <input id="new-client__redirect-uri" value="" inputMode="url" type="text" />
-                        </div>
-                        <div className="clients-root__shared-wrapper__action">
-                            <button className="button-anchor">Add entry</button>
-                        </div>
-                    </div>
-                </div>
+                <DynamicList
+                    label="Canonical URI"
+                    labelPlural="Canonical URIs"
+                    removeTitle="Remove canonical URI"
+                    id="canonical-uri" />
+                <DynamicList
+                    label="Redirect URI"
+                    labelPlural="Redirect URIs"
+                    removeTitle="Remove redirect URI"
+                    id="redirect-uri" />
                 <div className="globals__siblings globals__form-actions">
                     <div className="globals__input-wrapper">
                         <input type="submit" className="button" value="Save client application" />
