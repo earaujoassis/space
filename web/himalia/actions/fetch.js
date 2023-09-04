@@ -1,6 +1,8 @@
 /* eslint-disable quote-props */
 import axios from 'axios'
 
+axios.defaults.withCredentials = true
+
 const fetch = axios.create({
     baseURL: '/api/',
     headers: {

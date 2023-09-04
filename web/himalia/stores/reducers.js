@@ -64,7 +64,7 @@ const userRecordSuccess = (state, action) => {
         loading: reduceLoading(state, 'user'),
         success: true,
         error: null,
-        user: action.user || state.user || { error: true },
+        user: action.user || { error: true },
         stateSignal: 'user_record_success'
     })
 }
@@ -92,7 +92,7 @@ const clientRecordSuccess = (state, action) => {
         loading: reduceLoading(state, 'client'),
         success: true,
         error: null,
-        clients: action.clients || state.clients || { error: true },
+        clients: action.clients || new Array(),
         stateSignal: 'client_record_success'
     })
 }
@@ -104,7 +104,7 @@ const clientRecordError = (state, action) => {
         displayToast: true,
         success: false,
         error: action.error,
-        clients: action.clients || state.clients || { error: true },
+        clients: action.clients || new Array(),
         stateSignal: 'client_record_error'
     })
 }

@@ -65,3 +65,29 @@ export const updateClient = (id, data, token) => {
             })
     }
 }
+
+export const fetchClientApplicationsFromUser = (id, token) => {
+    return dispatch => {
+        dispatch(clientRecordStart())
+        fetch.get(`users/${id}/clients`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(response => {
+                dispatch(clientRecordSuccess(response.data))
+            })
+            .catch(error => {
+                dispatch(clientRecordError(error))
+            })
+    }
+}
+
+export const revokeClientApplicationFromUser = (userId, clientId, token) => {
+    return dispatch => {
+        dispatch(clientRecordStart())
+        fetch.delete(`users/${userId}/clients/${clientId}/revoke`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(response => {
+                dispatch(clientRecordSuccess(response.data))
+            })
+            .catch(error => {
+                dispatch(clientRecordError(error))
+            })
+    }
+}

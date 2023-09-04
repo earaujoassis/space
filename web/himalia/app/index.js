@@ -13,7 +13,7 @@ import './style.css'
 const app = () => {
     const router = createBrowserRouter([
         {
-            path: '/himalia',
+            path: '/',
             element: <Layout />,
             children: [
                 {

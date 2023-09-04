@@ -32,7 +32,7 @@ const allClients = ({ fetchClients, setClientForEdition, loading, application, c
                                     <button
                                         onClick={() => {
                                             setClientForEdition(client)
-                                            navigate('/himalia/clients/edit')
+                                            navigate('/clients/edit')
                                         }}
                                         className="button-anchor">Edit</button>
                                     <a
