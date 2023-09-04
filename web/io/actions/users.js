@@ -1,6 +1,6 @@
 import { ActionTypes } from '../../core/constants'
 import { ActionCreator, processResponse, processData, processHandler } from '../../core/actions/base'
-import SpaceApi from '../../core/utils/spaceApi'
+import SpaceApi from '../../core/utils/space-api'
 
 class UsersActionFactory {
     signUp(data) {
