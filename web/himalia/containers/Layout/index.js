@@ -15,11 +15,11 @@ const layout = ({ bootstrapApplication, loading, application }) => {
     }, [])
 
     let outlet = (<Outlet />)
+    let loadingStatus = false
 
     if (loading.includes('application') || application === undefined) {
-        outlet = (
-            <SpinningSquare />
-        )
+        loadingStatus = true
+        outlet = (<SpinningSquare />)
     } else if (application && application.error) {
         outlet = (
             <>
@@ -39,7 +39,7 @@ const layout = ({ bootstrapApplication, loading, application }) => {
             <div className="layout-root__menu-container">
                 <Menu isUserAdmin={application && application.user_is_admin} />
             </div>
-            <div className="layout-root__corpus-container">
+            <div className={`layout-root__corpus-container ${loadingStatus ? 'loading' : 'loaded'}`}>
                 {outlet}
             </div>
         </div>
