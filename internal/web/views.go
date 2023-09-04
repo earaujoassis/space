@@ -47,25 +47,16 @@ func ExposeRoutes(router *gin.Engine) {
 		HttpOnly: true,
 	})
 	router.Use(sessions.Sessions("jupiter.session", store))
-
-	// TODO REMOVE THIS
-	router.GET("/himalia", himaliaHandler)
-	router.GET("/himalia/profile", himaliaHandler)
-	router.GET("/himalia/security", himaliaHandler)
-	router.GET("/himalia/applications", himaliaHandler)
-	router.GET("/himalia/clients", himaliaHandler)
-	router.GET("/himalia/clients/edit", himaliaHandler)
-	router.GET("/himalia/clients/new", himaliaHandler)
-	router.GET("/himalia/notifications", himaliaHandler)
-	// TODO REMOVE THIS
-
 	views := router.Group("/")
 	{
-		views.GET("/", func(c *gin.Context) {
-			c.Redirect(http.StatusFound, "/applications")
-		})
-		views.GET("/applications", jupiterHandler)
-		views.GET("/profile", jupiterHandler)
+		views.GET("/", satelliteHandler)
+		views.GET("/applications", satelliteHandler)
+		views.GET("/clients", satelliteHandler)
+		views.GET("/clients/edit", satelliteHandler)
+		views.GET("/clients/new", satelliteHandler)
+		views.GET("/notifications", satelliteHandler)
+		views.GET("/profile", satelliteHandler)
+		views.GET("/security", satelliteHandler)
 
 		views.GET("/profile/password", func(c *gin.Context) {
 			var authorizationBearer = c.Query("_")

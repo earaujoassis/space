@@ -21,9 +21,9 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
 
     useEffect(() => {
         if (!clients || !clients.length || clients.error) {
-            navigate('/himalia/clients')
+            navigate('/clients')
         } else if (stateSignal === 'client_record_success' && formSent) {
-            navigate('/himalia/clients')
+            navigate('/clients')
         } else if (stateSignal === 'client_record_error' && formSent) {
             setFormSent(false)
         }

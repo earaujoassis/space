@@ -18,10 +18,10 @@ const submenu = ({ activeAction, editingClient }) => {
         <>
             <ul className="submenu__list">
                 <li className={activeAction === 'all-clients' ? 'submenu__list-active' : ''}>
-                    <Link to="/himalia/clients">All clients</Link>
+                    <Link to="/clients">All clients</Link>
                 </li>
                 <li className={activeAction === 'new-client' ? 'submenu__list-active' : ''}>
-                    <Link to="/himalia/clients/new">New client</Link>
+                    <Link to="/clients/new">New client</Link>
                 </li>
                 {clientEditingLink}
             </ul>
