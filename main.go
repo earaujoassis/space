@@ -14,7 +14,9 @@ import (
 func init() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Printf("> The environment file (.env) doesn't exist; skipping .env\n")
+		log.Println("> The environment file (.env) doesn't exist; skipping .env")
+	} else {
+		log.Println("> Application has found a .env file")
 	}
 
 	config.LoadConfig()
