@@ -1,14 +1,14 @@
 package tasks
 
 import (
-	"fmt"
-	"net/http"
-	"log"
 	"errors"
+	"fmt"
+	"log"
+	"net/http"
 	"runtime/debug"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/api"
 	"github.com/earaujoassis/space/internal/config"
