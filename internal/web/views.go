@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gin-gonic/contrib/renders/multitemplate"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 
@@ -19,24 +18,11 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func createCustomRender() multitemplate.Render {
-	render := multitemplate.New()
-	render.AddFromFiles("satellite", "internal/web/templates/default.html", "internal/web/templates/satellite.html")
-	render.AddFromFiles("user.update.secrets", "internal/web/templates/default.html", "internal/web/templates/user.update.secrets.html")
-	render.AddFromFiles("error.generic", "internal/web/templates/default.html", "internal/web/templates/error.generic.html")
-	render.AddFromFiles("error.password_update", "internal/web/templates/default.html", "internal/web/templates/error.password_update.html")
-	render.AddFromFiles("error.secrets_update", "internal/web/templates/default.html", "internal/web/templates/error.secrets_update.html")
-	render.AddFromFiles("error.authorization", "internal/web/templates/default.html", "internal/web/templates/error.authorization.html")
-	render.AddFromFiles("error.not_found", "internal/web/templates/default.html", "internal/web/templates/error.not_found.html")
-	render.AddFromFiles("error.internal", "internal/web/templates/default.html", "internal/web/templates/error.internal.html")
-	return render
-}
-
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
 //	in the WEB escope
 func ExposeRoutes(router *gin.Engine) {
-	router.LoadHTMLGlob("internal/web/templates/*.html")
+	router.LoadHTMLGlob("web/templates/*.html")
 	router.HTMLRender = createCustomRender()
 	router.Static("/public", "web/public")
 	views := router.Group("/")
