@@ -6,7 +6,7 @@ import (
 
 const (
 	// UserCreate make it possible to create users (through sign-up)
-	UserCreate   string = "user.create"
+	UserCreate string = "user.create"
 	// UserAdminify make it possible to set users as admin (using the application key)
 	UserAdminify string = "user.adminify"
 )

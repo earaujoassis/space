@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/models"
@@ -13,7 +13,8 @@ import (
 )
 
 // exposeApplicationRoutes defines and exposes HTTP routes for a given gin.RouterGroup
-// 	it represents API calls related to the UI application
+//
+//	it represents API calls related to the UI application
 //
 //	in the REST API escope, for the application resource
 func exposeApplicationRoutes(router *gin.RouterGroup) {

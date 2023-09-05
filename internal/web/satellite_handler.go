@@ -20,6 +20,6 @@ func satelliteHandler(c *gin.Context) {
 		"Title":     " - Mission Control",
 		"Satellite": "himalia",
 		"Internal":  true,
-		"Data": utils.H{},
+		"Data":      utils.H{},
 	})
 }
