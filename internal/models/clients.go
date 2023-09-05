@@ -1,18 +1,18 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"reflect"
 	"strings"
-	"encoding/json"
 
 	"golang.org/x/exp/slices"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"github.com/lib/pq"
 )
 
 const (
@@ -154,7 +154,7 @@ func (client *Client) DefaultRedirectURI() string {
 }
 
 func (client Client) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct{
+	return json.Marshal(struct {
 		Id           string `json:"id"`
 		Name         string `json:"name"`
 		Description  string `json:"description"`
