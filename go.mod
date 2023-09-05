@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go v1.19.23
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/caarlos0/env/v9 v9.0.0
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/contrib v0.0.0-20190408155029-b5986969cb50
 	github.com/gin-gonic/gin v1.3.0
@@ -12,6 +13,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/hashicorp/vault/api v1.0.1
 	github.com/joho/godotenv v1.3.0
+	github.com/lib/pq v1.10.9
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/pquerna/otp v1.1.0
@@ -62,7 +64,6 @@ require (
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mitchellh/go-homedir v1.0.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect

@@ -6,9 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/caarlos0/env/v6"
+	"github.com/caarlos0/env/v9"
 	"github.com/hashicorp/vault/api"
-	"github.com/joho/godotenv"
 )
 
 const (
@@ -18,22 +17,22 @@ const (
 
 // Config struct with configuration data for the application
 type Config struct {
-	ApplicationKey      string `json:"application_key" env:"SPACE_APPLICATION_KEY"`
+	ApplicationKey      string `json:"application_key" env:"SPACE_APPLICATION_KEY,unset"`
 	DatastoreHost       string `json:"datastore_host" env:"SPACE_DATASTORE_HOST"`
 	DatastorePort       int    `json:"datastore_port" env:"SPACE_DATASTORE_PORT"`
 	DatastoreNamePrefix string `json:"datastore_name_prefix" env:"SPACE_DATASTORE_NAME_PREFIX"`
-	DatastorePassword   string `json:"datastore_password" env:"SPACE_DATASTORE_PASSWORD"`
-	DatastoreSslMode    string `json:"datastore_ssl_mode" env:"SPACE_DATASTORE_SSL_MODE"`
 	DatastoreUser       string `json:"datastore_user" env:"SPACE_DATASTORE_USER"`
+	DatastorePassword   string `json:"datastore_password" env:"SPACE_DATASTORE_PASSWORD,unset"`
+	DatastoreSslMode    string `json:"datastore_ssl_mode" env:"SPACE_DATASTORE_SSL_MODE"`
 	MailFrom            string `json:"mail_from" env:"SPACE_MAIL_FROM"`
-	MailerAccess        string `json:"mailer_access" env:"SPACE_MAILER_ACCESS"`
+	MailerAccess        string `json:"mailer_access" env:"SPACE_MAILER_ACCESS,unset"`
 	MemorystoreHost     string `json:"memory_store_host" env:"SPACE_MEMORY_STORE_HOST"`
-	MemorystoreIndex    int    `json:"memory_store_index" env:"SPACE_MEMORY_STORE_INDEX"`
-	MemorystorePassword string `json:"memory_store_password" env:"SPACE_MEMORY_STORE_PASSWORD"`
 	MemorystorePort     int    `json:"memory_store_port" env:"SPACE_MEMORY_STORE_PORT"`
-	SessionSecret       string `json:"session_secret" env:"SPACE_SESSION_SECRET"`
-	SessionSecure       bool   `json:"session_secure" env:"SPACE_SESSION_SECURE"`
-	StorageSecret       string `json:"storage_secret" env:"SPACE_STORAGE_SECRET"`
+	MemorystoreIndex    int    `json:"memory_store_index" env:"SPACE_MEMORY_STORE_INDEX"`
+	MemorystorePassword string `json:"memory_store_password" env:"SPACE_MEMORY_STORE_PASSWORD,unset"`
+	SessionSecret       string `json:"session_secret" env:"SPACE_SESSION_SECRET,unset"`
+	SessionSecure       bool   `json:"session_secure" env:"SPACE_SESSION_SECURE,unset"`
+	StorageSecret       string `json:"storage_secret" env:"SPACE_STORAGE_SECRET,unset"`
 }
 
 var globalConfig Config
@@ -87,6 +86,8 @@ func LoadConfig() {
 	var err error
 	var client *api.Client
 	var secret *api.Secret
+	var loadFromEnvVarsFlag bool = false
+	var loadedFlag bool = false
 
 	if _, jErr := os.Stat(localConfigurationFile); jErr == nil {
 		// .config.local.json exists
@@ -98,6 +99,8 @@ func LoadConfig() {
 		if err != nil {
 			panic(err)
 		}
+		loadedFlag = true
+		log.Printf("> Configuration obtained from %s; all good\n", localConfigurationFile)
 	} else if _, yErr := os.Stat(configurationStoreFile); yErr == nil && os.IsNotExist(jErr) {
 		// .config.yml exists
 		globalService.LoadService(configurationStoreFile)
@@ -118,15 +121,22 @@ func LoadConfig() {
 		if err != nil {
 			panic(err)
 		}
-	} else if err := godotenv.Load(); err == nil {
-		err = env.Parse(&globalConfig)
-		if err != nil {
-			panic(err)
-		}
-	} else if err = env.Parse(&globalConfig); err == nil {
-		log.Println("> Configuration obtained from environment; all good")
+		log.Println("> Configuration obtained from Vault; all good")
+		loadedFlag = true
 	} else {
+		loadFromEnvVarsFlag = true
+	}
+
+	if loadFromEnvVarsFlag {
+		opts := env.Options{RequiredIfNoDef: true}
+		if err = env.ParseWithOptions(&globalConfig, opts); err == nil {
+			loadedFlag = true
+			log.Println("> Configuration obtained from environment; all good")
+		}
+	}
+
+	if !loadedFlag {
 		// no configuration option available
-		log.Fatal("> No configuration option is available; fatal")
+		log.Fatal("> Application is not configured; fatal")
 	}
 }
