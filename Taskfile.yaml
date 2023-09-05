@@ -1,0 +1,57 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  setup:
+    desc: Setup local environment for development.
+    cmds:
+      - go get github.com/mattn/goreman
+      - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
+      - go install github.com/rakyll/gotest@latest
+      - go install honnef.co/go/tools/cmd/staticcheck@latest
+  get:
+    desc: go-get all packages
+    cmds:
+      - go get -d ./...
+  build:
+    desc: Build the go binary.
+    cmds:
+      - rm -rf cmd && mkdir -p cmd && CGO_ENABLED=0 go build -o cmd/ ./...
+  release:
+    desc: Build the application for release
+    cmds:
+      - task: setup
+      - task: get
+      - task: build
+  test:
+    desc: Run all tests and generate coverage
+    cmds:
+      - task: test:unit
+      - task: test:integration
+      - task: test:coverage
+  test:unit:
+    desc: Unit tests for the backend application.
+    cmds:
+      - gotest -race -coverprofile=coverage.unit.out -coverpkg=./internal/... ./internal/...
+  test:integration:
+    desc: Integration tests for the backend application.
+    cmds:
+      - ginkgo ./test/...
+  test:coverage:
+    desc: Generate test coverage report.
+    cmds:
+      - go tool cover -html=coverage.unit.out -o coverage.unit.html
+  lint:
+    desc: Lint go package (this repository package)
+    cmds:
+      - staticcheck ./...
+  run:
+    desc: Run the service component.
+    cmds:
+      - task: build
+      - cmd/space {{.CLI_ARGS}}
+  db:migration:create:
+    desc: "Create migration file (eg.: db:migration:create task -- NAME)."
+    cmds:
+      - migrate create -ext=".sql" -seq -digits=4 -dir="$PWD/configs/migrations" {{.CLI_ARGS}}

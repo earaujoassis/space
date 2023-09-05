@@ -19,7 +19,7 @@ import (
 
 // Server is used to start and serve the application (REST API + Web front-end)
 func Server() {
-	datastore.Start()
+	datastore.InitConnection()
 	router := gin.Default()
 	cfg := config.GetGlobalConfig()
 	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
