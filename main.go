@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli"
 
+	"github.com/earaujoassis/space/internal"
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/tasks"
 	"github.com/earaujoassis/space/internal/logs"
@@ -15,15 +16,14 @@ import (
 func init() {
 	defer utils.RecoverHandler()
 	err := godotenv.Load()
-	if err != nil {
-		logs.Propagate(logs.Info, "The environment file (.env) doesn't exist; skipping .env")
-	} else {
+	if err == nil {
 		logs.Propagate(logs.Info, "Application has found a .env file")
 	}
 	config.LoadConfig()
 	cfg := config.GetGlobalConfig()
 	logs.Setup(logs.Options{
 		Environment: config.Environment(),
+		Release:     config.Release(),
 		SentryUrl:   cfg.SentryUrl,
 	})
 }
@@ -32,7 +32,7 @@ func main() {
 	defer utils.RecoverHandler()
 	app := cli.NewApp()
 	app.Name = "space"
-	app.Version = "0.2.0"
+	app.Version = internal.Version
 	app.Usage = "A user management microservice; OAuth 2 provider"
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
