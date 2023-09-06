@@ -27,10 +27,11 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
-          name: Run tests
+          name: Run tests and build binary
           command: |
             mkdir -p /tmp/test-reports
             gotestsum --junitfile /tmp/test-reports/unit-tests.xml
+            rm -rf cmd && mkdir -p cmd && CGO_ENABLED=0 go build -o cmd/ ./...
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows

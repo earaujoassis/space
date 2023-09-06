@@ -3,16 +3,17 @@
   "datastore_host": "space-postgres",
   "datastore_port": 5432,
   "datastore_name_prefix": "space",
+  "datastore_user": "space",
   "datastore_password": "8GWbz2JF4FMe1Q8X",
   "datastore_ssl_mode": "disable",
-  "datastore_user": "space",
   "mail_from": "example@example.com",
   "mailer_access": "AccessKeyId:SecretAccessKey:Region",
   "memory_store_host": "space-redis",
+  "memory_store_port": 6379,
   "memory_store_index": 0,
   "memory_store_password": "",
-  "memory_store_port": 6379,
   "session_secret": "",
   "session_secure": false,
-  "storage_secret": ""
+  "storage_secret": "",
+  "sentry_url": ""
 }

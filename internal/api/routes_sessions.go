@@ -12,7 +12,7 @@ import (
 	"github.com/earaujoassis/space/internal/policy"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
-	"github.com/earaujoassis/space/internal/services/logger"
+	"github.com/earaujoassis/space/internal/services/communications"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -52,7 +52,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 						models.PublicScope,
 						models.GrantToken)
 					if session.ID != 0 {
-						go logger.LogAction("session.created", utils.H{
+						go communications.Announce("session.created", utils.H{
 							"Email":     user.Email,
 							"FirstName": user.FirstName,
 							"IP":        session.IP,
@@ -116,7 +116,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 						models.PublicScope,
 						models.GrantToken)
 					if session.ID != 0 {
-						go logger.LogAction("session.magic", utils.H{
+						go communications.Announce("session.magic", utils.H{
 							"Email":     user.Email,
 							"FirstName": user.FirstName,
 							"CreatedAt": session.CreatedAt.Format(time.RFC850),

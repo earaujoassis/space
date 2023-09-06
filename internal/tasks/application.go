@@ -3,7 +3,6 @@ package tasks
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"runtime/debug"
 
@@ -13,13 +12,14 @@ import (
 	"github.com/earaujoassis/space/internal/api"
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/datastore"
+	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/utils"
 	"github.com/earaujoassis/space/internal/web"
 )
 
 // Server is used to start and serve the application (REST API + Web front-end)
 func Server() {
-	datastore.Start()
+	datastore.InitConnection()
 	router := gin.Default()
 	cfg := config.GetGlobalConfig()
 	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
@@ -30,10 +30,8 @@ func Server() {
 	router.Use(sessions.Sessions("jupiter.session", store))
 	router.Use(func(c *gin.Context) {
 		defer func(c *gin.Context) {
-			// TODO It is not displaying/logging the error
 			if rec := recover(); rec != nil {
-				log.Printf("Error: %+v", errors.New(fmt.Sprintf("%v", rec)))
-				log.Println(debug.Stack())
+				logs.Propagatef(logs.Error, "%+v\n%s\n", errors.New(fmt.Sprintf("%v", rec)), string(debug.Stack()))
 				if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",

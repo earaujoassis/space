@@ -15,7 +15,7 @@ import (
 	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
-	"github.com/earaujoassis/space/internal/services/logger"
+	"github.com/earaujoassis/space/internal/services/communications"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -74,7 +74,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					"user":     user,
 				})
 			} else {
-				go logger.LogAction("user.created", utils.H{
+				go communications.Announce("user.created", utils.H{
 					"Email":     user.Email,
 					"FirstName": user.FirstName,
 				})
@@ -230,7 +230,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 						models.ReadWriteScope,
 						models.UpdateUserAction,
 					)
-					go logger.LogAction("session.magic", utils.H{
+					go communications.Announce("session.magic", utils.H{
 						"Email":     user.Email,
 						"FirstName": user.FirstName,
 						"Callback":  fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
@@ -246,7 +246,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 						models.ReadWriteScope,
 						models.UpdateUserAction,
 					)
-					go logger.LogAction("session.magic", utils.H{
+					go communications.Announce("session.magic", utils.H{
 						"Email":     user.Email,
 						"FirstName": user.FirstName,
 						"Callback":  fmt.Sprintf("%s/profile/secrets?_=%s", host, actionToken.Token),

@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"gopkg.in/yaml.v2"
+
+	"github.com/earaujoassis/space/internal/logs"
 )
 
 // Service struct with data to retrieve a Vault secret
@@ -21,10 +23,10 @@ type Service struct {
 func (s *Service) LoadService(filepath string) {
 	yamlFile, err := os.ReadFile(filepath)
 	if err != nil {
-		panic(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 	err = yaml.Unmarshal([]byte(yamlFile), &s)
 	if err != nil {
-		panic(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 }
