@@ -6,6 +6,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 
 	"github.com/earaujoassis/space/internal/config"
+	"github.com/earaujoassis/space/internal/logs"
 )
 
 var memoryStore redis.Conn
@@ -29,7 +30,7 @@ func Start() {
 	}
 	memoryStore, err = redis.DialURL(storeURI)
 	if err != nil {
-		panic(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 }
 

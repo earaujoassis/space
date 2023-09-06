@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -9,20 +8,23 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/tasks"
+	"github.com/earaujoassis/space/internal/logs"
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 func init() {
+	defer utils.RecoverHandler()
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("> The environment file (.env) doesn't exist; skipping .env")
+		logs.Propagate(logs.Info, "The environment file (.env) doesn't exist; skipping .env")
 	} else {
-		log.Println("> Application has found a .env file")
+		logs.Propagate(logs.Info, "Application has found a .env file")
 	}
-
 	config.LoadConfig()
 }
 
 func main() {
+	defer utils.RecoverHandler()
 	app := cli.NewApp()
 	app.Name = "space"
 	app.Version = "0.2.0"
