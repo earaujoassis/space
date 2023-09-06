@@ -134,6 +134,8 @@ func LoadConfig() {
 		if err = env.ParseWithOptions(&globalConfig, opts); err == nil {
 			loadedFlag = true
 			logs.Propagate(logs.Info, "Configuration obtained from environment; all good")
+		} else {
+			logs.Propagatef(logs.Error, "Cannot load configuration from environment: %s", err.Error())
 		}
 	}
 
