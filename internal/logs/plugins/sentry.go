@@ -14,7 +14,7 @@ func init() {
 	isSentryAvailable = false
 }
 
-func SetupSentry(environment, sentryUrl string) error {
+func SetupSentry(environment, release, sentryUrl string) error {
 	isSentryAvailable = false
 	if sentryUrl != "" {
 		tr := &http.Transport{
@@ -25,6 +25,7 @@ func SetupSentry(environment, sentryUrl string) error {
 			Dsn:              sentryUrl,
 			TracesSampleRate: 1.0,
 			Environment:      environment,
+			Release:          release,
 			HTTPClient:       client,
 		})
 		if err != nil {
