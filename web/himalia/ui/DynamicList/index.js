@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+import { prependUrlWithHttps } from '@utils/forms'
+
 import './style.css'
 
 const convertListTopMap = (list) => {
@@ -10,7 +12,7 @@ const convertListTopMap = (list) => {
     return map
 }
 
-const dynamicList = ({ defaultList, label, labelPlural, removeTitle, id, onChange = null }) => {
+const dynamicList = ({ defaultList, label, labelPlural, removeTitle, id, tabIndex, onChange = null }) => {
     const [inputValue, setInputValue] = useState('')
     const [counter, setCounter] = useState(defaultList.length + 1)
     const [localList, setLocalList] = useState(convertListTopMap(defaultList))
@@ -85,9 +87,11 @@ const dynamicList = ({ defaultList, label, labelPlural, removeTitle, id, onChang
                 <div className="dynamic-list__shared-wrapper__field">
                     <label htmlFor={`dynamic-list__${id}`}>{label}</label>
                     <input
+                        tabIndex={tabIndex}
                         value={inputValue}
                         onKeyDown={handleKeypress}
                         onChange={(e) => setInputValue(e.target.value)}
+                        onBlurCapture={(e) => prependUrlWithHttps(e)}
                         id={`dynamic-list__${id}`}
                         inputMode="url"
                         type="text" />

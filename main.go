@@ -8,8 +8,8 @@ import (
 
 	"github.com/earaujoassis/space/internal"
 	"github.com/earaujoassis/space/internal/config"
-	"github.com/earaujoassis/space/internal/tasks"
 	"github.com/earaujoassis/space/internal/logs"
+	"github.com/earaujoassis/space/internal/tasks"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -44,7 +44,7 @@ func main() {
 				{
 					Name:  "migrate",
 					Usage: "Apply migrations to the database upward",
-					Flags: []cli.Flag {
+					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "path",
 							Value: "./configs/migrations",
@@ -59,7 +59,7 @@ func main() {
 				{
 					Name:  "rollback",
 					Usage: "Apply migrations to the database downward",
-					Flags: []cli.Flag {
+					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "path",
 							Value: "./configs/migrations",
@@ -74,17 +74,17 @@ func main() {
 			},
 		},
 		{
-			Name:    "serve",
-			Usage:   "Serve the application server",
+			Name:  "serve",
+			Usage: "Serve the application server",
 			Action: func(c *cli.Context) error {
 				tasks.Server()
 				return nil
 			},
 		},
 		{
-			Name:    "launch",
-			Usage:   "Apply migrations and serve the application server",
-			Flags: []cli.Flag {
+			Name:  "launch",
+			Usage: "Apply migrations and serve the application server",
+			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "path",
 					Value: "./configs/migrations",
@@ -98,8 +98,8 @@ func main() {
 			},
 		},
 		{
-			Name:    "client",
-			Usage:   "Manage client applications",
+			Name:  "client",
+			Usage: "Manage client applications",
 			Subcommands: []cli.Command{
 				{
 					Name:  "create",
@@ -112,8 +112,8 @@ func main() {
 			},
 		},
 		{
-			Name:    "feature",
-			Usage:   "Toggle feature flags ON/OFF",
+			Name:  "feature",
+			Usage: "Toggle feature flags ON/OFF",
 			Action: func(c *cli.Context) error {
 				tasks.ToggleFeature()
 				return nil
