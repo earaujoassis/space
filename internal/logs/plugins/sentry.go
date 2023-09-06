@@ -22,10 +22,10 @@ func SetupSentry(environment, sentryUrl string) error {
 		}
 		client := &http.Client{Transport: tr}
 		err := sentry.Init(sentry.ClientOptions{
-			Dsn: sentryUrl,
+			Dsn:              sentryUrl,
 			TracesSampleRate: 1.0,
-			Environment: environment,
-			HTTPClient: client,
+			Environment:      environment,
+			HTTPClient:       client,
 		})
 		if err != nil {
 			return err
