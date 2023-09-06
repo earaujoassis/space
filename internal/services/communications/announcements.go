@@ -1,4 +1,4 @@
-package logger
+package communications
 
 import (
 	"time"
@@ -12,7 +12,7 @@ import (
 // LogAction is used to Log actions throughout the application;
 //
 //	using e-mail messages (production-only) or stdout (development-only)
-func LogAction(name string, data utils.H) {
+func Announce(name string, data utils.H) {
 	if config.IsEnvironment("production") {
 		switch name {
 		case "user.created":
