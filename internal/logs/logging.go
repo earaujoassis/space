@@ -25,7 +25,7 @@ type Options struct {
 var logger *log.Logger
 
 func init() {
-	logger = log.New(os.Stdout, "", log.Ldate | log.Ltime | log.LUTC)
+	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.LUTC)
 }
 
 func Setup(opts Options) {
