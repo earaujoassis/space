@@ -37,11 +37,11 @@ WORKDIR /app
 COPY . /app
 
 RUN yarn install && yarn build
-RUN rm -rf cmd && mkdir -p cmd
-RUN CGO_ENABLED=0 go build -o cmd/space main.go
+RUN go install github.com/go-task/task/v3/cmd/task@latest
+RUN task release
 
 EXPOSE 9000
 
 USER 1010
 ENTRYPOINT [ "cmd/space" ]
-CMD [ "serve" ]
+CMD [ "launch" ]

@@ -6,7 +6,7 @@ The following commands will create a *docker image* and create a *docker contain
 
 ```sh
 $ docker build -t earaujoassis/space .
-$ docker run -d -p 8080:8080 earaujoassis/space
+$ docker run -d -p 9000:9000 earaujoassis/space
 ```
 
 The project also provides a *docker-compose* setup, which could be configured through:
