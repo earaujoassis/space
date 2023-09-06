@@ -101,7 +101,7 @@ const security = ({
                     <h3>Update password through a magic link</h3>
                     <p>
                         Update your password through a magic link sent to your e-mail account. It will generate
-                        a temporary token so you can securily modify your account password.
+                        a temporary token so you can securely modify your account password.
                     </p>
                     {requestPasswordResetMessage}
                 </div>
