@@ -34,6 +34,7 @@ type Config struct {
 	SessionSecret       string `json:"session_secret" env:"SPACE_SESSION_SECRET,unset"`
 	SessionSecure       bool   `json:"session_secure" env:"SPACE_SESSION_SECURE,unset"`
 	StorageSecret       string `json:"storage_secret" env:"SPACE_STORAGE_SECRET,unset"`
+	SentryUrl           string `json:"sentry_url" env:"SPACE_SENTRY_URL,unset" envDefault:""`
 }
 
 var globalConfig Config

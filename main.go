@@ -21,6 +21,11 @@ func init() {
 		logs.Propagate(logs.Info, "Application has found a .env file")
 	}
 	config.LoadConfig()
+	cfg := config.GetGlobalConfig()
+	logs.Setup(logs.Options{
+		Environment: config.Environment(),
+		SentryUrl:   cfg.SentryUrl,
+	})
 }
 
 func main() {

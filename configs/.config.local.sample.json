@@ -14,5 +14,6 @@
   "memory_store_password": "",
   "session_secret": "",
   "session_secure": false,
-  "storage_secret": ""
+  "storage_secret": "",
+  "sentry_url": ""
 }
