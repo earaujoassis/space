@@ -8,4 +8,11 @@ const extractDataForm = (form, attributes) => {
     return data
 }
 
-export { extractDataForm }
+const prependUrlWithHttps = (e) => {
+    const string = e.target.value
+    if (!~string.indexOf('http') && string.length) {
+        e.target.value = 'https://' + string
+    }
+}
+
+export { extractDataForm, prependUrlWithHttps }
