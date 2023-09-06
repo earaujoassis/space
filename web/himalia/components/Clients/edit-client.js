@@ -48,7 +48,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
             }}>
                 <p>
                     By default, all applications are created with &quot;Public&quot; scope, which
-                    can&apos;t instrospect user data (read user&apos;s full name, email etc.) If
+                    can&apos;t introspect user data (read user&apos;s full name, email etc.) If
                     your application needs to read user data, you must set the &quot;Application scope&quot;
                     to &quot;Read&quot;.
                 </p>
@@ -76,18 +76,21 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
                     label="Canonical URI"
                     labelPlural="Canonical URIs"
                     removeTitle="Remove canonical URI"
-                    id="canonical-uri" />
+                    id="canonical-uri"
+                    tabIndex="1" />
                 <DynamicList
                     onChange={(list) => setRedirectUri(Array.from(list))}
                     defaultList={redirectUri}
                     label="Redirect URI"
                     labelPlural="Redirect URIs"
                     removeTitle="Remove redirect URI"
-                    id="redirect-uri" />
+                    id="redirect-uri"
+                    tabIndex="2" />
                 <div className="globals__siblings globals__form-actions">
                     <div className="globals__input-wrapper">
-                        <input type="submit" className="button" value="Save client application" />
+                        <input tabIndex="3" type="submit" className="button" value="Save client application" />
                         <button
+                            tabIndex="4"
                             onClick={(e) => {
                                 e.preventDefault()
                                 navigate('/clients')
