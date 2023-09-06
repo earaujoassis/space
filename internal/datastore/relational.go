@@ -2,12 +2,12 @@ package datastore
 
 import (
 	"fmt"
-	"log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	"github.com/earaujoassis/space/internal/config"
+	"github.com/earaujoassis/space/internal/logs"
 )
 
 var datastore *gorm.DB
@@ -32,10 +32,10 @@ func InitConnection() {
 		cfg.DatastoreUser,
 		databaseName,
 	)
-	log.Printf("Connected to the following data store: %v\n", safeDatabaseConnectionData)
+	logs.Propagatef(logs.Info, "Connected to the following data store: %v\n", safeDatabaseConnectionData)
 	datastore, err = gorm.Open(postgres.Open(databaseConnectionData), &gorm.Config{})
 	if err != nil {
-		panic(fmt.Sprintf("Failed to connect datastore: %v\n", err))
+		logs.Propagatef(logs.Panic, "Failed to connect datastore: %v\n", err)
 	}
 }
 

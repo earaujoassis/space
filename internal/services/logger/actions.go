@@ -1,10 +1,10 @@
 package logger
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/earaujoassis/space/internal/config"
+	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/services/mailer"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -38,6 +38,6 @@ func LogAction(name string, data utils.H) {
 		}
 	}
 	if config.IsEnvironment("development") {
-		fmt.Printf("[logger] Action `%s` with data `%v`\n", name, data)
+		logs.Propagatef(logs.Info, "Action `%s` with data `%v`\n", name, data)
 	}
 }

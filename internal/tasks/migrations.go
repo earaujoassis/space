@@ -3,7 +3,6 @@ package tasks
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -13,6 +12,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/earaujoassis/space/internal/config"
+	"github.com/earaujoassis/space/internal/logs"
 )
 
 func buildDatabaseUrl() string {
@@ -52,22 +52,22 @@ func createMigrator(relativePath string) (*migrate.Migrate, error) {
 func RunMigrations(relativePath string) {
 	migrator, err := createMigrator(relativePath)
 	if err != nil {
-		log.Fatal(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 	if err = migrator.Force(1); err != nil {
-		log.Fatal(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 	if err = migrator.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatal(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 }
 
 func RollbackMigrations(relativePath string) {
 	migrator, err := createMigrator(relativePath)
 	if err != nil {
-		log.Fatal(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 	if err = migrator.Down(); err != nil {
-		log.Fatal(err)
+		logs.Propagate(logs.Panic, err.Error())
 	}
 }

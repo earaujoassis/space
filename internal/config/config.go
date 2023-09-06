@@ -2,12 +2,13 @@ package config
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/caarlos0/env/v9"
 	"github.com/hashicorp/vault/api"
+
+	"github.com/earaujoassis/space/internal/logs"
 )
 
 const (
@@ -93,14 +94,14 @@ func LoadConfig() {
 		// .config.local.json exists
 		dataStream, err = os.ReadFile(localConfigurationFile)
 		if err != nil {
-			panic(err)
+			logs.Propagate(logs.Panic, err.Error())
 		}
 		err = json.Unmarshal([]byte(dataStream), &globalConfig)
 		if err != nil {
-			panic(err)
+			logs.Propagate(logs.Panic, err.Error())
 		}
 		loadedFlag = true
-		log.Printf("> Configuration obtained from %s; all good\n", localConfigurationFile)
+		logs.Propagatef(logs.Info, "Configuration obtained from %s; all good\n", localConfigurationFile)
 	} else if _, yErr := os.Stat(configurationStoreFile); yErr == nil && os.IsNotExist(jErr) {
 		// .config.yml exists
 		globalService.LoadService(configurationStoreFile)
@@ -108,20 +109,20 @@ func LoadConfig() {
 			Address: globalService.Space.ConfigurationStore.Addr,
 		})
 		if err != nil {
-			panic(err)
+			logs.Propagate(logs.Panic, err.Error())
 		}
 		client.SetToken(globalService.Space.ConfigurationStore.Token)
 		secret, err = client.Logical().Read(globalService.Space.ConfigurationStore.Path)
 		if err != nil {
-			panic(err)
+			logs.Propagate(logs.Panic, err.Error())
 		}
 
 		dataStream, _ = json.Marshal(secret.Data)
 		err = json.Unmarshal([]byte(dataStream), &globalConfig)
 		if err != nil {
-			panic(err)
+			logs.Propagate(logs.Panic, err.Error())
 		}
-		log.Println("> Configuration obtained from Vault; all good")
+		logs.Propagate(logs.Info, "Configuration obtained from Vault; all good")
 		loadedFlag = true
 	} else {
 		loadFromEnvVarsFlag = true
@@ -131,12 +132,12 @@ func LoadConfig() {
 		opts := env.Options{RequiredIfNoDef: true}
 		if err = env.ParseWithOptions(&globalConfig, opts); err == nil {
 			loadedFlag = true
-			log.Println("> Configuration obtained from environment; all good")
+			logs.Propagate(logs.Info, "Configuration obtained from environment; all good")
 		}
 	}
 
 	if !loadedFlag {
 		// no configuration option available
-		log.Fatal("> Application is not configured; fatal")
+		logs.Propagate(logs.Panic, "Application is not configured")
 	}
 }
