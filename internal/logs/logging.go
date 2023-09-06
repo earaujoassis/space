@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-)
 
-var logger *log.Logger
+	"github.com/earaujoassis/space/internal/logs/plugins"
+)
 
 type Level int8
 
@@ -17,8 +17,22 @@ const (
 	Panic
 )
 
+type Options struct {
+	Environment string
+	SentryUrl   string
+}
+
+var logger *log.Logger
+
 func init() {
 	logger = log.New(os.Stdout, "", log.Ldate | log.Ltime | log.LUTC)
+}
+
+func Setup(opts Options) {
+	err := plugins.SetupSentry(opts.Environment, opts.SentryUrl)
+	if err != nil {
+		Propagatef(Error, "sentry.Init: %s\n", err)
+	}
 }
 
 func setLogForLevel(level Level) {
@@ -37,7 +51,11 @@ func setLogForLevel(level Level) {
 func Propagate(level Level, msg string) {
 	setLogForLevel(level)
 	switch level {
+	case Error, Critical:
+		plugins.CaptureException(msg)
+		logger.Println(msg)
 	case Panic:
+		plugins.CaptureException(msg)
 		logger.Println(msg)
 		panic(msg)
 	default:
@@ -48,7 +66,12 @@ func Propagate(level Level, msg string) {
 func Propagatef(level Level, msg string, args ...interface{}) {
 	setLogForLevel(level)
 	switch level {
+	case Error, Critical:
+		plugins.CaptureException(fmt.Sprintf(msg, args...))
+		logger.Printf(msg, args...)
+		panic(fmt.Sprintf(msg, args...))
 	case Panic:
+		plugins.CaptureException(fmt.Sprintf(msg, args...))
 		logger.Printf(msg, args...)
 		panic(fmt.Sprintf(msg, args...))
 	default:

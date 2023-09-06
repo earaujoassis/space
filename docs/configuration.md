@@ -102,6 +102,10 @@ You may set them through the described configuration channels (above).
 
   Key used to encrypt sensitive data in the relational database.
 
+- `SPACE_SENTRY_URL` (Optional)
+
+  This optional setting is used to configure Sentry to capture error messages.
+
 ## Environment variables set in the Dockerfile
 
 The following environment variables are set in the Dockerfile and could impact in the
