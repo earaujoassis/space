@@ -19,6 +19,7 @@ const (
 
 type Options struct {
 	Environment string
+	Release     string
 	SentryUrl   string
 }
 
@@ -29,7 +30,7 @@ func init() {
 }
 
 func Setup(opts Options) {
-	err := plugins.SetupSentry(opts.Environment, opts.SentryUrl)
+	err := plugins.SetupSentry(opts.Environment, opts.Release, opts.SentryUrl)
 	if err != nil {
 		Propagatef(Error, "sentry.Init: %s\n", err)
 	}

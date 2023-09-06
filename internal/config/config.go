@@ -2,12 +2,14 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/caarlos0/env/v9"
 	"github.com/hashicorp/vault/api"
 
+	"github.com/earaujoassis/space/internal"
 	"github.com/earaujoassis/space/internal/logs"
 )
 
@@ -59,6 +61,13 @@ func Environment() string {
 //	is the same as defined in `env`
 func IsEnvironment(env string) bool {
 	return strings.ToLower(env) == Environment()
+}
+
+func Release() string {
+	if commitHash := GetEnvVar("COMMIT_HASH"); commitHash != "" {
+		return fmt.Sprintf("%s+%s", internal.Version, GetEnvVar("COMMIT_HASH"))
+	}
+	return internal.Version
 }
 
 // GetEnvVar gets a `key` from the environment variables
