@@ -143,7 +143,7 @@ func (client *Client) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// DefaultRedirectURI gets the default (first) redirect URI/URL for a client application
+// DefaultCanonicalURI gets the default (first) canonical URI/URL for a client application
 func (client *Client) DefaultCanonicalURI() string {
 	return client.CanonicalURI[0]
 }
