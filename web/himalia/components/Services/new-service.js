@@ -25,7 +25,6 @@ const newService = ({ createService, application, stateSignal }) => {
             <Submenu activeAction="new-service" />
             <div className="services-root">
                 <form className="form-common" action="." method="post" onSubmit={(e) => {
-                    e.persist()
                     e.preventDefault()
                     const attrs = ['name', 'description', 'canonical_uri']
                     const data = extractDataForm(e.target, attrs)
