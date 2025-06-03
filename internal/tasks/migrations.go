@@ -54,9 +54,6 @@ func RunMigrations(relativePath string) {
 	if err != nil {
 		logs.Propagate(logs.Panic, err.Error())
 	}
-	if err = migrator.Force(2); err != nil {
-		logs.Propagate(logs.Panic, err.Error())
-	}
 	if err = migrator.Up(); err != nil && err != migrate.ErrNoChange {
 		logs.Propagate(logs.Panic, err.Error())
 	}

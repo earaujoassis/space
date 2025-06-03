@@ -60,7 +60,7 @@ func validCanonicalURIs(fl validator.FieldLevel) bool {
 	}
 
 	currentClient := fl.Top().Interface().(Client)
-	// Unfortunately, the Jupiter (internal client) is created with the following value
+	// The Jupiter (internal client) is created with the following value
 	if len(currentClient.CanonicalURI) == 1 && currentClient.CanonicalURI[0] == "localhost" {
 		return true
 	}
@@ -90,7 +90,7 @@ func validRedirectURIs(fl validator.FieldLevel) bool {
 	canonicalUri := currentClient.CanonicalURI
 	redirectUri := currentClient.RedirectURI
 
-	// Unfortunately, the Jupiter (internal client) is created with the following values
+	// The Jupiter (internal client) is created with the following values
 	if len(canonicalUri) == 1 && canonicalUri[0] == "localhost" && len(redirectUri) == 1 && redirectUri[0] == "/" {
 		return true
 	}
