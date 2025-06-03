@@ -43,7 +43,7 @@ Once the configuration is complete, the following commands will run the server a
 $ yarn install && yarn build
 $ go get github.com/mattn/goreman
 $ goreman start
-$ open http://localhost:8080
+$ open http://localhost:9000
 ```
 
 If you're planning to setup it for development, ideally you should run:
@@ -52,7 +52,7 @@ If you're planning to setup it for development, ideally you should run:
 $ scripts/dev-setup
 $ go get github.com/mattn/goreman
 $ goreman start
-$ open http://localhost:8080
+$ open http://localhost:9000
 ```
 
 ## Testing & Linting

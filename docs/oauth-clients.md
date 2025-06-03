@@ -11,7 +11,7 @@ require 'base64'
 
 client_key = "<application's CLIENT_KEY, provided by space web UI>"
 client_secret = "<application's CLIENT_SECRET, provided by space web UI>"
-base_url = '<space server base url, like: http://localhost:8080>'
+base_url = '<space server base url, like: http://localhost:9000>'
 
 # `scope` must be `read` if you'd like to read user's content, like `first_name` and `last_name`.
 # Also, the application must have the `read` scope --- you may set that through the web UI.

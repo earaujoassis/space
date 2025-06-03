@@ -70,7 +70,6 @@ func Propagatef(level Level, msg string, args ...interface{}) {
 	case Error, Critical:
 		plugins.CaptureException(fmt.Sprintf(msg, args...))
 		logger.Printf(msg, args...)
-		panic(fmt.Sprintf(msg, args...))
 	case Panic:
 		plugins.CaptureException(fmt.Sprintf(msg, args...))
 		logger.Printf(msg, args...)
