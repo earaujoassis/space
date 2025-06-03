@@ -37,7 +37,6 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
     if (client) {
         content = (
             <form className="form-common" action="." method="post" onSubmit={(e) => {
-                e.persist()
                 e.preventDefault()
                 const data = new FormData()
                 data.append('canonical_uri', canonicalUri.join('\n'))
