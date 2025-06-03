@@ -7,6 +7,7 @@ import { AllClients, EditClient, NewClient } from '@components/Clients'
 import Notifications from '@components/Notifications'
 import Profile from '@components/Profile'
 import Security from '@components/Security'
+import { AllServices, NewService } from '@components/Services'
 
 import './style.css'
 
@@ -43,6 +44,14 @@ const app = () => {
                 {
                     path: 'security',
                     element: <Security />,
+                },
+                {
+                    path: 'services',
+                    element: <AllServices />,
+                },
+                {
+                    path: 'services/new',
+                    element: <NewService />,
                 },
             ],
         }
