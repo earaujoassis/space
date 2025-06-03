@@ -20,6 +20,7 @@ import (
 // Server is used to start and serve the application (REST API + Web front-end)
 func Server() {
 	datastore.InitConnection()
+	gin.DisableConsoleColor()
 	router := gin.Default()
 	cfg := config.GetGlobalConfig()
 	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
@@ -31,7 +32,7 @@ func Server() {
 	router.Use(func(c *gin.Context) {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {
-				logs.Propagatef(logs.Error, "%+v\n%s\n", errors.New(fmt.Sprintf("%v", rec)), string(debug.Stack()))
+				defer logs.Propagatef(logs.Error, "%+v\n%s\n", errors.New(fmt.Sprintf("%v", rec)), string(debug.Stack()))
 				if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",
