@@ -35,13 +35,13 @@ const menu = ({ isUserAdmin }) => {
                         icon={icon({name: 'shield-halved'})} />
                     <Link to="/security">Password & Security</Link>
                 </li>
+                {clientMenuItem}
                 <li className={pathname === '/applications' ? selectedItemClass : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
                         icon={icon({name: 'desktop'})} />
                     <Link to="/applications">Applications</Link>
                 </li>
-                {clientMenuItem}
                 <li className={pathname === '/services' ? selectedItemClass : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"
