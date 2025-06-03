@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/api"
@@ -23,12 +24,12 @@ func Server() {
 	gin.DisableConsoleColor()
 	router := gin.Default()
 	cfg := config.GetGlobalConfig()
-	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
+	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	store.Options(sessions.Options{
 		Secure:   (config.IsEnvironment("production") && cfg.SessionSecure),
 		HttpOnly: true,
 	})
-	router.Use(sessions.Sessions("jupiter.session", store))
+	router.Use(sessions.Sessions("space.session", store))
 	router.Use(func(c *gin.Context) {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {

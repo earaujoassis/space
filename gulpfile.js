@@ -1,5 +1,5 @@
 var gulp       = require('gulp')
-var sass       = require('gulp-sass')(require('node-sass'))
+var sass       = require('gulp-sass')(require('sass'))
 var rename     = require('gulp-rename')
 var uglify     = require('gulp-uglify')
 var browserify = require('browserify')
@@ -28,7 +28,9 @@ gulp.task('styles', function () {
                     'web/core/styles',
                     'web'
                 ],
-                outputStyle: environment == 'production' ? 'compressed' : 'nested'
+                outputStyle: environment == 'production' ? 'compressed' : 'expanded',
+                quietDeps: true,
+                silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'mixed-decls']
             }).on('error', sass.logError)
         )
         .pipe(gulp.dest('./web/public/css/'))
