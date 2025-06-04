@@ -6,11 +6,7 @@
 
 .services-root__list > li {
   display: inline-block;
-}
-
-.services-root__list > li ~ li {
-  margin-bottom: 16px;
-  margin-left: 16px;
+  margin: 0 8px 20px 8px;
 }
 
 .services-root__entry {
