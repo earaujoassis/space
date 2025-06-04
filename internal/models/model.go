@@ -58,6 +58,7 @@ func validateModel(tagName string, model interface{}) error {
 	validate.RegisterValidation("canonical", validCanonicalURIs)
 	validate.RegisterValidation("redirect", validRedirectURIs)
 	validate.RegisterValidation("action", validAction)
+	validate.RegisterValidation("service", validServiceType)
 	err := validate.Struct(model)
 	return err
 }

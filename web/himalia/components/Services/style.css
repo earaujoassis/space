@@ -1,0 +1,42 @@
+.services-root__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.services-root__list > li {
+  display: inline-block;
+}
+
+.services-root__list > li ~ li {
+  margin-bottom: 16px;
+  margin-left: 16px;
+}
+
+.services-root__entry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 140px;
+  padding: 20px 22px;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+}
+
+.services-root__entry > h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.services-root__entry > h3 > span {
+  font-weight: 400;
+}
+
+.services-root__entry > p:last-of-type {
+  margin: 0;
+}
+
+.services-root__entry .button-anchor ~ .button-anchor {
+  margin-left: 12px;
+}
