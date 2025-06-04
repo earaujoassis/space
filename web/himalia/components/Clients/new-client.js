@@ -37,7 +37,6 @@ const newClient = ({ createClient, application, stateSignal }) => {
             </p>
             <div className="clients-root">
                 <form className="form-common" action="." method="post" onSubmit={(e) => {
-                    e.persist()
                     e.preventDefault()
                     const attrs = ['name', 'description', 'canonical_uri', 'redirect_uri']
                     const data = extractDataForm(e.target, attrs)

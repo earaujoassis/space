@@ -6,6 +6,7 @@ const initialState = {
     application: undefined,
     user: undefined,
     clients: undefined,
+    services: undefined,
     error: undefined,
     success: undefined,
     stateSignal: undefined
@@ -100,12 +101,40 @@ const clientRecordSuccess = (state, action) => {
 const clientRecordError = (state, action) => {
     NProgress.done()
     return Object.assign({}, state, {
-        loading: reduceLoading(state, 'user'),
+        loading: reduceLoading(state, 'client'),
         displayToast: true,
         success: false,
         error: action.error,
         clients: action.clients || new Array(),
         stateSignal: 'client_record_error'
+    })
+}
+
+const serviceRecordStart = (state) => {
+    NProgress.start()
+    return Object.assign({}, state, { loading: addLoading(state, 'service'), stateSignal: 'service_record_start' })
+}
+
+const serviceRecordSuccess = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'service'),
+        success: true,
+        error: null,
+        services: action.services || new Array(),
+        stateSignal: 'service_record_success'
+    })
+}
+
+const serviceRecordError = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'service'),
+        displayToast: true,
+        success: false,
+        error: action.error,
+        services: action.services || new Array(),
+        stateSignal: 'service_record_error'
     })
 }
 
@@ -121,6 +150,9 @@ const reducer = (state = initialState, action) => {
     case actionTypes.CLIENT_RECORD_START: return clientRecordStart(state, action)
     case actionTypes.CLIENT_RECORD_SUCCESS: return clientRecordSuccess(state, action)
     case actionTypes.CLIENT_RECORD_ERROR: return clientRecordError(state, action)
+    case actionTypes.SERVICE_RECORD_START: return serviceRecordStart(state, action)
+    case actionTypes.SERVICE_RECORD_SUCCESS: return serviceRecordSuccess(state, action)
+    case actionTypes.SERVICE_RECORD_ERROR: return serviceRecordError(state, action)
     default: return state
     }
 }

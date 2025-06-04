@@ -32,6 +32,8 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/clients", satelliteHandler)
 		views.GET("/clients/edit", satelliteHandler)
 		views.GET("/clients/new", satelliteHandler)
+		views.GET("/services", satelliteHandler)
+		views.GET("/services/new", satelliteHandler)
 		views.GET("/notifications", satelliteHandler)
 		views.GET("/profile", satelliteHandler)
 		views.GET("/security", satelliteHandler)
