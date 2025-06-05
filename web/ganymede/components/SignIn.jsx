@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 
 import Row from '@core/components/Row.jsx'
 import Columns from '@core/components/Columns.jsx'
-import { useApp } from '../context/useApp'
 
 import { getParameterByName } from '@core/utils/url'
+
+import { useApp } from '../context/useApp'
 
 const initialForm = () => ({ holder: '', password: '', passcode: '' })
 const StepsOrder = ['access', 'secrecy', 'code']
