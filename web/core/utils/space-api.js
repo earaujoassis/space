@@ -1,6 +1,6 @@
 const SpaceApi = {
-    createUser(data) {
-        return fetch('/api/users/create', {
+    async createUser(data) {
+        return await fetch('/api/users/create', {
             method: 'POST',
             headers: {
                 'X-Requested-By': 'SpaceApi',
