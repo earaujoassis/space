@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint -c .eslintrc.json ./web/{callisto,core,europa,ganymede,himalia,io}/**/*.js*",
-    "build": "gulp && webpack --config webpack.config.js --mode production",
-    "build:webpack": "webpack --config webpack.config.js --mode production",
-    "build:gulp": "gulp"
+    "lint": "eslint -c .eslintrc.json ./web/{amalthea,callisto,core,ganymede,himalia,io}/**/*.js*",
+    "build": "webpack --config webpack.config.js --mode production"
   },
   "repository": {
     "type": "git",
@@ -36,8 +34,6 @@
     "eslint": "^7.28.0",
     "eslint-plugin-react": "^7.37.5",
     "foundation-sites": "^6.9.0",
-    "gulp": "^4.0.2",
-    "gulp-sass": "^5.1.0",
     "mini-css-extract-plugin": "^2.9.2",
     "normalize.scss": "^0.1.0",
     "prop-types": "^15.8.1",
@@ -52,6 +48,7 @@
     "sass-loader": "^13.3.2",
     "terser-webpack-plugin": "^5.3.14",
     "webpack": "^5.99.9",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-remove-empty-scripts": "^1.1.1"
   }
 }
