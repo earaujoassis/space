@@ -5,15 +5,19 @@ const TerserPlugin = require('terser-webpack-plugin')
 const commitHash = process.env.COMMIT_HASH || 'unknown-version'
 
 module.exports = {
-    entry: './web/himalia/index.js',
+    entry: {
+        himalia: './web/himalia/index.js',
+        ganymede: './web/ganymede/index.js'
+    },
     output: {
         path: path.resolve(__dirname, './web/public/'),
         publicPath: '/public/',
-        filename: 'js/himalia.min.js'
+        filename: 'js/[name].min.js'
     },
     resolve: {
         alias: {
             'public-css': path.resolve(__dirname, 'web/public/css'),
+            '@core': path.resolve(__dirname, 'web/core'),
             '@app': path.resolve(__dirname, 'web/himalia/app'),
             '@actions': path.resolve(__dirname, 'web/himalia/actions'),
             '@components': path.resolve(__dirname, 'web/himalia/components'),

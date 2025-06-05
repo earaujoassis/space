@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import SignIn from './SignIn.jsx'
 import UserRequest from './UserRequest.jsx'
 
+import { AppProvider } from '../context/useApp'
+
 const PASSWORD_STRATEGY = 'password'
 const MAGIC_LINK_STRATEGY = 'magic-link'
 const REQUEST_PASSWORD = 'request-password'
@@ -47,17 +49,19 @@ const root = () => {
     const [currentStrategy, setSignInStrategy] = useState(PASSWORD_STRATEGY)
 
     return (
-        <div className="ganymede-root">
-            {strategyComponent(currentStrategy)}
-            <div className="ganymede-strategies">
-                <div className="strategy-sibling">
-                    {strategyCallToAction(currentStrategy, setSignInStrategy)}
-                </div>
-                <div className="strategy-sibling">
-                    {passwordRequestButtonStates(currentStrategy, setSignInStrategy)}
+        <AppProvider>
+            <div className="ganymede-root">
+                {strategyComponent(currentStrategy)}
+                <div className="ganymede-strategies">
+                    <div className="strategy-sibling">
+                        {strategyCallToAction(currentStrategy, setSignInStrategy)}
+                    </div>
+                    <div className="strategy-sibling">
+                        {passwordRequestButtonStates(currentStrategy, setSignInStrategy)}
+                    </div>
                 </div>
             </div>
-        </div>
+        </AppProvider>
     )
 }
 
