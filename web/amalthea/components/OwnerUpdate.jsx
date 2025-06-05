@@ -1,36 +1,45 @@
 import React, { useEffect, useState } from 'react'
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
-import PasswordInput from '../../core/components/PasswordInput.jsx'
-import SuccessBox from '../../core/components/SuccessBox.jsx'
+import Row from '@core/components/Row.jsx'
+import Columns from '@core/components/Columns.jsx'
+import PasswordInput from '@core/components/PasswordInput.jsx'
+import SuccessBox from '@core/components/SuccessBox.jsx'
 
-import { extractDataForm } from '../../core/utils/forms'
+import { extractDataForm } from '@core/utils/forms'
 
-import UserStore from '../stores/users'
-import UsersActions from '../actions/users'
-
-const attemptPassworUpdate = (target) => {
-    const data = extractDataForm(target, ['new_password', 'password_confirmation'])
-    data.append('_', UserStore.getActionToken())
-    UsersActions.updatePassword(data)
-}
+import { useApp, AppProvider } from '../context/useApp'
 
 const UpdatePassword = ({ onSuccess }) => {
+    const { state, actions } = useApp()
+    const [errorMessage, setErrorMessage] = useState(null)
+
+    const attemptPassworUpdate = (target) => {
+        const data = extractDataForm(target, ['new_password', 'password_confirmation'])
+        data.append('_', state.server['action_token'])
+        actions.updatePassword(data)
+    }
+
     useEffect(() => {
-        let updateLocalStoreState = () => {
-            if (UserStore.success()) {
-                onSuccess()
-            }
-        }
+        actions.loadServerData()
 
-        UserStore.loadData()
-        UserStore.addChangeListener(updateLocalStoreState)
-
-        return function cleanup() {
-            UserStore.removeChangeListener(updateLocalStoreState)
+        return () => {
+            actions.reset()
         }
     }, [])
+
+    useEffect(() => {
+        if (state.success) {
+            onSuccess()
+        }
+    }, [state.success])
+
+    useEffect(() => {
+        if (state.error && state.error._message && state.error.error) {
+            setErrorMessage(`Error: ${state.error.error}`)
+        } else if (state.error) {
+            setErrorMessage('Something unexpected happened')
+        }
+    }, [state.error])
 
     return (
         <div className="middle-box plain resource-owner-password">
@@ -51,13 +60,14 @@ const UpdatePassword = ({ onSuccess }) => {
                             className="button expand"
                             disabled={false}>Update password</button>
                     </form>
+                    {errorMessage ? <p className="error-message">{errorMessage}</p> : null}
                 </Columns>
             </Row>
         </div>
     )
 }
 
-const ownerUpdate = () => {
+const OwnerUpdate = () => {
     const [hasUpdated, setHasUpdated] = useState(false)
 
     return (
@@ -78,4 +88,12 @@ const ownerUpdate = () => {
     )
 }
 
-export default ownerUpdate
+const wrapper = () => {
+    return (
+        <AppProvider>
+            <OwnerUpdate />
+        </AppProvider>
+    )
+}
+
+export default wrapper

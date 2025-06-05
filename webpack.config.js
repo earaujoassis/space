@@ -6,8 +6,9 @@ const commitHash = process.env.COMMIT_HASH || 'unknown-version'
 
 module.exports = {
     entry: {
-        himalia: './web/himalia/index.js',
-        ganymede: './web/ganymede/index.js'
+        amalthea: './web/amalthea/index.js',
+        ganymede: './web/ganymede/index.js',
+        himalia: './web/himalia/index.js'
     },
     output: {
         path: path.resolve(__dirname, './web/public/'),

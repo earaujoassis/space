@@ -10,8 +10,8 @@ const SpaceApi = {
         })
     },
 
-    updatePassword(data) {
-        return fetch('/api/users/update/password', {
+    async updatePassword(data) {
+        return await fetch('/api/users/update/password', {
             method: 'PATCH',
             headers: {
                 'X-Requested-By': 'SpaceApi',
