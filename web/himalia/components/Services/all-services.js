@@ -15,7 +15,7 @@ const allServices = ({ fetchServices, loading, application, services }) => {
 
     if (loading.includes('service') || services === undefined) {
         content = (<SpinningSquare />)
-    } else if (services.length) {
+    } else if (services && services.length) {
         content = (
             <ul className="services-root__list">
                 {services.map((service, i) => {
