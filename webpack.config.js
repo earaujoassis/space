@@ -7,6 +7,7 @@ const commitHash = process.env.COMMIT_HASH || 'unknown-version'
 module.exports = {
     entry: {
         amalthea: './web/amalthea/index.js',
+        callisto: './web/callisto/index.js',
         ganymede: './web/ganymede/index.js',
         himalia: './web/himalia/index.js'
     },

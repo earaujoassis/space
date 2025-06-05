@@ -7,7 +7,7 @@ var babelify   = require('babelify')
 var source     = require('vinyl-source-stream')
 var buffer     = require('vinyl-buffer')
 
-var satellites = ['callisto', 'io']
+var satellites = ['io']
 var environment = process.env.NODE_ENV
 
 gulp.task('styles', function () {
