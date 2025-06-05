@@ -9,7 +9,8 @@ module.exports = {
         amalthea: './web/amalthea/index.js',
         callisto: './web/callisto/index.js',
         ganymede: './web/ganymede/index.js',
-        himalia: './web/himalia/index.js'
+        himalia: './web/himalia/index.js',
+        io: './web/io/index.js'
     },
     output: {
         path: path.resolve(__dirname, './web/public/'),

@@ -1,47 +1,61 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-import FeaturesStore from '../../core/stores/features'
-import UserStore from '../stores/users'
+import { AppProvider, useApp } from '../context/useApp'
 
 import Blocked from './Blocked.jsx'
 import SignUp from './SignUp.jsx'
 import Success from './Success.jsx'
 
-export default class Root extends React.Component {
-    constructor() {
-        super()
-        this.state = UserStore.getState().payload || {}
-        this._updateFromStore = this._updateFromStore.bind(this)
-    }
+const isFeatureActive = (key, data) => {
+    return data['feature.gates'] && data['feature.gates'][key]
+}
 
-    componentDidMount() {
-        UserStore.addChangeListener(this._updateFromStore)
-    }
+const Root = () => {
+    const { actions, state } = useApp()
+    const [validationFailed, setValidationFailed] = useState(false)
 
-    componentWillUnmount() {
-        UserStore.removeChangeListener(this._updateFromStore)
-    }
-
-    render() {
-        if (!FeaturesStore.isFeatureActive('user.create')) {
-            return (<Blocked />)
+    useEffect(() => {
+        actions.loadServerData()
+        if (state.error && state.error.user) {
+            setValidationFailed(true)
         }
-        if (!!this.state.recover_secret && !!this.state.code_secret_image) {
-            return (<Success codeSecretImage={this.state.code_secret_image}
-                recoverSecret={this.state.recover_secret} />)
-        } else {
-            return (<SignUp validationFailed={this.state.validationFailed} />)
-        }
+    }, [state.error])
+
+    if (!state.server) {
+        return <></>
     }
 
-    _updateFromStore() {
-        if (UserStore.success()) {
-            this.setState(UserStore.getState().payload || {})
-        } else {
-            let error = UserStore.getState().payload
-            if (error.user) {
-                this.setState({validationFailed: true})
-            }
-        }
+    if (!isFeatureActive('user.create', state.server)) {
+        return (
+            <>
+                <Blocked />
+            </>
+        )
+    }
+    if (state.payload && state.payload.recover_secret && state.payload.code_secret_image) {
+        return (
+            <>
+                <Success
+                    codeSecretImage={state.payload.code_secret_image}
+                    recoverSecret={state.payload.recover_secret}
+                />
+            </>
+        )
+    } else {
+        return (
+            <>
+                <SignUp validationFailed={validationFailed} />
+            </>
+        )
     }
 }
+
+const wrapper = () => {
+    return (
+        <AppProvider>
+            <Root />
+        </AppProvider>
+    )
+}
+
+export default wrapper
