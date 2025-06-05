@@ -93,7 +93,7 @@ const clientRecordSuccess = (state, action) => {
         loading: reduceLoading(state, 'client'),
         success: true,
         error: null,
-        clients: action.clients || new Array(),
+        clients: action.clients,
         stateSignal: 'client_record_success'
     })
 }
@@ -105,7 +105,7 @@ const clientRecordError = (state, action) => {
         displayToast: true,
         success: false,
         error: action.error,
-        clients: action.clients || new Array(),
+        clients: action.clients,
         stateSignal: 'client_record_error'
     })
 }
@@ -121,7 +121,7 @@ const serviceRecordSuccess = (state, action) => {
         loading: reduceLoading(state, 'service'),
         success: true,
         error: null,
-        services: action.services || new Array(),
+        services: action.services,
         stateSignal: 'service_record_success'
     })
 }
@@ -133,7 +133,7 @@ const serviceRecordError = (state, action) => {
         displayToast: true,
         success: false,
         error: action.error,
-        services: action.services || new Array(),
+        services: action.services,
         stateSignal: 'service_record_error'
     })
 }
