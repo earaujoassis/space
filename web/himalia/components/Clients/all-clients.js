@@ -17,7 +17,7 @@ const allClients = ({ fetchClients, setClientForEdition, loading, application, c
 
     if (loading.includes('client') || clients === undefined) {
         content = (<SpinningSquare />)
-    } else if (clients.length) {
+    } else if (clients && clients.length) {
         content = (
             <ul className="clients-root__list">
                 {clients.map((client, i) => {

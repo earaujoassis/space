@@ -13,15 +13,22 @@ const applications = ({
     application,
     clients }) => {
 
+    const { user_id, action_token } = application
     let content = null
 
     useEffect(() => {
-        fetchClientApplicationsFromUser(application.user_id, application.action_token)
+        fetchClientApplicationsFromUser(user_id, action_token)
     }, [])
+
+    useEffect(() => {
+        if (clients === undefined) {
+            fetchClientApplicationsFromUser(user_id, action_token)
+        }
+    }, [clients])
 
     if (loading.includes('client') || clients === undefined) {
         content = (<SpinningSquare />)
-    } else if (clients.length) {
+    } else if (clients && clients.length) {
         content = (
             <>
                 <p>The following applications are associated with your user account.</p>
@@ -38,7 +45,7 @@ const applications = ({
                                         <button
                                             onClick={(e) => {
                                                 e.preventDefault()
-                                                revokeClientApplicationFromUser(application.user_id, client.id, application.action_token)
+                                                revokeClientApplicationFromUser(user_id, client.id, action_token)
                                             }}
                                             className="button-anchor">
                                             Revoke access
