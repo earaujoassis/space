@@ -20,7 +20,6 @@ web/public/js/*.min.js
 .gitignore
 .goreman
 .tool-versions
-.travis.yml
 docker-compose.yml
 Dockerfile
 c.out
