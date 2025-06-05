@@ -8,7 +8,7 @@ import thunk from 'redux-thunk'
 import App from '@app'
 import reducers from '@stores/reducers'
 
-import 'public-css/core.css'
+import '@core/styles/core.scss'
 import './globals.css'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
