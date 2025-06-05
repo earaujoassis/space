@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
+import Row from '@core/components/Row.jsx'
+import Columns from '@core/components/Columns.jsx'
 
 const blocked = () => {
     return (

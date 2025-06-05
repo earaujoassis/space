@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
+import Row from '@core/components/Row.jsx'
+import Columns from '@core/components/Columns.jsx'
 
 const success = ({ codeSecretImage, recoverSecret }) => {
     return (
@@ -29,9 +29,7 @@ const success = ({ codeSecretImage, recoverSecret }) => {
                     </p>
                     <p className="attention-points">
                         <span className="recovery-code">
-                            {Array.prototype.map.call(
-                                recoverSecret.split(/\s*-\s*/),
-                                (piece) => <span key={piece} className="piece">{piece}</span>)}
+                            {recoverSecret.split(/\s*-\s*/).map((piece) => <span key={piece} className="piece">{piece}</span>)}
                         </span>
                     </p>
                     <p>We hope to make your account as secure as possible using these settings.</p>

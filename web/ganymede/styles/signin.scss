@@ -8,6 +8,10 @@
   background: #323232;
   color: #fff;
 
+  input.hidden {
+    display: none;
+  }
+
   .user-avatar {
     &.unknown:before, &.secrecy:before, &.code:before, &.magic:before, &.password:before {
       display: block;
