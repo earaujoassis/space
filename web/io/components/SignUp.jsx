@@ -1,13 +1,21 @@
 import React from 'react'
 
-import UsersActions from '../actions/users'
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
-import PasswordInput from '../../core/components/PasswordInput.jsx'
+import Row from '@core/components/Row.jsx'
+import Columns from '@core/components/Columns.jsx'
+import PasswordInput from '@core/components/PasswordInput.jsx'
+import { extractDataForm } from '@core/utils/forms'
 
-import { extractDataForm } from '../../core/utils/forms'
+import { useApp } from '../context/useApp'
 
 const signUp = ({ validationFailed }) => {
+    const { actions } = useApp()
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        const attrs = ['first_name', 'last_name', 'action_token', 'username', 'email', 'password']
+        actions.createUser(extractDataForm(e.target, attrs))
+    }
+
     return (
         <div className="signup-content">
             <Row>
@@ -28,11 +36,8 @@ const signUp = ({ validationFailed }) => {
                         className="form-common"
                         action="."
                         method="post"
-                        onSubmit={(e) => {
-                            e.preventDefault()
-                            const attrs = ['first_name', 'last_name', 'action_token', 'username', 'email', 'password']
-                            UsersActions.signUp(extractDataForm(e.target, attrs))
-                        }}>
+                        onSubmit={(e) => handleSubmit(e)}
+                    >
                         {
                             validationFailed ? (
                                 <p className="error-message">Validation failed</p>
