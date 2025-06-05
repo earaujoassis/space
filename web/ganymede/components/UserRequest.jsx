@@ -1,27 +1,50 @@
 import React, { useState, useEffect } from 'react'
 
-import SessionsActions from '../actions/sessions'
-import UsersActions from '../actions/users'
-import Row from '../../core/components/Row.jsx'
-import Columns from '../../core/components/Columns.jsx'
-import SuccessBox from '../../core/components/SuccessBox.jsx'
+import Row from '@core/components/Row.jsx'
+import Columns from '@core/components/Columns.jsx'
+import SuccessBox from '@core/components/SuccessBox.jsx'
+import { getParameterByName } from '@core/utils/url'
 
-import { getParameterByName } from '../../core/utils/url'
+import { useApp } from '../context/useApp'
 
-// TODO Handle errors from Stores
 const RequestForm = ({ type, onRequest }) => {
     const [lockedForm, setLockedForm] = useState(false)
     const [holder, setHolderValue] = useState('')
 
+    const { actions } = useApp()
+
     useEffect(() => {
-        let securityTimeoutID = setTimeout(() => {
+        const securityTimeoutID = setTimeout(() => {
             setLockedForm(true)
             clearTimeout(securityTimeoutID)
         }, 60000)
-        return function cleanup() {
+
+        return () => {
             clearTimeout(securityTimeoutID)
+            actions.reset()
         }
-    })
+    }, [])
+
+    const handleRequest = (e) => {
+        if (e) e.preventDefault()
+
+        const formData = new FormData()
+        formData.append('holder', holder)
+        if (type === 'magic') {
+            let next = getParameterByName('_')
+            if (next && next) {
+                formData.append('next', next)
+            }
+            actions.requestMagicLink(formData)
+        } else {
+            formData.append('request_type', 'password')
+            actions.requestUpdate(formData)
+        }
+
+        e.target.form.reset()
+        setLockedForm(true)
+        onRequest(true)
+    }
 
     return (
         <div className="middle-box signin-content">
@@ -32,31 +55,12 @@ const RequestForm = ({ type, onRequest }) => {
                         <input type="text"
                             name="holder"
                             placeholder="Access holder"
-                            value={holder}
                             onChange={(e) => setHolderValue(e.target.value)}
                             required
                             disabled={lockedForm} />
                         <button type="submit"
                             className="button expand"
-                            onClick={(e) => {
-                                if (e) e.preventDefault()
-
-                                let formData = new FormData()
-                                formData.append('holder', holder)
-                                if (type === 'magic') {
-                                    let next = getParameterByName('_')
-                                    if (next && next) {
-                                        formData.append('next', next)
-                                    }
-                                    SessionsActions.requestMagicLink(formData)
-                                } else {
-                                    formData.append('request_type', 'password')
-                                    UsersActions.requestUpdate(formData)
-                                }
-
-                                setLockedForm(true)
-                                onRequest(true)
-                            }}
+                            onClick={(e) => handleRequest(e)}
                             disabled={lockedForm}>
                             {type === 'magic' ? 'Request Magic Link' : 'Request to update password'}
                         </button>
@@ -68,7 +72,7 @@ const RequestForm = ({ type, onRequest }) => {
     )
 }
 
-const userRequest = ({ type }) => {
+const UserRequest = ({ type }) => {
     const [requestedFulfilled, setRequestFulfilment] = useState(false)
 
     return (
@@ -87,4 +91,4 @@ const userRequest = ({ type }) => {
     )
 }
 
-export default userRequest
+export default UserRequest
