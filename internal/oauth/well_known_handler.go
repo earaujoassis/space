@@ -10,11 +10,7 @@ import (
 )
 
 func getOAuthAuthorizationServerDefinitions(c *gin.Context) utils.H {
-	scheme := "http"
-    if c.Request.TLS != nil {
-        scheme = "https"
-    }
-	baseURL := fmt.Sprintf("%s://%s", scheme, c.Request.Host)
+	baseURL := getBaseUrl(c)
 
 	return utils.H{
 		"issuer": baseURL,

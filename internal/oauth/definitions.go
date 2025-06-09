@@ -1,5 +1,11 @@
 package oauth
 
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
 const (
 	// Error types
 
@@ -44,3 +50,11 @@ const (
 	// Token response type
 	Token string = "token"
 )
+
+func getBaseUrl(c *gin.Context) string {
+	scheme := "http"
+    if c.Request.TLS != nil {
+        scheme = "https"
+    }
+	return fmt.Sprintf("%s://%s", scheme, c.Request.Host)
+}
