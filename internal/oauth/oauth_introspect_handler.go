@@ -13,14 +13,14 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func revokeHandler(c *gin.Context) {
+func introspectHandler(c *gin.Context) {
 	var token = c.PostForm("token")
 	var tokenTypeHint = c.PostForm("token_type_hint")
 	var session models.Session
 
+	baseURL := getBaseUrl(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := ClientAuthentication(authorizationBasic)
-	if client.ID == 0 {
+	if client := ClientAuthentication(authorizationBasic); client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",
@@ -61,9 +61,31 @@ func revokeHandler(c *gin.Context) {
 		}
 	}
 
-	if session.ID != 0 {
-		services.InvalidateSession(session)
+	if session.ID == 0 {
+		c.JSON(http.StatusOK, utils.H{
+			"active": false,
+		})
+		return
 	}
 
-	c.Status(http.StatusOK)
+	user := session.User
+	client := session.Client
+
+	c.JSON(http.StatusOK, utils.H{
+		"active": true,
+		"scope": session.Scopes,
+		"client_id": client.Key,
+		"username": user.Username,
+		"token_type": "Bearer",
+		"exp": session.ExpiresIn,
+		"iat": session.Moment,
+		// "nbf": (not before) not defined nor required
+		"sub": user.PublicID,
+		// "aud": (audience) not defined nor required
+		"iss": baseURL,
+		// "jti": (String identifier for the token) not defined nor required
+		"user_id": user.PublicID,
+		"roles": []string{ "user" },
+		// "email": user.Email,
+	})
 }

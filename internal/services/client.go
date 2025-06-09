@@ -72,6 +72,15 @@ func FindClientByUUID(uuid string) models.Client {
 	return client
 }
 
+// FindClientByID gets a client application by its ID
+func FindClientByID(id uint) models.Client {
+	var client models.Client
+
+	datastoreSession := datastore.GetDatastoreConnection()
+	datastoreSession.Where("id = ?", id).First(&client)
+	return client
+}
+
 // ClientAuthentication gets a client application by its key-secret pair
 func ClientAuthentication(key, secret string) models.Client {
 	client := FindClientByKey(key)

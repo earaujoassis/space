@@ -34,5 +34,9 @@ func BasicAuthDecode(token string) (string, string) {
 func MustServeJSON(path string, accept string) bool {
 	return strings.HasPrefix(path, "/api") ||
 		strings.HasPrefix(path, "/token") ||
-		strings.HasPrefix(path, "/oauth/token")
+		strings.HasPrefix(path, "/oauth/token") ||
+		strings.HasPrefix(path, "/revoke") ||
+		strings.HasPrefix(path, "/oauth/revoke") ||
+		strings.HasPrefix(path, "/introspect") ||
+		strings.HasPrefix(path, "/oauth/introspect")
 }
