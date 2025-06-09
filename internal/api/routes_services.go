@@ -15,7 +15,7 @@ import (
 
 // exposeServicesRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the REST API escope, for the services resource
+//	in the REST API scope, for the services resource
 func exposeServicesRoutes(router *gin.RouterGroup) {
 	servicesRoutes := router.Group("/services")
 	{

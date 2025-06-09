@@ -16,7 +16,7 @@ import (
 //
 //	it represents API calls related to the UI application
 //
-//	in the REST API escope, for the application resource
+//	in the REST API scope, for the application resource
 func exposeApplicationRoutes(router *gin.RouterGroup) {
 	applicationRoutes := router.Group("/application")
 	{
@@ -36,7 +36,7 @@ func exposeApplicationRoutes(router *gin.RouterGroup) {
 			actionToken := services.CreateAction(user, client,
 				c.Request.RemoteAddr,
 				c.Request.UserAgent(),
-				models.ReadWriteScope,
+				models.WriteScope,
 				models.NotSpecialAction,
 			)
 			c.JSON(http.StatusOK, utils.H{

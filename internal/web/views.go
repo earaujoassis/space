@@ -20,7 +20,7 @@ import (
 
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the WEB escope
+//	in the Web scope
 func ExposeRoutes(router *gin.Engine) {
 	router.LoadHTMLGlob("web/templates/*.html")
 	router.HTMLRender = createCustomRender()
@@ -182,12 +182,5 @@ func ExposeRoutes(router *gin.Engine) {
 				"ErrorReason": errorReason,
 			})
 		})
-
-		views.GET("/authorize", authorizeHandler)
-		views.GET("/oauth/authorize", authorizeHandler)
-		views.POST("/authorize", authorizeHandler)
-		views.POST("/oauth/authorize", authorizeHandler)
-		views.POST("/token", tokenHandler)
-		views.POST("/oauth/token", tokenHandler)
 	}
 }

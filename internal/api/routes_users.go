@@ -21,7 +21,7 @@ import (
 
 // exposeUsersRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the REST API escope, for the users resource
+//	in the REST API scope, for the users resource
 func exposeUsersRoutes(router *gin.RouterGroup) {
 	usersRoutes := router.Group("/users")
 	{
@@ -227,7 +227,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					actionToken := services.CreateAction(user, client,
 						c.Request.RemoteAddr,
 						c.Request.UserAgent(),
-						models.ReadWriteScope,
+						models.WriteScope,
 						models.UpdateUserAction,
 					)
 					go communications.Announce("session.magic", utils.H{
@@ -243,7 +243,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					actionToken := services.CreateAction(user, client,
 						c.Request.RemoteAddr,
 						c.Request.UserAgent(),
-						models.ReadWriteScope,
+						models.WriteScope,
 						models.UpdateUserAction,
 					)
 					go communications.Announce("session.magic", utils.H{

@@ -1,4 +1,4 @@
-package web
+package oauth
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -15,21 +14,21 @@ func tokenHandler(c *gin.Context) {
 	var grantType = c.PostForm("grant_type")
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := oauth.ClientAuthentication(authorizationBasic)
+	client := ClientAuthentication(authorizationBasic)
 	if client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",
 			"_message": "Cannot fulfill token request",
-			"error":    oauth.AccessDenied,
+			"error":    AccessDenied,
 		})
 		return
 	}
 
 	switch grantType {
 	// Authorization Code Grant
-	case oauth.AuthorizationCode:
-		result, err := oauth.AccessTokenRequest(utils.H{
+	case AuthorizationCode:
+		result, err := AccessTokenRequest(utils.H{
 			"grant_type":   grantType,
 			"code":         c.PostForm("code"),
 			"redirect_uri": c.PostForm("redirect_uri"),
@@ -55,8 +54,8 @@ func tokenHandler(c *gin.Context) {
 		})
 		return
 	// Refreshing an Access Token
-	case oauth.RefreshToken:
-		result, err := oauth.RefreshTokenRequest(utils.H{
+	case RefreshToken:
+		result, err := RefreshTokenRequest(utils.H{
 			"grant_type":    grantType,
 			"refresh_token": c.PostForm("refresh_token"),
 			"scope":         c.PostForm("scope"),
@@ -83,18 +82,18 @@ func tokenHandler(c *gin.Context) {
 		return
 	// Resource Owner Password Credentials Grant
 	// Client Credentials Grant
-	case oauth.Password, oauth.ClientCredentials:
+	case Password, ClientCredentials:
 		c.JSON(http.StatusMethodNotAllowed, utils.H{
 			"_status":  "error",
 			"_message": "Cannot fulfill token request",
-			"error":    oauth.UnsupportedGrantType,
+			"error":    UnsupportedGrantType,
 		})
 		return
 	default:
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "Cannot fulfill token request",
-			"error":    oauth.InvalidRequest,
+			"error":    InvalidRequest,
 		})
 		return
 	}
