@@ -21,9 +21,12 @@ const (
 	// ReadScope session scope
 	// This is used by confidential clients (they can only read user data)
 	ReadScope string = "read"
-	// ReadWriteScope session scope
+	// WriteScope session scope
 	// No client is allowed to hold this scope (they can't write user data)
-	ReadWriteScope string = "read_write"
+	WriteScope string = "write"
+	// OpenIDScope session scope
+	// This is used for OpenID Connect
+	OpenIDScope string = "openid"
 )
 
 // Session model/struct
@@ -46,7 +49,7 @@ type Session struct {
 
 func validScope(fl validator.FieldLevel) bool {
 	scope := fl.Field().String()
-	if scope != PublicScope && scope != ReadScope && scope != ReadWriteScope {
+	if scope != PublicScope && scope != ReadScope && scope != WriteScope && scope != OpenIDScope {
 		return false
 	}
 	return true

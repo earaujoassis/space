@@ -16,6 +16,7 @@ import (
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/utils"
 	"github.com/earaujoassis/space/internal/web"
+	"github.com/earaujoassis/space/internal/oauth"
 )
 
 // Server is used to start and serve the application (REST API + Web front-end)
@@ -65,6 +66,7 @@ func Server() {
 		}
 	})
 	web.ExposeRoutes(router)
+	oauth.ExposeRoutes(router)
 	restAPI := router.Group("/api")
 	api.ExposeRoutes(restAPI)
 	router.Run(fmt.Sprintf(":%v", config.GetEnvVar("PORT")))

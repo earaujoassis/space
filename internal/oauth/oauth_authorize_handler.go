@@ -1,4 +1,4 @@
-package web
+package oauth
 
 import (
 	"fmt"
@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -53,24 +52,24 @@ func authorizeHandler(c *gin.Context) {
 	if client.ID == 0 {
 		// REFACTOR This scenario is the trickiest one
 		// redirectURI = "/error"
-		// location = fmt.Sprintf("%s?error=%s&state=%s", redirectURI, oauth.UnauthorizedClient, state)
+		// location = fmt.Sprintf("%s?error=%s&state=%s", redirectURI, UnauthorizedClient, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": nil,
-			"ErrorCode": oauth.UnauthorizedClient,
+			"ErrorCode": UnauthorizedClient,
 		})
 		return
 	}
 
-	if scope != models.PublicScope && scope != models.ReadScope && scope != models.ReadWriteScope {
+	if scope != models.PublicScope && scope != models.ReadScope && scope != models.WriteScope && scope != models.OpenIDScope {
 		scope = models.PublicScope
 	}
 
 	switch responseType {
 	// Authorization Code Grant
-	case oauth.Code:
+	case Code:
 		activeSessions := services.ActiveSessionsForClient(client.ID, user.ID)
 		if c.Request.Method == "GET" && activeSessions == 0 {
 			c.HTML(http.StatusOK, "satellite", utils.H{
@@ -90,11 +89,11 @@ func authorizeHandler(c *gin.Context) {
 			if c.PostForm("access_denied") == "true" {
 				// In this scenario, the user requested to deny access; it's not the client application's fault
 				// The client application is safe, so the user may proceed (client application must handle this)
-				location = fmt.Sprintf(errorURI, redirectURI, oauth.AccessDenied, state)
+				location = fmt.Sprintf(errorURI, redirectURI, AccessDenied, state)
 				c.Redirect(http.StatusFound, location)
 				return
 			}
-			result, err := oauth.AuthorizationCodeGrant(utils.H{
+			result, err := AuthorizationCodeGrant(utils.H{
 				"response_type": responseType,
 				"client":        client,
 				"user":          user,
@@ -122,23 +121,23 @@ func authorizeHandler(c *gin.Context) {
 			c.String(http.StatusNotFound, "404 Not Found")
 		}
 	// Implicit Grant
-	case oauth.Token:
-		location = fmt.Sprintf(errorURI, redirectURI, oauth.UnsupportedResponseType, state)
+	case Token:
+		location = fmt.Sprintf(errorURI, redirectURI, UnsupportedResponseType, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": location,
-			"ErrorCode": oauth.UnsupportedResponseType,
+			"ErrorCode": UnsupportedResponseType,
 		})
 	default:
-		location = fmt.Sprintf(errorURI, redirectURI, oauth.InvalidRequest, state)
+		location = fmt.Sprintf(errorURI, redirectURI, InvalidRequest, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": location,
-			"ErrorCode": oauth.InvalidRequest,
+			"ErrorCode": InvalidRequest,
 		})
 	}
 }

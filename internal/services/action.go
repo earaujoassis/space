@@ -32,10 +32,10 @@ func ActionAuthentication(token string) models.Action {
 
 // ActionGrantsReadAbility checks if an action entry has read-ability
 func ActionGrantsReadAbility(action models.Action) bool {
-	return action.Scopes == models.ReadScope || action.Scopes == models.ReadWriteScope
+	return action.Scopes == models.ReadScope || action.Scopes == models.WriteScope || action.Scopes == models.OpenIDScope
 }
 
 // ActionGrantsWriteAbility checks if an action entry has write-ability
 func ActionGrantsWriteAbility(action models.Action) bool {
-	return action.Scopes == models.ReadWriteScope
+	return action.Scopes == models.WriteScope
 }
