@@ -21,10 +21,12 @@ func invalidRequestResult(state string) (utils.H, error) {
 	return errorResult(InvalidRequest, state)
 }
 
+//lint:ignore U1000 keep it for consistency
 func unauthorizedClientResult(state string) (utils.H, error) {
 	return errorResult(UnauthorizedClient, state)
 }
 
+//lint:ignore U1000 keep it for consistency
 func accessDeniedResult(state string) (utils.H, error) {
 	return errorResult(AccessDenied, state)
 }

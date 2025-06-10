@@ -37,7 +37,7 @@ func (c *OAuthTestClient) LoginUser(holder, password, passcode string) *TestResp
 	formData.Set("password", password)
 	formData.Set("passcode", passcode)
 	encoded := formData.Encode()
-	request, err := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
 	request.Header.Set("X-Requested-By", "SpaceApi")
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response, err := c.httpClient.Do(request)
