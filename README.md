@@ -81,7 +81,7 @@ $ open http://localhost:9000
 If you're planning to setup it for development, ideally you should run:
 
 ```sh
-$ scripts/dev-setup
+$ scripts/setup.sh
 $ go get github.com/mattn/goreman
 $ goreman start
 $ open http://localhost:9000
