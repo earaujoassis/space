@@ -34,10 +34,14 @@ tasks:
     desc: Unit tests for the backend application.
     cmds:
       - gotest -race -coverprofile=coverage.unit.out -coverpkg=./internal/... ./internal/...
+  test:acceptance:
+    desc: Acceptance tests for the backend application.
+    cmds:
+      - ginkgo ./test/acceptance...
   test:integration:
     desc: Integration tests for the backend application.
     cmds:
-      - ginkgo ./test/...
+      - go test ./test/integration/... -v
   test:coverage:
     desc: Generate test coverage report.
     cmds:

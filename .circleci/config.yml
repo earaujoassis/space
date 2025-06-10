@@ -16,22 +16,33 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
+      - setup_remote_docker:
+          version: default
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
           name: Install Dependencies
-          command: go mod download
+          command: |
+            go mod download
+            go install github.com/go-task/task/v3/cmd/task@latest
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
       - run:
-          name: Run tests and build binary
+          name: Run unit tests
           command: |
             mkdir -p /tmp/test-reports
-            gotestsum --junitfile /tmp/test-reports/unit-tests.xml
-            rm -rf cmd && mkdir -p cmd && CGO_ENABLED=0 go build -o cmd/ ./...
+            gotestsum --junitfile /tmp/test-reports/unit-tests.xml ./internal/...
+      - run:
+          name: Run integration tests
+          command: |
+            task test:integration
+      - run:
+          name: Build application code
+          command: |
+            task build
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
