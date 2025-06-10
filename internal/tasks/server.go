@@ -19,8 +19,8 @@ import (
 	"github.com/earaujoassis/space/internal/oauth"
 )
 
-// Server is used to start and serve the application (REST API + Web front-end)
-func Server() {
+// Expose all routes
+func Routes() *gin.Engine {
 	datastore.InitConnection()
 	gin.DisableConsoleColor()
 	router := gin.Default()
@@ -69,5 +69,12 @@ func Server() {
 	oauth.ExposeRoutes(router)
 	restAPI := router.Group("/api")
 	api.ExposeRoutes(restAPI)
+
+	return router
+}
+
+// Server is used to start and serve the application (REST API + Web front-end)
+func Server() {
+	router := Routes()
 	router.Run(fmt.Sprintf(":%v", config.GetEnvVar("PORT")))
 }
