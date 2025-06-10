@@ -42,10 +42,16 @@ type Config struct {
 var globalConfig Config
 var environment string
 
-func init() {
+// LoadEnvironment loads the environment from the SPACE_ENV env var;
+//
+//	it could be: development, testing, production
+func LoadEnvironment() {
 	environment = strings.ToLower(os.Getenv("SPACE_ENV"))
 	if environment == "" {
 		environment = "development"
+	}
+	if environment != "production" && environment != "testing" && environment != "development" {
+		environment = ""
 	}
 }
 
@@ -100,7 +106,13 @@ func LoadConfig() {
 	var loadFromEnvVarsFlag bool = false
 	var loadedFlag bool = false
 
-	if _, jErr := os.Stat(localConfigurationFile); jErr == nil {
+	LoadEnvironment()
+
+	if environment == "testing" {
+		loadFromEnvVarsFlag = true
+	}
+
+	if _, jErr := os.Stat(localConfigurationFile); !loadFromEnvVarsFlag && jErr == nil {
 		// .config.local.json exists
 		dataStream, err = os.ReadFile(localConfigurationFile)
 		if err != nil {
@@ -112,7 +124,7 @@ func LoadConfig() {
 		}
 		loadedFlag = true
 		logs.Propagatef(logs.Info, "Configuration obtained from %s; all good\n", localConfigurationFile)
-	} else if _, yErr := os.Stat(configurationStoreFile); yErr == nil && os.IsNotExist(jErr) {
+	} else if _, yErr := os.Stat(configurationStoreFile); !loadFromEnvVarsFlag && yErr == nil && os.IsNotExist(jErr) {
 		// .config.yml exists
 		globalService.LoadService(configurationStoreFile)
 		client, err = api.NewClient(&api.Config{

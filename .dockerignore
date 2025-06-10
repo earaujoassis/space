@@ -11,7 +11,6 @@ test/
 web/public/vendor
 web/public/css/*.css
 web/public/js/*.min.js
-.config.ci.json
 .config.local.sample.json
 .config.sample.yml
 .editorconfig
