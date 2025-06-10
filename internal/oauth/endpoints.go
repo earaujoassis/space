@@ -15,11 +15,11 @@ func ExposeRoutes(router *gin.Engine) {
 		endpoints.POST("/oauth/authorize", authorizeHandler)
 		endpoints.POST("/oauth/token", tokenHandler)
 		endpoints.POST("/oauth/revoke", revokeHandler)
-		endpoints.POST("/oauth/introspect", revokeHandler)
+		endpoints.POST("/oauth/introspect", introspectHandler)
 		endpoints.GET("/authorize", authorizeHandler)
 		endpoints.POST("/authorize", authorizeHandler)
 		endpoints.POST("/token", tokenHandler)
 		endpoints.POST("/revoke", revokeHandler)
-		endpoints.POST("/introspect", revokeHandler)
+		endpoints.POST("/introspect", introspectHandler)
 	}
 }
