@@ -39,7 +39,19 @@ func NewOAuthTestClient(baseURL string) *OAuthTestClient {
 	}
 }
 
+func (c *OAuthTestClient) ClearSession() {
+	options := &cookiejar.Options{
+		PublicSuffixList: publicsuffix.List,
+	}
+	jar, err := cookiejar.New(options)
+	if err != nil {
+		log.Fatalf("Error creating cookiejar: %s", err)
+	}
+	c.httpClient.Jar = jar
+}
+
 func (c *OAuthTestClient) StartSession(user *factory.User) {
+	c.ClearSession()
 	code, _ := totp.GenerateCode(user.CodeSecretKey, time.Now())
 	response := c.LoginUser(user.Username, user.Passphrase, code)
 	json := response.JSON
@@ -145,6 +157,18 @@ func (c *OAuthTestClient) PostTokenRefresh(clientBasicAuth, refreshToken, scope 
 	formData.Set("scope", scope)
 	encoded := formData.Encode()
 	requestUrl := fmt.Sprintf("%s/oauth/token", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}
+
+func (c *OAuthTestClient) PostIntrospect(clientBasicAuth, token string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("token", token)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oauth/introspect", c.baseURL)
 	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))

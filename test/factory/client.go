@@ -11,9 +11,10 @@ import (
 )
 
 type Client struct {
-	Name         string
-	Key          string
-	Secret       string
+	Name   string
+	Key    string
+	Secret string
+	Model  models.Client
 }
 
 func NewClient() *Client {
@@ -32,9 +33,10 @@ func NewClient() *Client {
 	client.UpdateSecret(clientSecret)
 	services.SaveClient(&client)
 	localClient := Client{
-		Name:          client.Name,
-		Key:           client.Key,
-		Secret:        clientSecret,
+		Name:   client.Name,
+		Key:    client.Key,
+		Secret: clientSecret,
+		Model:  client,
 	}
 	return &localClient
 }

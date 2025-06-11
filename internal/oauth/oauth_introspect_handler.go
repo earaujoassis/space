@@ -17,10 +17,12 @@ func introspectHandler(c *gin.Context) {
 	var token = c.PostForm("token")
 	var tokenTypeHint = c.PostForm("token_type_hint")
 	var session models.Session
+	var introspectType string
+	var client models.Client
 
 	baseURL := getBaseUrl(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	if client := ClientAuthentication(authorizationBasic); client.ID == 0 {
+	if client = ClientAuthentication(authorizationBasic); client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",
@@ -37,7 +39,6 @@ func introspectHandler(c *gin.Context) {
 			"error":    InvalidRequest,
 		})
 		return
-
 	}
 
 	if !security.ValidToken(token) {
@@ -52,12 +53,25 @@ func introspectHandler(c *gin.Context) {
 	switch tokenTypeHint {
 	case models.AccessToken:
 		session = services.FindSessionByToken(token, models.AccessToken)
+		introspectType = models.AccessToken
 	case models.RefreshToken:
 		session = services.FindSessionByToken(token, models.RefreshToken)
+		introspectType = models.RefreshToken
 	default:
 		session = services.FindSessionByToken(token, models.AccessToken)
+		introspectType = models.AccessToken
 		if session.ID == 0 {
 			session = services.FindSessionByToken(token, models.RefreshToken)
+			introspectType = models.RefreshToken
+		}
+	}
+
+	if session.ID == 0 {
+		session = services.FindSessionByToken(token, models.AccessToken)
+		introspectType = models.AccessToken
+		if session.ID == 0 {
+			session = services.FindSessionByToken(token, models.RefreshToken)
+			introspectType = models.RefreshToken
 		}
 	}
 
@@ -68,15 +82,21 @@ func introspectHandler(c *gin.Context) {
 		return
 	}
 
-	user := session.User
-	client := session.Client
+	if session.Client.ID != client.ID {
+		c.JSON(http.StatusOK, utils.H{
+			"active": false,
+		})
+		return
+	}
 
-	c.JSON(http.StatusOK, utils.H{
+	user := session.User
+	client = session.Client
+
+	introspectionData := utils.H{
 		"active": true,
 		"scope": session.Scopes,
 		"client_id": client.Key,
 		"username": user.Username,
-		"token_type": "Bearer",
 		"exp": session.ExpiresIn,
 		"iat": session.Moment,
 		// "nbf": (not before) not defined nor required
@@ -87,5 +107,11 @@ func introspectHandler(c *gin.Context) {
 		"user_id": user.PublicID,
 		"roles": []string{ "user" },
 		// "email": user.Email,
-	})
+	}
+
+	if introspectType == models.AccessToken {
+		introspectionData["token_type"] = "Bearer"
+	}
+
+	c.JSON(http.StatusOK, introspectionData)
 }
