@@ -52,7 +52,9 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 
 	/*
 	 * WARNING
-	 * It will grant access, but with a public-only scope
+	 * If the scope is not available for the Client,
+	 * it will grant access, but with a public-only scope.
+	 * So basically it downgrades the scope.
 	 */
 	if scope != "" && !strings.Contains(client.Scopes, scope) {
 		scope = models.PublicScope
