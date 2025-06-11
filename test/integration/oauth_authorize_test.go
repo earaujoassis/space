@@ -6,7 +6,7 @@ import (
 	"github.com/earaujoassis/space/test/factory"
 )
 
-func (s *OAuthProviderSuite) TestGetAuthorize() {
+func (s *OAuthProviderSuite) TestAuthorizeGrant() {
 	user := factory.NewUser()
 	client := factory.NewClient()
 
@@ -40,7 +40,7 @@ func (s *OAuthProviderSuite) TestGetAuthorize() {
 		response := s.Client.GetAuthorize("code", client.Key, "http://localhost/another/callback", "test-state")
 
 		s.Equal(400, response.StatusCode)
-		s.Contains(response.Body, "invalid_redirect_uri")
+		s.Contains(response.Body, "invalid_request")
 	})
 
 	s.Run("should display consent screen with valid parameters", func() {

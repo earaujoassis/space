@@ -47,7 +47,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	}
 
 	if !slices.Contains(client.RedirectURI, redirectURI) {
-		return invalidRedirectURIResult(state)
+		return invalidRequestResult(state)
 	}
 
 	/*

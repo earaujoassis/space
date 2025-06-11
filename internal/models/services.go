@@ -18,7 +18,7 @@ const (
 type Service struct {
 	Model
 	UUID         string `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
-	Name         string `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
+	Name         string `gorm:"not null;unique;index" validate:"required,min=3,max=50" json:"name"`
 	Description  string `json:"description"`
 	CanonicalURI string `gorm:"not null" validate:"required,http_url" json:"uri"`
 	LogoURI      string `json:"logo_uri"`

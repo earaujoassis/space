@@ -35,7 +35,7 @@ func tokenHandler(c *gin.Context) {
 			"client":       client,
 		})
 		if err != nil {
-			c.JSON(http.StatusMethodNotAllowed, utils.H{
+			c.JSON(http.StatusBadRequest, utils.H{
 				"_status":  "error",
 				"_message": "Cannot fulfill token request",
 				"error":    result["error"],
@@ -62,7 +62,7 @@ func tokenHandler(c *gin.Context) {
 			"client":        client,
 		})
 		if err != nil {
-			c.JSON(http.StatusMethodNotAllowed, utils.H{
+			c.JSON(http.StatusBadRequest, utils.H{
 				"_status":  "error",
 				"_message": "Cannot fulfill token request",
 				"error":    result["error"],
@@ -83,7 +83,7 @@ func tokenHandler(c *gin.Context) {
 	// Resource Owner Password Credentials Grant
 	// Client Credentials Grant
 	case Password, ClientCredentials:
-		c.JSON(http.StatusMethodNotAllowed, utils.H{
+		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "Cannot fulfill token request",
 			"error":    UnsupportedGrantType,
