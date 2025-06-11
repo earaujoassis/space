@@ -18,9 +18,8 @@ func tokenHandler(c *gin.Context) {
 	if client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"_status":  "error",
-			"_message": "Cannot fulfill token request",
-			"error":    AccessDenied,
+			"error":             InvalidClient,
+			"error_description": "Client authentication failed",
 		})
 		return
 	}
@@ -36,15 +35,11 @@ func tokenHandler(c *gin.Context) {
 		})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"_status":  "error",
-				"_message": "Cannot fulfill token request",
 				"error":    result["error"],
 			})
 			return
 		}
 		c.JSON(http.StatusOK, utils.H{
-			"_status":       "success",
-			"_message":      "Token granted",
 			"user_id":       result["user_id"],
 			"access_token":  result["access_token"],
 			"token_type":    result["token_type"],
@@ -63,15 +58,11 @@ func tokenHandler(c *gin.Context) {
 		})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"_status":  "error",
-				"_message": "Cannot fulfill token request",
 				"error":    result["error"],
 			})
 			return
 		}
 		c.JSON(http.StatusOK, utils.H{
-			"_status":       "success",
-			"_message":      "Token granted",
 			"user_id":       result["user_id"],
 			"access_token":  result["access_token"],
 			"token_type":    result["token_type"],
@@ -84,15 +75,12 @@ func tokenHandler(c *gin.Context) {
 	// Client Credentials Grant
 	case Password, ClientCredentials:
 		c.JSON(http.StatusBadRequest, utils.H{
-			"_status":  "error",
-			"_message": "Cannot fulfill token request",
 			"error":    UnsupportedGrantType,
+
 		})
 		return
 	default:
 		c.JSON(http.StatusBadRequest, utils.H{
-			"_status":  "error",
-			"_message": "Cannot fulfill token request",
 			"error":    InvalidRequest,
 		})
 		return

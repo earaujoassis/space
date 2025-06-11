@@ -175,3 +175,15 @@ func (c *OAuthTestClient) PostIntrospect(clientBasicAuth, token string) *TestRes
 	response, err := c.httpClient.Do(request)
 	return parseResponse(response, err)
 }
+
+func (c *OAuthTestClient) PostRevoke(clientBasicAuth, token string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("token", token)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oauth/revoke", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}

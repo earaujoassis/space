@@ -23,29 +23,22 @@ func revokeHandler(c *gin.Context) {
 	if client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"_status":  "error",
-			"_message": "Cannot fulfill token request",
-			"error":    AccessDenied,
+			"error":             InvalidClient,
+			"error_description": "Client authentication failed",
 		})
 		return
 	}
 
-	if tokenTypeHint != models.AccessToken && tokenTypeHint != models.RefreshToken && tokenTypeHint != "" {
+	if token == "" {
 		c.JSON(http.StatusBadRequest, utils.H{
-			"_status":  "error",
-			"_message": "Missing or invalid token hint parameter",
-			"error":    InvalidRequest,
+			"error":             InvalidClient,
+			"error_description": "Missing token parameter",
 		})
 		return
-
 	}
 
 	if !security.ValidToken(token) {
-		c.JSON(http.StatusBadRequest, utils.H{
-			"_status":  "error",
-			"_message": "Session instropection failed",
-			"error":    InvalidRequest,
-		})
+		c.Status(http.StatusOK)
 		return
 	}
 
@@ -54,7 +47,9 @@ func revokeHandler(c *gin.Context) {
 		session = services.FindSessionByToken(token, models.AccessToken)
 	case models.RefreshToken:
 		session = services.FindSessionByToken(token, models.RefreshToken)
-	default:
+	}
+
+	if session.ID == 0 {
 		session = services.FindSessionByToken(token, models.AccessToken)
 		if session.ID == 0 {
 			session = services.FindSessionByToken(token, models.RefreshToken)

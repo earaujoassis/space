@@ -12,8 +12,6 @@ func (s *OAuthProviderSuite) TestTokenUnsupportedGrants() {
 		json := response.JSON
 
 		s.Equal(400, response.StatusCode)
-		s.Contains(response.Body, "unsupported_grant_type")
-		s.Equal("error", json["_status"], )
 		s.Equal("unsupported_grant_type", json["error"])
 	})
 
@@ -22,8 +20,6 @@ func (s *OAuthProviderSuite) TestTokenUnsupportedGrants() {
 		json := response.JSON
 
 		s.Equal(400, response.StatusCode)
-		s.Contains(response.Body, "unsupported_grant_type")
-		s.Equal("error", json["_status"])
 		s.Equal("unsupported_grant_type", json["error"])
 	})
 }

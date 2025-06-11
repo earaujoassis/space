@@ -27,8 +27,6 @@ func (s *OAuthProviderSuite) TestTokenGrant() {
 		json := response.JSON
 
 		s.Equal(400, response.StatusCode)
-		s.Contains(response.Body, "invalid_grant")
-		s.Equal("error", json["_status"])
 		s.Equal("invalid_grant", json["error"])
 	})
 
@@ -38,8 +36,6 @@ func (s *OAuthProviderSuite) TestTokenGrant() {
 		json := response.JSON
 
 		s.Equal(400, response.StatusCode)
-		s.Contains(response.Body, "invalid_grant")
-		s.Equal("error", json["_status"])
 		s.Equal("invalid_grant", json["error"])
 	})
 
@@ -54,7 +50,6 @@ func (s *OAuthProviderSuite) TestTokenGrant() {
 		json := response.JSON
 
 		s.Equal(200, response.StatusCode)
-		s.Contains(response.Body, "success")
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))

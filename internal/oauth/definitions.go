@@ -11,6 +11,8 @@ const (
 
 	// InvalidRequest error type
 	InvalidRequest string = "invalid_request"
+	// InvalidClient error type
+	InvalidClient string = "invalid_client"
 	// UnauthorizedClient error type
 	UnauthorizedClient string = "unauthorized_client"
 	// AccessDenied error type
