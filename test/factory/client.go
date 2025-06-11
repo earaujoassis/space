@@ -7,6 +7,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 type Client struct {
@@ -36,4 +37,8 @@ func NewClient() *Client {
 		Secret:        clientSecret,
 	}
 	return &localClient
+}
+
+func (c *Client) BasicAuthEncode() string {
+	return utils.BasicAuthEncode(c.Key, c.Secret)
 }

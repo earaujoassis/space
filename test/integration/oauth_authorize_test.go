@@ -6,7 +6,7 @@ import (
 	"github.com/earaujoassis/space/test/factory"
 )
 
-func (s *OAuthProviderSuite) TestGetAuthorization() {
+func (s *OAuthProviderSuite) TestGetAuthorize() {
 	user := factory.NewUser()
 	client := factory.NewClient()
 
@@ -16,35 +16,35 @@ func (s *OAuthProviderSuite) TestGetAuthorization() {
 	})
 
 	s.Run("should return error if missing response_type", func() {
-		response := s.Client.GetAuthorization("", "test-client", "http://localhost/callback", "test-state")
+		response := s.Client.GetAuthorize("", "test-client", "http://localhost/callback", "test-state")
 
 		s.Equal(400, response.StatusCode)
 		s.Contains(response.Body, "invalid_request")
 	})
 
 	s.Run("should return error if missing client_id", func() {
-		response := s.Client.GetAuthorization("code", "", "http://localhost/callback", "test-state")
+		response := s.Client.GetAuthorize("code", "", "http://localhost/callback", "test-state")
 
 		s.Equal(400, response.StatusCode)
 		s.Contains(response.Body, "invalid_request")
 	})
 
 	s.Run("should return error if missing redirect_uri", func() {
-		response := s.Client.GetAuthorization("code", "test-client", "", "test-state")
+		response := s.Client.GetAuthorize("code", "test-client", "", "test-state")
 
 		s.Equal(400, response.StatusCode)
 		s.Contains(response.Body, "invalid_request")
 	})
 
 	s.Run("should return error if redirect_uri is different from client setup", func() {
-		response := s.Client.GetAuthorization("code", client.Key, "http://localhost/another/callback", "test-state")
+		response := s.Client.GetAuthorize("code", client.Key, "http://localhost/another/callback", "test-state")
 
 		s.Equal(400, response.StatusCode)
 		s.Contains(response.Body, "invalid_redirect_uri")
 	})
 
 	s.Run("should display consent screen with valid parameters", func() {
-		response := s.Client.GetAuthorization("code", client.Key, "http://localhost/callback", "test-state")
+		response := s.Client.GetAuthorize("code", client.Key, "http://localhost/callback", "test-state")
 
 		s.Equal(200, response.StatusCode)
 		s.Contains(response.Body, client.Name)
@@ -52,7 +52,7 @@ func (s *OAuthProviderSuite) TestGetAuthorization() {
 	})
 
 	s.Run("should redirect to callback if access granted", func() {
-		response := s.Client.PostAuthorization("code", client.Key, "http://localhost/callback", "test-state", true)
+		response := s.Client.PostAuthorize("code", client.Key, "http://localhost/callback", "test-state", true)
 
 		s.Equal(302, response.StatusCode)
 		s.True(strings.HasPrefix(response.Location, "http://localhost/callback"))
@@ -63,7 +63,7 @@ func (s *OAuthProviderSuite) TestGetAuthorization() {
 	})
 
 	s.Run("should redirect to index if access not granted", func() {
-		response := s.Client.PostAuthorization("code", client.Key, "http://localhost/callback", "test-state", false)
+		response := s.Client.PostAuthorize("code", client.Key, "http://localhost/callback", "test-state", false)
 
 		s.Equal(302, response.StatusCode)
 		s.True(strings.HasPrefix(response.Location, "http://localhost/callback?error="))
