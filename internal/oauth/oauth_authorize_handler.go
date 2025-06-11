@@ -74,7 +74,7 @@ func authorizeHandler(c *gin.Context) {
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": nil,
-			"ErrorCode": InvalidRedirectURI,
+			"ErrorCode": InvalidRequest,
 		})
 		return
 	}

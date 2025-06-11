@@ -26,7 +26,7 @@ const (
 type Client struct {
 	Model
 	UUID         string         `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
-	Name         string         `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
+	Name         string         `gorm:"not null;unique;index" validate:"required,min=3,max=50" json:"name"`
 	Description  string         `json:"description"`
 	Key          string         `gorm:"not null;unique;index" json:"-"`
 	Secret       string         `gorm:"not null" json:"-"`

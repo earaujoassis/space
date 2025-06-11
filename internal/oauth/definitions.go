@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	// Error types
+	// RFC 6749 Error types
 
 	// InvalidRequest error type
 	InvalidRequest string = "invalid_request"
@@ -27,12 +27,13 @@ const (
 	UnsupportedGrantType string = "unsupported_grant_type"
 	// InvalidGrant error type
 	InvalidGrant string = "invalid_grant"
+
+	// OpenID Connect / Extensions Error types
+
 	// InvalidSession error type
 	InvalidSession string = "invalid_session"
-	// InvalidRedirectURI error type
-	InvalidRedirectURI string = "invalid_redirect_uri"
 
-	// Grant types
+	// RFC 6749 Grant types
 
 	// AuthorizationCode grant type
 	AuthorizationCode string = "authorization_code"
@@ -43,7 +44,7 @@ const (
 	// ClientCredentials grant type
 	ClientCredentials string = "client_credentials"
 
-	// Response types
+	// RFC 6749 Response types
 
 	// Code response type
 	Code string = "code"

@@ -125,3 +125,17 @@ func (c *OAuthTestClient) PostToken(clientBasicAuth, grantType string) *TestResp
 	response, err := c.httpClient.Do(request)
 	return parseResponse(response, err)
 }
+
+func (c *OAuthTestClient) PostTokenComplete(clientBasicAuth, grantType, code, redirectURI string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("grant_type", grantType)
+	formData.Set("code", code)
+	formData.Set("redirect_uri", redirectURI)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oauth/token", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}

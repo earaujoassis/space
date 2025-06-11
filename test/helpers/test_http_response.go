@@ -68,3 +68,8 @@ func (r *TestResponse) HasKeyInQuery(key string) bool {
 	_, ok := r.Query[key]
 	return ok
 }
+
+func (r *TestResponse) HasKeyInJSON(key string) bool {
+	_, ok := r.JSON[key]
+	return ok
+}

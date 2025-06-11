@@ -148,7 +148,7 @@ func ExposeRoutes(router *gin.Engine) {
 
 			if scope == "" || grantType == "" || code == "" || clientID == "" {
 				// Original response:
-				// c.String(http.StatusMethodNotAllowed, "Missing required parameters")
+				// c.String(http.StatusBadRequest, "Missing required parameters")
 				c.Redirect(http.StatusFound, "/signin")
 				return
 			}

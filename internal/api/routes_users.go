@@ -339,7 +339,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		usersRoutes.DELETE("/:user_id/deactivate", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			c.String(http.StatusMethodNotAllowed, "Not implemented")
+			c.String(http.StatusNotImplemented, "Not implemented")
 		})
 
 		// Requires X-Requested-By and Origin (same-origin policy)
