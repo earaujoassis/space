@@ -98,20 +98,6 @@ func main() {
 			},
 		},
 		{
-			Name:  "client",
-			Usage: "Manage client applications",
-			Subcommands: []cli.Command{
-				{
-					Name:  "create",
-					Usage: "Create a new client application",
-					Action: func(c *cli.Context) error {
-						tasks.CreateClient()
-						return nil
-					},
-				},
-			},
-		},
-		{
 			Name:  "feature",
 			Usage: "Toggle feature flags ON/OFF",
 			Action: func(c *cli.Context) error {
