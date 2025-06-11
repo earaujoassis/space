@@ -25,27 +25,30 @@ func introspectHandler(c *gin.Context) {
 	if client = ClientAuthentication(authorizationBasic); client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"_status":  "error",
-			"_message": "Cannot fulfill token request",
-			"error":    AccessDenied,
+			"error":             InvalidClient,
+			"error_description": "Client authentication failed",
 		})
 		return
 	}
 
-	if tokenTypeHint != models.AccessToken && tokenTypeHint != models.RefreshToken && tokenTypeHint != "" {
+	if token == "" {
 		c.JSON(http.StatusBadRequest, utils.H{
-			"_status":  "error",
-			"_message": "Missing or invalid token hint parameter",
-			"error":    InvalidRequest,
+			"error":             InvalidClient,
+			"error_description": "Missing token parameter",
 		})
 		return
 	}
 
 	if !security.ValidToken(token) {
-		c.JSON(http.StatusBadRequest, utils.H{
-			"_status":  "error",
-			"_message": "Session instropection failed",
-			"error":    InvalidRequest,
+		c.JSON(http.StatusOK, utils.H{
+			"active": false,
+		})
+		return
+	}
+
+	if !security.ValidToken(token) {
+		c.JSON(http.StatusOK, utils.H{
+			"active": false,
 		})
 		return
 	}
@@ -57,13 +60,6 @@ func introspectHandler(c *gin.Context) {
 	case models.RefreshToken:
 		session = services.FindSessionByToken(token, models.RefreshToken)
 		introspectType = models.RefreshToken
-	default:
-		session = services.FindSessionByToken(token, models.AccessToken)
-		introspectType = models.AccessToken
-		if session.ID == 0 {
-			session = services.FindSessionByToken(token, models.RefreshToken)
-			introspectType = models.RefreshToken
-		}
 	}
 
 	if session.ID == 0 {
@@ -75,14 +71,7 @@ func introspectHandler(c *gin.Context) {
 		}
 	}
 
-	if session.ID == 0 {
-		c.JSON(http.StatusOK, utils.H{
-			"active": false,
-		})
-		return
-	}
-
-	if session.Client.ID != client.ID {
+	if session.ID == 0 || session.Client.ID != client.ID {
 		c.JSON(http.StatusOK, utils.H{
 			"active": false,
 		})

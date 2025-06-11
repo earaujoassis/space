@@ -4,12 +4,10 @@ import (
 	"github.com/earaujoassis/space/test/factory"
 )
 
-func (s *OAuthProviderSuite) TestTokenIntrospect() {
+func (s *OAuthProviderSuite) TestTokenRevoke() {
 	var accessToken, refreshToken string
 	client := factory.NewClient()
-	clientModel := client.Model
 	user := factory.NewUser()
-	userModel := user.Model
 
 	s.Run("should successfully retrieve tokens", func() {
 		s.Client.StartSession(user)
@@ -36,22 +34,18 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		refreshToken = json["refresh_token"].(string)
 	})
 
-	s.Run("should return active:false if attempting to introspect token through another client", func() {
+	s.Run("should return 200 Ok if attempting to revoke token through another client", func() {
 		second_client := factory.NewClient()
-		response := s.Client.PostIntrospect(second_client.BasicAuthEncode(), accessToken)
-		json := response.JSON
+		response := s.Client.PostRevoke(second_client.BasicAuthEncode(), accessToken)
 
 		s.Equal(200, response.StatusCode)
-		s.Equal(false, json["active"])
 
-		response = s.Client.PostIntrospect(second_client.BasicAuthEncode(), refreshToken)
-		json = response.JSON
+		response = s.Client.PostRevoke(second_client.BasicAuthEncode(), refreshToken)
 
 		s.Equal(200, response.StatusCode)
-		s.Equal(false, json["active"])
 	})
 
-	s.Run("should return success if all parameters are correct", func() {
+	s.Run("should return 200 Ok if all parameters are correct", func() {
 		response := s.Client.PostAuthorize(Code, client.Key, "http://localhost/callback", "test-state", true)
 
 		s.Equal(302, response.StatusCode)
@@ -71,26 +65,12 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		accessToken = json["access_token"].(string)
 		refreshToken = json["refresh_token"].(string)
 
-		response = s.Client.PostIntrospect(client.BasicAuthEncode(), accessToken)
-		json = response.JSON
+		response = s.Client.PostRevoke(client.BasicAuthEncode(), accessToken)
 
 		s.Equal(200, response.StatusCode)
-		s.Equal(true, json["active"])
-		s.Equal("Bearer", json["token_type"])
-		s.Equal(clientModel.Key, json["client_id"])
-		s.Equal(userModel.Username, json["username"])
-		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 
-		response = s.Client.PostIntrospect(client.BasicAuthEncode(), refreshToken)
-		json = response.JSON
+		response = s.Client.PostRevoke(client.BasicAuthEncode(), refreshToken)
 
 		s.Equal(200, response.StatusCode)
-		s.Equal(true, json["active"])
-		s.Equal(nil, json["token_type"])
-		s.Equal(clientModel.Key, json["client_id"])
-		s.Equal(userModel.Username, json["username"])
-		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 	})
 }
