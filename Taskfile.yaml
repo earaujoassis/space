@@ -1,6 +1,6 @@
 version: '3'
 
-dotenv: ['.env']
+# dotenv: ['.env']
 
 tasks:
   setup:
@@ -29,11 +29,12 @@ tasks:
     cmds:
       - task: test:unit
       - task: test:integration
-      - task: test:coverage
+      - task: test:report
   test:unit:
     desc: Unit tests for the backend application.
     cmds:
-      - gotest -race -coverprofile=coverage.unit.out -coverpkg=./internal/... ./internal/...
+      - mkdir -p tmp/
+      - gotestsum --format-icons hivis --format pkgname-and-test-fails --junitfile tmp/unit-tests.xml -- -coverprofile=tmp/cover.unit.out ./internal/...
   test:acceptance:
     desc: Acceptance tests for the backend application.
     cmds:
@@ -41,11 +42,16 @@ tasks:
   test:integration:
     desc: Integration tests for the backend application.
     cmds:
-      - go test ./test/integration/... -v
-  test:coverage:
+      - mkdir -p tmp/
+      - gotestsum --format-icons hivis --format pkgname-and-test-fails --junitfile tmp/integration-tests.xml -- -coverprofile=tmp/cover.integration.out ./test/integration/...
+  test:report:
     desc: Generate test coverage report.
     cmds:
-      - go tool cover -html=coverage.unit.out -o coverage.unit.html
+      - rm -rf tmp/test-results && mkdir -p tmp/test-results
+      - cp tmp/unit-tests.xml tmp/test-results
+      - cp tmp/integration-tests.xml tmp/test-results
+      - allure generate tmp/test-results --output tmp/test-report --clean
+      - echo "Run 'allure serve tmp/report' to open report"
   lint:
     desc: Lint go package (this repository package)
     cmds:

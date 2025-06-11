@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -13,6 +14,24 @@ type TestResponse struct {
 	Headers    http.Header
 	Location   string
 	JSON       map[string]interface{}
+	Query      map[string]string
+}
+
+func parseQueryString(rawURL string) map[string]string {
+    result := make(map[string]string)
+
+    u, err := url.Parse(rawURL)
+    if err != nil {
+        return result
+    }
+
+    for key, values := range u.Query() {
+        if len(values) > 0 {
+            result[key] = values[0]
+        }
+    }
+
+    return result
 }
 
 func parseResponse(response *http.Response, err error) *TestResponse {
@@ -38,5 +57,14 @@ func parseResponse(response *http.Response, err error) *TestResponse {
 		}
 	}
 
+	if result.Location != "" {
+		result.Query = parseQueryString(result.Location)
+	}
+
 	return result
+}
+
+func (r *TestResponse) HasKeyInQuery(key string) bool {
+	_, ok := r.Query[key]
+	return ok
 }

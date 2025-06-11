@@ -21,8 +21,7 @@ web/public/js/*.min.js
 .tool-versions
 docker-compose.yml
 Dockerfile
-c.out
-coverage.*
+tmp/
 *.log
 LICENSE
 Procfile
