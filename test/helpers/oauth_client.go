@@ -88,7 +88,6 @@ func (c *OAuthTestClient) GetAuthorize(responseType, clientID, redirectURI, stat
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
 	params.Set("state", state)
-
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	resp, err := c.httpClient.Get(authURL)
 	return parseResponse(resp, err)
@@ -100,7 +99,6 @@ func (c *OAuthTestClient) PostAuthorize(responseType, clientID, redirectURI, sta
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
 	params.Set("state", state)
-
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	if authorize {
 		resp, err := c.httpClient.Post(authURL, "application/x-www-form-urlencoded", strings.NewReader(""))
@@ -131,6 +129,20 @@ func (c *OAuthTestClient) PostTokenComplete(clientBasicAuth, grantType, code, re
 	formData.Set("grant_type", grantType)
 	formData.Set("code", code)
 	formData.Set("redirect_uri", redirectURI)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oauth/token", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}
+
+func (c *OAuthTestClient) PostTokenRefresh(clientBasicAuth, refreshToken, scope string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("grant_type", "refresh_token")
+	formData.Set("refresh_token", refreshToken)
+	formData.Set("scope", scope)
 	encoded := formData.Encode()
 	requestUrl := fmt.Sprintf("%s/oauth/token", c.baseURL)
 	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
