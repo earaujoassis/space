@@ -14,6 +14,7 @@ type User struct {
 	Email         string
 	Passphrase    string
 	CodeSecretKey string
+	Model         models.User
 }
 
 func NewUser() *User {
@@ -36,6 +37,7 @@ func NewUser() *User {
 		Email:         user.Email,
 		Passphrase:    passphrase,
 		CodeSecretKey: codeSecretKey,
+		Model: user,
 	}
 	return &localUser
 }
