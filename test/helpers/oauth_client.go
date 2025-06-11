@@ -6,7 +6,13 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"time"
 	"strings"
+
+	"golang.org/x/net/publicsuffix"
+	"github.com/pquerna/otp/totp"
+
+	"github.com/earaujoassis/space/test/factory"
 )
 
 type OAuthTestClient struct {
@@ -15,7 +21,10 @@ type OAuthTestClient struct {
 }
 
 func NewOAuthTestClient(baseURL string) *OAuthTestClient {
-	jar, err := cookiejar.New(nil)
+	options := &cookiejar.Options{
+		PublicSuffixList: publicsuffix.List,
+	}
+	jar, err := cookiejar.New(options)
 	if err != nil {
 		log.Fatalf("Error creating cookiejar: %s", err)
 	}
@@ -44,14 +53,63 @@ func (c *OAuthTestClient) LoginUser(holder, password, passcode string) *TestResp
 	return parseResponse(response, err)
 }
 
-func (c *OAuthTestClient) GetAuthorization(responseType, clientID, redirectURI string) *TestResponse {
+func (c *OAuthTestClient) GetAuthorization(responseType, clientID, redirectURI, state string) *TestResponse {
 	params := url.Values{}
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
-	params.Set("state", "test-state")
+	params.Set("state", state)
 
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	resp, err := c.httpClient.Get(authURL)
 	return parseResponse(resp, err)
+}
+
+func (c *OAuthTestClient) PostAuthorization(responseType, clientID, redirectURI, state string, authorize bool) *TestResponse {
+	params := url.Values{}
+	params.Set("response_type", responseType)
+	params.Set("client_id", clientID)
+	params.Set("redirect_uri", redirectURI)
+	params.Set("state", state)
+
+	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
+	if authorize {
+		resp, err := c.httpClient.Post(authURL, "application/x-www-form-urlencoded", strings.NewReader(""))
+		return parseResponse(resp, err)
+	} else {
+		formData := url.Values{}
+		formData.Set("access_denied", "true")
+		encoded := formData.Encode()
+		resp, err := c.httpClient.Post(authURL, "application/x-www-form-urlencoded", strings.NewReader(encoded))
+		return parseResponse(resp, err)
+	}
+}
+
+func (c *OAuthTestClient) StartSession(user *factory.User) {
+	code, _ := totp.GenerateCode(user.CodeSecretKey, time.Now())
+	response := c.LoginUser(user.Username, user.Passphrase, code)
+	json := response.JSON
+	location := c.baseURL +
+		fmt.Sprintf("%s", json["redirect_uri"]) +
+		fmt.Sprintf("?client_id=%s", json["client_id"]) +
+		fmt.Sprintf("&code=%s", json["code"]) +
+		fmt.Sprintf("&grant_type=%s", json["grant_type"]) +
+		fmt.Sprintf("&scope=%s", json["scope"]) +
+		fmt.Sprintf("&state=%s", json["state"])
+	resp, _ := c.httpClient.Get(location)
+	u, _ := url.Parse(c.baseURL)
+	c.httpClient.Jar.SetCookies(u, resp.Cookies())
+}
+
+func (c *OAuthTestClient) HasSessionCookie() bool {
+	u, _ := url.Parse(c.baseURL)
+	cookies := c.httpClient.Jar.Cookies(u)
+
+	for _, cookie := range cookies {
+		if cookie.Name == "space.session" {
+			return cookie.Value != ""
+		}
+	}
+
+	return false
 }

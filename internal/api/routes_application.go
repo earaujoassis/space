@@ -23,7 +23,7 @@ func exposeApplicationRoutes(router *gin.RouterGroup) {
 		// Requires X-Requested-By and Origin (same-origin policy)
 		applicationRoutes.GET("/bootstrap", requiresConformance, func(c *gin.Context) {
 			session := sessions.Default(c)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			if userPublicID == nil {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",

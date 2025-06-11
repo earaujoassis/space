@@ -8,8 +8,7 @@ import (
 )
 
 func TestEnvironment(t *testing.T) {
-	externalEnvironment := os.Getenv("SPACE_ENV")
-	assert.Equal(t, "", externalEnvironment, "SPACE_ENV is unset")
+	os.Unsetenv("SPACE_ENV")
 	assert.Equal(t, "", Environment(), "environment is empty")
 	os.Setenv("SPACE_ENV", "development")
 	LoadEnvironment()

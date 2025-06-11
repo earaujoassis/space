@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ func authorizeHandler(c *gin.Context) {
 	var state string
 
 	session := sessions.Default(c)
-	userPublicID := session.Get("userPublicID")
+	userPublicID := session.Get("user_public_id")
 	nextPath := url.QueryEscape(fmt.Sprintf("%s?%s", c.Request.URL.Path, c.Request.URL.RawQuery))
 	if userPublicID == nil {
 		location = fmt.Sprintf("/signin?_=%s", nextPath)
@@ -31,7 +32,7 @@ func authorizeHandler(c *gin.Context) {
 	}
 	user := services.FindUserByPublicID(userPublicID.(string))
 	if user.ID == 0 {
-		session.Delete("userPublicID")
+		session.Delete("user_public_id")
 		session.Save()
 		location = fmt.Sprintf("/signin?_=%s", nextPath)
 		c.Redirect(http.StatusFound, location)
@@ -44,8 +45,13 @@ func authorizeHandler(c *gin.Context) {
 	scope = c.Query("scope")
 	state = c.Query("state")
 
-	if redirectURI == "" {
-		redirectURI = "/error"
+	if responseType == "" || clientID == "" || redirectURI == "" {
+		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
+			"Title":     " - Authorization Error",
+			"Internal":  true,
+			"ProceedTo": nil,
+			"ErrorCode": InvalidRequest,
+		})
 	}
 
 	client := services.FindClientByKey(clientID)
@@ -59,6 +65,16 @@ func authorizeHandler(c *gin.Context) {
 			"Internal":  true,
 			"ProceedTo": nil,
 			"ErrorCode": UnauthorizedClient,
+		})
+		return
+	}
+
+	if !slices.Contains(client.RedirectURI, redirectURI) {
+		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
+			"Title":     " - Authorization Error",
+			"Internal":  true,
+			"ProceedTo": nil,
+			"ErrorCode": InvalidRedirectURI,
 		})
 		return
 	}

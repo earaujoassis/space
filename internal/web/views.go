@@ -120,9 +120,9 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/signout", func(c *gin.Context) {
 			session := sessions.Default(c)
 
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			if userPublicID != nil {
-				session.Delete("userPublicID")
+				session.Delete("user_public_id")
 				session.Save()
 			}
 
@@ -132,7 +132,7 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/session", func(c *gin.Context) {
 			session := sessions.Default(c)
 
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			if userPublicID != nil {
 				c.Redirect(http.StatusFound, "/")
 				return
@@ -162,7 +162,7 @@ func ExposeRoutes(router *gin.Engine) {
 			if client.Key == clientID && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
 				grantToken := services.FindSessionByToken(code, models.GrantToken)
 				if grantToken.ID != 0 {
-					session.Set("userPublicID", grantToken.User.PublicID)
+					session.Set("user_public_id", grantToken.User.PublicID)
 					session.Save()
 					services.InvalidateSession(grantToken)
 					c.Redirect(http.StatusFound, nextPath)
