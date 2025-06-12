@@ -26,10 +26,10 @@ const (
 type Client struct {
 	Model
 	UUID         string         `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
-	Name         string         `gorm:"not null;unique;index" validate:"required,min=3,max=20" json:"name"`
+	Name         string         `gorm:"not null;unique;index" validate:"required,min=3,max=50" json:"name"`
 	Description  string         `json:"description"`
 	Key          string         `gorm:"not null;unique;index" json:"-"`
-	Secret       string         `gorm:"not null" validate:"required" json:"-"`
+	Secret       string         `gorm:"not null" json:"-"`
 	Scopes       string         `gorm:"not null" validate:"required,restrict" json:"scopes"`
 	CanonicalURI pq.StringArray `gorm:"type:text[];not null" validate:"required,canonical" json:"uri"`
 	RedirectURI  pq.StringArray `gorm:"type:text[];not null" validate:"required,redirect" json:"redirect"`
@@ -135,6 +135,7 @@ func (client *Client) BeforeSave(tx *gorm.DB) error {
 func (client *Client) BeforeCreate(tx *gorm.DB) error {
 	client.UUID = generateUUID()
 	client.Key = GenerateRandomString(32)
+	client.Secret = GenerateRandomString(64)
 	if crypted, err := bcrypt.GenerateFromPassword([]byte(client.Secret), bcrypt.DefaultCost); err == nil {
 		client.Secret = string(crypted)
 	} else {

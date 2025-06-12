@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -16,10 +15,11 @@ import (
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/utils"
 	"github.com/earaujoassis/space/internal/web"
+	"github.com/earaujoassis/space/internal/oauth"
 )
 
-// Server is used to start and serve the application (REST API + Web front-end)
-func Server() {
+// Expose all routes
+func Routes() *gin.Engine {
 	datastore.InitConnection()
 	gin.DisableConsoleColor()
 	router := gin.Default()
@@ -33,7 +33,7 @@ func Server() {
 	router.Use(func(c *gin.Context) {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {
-				defer logs.Propagatef(logs.Error, "%+v\n%s\n", errors.New(fmt.Sprintf("%v", rec)), string(debug.Stack()))
+				defer logs.Propagatef(logs.Error, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
 				if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",
@@ -65,7 +65,15 @@ func Server() {
 		}
 	})
 	web.ExposeRoutes(router)
+	oauth.ExposeRoutes(router)
 	restAPI := router.Group("/api")
 	api.ExposeRoutes(restAPI)
+
+	return router
+}
+
+// Server is used to start and serve the application (REST API + Web front-end)
+func Server() {
+	router := Routes()
 	router.Run(fmt.Sprintf(":%v", config.GetEnvVar("PORT")))
 }

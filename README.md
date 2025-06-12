@@ -26,14 +26,25 @@ supports it.
 
 It is not planned to implement all authorisation methods described in RFC
 6749 but section 4.1 only, "Authorization Code Grant". As we prepare to OAuth
-2.1, and following RFC 7636 "Proof Key for Code Exchange by OAuth Public
-Clients", RFC 9700 "Best Current Practice for OAuth 2.0 Security", and the
-drafts for OAuth 2.1 and "OAuth 2.0 for Browser-Based Applications", the
-methods for "Implicit Grant", "Resource Owner Password Credentials Grant",
-and "Client Credentials Grant" won't be implemented.
+2.1, and following [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636) "Proof
+Key for Code Exchange by OAuth Public Clients",
+[RFC 9700](https://www.ietf.org/rfc/rfc9700.html) "Best Current Practice for
+OAuth 2.0 Security", and the drafts for OAuth 2.1 and "OAuth 2.0 for
+Browser-Based Applications", the methods for "Implicit Grant", "Resource
+Owner Password Credentials Grant", and "Client Credentials Grant" won't be
+implemented.
 
 Space is based on a set of [feature flags](docs/feature-gate.md)
-enabled/disabled through the Redis store.
+enabled/disabled through a Redis store.
+
+### Implemented RFCs
+
+- [RFC 6749](https://tools.ietf.org/html/rfc6749): The OAuth 2.0 Authorization Framework
+- [RFC 6750](https://datatracker.ietf.org/doc/html/rfc6750): The OAuth 2.0 Authorization Framework: Bearer Token Usage
+- [RFC 9700](https://www.ietf.org/rfc/rfc9700.html): Best Current Practice for OAuth 2.0 Security
+- [RFC 7009](https://datatracker.ietf.org/doc/html/rfc7009): OAuth 2.0 Token Revocation
+- [RFC 7662](https://datatracker.ietf.org/doc/html/rfc7662): OAuth 2.0 Token Introspection
+- [RFC 8414](https://datatracker.ietf.org/doc/html/rfc8414): OAuth 2.0 Authorization Server Metadata
 
 ## Setup & running
 
@@ -70,7 +81,7 @@ $ open http://localhost:9000
 If you're planning to setup it for development, ideally you should run:
 
 ```sh
-$ scripts/dev-setup
+$ scripts/setup.sh
 $ go get github.com/mattn/goreman
 $ goreman start
 $ open http://localhost:9000

@@ -15,7 +15,7 @@ import (
 
 // exposeServicesRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the REST API escope, for the services resource
+//	in the REST API scope, for the services resource
 func exposeServicesRoutes(router *gin.RouterGroup) {
 	servicesRoutes := router.Group("/services")
 	{
@@ -24,7 +24,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 		servicesRoutes.GET("/", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			action := c.MustGet("Action").(models.Action)
 			session := sessions.Default(c)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
@@ -48,7 +48,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 		servicesRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))

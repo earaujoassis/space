@@ -25,12 +25,12 @@ func CreateSession(user models.User, client models.Client, ip, userAgent, scopes
 
 // SessionGrantsReadAbility checks if a session entry has read-ability
 func SessionGrantsReadAbility(session models.Session) bool {
-	return session.Scopes == models.ReadScope || session.Scopes == models.ReadWriteScope
+	return session.Scopes == models.ReadScope || session.Scopes == models.WriteScope || session.Scopes == models.OpenIDScope
 }
 
 // SessionGrantsWriteAbility checks if a session entry has write-ability
 func SessionGrantsWriteAbility(session models.Session) bool {
-	return session.Scopes == models.ReadWriteScope
+	return session.Scopes == models.WriteScope
 }
 
 // FindSessionByUUID gets a session entry by its UUID

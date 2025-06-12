@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+//lint:ignore U1000 keep it for consistency
 func _TestAcceptance(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Acceptance Suite")

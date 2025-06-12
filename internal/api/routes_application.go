@@ -16,14 +16,14 @@ import (
 //
 //	it represents API calls related to the UI application
 //
-//	in the REST API escope, for the application resource
+//	in the REST API scope, for the application resource
 func exposeApplicationRoutes(router *gin.RouterGroup) {
 	applicationRoutes := router.Group("/application")
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
 		applicationRoutes.GET("/bootstrap", requiresConformance, func(c *gin.Context) {
 			session := sessions.Default(c)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			if userPublicID == nil {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -36,7 +36,7 @@ func exposeApplicationRoutes(router *gin.RouterGroup) {
 			actionToken := services.CreateAction(user, client,
 				c.Request.RemoteAddr,
 				c.Request.UserAgent(),
-				models.ReadWriteScope,
+				models.WriteScope,
 				models.NotSpecialAction,
 			)
 			c.JSON(http.StatusOK, utils.H{

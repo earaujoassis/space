@@ -11,7 +11,7 @@ import (
 
 func satelliteHandler(c *gin.Context) {
 	session := sessions.Default(c)
-	userPublicID := session.Get("userPublicID")
+	userPublicID := session.Get("user_public_id")
 	if userPublicID == nil {
 		c.Redirect(http.StatusFound, "/signin")
 		return

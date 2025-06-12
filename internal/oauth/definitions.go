@@ -1,10 +1,18 @@
 package oauth
 
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
 const (
-	// Error types
+	// RFC 6749 Error types
 
 	// InvalidRequest error type
 	InvalidRequest string = "invalid_request"
+	// InvalidClient error type
+	InvalidClient string = "invalid_client"
 	// UnauthorizedClient error type
 	UnauthorizedClient string = "unauthorized_client"
 	// AccessDenied error type
@@ -21,12 +29,13 @@ const (
 	UnsupportedGrantType string = "unsupported_grant_type"
 	// InvalidGrant error type
 	InvalidGrant string = "invalid_grant"
+
+	// OpenID Connect / Extensions Error types
+
 	// InvalidSession error type
 	InvalidSession string = "invalid_session"
-	// InvalidRedirectURI error type
-	InvalidRedirectURI string = "invalid_redirect_uri"
 
-	// Grant types
+	// RFC 6749 Grant types
 
 	// AuthorizationCode grant type
 	AuthorizationCode string = "authorization_code"
@@ -37,10 +46,18 @@ const (
 	// ClientCredentials grant type
 	ClientCredentials string = "client_credentials"
 
-	// Response types
+	// RFC 6749 Response types
 
 	// Code response type
 	Code string = "code"
 	// Token response type
 	Token string = "token"
 )
+
+func getBaseUrl(c *gin.Context) string {
+	scheme := "http"
+    if c.Request.TLS != nil {
+        scheme = "https"
+    }
+	return fmt.Sprintf("%s://%s", scheme, c.Request.Host)
+}

@@ -21,7 +21,7 @@ import (
 
 // exposeUsersRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the REST API escope, for the users resource
+//	in the REST API scope, for the users resource
 func exposeUsersRoutes(router *gin.RouterGroup) {
 	usersRoutes := router.Group("/users")
 	{
@@ -227,7 +227,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					actionToken := services.CreateAction(user, client,
 						c.Request.RemoteAddr,
 						c.Request.UserAgent(),
-						models.ReadWriteScope,
+						models.WriteScope,
 						models.UpdateUserAction,
 					)
 					go communications.Announce("session.magic", utils.H{
@@ -243,7 +243,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					actionToken := services.CreateAction(user, client,
 						c.Request.RemoteAddr,
 						c.Request.UserAgent(),
-						models.ReadWriteScope,
+						models.WriteScope,
 						models.UpdateUserAction,
 					)
 					go communications.Announce("session.magic", utils.H{
@@ -339,7 +339,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		usersRoutes.DELETE("/:user_id/deactivate", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			c.String(http.StatusMethodNotAllowed, "Not implemented")
+			c.String(http.StatusNotImplemented, "Not implemented")
 		})
 
 		// Requires X-Requested-By and Origin (same-origin policy)

@@ -17,7 +17,7 @@ import (
 
 // exposeClientsRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the REST API escope, for the clients resource
+//	in the REST API scope, for the clients resource
 func exposeClientsRoutes(router *gin.RouterGroup) {
 	clientsRoutes := router.Group("/clients")
 	{
@@ -26,7 +26,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		clientsRoutes.GET("/", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			action := c.MustGet("Action").(models.Action)
 			session := sessions.Default(c)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
@@ -50,7 +50,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		clientsRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
@@ -62,25 +62,21 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			clientName := c.PostForm("name")
-			clientDescription := c.PostForm("description")
-			clientSecret := models.GenerateRandomString(64)
-			clientScope := models.PublicScope
-			canonicalURI := c.PostForm("canonical_uri")
-			redirectURI := c.PostForm("redirect_uri")
+			client:= models.Client{
+				Name:         c.PostForm("name"),
+				Description:  c.PostForm("description"),
+				Scopes:       models.PublicScope,
+				CanonicalURI: strings.Split(c.PostForm("canonical_uri"), "\n"),
+				RedirectURI:  strings.Split(c.PostForm("redirect_uri"), "\n"),
+				Type:         models.ConfidentialClient,
+			}
 
-			client := services.CreateNewClient(clientName,
-				clientDescription,
-				clientSecret,
-				clientScope,
-				canonicalURI,
-				redirectURI)
-
-			if client.ID == 0 {
+			ok, err := services.CreateNewClient(&client)
+			if !ok {
 				c.JSON(http.StatusBadRequest, utils.H{
 					"_status":  "error",
 					"_message": "Client was not created",
-					"error":    "cannot create Client",
+					"error":    fmt.Sprintf("%v", err),
 					"client":   client,
 				})
 			} else {
@@ -95,7 +91,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
@@ -138,7 +134,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			var clientUUID = c.Param("client_id")
 
 			session := sessions.Default(c)
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.ID == 0 || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
