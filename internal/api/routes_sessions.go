@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/policy"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
@@ -78,7 +77,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusBadRequest, utils.H{
 				"_status":  "error",
 				"_message": "Session was not created",
-				"error":    oauth.AccessDenied,
+				"error":    AccessDenied,
 				"attempts": statusSignInAttempts,
 			})
 		})
@@ -132,71 +131,6 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 			}
 			policy.RegisterSignInAttempt(userID)
 			c.JSON(http.StatusNoContent, nil)
-		})
-
-		// Authorization type: Basic (for OAuth clients use)
-		sessionsRoutes.POST("/introspect", clientBasicAuthorization, func(c *gin.Context) {
-			var token = c.PostForm("access_token")
-
-			if !security.ValidToken(token) {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "Session instropection failed",
-					"error":    "must use valid token string",
-				})
-				return
-			}
-
-			session := services.FindSessionByToken(token, models.AccessToken)
-			if session.ID == 0 {
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "Session instropection failed",
-					"error":    oauth.InvalidSession,
-				})
-				return
-			}
-			c.JSON(http.StatusOK, utils.H{
-				"_status":    "success",
-				"_message":   "Session instropection fulfilled",
-				"active":     true,
-				"scope":      session.Scopes,
-				"client_id":  session.Client.Key,
-				"token_type": "Bearer",
-			})
-		})
-
-		// Authorization type: Basic (for OAuth clients use)
-		sessionsRoutes.POST("/invalidate", clientBasicAuthorization, func(c *gin.Context) {
-			var token = c.PostForm("access_token")
-
-			if !security.ValidToken(token) {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "Session invalidation failed",
-					"error":    "must use valid token string",
-				})
-				return
-			}
-
-			session := services.FindSessionByToken(token, models.AccessToken)
-			if session.ID == 0 {
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "Session invalidation failed",
-					"error":    oauth.InvalidSession,
-				})
-				return
-			}
-			services.InvalidateSession(session)
-			c.JSON(http.StatusOK, utils.H{
-				"_status":    "deleted",
-				"_message":   "Session was deleted (soft)",
-				"active":     false,
-				"scope":      session.Scopes,
-				"client_id":  session.Client.Key,
-				"token_type": "Bearer",
-			})
 		})
 	}
 }

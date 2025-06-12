@@ -1,4 +1,4 @@
-package api
+package oauth
 
 import (
 	"net/http"
@@ -20,22 +20,17 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 	return w
 }
 
-func TestScheme(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/", nil)
-	assert.Equal(t, "http", scheme(req), "default to HTTP scheme/protocol")
-}
-
-func TestRequiresConformance(t *testing.T) {
+func TestClientBasicAuthorization(t *testing.T) {
 	router := gin.New()
-	router.Use(requiresConformance)
+	router.Use(clientBasicAuthorization)
 	router.GET("/", defaultRoute)
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, w.Code, 400)
 }
 
-func TestActionTokenBearerAuthorization(t *testing.T) {
+func TestOAuthTokenBearerAuthorization(t *testing.T) {
 	router := gin.New()
-	router.Use(actionTokenBearerAuthorization)
+	router.Use(oAuthTokenBearerAuthorization)
 	router.GET("/", defaultRoute)
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, w.Code, 400)

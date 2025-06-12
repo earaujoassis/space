@@ -22,7 +22,7 @@ func introspectHandler(c *gin.Context) {
 
 	baseURL := getBaseUrl(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	if client = ClientAuthentication(authorizationBasic); client.ID == 0 {
+	if client = clientAuthentication(authorizationBasic); client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             InvalidClient,

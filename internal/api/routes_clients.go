@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
@@ -23,7 +22,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		clientsRoutes.GET("/", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+		clientsRoutes.GET("", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			action := c.MustGet("Action").(models.Action)
 			session := sessions.Default(c)
 			userPublicID := session.Get("user_public_id")
@@ -33,7 +32,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Clients are not available",
-					"error":    oauth.AccessDenied,
+					"error":    AccessDenied,
 				})
 				return
 			}
@@ -57,7 +56,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client was not created",
-					"error":    oauth.AccessDenied,
+					"error":    AccessDenied,
 				})
 				return
 			}
@@ -85,6 +84,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		})
 
 		// In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
+		// Authorization type: action token / Bearer (for web use)
 		// TODO Improve security for this endpoint avoiding any overhead
 		clientsRoutes.PATCH("/:client_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			var clientUUID = c.Param("client_id")
@@ -98,7 +98,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client was not updated",
-					"error":    oauth.AccessDenied,
+					"error":    AccessDenied,
 				})
 				return
 			}
@@ -141,7 +141,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client credentials are not available",
-					"error":    oauth.AccessDenied,
+					"error":    AccessDenied,
 				})
 				return
 			}

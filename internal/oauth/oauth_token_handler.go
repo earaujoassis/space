@@ -14,7 +14,7 @@ func tokenHandler(c *gin.Context) {
 	var grantType = c.PostForm("grant_type")
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := ClientAuthentication(authorizationBasic)
+	client := clientAuthentication(authorizationBasic)
 	if client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
