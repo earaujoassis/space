@@ -16,15 +16,17 @@ func getOAuthAuthorizationServerDefinitions(c *gin.Context) utils.H {
 		"issuer": baseURL,
 		"authorization_endpoint": fmt.Sprintf("%s%s", baseURL, "/oauth/authorize"),
 		"token_endpoint": fmt.Sprintf("%s%s", baseURL, "/oauth/token"),
-		"response_types_supported": []string{ "code" },
-		"grant_types_supported": []string{ "authorization_code" },
 		"scopes_supported": []string{ "openid", "public", "read", "write" },
-		"token_endpoint_auth_methods_supported": []string{ "client_secret_basic" },
+		"response_types_supported": []string{ "code" },
 		"response_modes_supported": []string{ "query" },
-		"revocation_endpoint": fmt.Sprintf("%s%s", baseURL, "/oauth/revoke"),
-		"introspection_endpoint": fmt.Sprintf("%s%s", baseURL, "/oauth/introspect"),
+		"grant_types_supported": []string{ "authorization_code" },
+		"token_endpoint_auth_methods_supported": []string{ "client_secret_basic" },
 		"service_documentation": "https://github.com/earaujoassis/space",
 		"ui_locales_supported": []string{ "en-US" },
+		"revocation_endpoint": fmt.Sprintf("%s%s", baseURL, "/oauth/revoke"),
+		"revocation_endpoint_auth_methods_supported": []string{ "client_secret_basic" },
+		"introspection_endpoint": fmt.Sprintf("%s%s", baseURL, "/oauth/introspect"),
+		"introspection_endpoint_auth_methods_supported": []string{ "client_secret_basic" },
 	}
 }
 

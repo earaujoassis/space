@@ -187,3 +187,9 @@ func (c *OAuthTestClient) PostRevoke(clientBasicAuth, token string) *TestRespons
 	response, err := c.httpClient.Do(request)
 	return parseResponse(response, err)
 }
+
+func (c *OAuthTestClient) GetMetadata() *TestResponse {
+	requestUrl := c.baseURL + "/.well-known/oauth-authorization-server"
+	response, err := c.httpClient.Get(requestUrl)
+	return parseResponse(response, err)
+}
