@@ -9,8 +9,7 @@ web/public/js/*.min.js
 web/public/js/*.min.js.*
 .config.yml
 .config.local.json
-c.out
-coverage.*
+tmp/
 *.log
 vendor
 Godeps/*

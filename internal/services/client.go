@@ -1,8 +1,6 @@
 package services
 
 import (
-	"strings"
-
 	"github.com/earaujoassis/space/internal/datastore"
 	"github.com/earaujoassis/space/internal/models"
 )
@@ -18,20 +16,10 @@ func SaveClient(client *models.Client) {
 }
 
 // CreateNewClient creates a new client application entry
-func CreateNewClient(name, description, secret, scopes, canonicalURI, redirectURI string) *models.Client {
-	var client models.Client = models.Client{
-		Name:         name,
-		Description:  description,
-		Secret:       secret,
-		Scopes:       scopes,
-		CanonicalURI: strings.Split(canonicalURI, "\n"),
-		RedirectURI:  strings.Split(redirectURI, "\n"),
-		Type:         models.ConfidentialClient,
-	}
-
+func CreateNewClient(client *models.Client) (bool, error) {
 	datastoreSession := datastore.GetDatastoreConnection()
-	datastoreSession.Create(&client)
-	return &client
+	result := datastoreSession.Create(&client)
+	return result.RowsAffected >= 1, result.Error
 }
 
 // FindOrCreateClient attempts to find a client application by its name; otherwise, it creates a new one
@@ -69,6 +57,15 @@ func FindClientByUUID(uuid string) models.Client {
 
 	datastoreSession := datastore.GetDatastoreConnection()
 	datastoreSession.Where("uuid = ?", uuid).First(&client)
+	return client
+}
+
+// FindClientByID gets a client application by its ID
+func FindClientByID(id uint) models.Client {
+	var client models.Client
+
+	datastoreSession := datastore.GetDatastoreConnection()
+	datastoreSession.Where("id = ?", id).First(&client)
 	return client
 }
 

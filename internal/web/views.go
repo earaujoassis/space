@@ -20,7 +20,7 @@ import (
 
 // ExposeRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
-//	in the WEB escope
+//	in the Web scope
 func ExposeRoutes(router *gin.Engine) {
 	router.LoadHTMLGlob("web/templates/*.html")
 	router.HTMLRender = createCustomRender()
@@ -120,9 +120,9 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/signout", func(c *gin.Context) {
 			session := sessions.Default(c)
 
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			if userPublicID != nil {
-				session.Delete("userPublicID")
+				session.Delete("user_public_id")
 				session.Save()
 			}
 
@@ -132,7 +132,7 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/session", func(c *gin.Context) {
 			session := sessions.Default(c)
 
-			userPublicID := session.Get("userPublicID")
+			userPublicID := session.Get("user_public_id")
 			if userPublicID != nil {
 				c.Redirect(http.StatusFound, "/")
 				return
@@ -148,7 +148,7 @@ func ExposeRoutes(router *gin.Engine) {
 
 			if scope == "" || grantType == "" || code == "" || clientID == "" {
 				// Original response:
-				// c.String(http.StatusMethodNotAllowed, "Missing required parameters")
+				// c.String(http.StatusBadRequest, "Missing required parameters")
 				c.Redirect(http.StatusFound, "/signin")
 				return
 			}
@@ -162,7 +162,7 @@ func ExposeRoutes(router *gin.Engine) {
 			if client.Key == clientID && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
 				grantToken := services.FindSessionByToken(code, models.GrantToken)
 				if grantToken.ID != 0 {
-					session.Set("userPublicID", grantToken.User.PublicID)
+					session.Set("user_public_id", grantToken.User.PublicID)
 					session.Save()
 					services.InvalidateSession(grantToken)
 					c.Redirect(http.StatusFound, nextPath)
@@ -182,12 +182,5 @@ func ExposeRoutes(router *gin.Engine) {
 				"ErrorReason": errorReason,
 			})
 		})
-
-		views.GET("/authorize", authorizeHandler)
-		views.GET("/oauth/authorize", authorizeHandler)
-		views.POST("/authorize", authorizeHandler)
-		views.POST("/oauth/authorize", authorizeHandler)
-		views.POST("/token", tokenHandler)
-		views.POST("/oauth/token", tokenHandler)
 	}
 }

@@ -18,7 +18,7 @@ const Authorize = () => {
                 'Authentication data for that given application',
                 'Your profile data (including e-mail and first and last names)'
             ]
-        case 'read_write':
+        case 'write':
             return [
                 'Authentication data for that given application',
                 'Your profile data (including e-mail and first and last names)',
