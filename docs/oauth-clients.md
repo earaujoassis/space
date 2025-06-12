@@ -2,8 +2,7 @@
 
 ## Ruby's `oauth2` gem
 
-The following example could be used to setup the [`oauth2`](https://rubygems.org/gems/oauth2) rubygem
-to connect to the `earaujoassis/space` OAuth2 provider:
+The following example could be used to setup the [`oauth2`](https://rubygems.org/gems/oauth2) rubygem to connect to the `earaujoassis/space` OAuth2 provider:
 
 ```rb
 require 'oauth2'
@@ -13,8 +12,7 @@ client_key = "<application's CLIENT_KEY, provided by space web UI>"
 client_secret = "<application's CLIENT_SECRET, provided by space web UI>"
 base_url = '<space server base url, like: http://localhost:9000>'
 
-# `scope` must be `read` if you'd like to read user's content, like `first_name` and `last_name`.
-# Also, the application must have the `read` scope --- you may set that through the web UI.
+# `scope` must be `read` if you'd like to read user's content, like `first_name` and `last_name`. Also, the application must have the `read` scope --- you may set that through the web UI.
 client = OAuth2::Client.new(client_key, client_secret, site: base_url, scope: 'read')
 
 application_callback_url = "<as configured in space's web UI>"
