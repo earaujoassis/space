@@ -18,32 +18,32 @@ import (
 //
 //	in the REST API scope, for the clients resource
 func exposeClientsRoutes(router *gin.RouterGroup) {
+	// Requires X-Requested-By and Origin (same-origin policy)
+	// Authorization type: action token / Bearer (for web use)
+	router.GET("/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+		action := c.MustGet("Action").(models.Action)
+		session := sessions.Default(c)
+		userPublicID := session.Get("user_public_id")
+		user := services.FindUserByPublicID(userPublicID.(string))
+		if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
+			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+			c.JSON(http.StatusUnauthorized, utils.H{
+				"_status":  "error",
+				"_message": "Clients are not available",
+				"error":    AccessDenied,
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, utils.H{
+			"_status":  "success",
+			"_message": "Clients are available",
+			"clients":  services.ActiveClients(),
+		})
+	})
+
 	clientsRoutes := router.Group("/clients")
 	{
-		// Requires X-Requested-By and Origin (same-origin policy)
-		// Authorization type: action token / Bearer (for web use)
-		clientsRoutes.GET("", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			action := c.MustGet("Action").(models.Action)
-			session := sessions.Default(c)
-			userPublicID := session.Get("user_public_id")
-			user := services.FindUserByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
-				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "Clients are not available",
-					"error":    AccessDenied,
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, utils.H{
-				"_status":  "success",
-				"_message": "Clients are available",
-				"clients":  services.ActiveClients(),
-			})
-		})
-
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		clientsRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
