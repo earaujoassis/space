@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react'
 
-import SpaceApi from '@core/utils/space-api'
+import { createSession, requestUpdate, createMagicSession } from './fetch'
 
 const ACTIONS = {
     FETCH_START: 'FETCH_START',
@@ -70,7 +70,7 @@ export function AppProvider({ children }) {
             dispatch({ type: ACTIONS.FETCH_START })
 
             try {
-                const response = await SpaceApi.createSession(data)
+                const response = await createSession(data)
 
                 if (!response.ok) {
                     throw {
@@ -104,7 +104,7 @@ export function AppProvider({ children }) {
             dispatch({ type: ACTIONS.FETCH_START })
 
             try {
-                const response = await SpaceApi.createMagicSession(data)
+                const response = await createMagicSession(data)
 
                 if (!response.ok) {
                     throw new Error(`Error ${response.status}: ${response.statusText}`)
@@ -127,7 +127,7 @@ export function AppProvider({ children }) {
             dispatch({ type: ACTIONS.FETCH_START })
 
             try {
-                const response = await SpaceApi.requestUpdate(data)
+                const response = await requestUpdate(data)
 
                 if (!response.ok) {
                     throw new Error(`Error ${response.status}: ${response.statusText}`)

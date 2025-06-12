@@ -24,6 +24,7 @@ func Routes() *gin.Engine {
 	datastore.InitConnection()
 	gin.DisableConsoleColor()
 	router := gin.Default()
+	router.RedirectTrailingSlash = false
 	cfg := config.GetGlobalConfig()
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	store.Options(sessions.Options{
