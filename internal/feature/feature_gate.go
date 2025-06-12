@@ -8,7 +8,7 @@ import (
 func IsActive(name string) bool {
 	var result bool
 
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		if !volatile.CheckFieldExistence("feature.gates", name) {
 			result = false
 		} else {
@@ -21,14 +21,14 @@ func IsActive(name string) bool {
 
 // Enable makes a feature-gate `name` currently active (through Redis keys)
 func Enable(name string) {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		volatile.SetFieldAtKey("feature.gates", name, 1)
 	})
 }
 
 // Disable makes a feature-gate `name` currently inactive (through Redis keys)
 func Disable(name string) {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		volatile.DeleteFieldAtKey("feature.gates", name)
 	})
 }

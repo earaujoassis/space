@@ -9,9 +9,10 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
+	datastore "github.com/earaujoassis/space/internal/gateways/postgres"
+
 	"github.com/earaujoassis/space/internal/api"
 	"github.com/earaujoassis/space/internal/config"
-	"github.com/earaujoassis/space/internal/datastore"
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/utils"
 	"github.com/earaujoassis/space/internal/web"
