@@ -19,7 +19,7 @@ func revokeHandler(c *gin.Context) {
 	var session models.Session
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := ClientAuthentication(authorizationBasic)
+	client := clientAuthentication(authorizationBasic)
 	if client.ID == 0 {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
