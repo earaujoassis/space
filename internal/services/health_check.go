@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/earaujoassis/space/internal/datastore"
+	datastore "github.com/earaujoassis/space/internal/gateways/postgres"
 )
 
 func IsDatastoreConnectedAndHealthy() bool {
