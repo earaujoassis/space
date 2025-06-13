@@ -8,6 +8,9 @@ const (
 
 	// AccessDenied error type
 	AccessDenied string = "access_denied"
+
+	// ErrorURI defines the query string for the callback redirect
+	ErrorURI string = "%s?error=%s&state=%s"
 )
 
 const (

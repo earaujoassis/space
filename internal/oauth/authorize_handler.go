@@ -106,7 +106,7 @@ func authorizeHandler(c *gin.Context) {
 			if c.PostForm("access_denied") == "true" {
 				// In this scenario, the user requested to deny access; it's not the client application's fault
 				// The client application is safe, so the user may proceed (client application must handle this)
-				location = fmt.Sprintf(errorURI, redirectURI, shared.AccessDenied, state)
+				location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.AccessDenied, state)
 				c.Redirect(http.StatusFound, location)
 				return
 			}
@@ -121,7 +121,7 @@ func authorizeHandler(c *gin.Context) {
 				"state":         state,
 			})
 			if err != nil {
-				location = fmt.Sprintf(errorURI, redirectURI, result["error"], result["state"])
+				location = fmt.Sprintf(shared.ErrorURI, redirectURI, result["error"], result["state"])
 				// Previous return: c.HTML(http.StatusFound, location)
 				c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 					"Title":     " - Authorization Error",
@@ -139,7 +139,7 @@ func authorizeHandler(c *gin.Context) {
 		}
 	// Implicit Grant
 	case shared.Token:
-		location = fmt.Sprintf(errorURI, redirectURI, shared.UnsupportedResponseType, state)
+		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.UnsupportedResponseType, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
@@ -148,7 +148,7 @@ func authorizeHandler(c *gin.Context) {
 			"ErrorCode": shared.UnsupportedResponseType,
 		})
 	default:
-		location = fmt.Sprintf(errorURI, redirectURI, shared.InvalidRequest, state)
+		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.InvalidRequest, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
