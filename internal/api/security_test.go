@@ -20,11 +20,6 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 	return w
 }
 
-func TestScheme(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/", nil)
-	assert.Equal(t, "http", scheme(req), "default to HTTP scheme/protocol")
-}
-
 func TestRequiresConformance(t *testing.T) {
 	router := gin.New()
 	router.Use(requiresConformance)

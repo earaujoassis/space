@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
@@ -17,7 +18,7 @@ import (
 func authorizeHandler(c *gin.Context) {
 	var location string
 	var responseType string
-	var clientID string
+	var clientKey string
 	var redirectURI string
 	var scope string
 	var state string
@@ -40,21 +41,21 @@ func authorizeHandler(c *gin.Context) {
 	}
 
 	responseType = c.Query("response_type")
-	clientID = c.Query("client_id")
+	clientKey = c.Query("client_id")
 	redirectURI = c.Query("redirect_uri")
 	scope = c.Query("scope")
 	state = c.Query("state")
 
-	if responseType == "" || clientID == "" || redirectURI == "" {
+	if responseType == "" || clientKey == "" || redirectURI == "" {
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": nil,
-			"ErrorCode": InvalidRequest,
+			"ErrorCode": shared.InvalidRequest,
 		})
 	}
 
-	client := services.FindClientByKey(clientID)
+	client := services.FindClientByKey(clientKey)
 	if client.ID == 0 {
 		// REFACTOR This scenario is the trickiest one
 		// redirectURI = "/error"
@@ -64,7 +65,7 @@ func authorizeHandler(c *gin.Context) {
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": nil,
-			"ErrorCode": UnauthorizedClient,
+			"ErrorCode": shared.UnauthorizedClient,
 		})
 		return
 	}
@@ -74,7 +75,7 @@ func authorizeHandler(c *gin.Context) {
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": nil,
-			"ErrorCode": InvalidRequest,
+			"ErrorCode": shared.InvalidRequest,
 		})
 		return
 	}
@@ -85,7 +86,7 @@ func authorizeHandler(c *gin.Context) {
 
 	switch responseType {
 	// Authorization Code Grant
-	case Code:
+	case shared.Code:
 		activeSessions := services.ActiveSessionsForClient(client.ID, user.ID)
 		if c.Request.Method == "GET" && activeSessions == 0 {
 			c.HTML(http.StatusOK, "satellite", utils.H{
@@ -105,7 +106,7 @@ func authorizeHandler(c *gin.Context) {
 			if c.PostForm("access_denied") == "true" {
 				// In this scenario, the user requested to deny access; it's not the client application's fault
 				// The client application is safe, so the user may proceed (client application must handle this)
-				location = fmt.Sprintf(errorURI, redirectURI, AccessDenied, state)
+				location = fmt.Sprintf(errorURI, redirectURI, shared.AccessDenied, state)
 				c.Redirect(http.StatusFound, location)
 				return
 			}
@@ -137,23 +138,23 @@ func authorizeHandler(c *gin.Context) {
 			c.String(http.StatusNotFound, "404 Not Found")
 		}
 	// Implicit Grant
-	case Token:
-		location = fmt.Sprintf(errorURI, redirectURI, UnsupportedResponseType, state)
+	case shared.Token:
+		location = fmt.Sprintf(errorURI, redirectURI, shared.UnsupportedResponseType, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": location,
-			"ErrorCode": UnsupportedResponseType,
+			"ErrorCode": shared.UnsupportedResponseType,
 		})
 	default:
-		location = fmt.Sprintf(errorURI, redirectURI, InvalidRequest, state)
+		location = fmt.Sprintf(errorURI, redirectURI, shared.InvalidRequest, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
 			"ProceedTo": location,
-			"ErrorCode": InvalidRequest,
+			"ErrorCode": shared.InvalidRequest,
 		})
 	}
 }

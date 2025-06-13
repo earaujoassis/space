@@ -1,0 +1,74 @@
+package oidc
+
+import (
+	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/security"
+	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/utils"
+)
+
+func userinfoHandler(c *gin.Context) {
+	var userinfo utils.H
+
+	token := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
+	if token == "" {
+		c.Header("WWW-Authenticate", "Bearer")
+		c.JSON(http.StatusUnauthorized, "")
+		return
+	}
+
+	if !security.ValidToken(token) {
+		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
+		c.JSON(http.StatusUnauthorized, utils.H{
+			"error":             shared.InvalidToken,
+			"error_description": "The access token expired",
+		})
+		return
+	}
+
+	session := services.FindSessionByToken(token, models.AccessToken)
+	if session.ID == 0 {
+		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
+		c.JSON(http.StatusUnauthorized, utils.H{
+			"error":             shared.InvalidToken,
+			"error_description": "The access token expired",
+		})
+		return
+	}
+
+	if !strings.Contains(session.Scopes, "openid") {
+		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InsufficientScope))
+		c.JSON(http.StatusForbidden, utils.H{
+			"error":             shared.InsufficientScope,
+			"error_description": "The access token does not have the required scope",
+		})
+		return
+	}
+
+	user := session.User
+	if !strings.Contains(session.Scopes, "profile") {
+		userinfo = utils.H{
+			"sub": user.PublicID,
+		}
+	} else {
+		userinfo = utils.H{
+			"sub": user.PublicID,
+			"name": fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+			"given_name": user.FirstName,
+			"family_name": user.LastName,
+			"preferred_username": user.Username,
+			"zoneinfo": "UTC",
+			"locale": "en-US",
+			"updated_at": user.UpdatedAt.Unix(),
+		}
+	}
+
+	c.JSON(http.StatusOK, userinfo)
+}

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
@@ -28,7 +29,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusUnauthorized, utils.H{
 				"_status":  "error",
 				"_message": "Services are not available",
-				"error":    AccessDenied,
+				"error":    shared.AccessDenied,
 			})
 			return
 		}
@@ -54,7 +55,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Service was not created",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}

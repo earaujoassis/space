@@ -25,7 +25,7 @@ const (
 	// No client is allowed to hold this scope (they can't write user data)
 	WriteScope string = "write"
 	// OpenIDScope session scope
-	// This is used for OpenID Connect
+	// This is used for OpenID Connect and confidential clients
 	OpenIDScope string = "openid"
 )
 

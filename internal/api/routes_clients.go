@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
@@ -30,7 +31,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusUnauthorized, utils.H{
 				"_status":  "error",
 				"_message": "Clients are not available",
-				"error":    AccessDenied,
+				"error":    shared.AccessDenied,
 			})
 			return
 		}
@@ -56,7 +57,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client was not created",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -98,7 +99,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client was not updated",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -141,7 +142,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client credentials are not available",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}

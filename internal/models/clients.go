@@ -39,7 +39,7 @@ type Client struct {
 func validClientScopes(fl validator.FieldLevel) bool {
 	scopesField := fl.Field().String()
 	// TODO A PublicClient can't have a ReadScope
-	if scopesField != PublicScope && scopesField != ReadScope {
+	if scopesField != PublicScope && scopesField != ReadScope && scopesField != OpenIDScope {
 		return false
 	}
 	return true
