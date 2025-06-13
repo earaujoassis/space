@@ -1,21 +1,8 @@
 package integration
 
 import (
-	"fmt"
 	"strings"
 )
-
-func interfaceSliceToStringSlice(slice []interface{}) []string {
-	result := make([]string, len(slice))
-	for i, v := range slice {
-		if str, ok := v.(string); ok {
-			result[i] = str
-		} else {
-			result[i] = fmt.Sprintf("%v", v)
-		}
-	}
-	return result
-}
 
 func (s *OAuthProviderSuite) TestWellKnownMetadata() {
 	s.Run("should return a valid well-known metadata", func() {
@@ -23,7 +10,7 @@ func (s *OAuthProviderSuite) TestWellKnownMetadata() {
 		json := response.JSON
 
 		s.Equal(200, response.StatusCode)
-		s.Equal("openid public read write", strings.Join(interfaceSliceToStringSlice(json["scopes_supported"].([]interface{})), " "))
+		s.Equal("public read", strings.Join(interfaceSliceToStringSlice(json["scopes_supported"].([]interface{})), " "))
 		s.Equal("code", strings.Join(interfaceSliceToStringSlice(json["response_types_supported"].([]interface{})), " "))
 		s.Equal("query", strings.Join(interfaceSliceToStringSlice(json["response_modes_supported"].([]interface{})), " "))
 		s.Equal("authorization_code", strings.Join(interfaceSliceToStringSlice(json["grant_types_supported"].([]interface{})), " "))

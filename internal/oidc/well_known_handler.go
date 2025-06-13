@@ -24,7 +24,7 @@ func getOpenIdConfigurationDefinitions(c *gin.Context) utils.H {
 		// "registration_endpoint": ?
 		"scopes_supported": []string{ "openid", "profile", "public", "read", "write" },
 		"response_types_supported": []string{ "code", "id_token", "code id_token" },
-		"response_modes_supported": []string{ "query" },
+		"response_modes_supported": []string{ "query", "fragment", "form_post" },
 		"grant_types_supported": []string{ "authorization_code" },
 		// OPTIONAL. JSON array containing a list of the Authentication
 		// Context Class References that this OP supports.

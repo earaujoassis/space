@@ -7,6 +7,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -23,7 +24,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	var client models.Client
 
 	if data["redirect_uri"] == nil || data["user"] == nil || data["client"] == nil {
-		return invalidRequestResult(state)
+		return shared.InvalidRequestResult(state)
 	}
 
 	if data["state"] != nil {
@@ -47,17 +48,11 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	}
 
 	if !slices.Contains(client.RedirectURI, redirectURI) {
-		return invalidRequestResult(state)
+		return shared.InvalidRequestResult(state)
 	}
 
-	/*
-	 * WARNING
-	 * If the scope is not available for the Client,
-	 * it will grant access, but with a public-only scope.
-	 * So basically it downgrades the scope.
-	 */
-	if scope != "" && !strings.Contains(client.Scopes, scope) {
-		scope = models.PublicScope
+	if scope == "" || !client.HasRequestedScopes(strings.Split(scope, " ")) {
+		return shared.InvalidScopeResult(state)
 	}
 
 	session := services.CreateSession(user, client, ip, userAgent, scope, models.GrantToken)
@@ -69,5 +64,5 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 		}, nil
 	}
 
-	return serverErrorResult(state)
+	return shared.ServerErrorResult(state)
 }

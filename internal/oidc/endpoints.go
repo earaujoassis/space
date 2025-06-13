@@ -8,10 +8,13 @@ import (
 //
 //	in the OpenID Connect endpoints scope
 func ExposeRoutes(router *gin.Engine) {
+	router.LoadHTMLGlob("internal/oidc/templates/*.html")
+	router.HTMLRender = createCustomRender()
 	endpoints := router.Group("/")
 	{
 		endpoints.GET("/.well-known/openid-configuration", getOpenIdConfiguration)
 		endpoints.GET("/oidc/userinfo", userinfoHandler)
 		endpoints.GET("/oidc/jwks", jwksHandler)
+		endpoints.GET("/oidc/authorize", authorizeHandler)
 	}
 }

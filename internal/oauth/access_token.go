@@ -5,6 +5,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -19,7 +20,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 	var redirectURI string
 
 	if data["code"] == nil || data["redirect_uri"] == nil || data["client"] == nil {
-		return invalidRequestResult("")
+		return shared.InvalidRequestResult("")
 	}
 
 	redirectURI = data["redirect_uri"].(string)
@@ -29,15 +30,15 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 	authorizationSession := services.FindSessionByToken(code, models.GrantToken)
 	defer services.InvalidateSession(authorizationSession)
 	if authorizationSession.ID == 0 {
-		return invalidGrantResult("")
+		return shared.InvalidGrantResult("")
 	}
 	user = authorizationSession.User
 	user = services.FindUserByPublicID(user.PublicID)
 	if authorizationSession.Client.ID != client.ID {
-		return invalidGrantResult("")
+		return shared.InvalidGrantResult("")
 	}
 	if !slices.Contains(authorizationSession.Client.RedirectURI, redirectURI) {
-		return invalidGrantResult("")
+		return shared.InvalidGrantResult("")
 	}
 
 	accessToken := services.CreateSession(user,
@@ -54,7 +55,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 		models.RefreshToken)
 
 	if accessToken.ID == 0 || refreshToken.ID == 0 {
-		return serverErrorResult("")
+		return shared.ServerErrorResult("")
 	}
 
 	return utils.H{
@@ -78,7 +79,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 	var scope string
 
 	if data["refresh_token"] == nil || data["scope"] == nil || data["client"] == nil {
-		return invalidRequestResult("")
+		return shared.InvalidRequestResult("")
 	}
 
 	token = data["refresh_token"].(string)
@@ -88,15 +89,15 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 	refreshSession := services.FindSessionByToken(token, models.RefreshToken)
 	defer services.InvalidateSession(refreshSession)
 	if refreshSession.ID == 0 {
-		return invalidGrantResult("")
+		return shared.InvalidGrantResult("")
 	}
 	user = refreshSession.User
 	user = services.FindUserByPublicID(user.PublicID)
 	if refreshSession.Client.ID != client.ID {
-		return invalidGrantResult("")
+		return shared.InvalidGrantResult("")
 	}
 	if scope != refreshSession.Scopes {
-		return invalidScopeResult("")
+		return shared.InvalidScopeResult("")
 	}
 
 	accessToken := services.CreateSession(user,
@@ -113,7 +114,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 		models.RefreshToken)
 
 	if accessToken.ID == 0 || refreshToken.ID == 0 {
-		return serverErrorResult("")
+		return shared.ServerErrorResult("")
 	}
 
 	return utils.H{
