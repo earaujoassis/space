@@ -24,6 +24,24 @@ func CreateSession(user models.User, client models.Client, ip, userAgent, scopes
 	return models.Session{}
 }
 
+// CreateSessionWithToken creates a session entry with a defined token
+func CreateSessionWithToken(user models.User, client models.Client, ip, userAgent, scopes, tokenType, token string) models.Session {
+	var session models.Session = models.Session{
+		User:      user,
+		Client:    client,
+		IP:        ip,
+		UserAgent: userAgent,
+		Scopes:    scopes,
+		TokenType: tokenType,
+	}
+	datastore := datastore.GetDatastoreConnection()
+	result := datastore.Create(&session)
+	if count := result.RowsAffected; count > 0 {
+		return session
+	}
+	return models.Session{}
+}
+
 // SessionGrantsReadAbility checks if a session entry has read-ability
 func SessionGrantsReadAbility(session models.Session) bool {
 	return session.Scopes == models.ReadScope || session.Scopes == models.WriteScope || session.Scopes == models.OpenIDScope

@@ -99,6 +99,7 @@ func (c *OAuthTestClient) GetAuthorize(responseType, clientID, redirectURI, stat
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
+	params.Set("scope", "public")
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	resp, err := c.httpClient.Get(authURL)
@@ -110,6 +111,7 @@ func (c *OAuthTestClient) PostAuthorize(responseType, clientID, redirectURI, sta
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
+	params.Set("scope", "public")
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	if authorize {

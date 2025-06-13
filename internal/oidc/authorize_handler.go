@@ -1,4 +1,4 @@
-package oauth
+package oidc
 
 import (
 	"fmt"
@@ -23,6 +23,7 @@ func authorizeHandler(c *gin.Context) {
 	var redirectURI string
 	var scope string
 	var state string
+	var nonce string
 
 	session := sessions.Default(c)
 	userPublicID := session.Get("user_public_id")
@@ -46,8 +47,9 @@ func authorizeHandler(c *gin.Context) {
 	redirectURI = c.Query("redirect_uri")
 	scope = c.Query("scope")
 	state = c.Query("state")
+	nonce = c.Query("nonce")
 
-	if responseType == "" || clientKey == "" || redirectURI == "" {
+	if responseType == "" || clientKey == "" || redirectURI == "" || scope == "" || nonce == "" {
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
 			"Internal":  true,
@@ -79,15 +81,16 @@ func authorizeHandler(c *gin.Context) {
 		return
 	}
 
-	if scope == "" || !models.HasValidScopes(strings.Split(scope, " ")) {
+	if scope == "" || !models.HasValidScopes(strings.Split(scope, " ")) || !strings.Contains(scope, models.OpenIDScope) {
 		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.InvalidScope, state)
 		c.Redirect(http.StatusFound, location)
 		return
 	}
 
 	switch responseType {
-	// Authorization Code Grant
-	case shared.Code:
+	// Implicit Flow (OIDC)
+	case shared.IdToken:
+		response_mode := c.Query("response_mode")
 		activeSessions := services.ActiveSessionsForClient(client.ID, user.ID)
 		if c.Request.Method == "GET" && activeSessions == 0 {
 			c.HTML(http.StatusOK, "satellite", utils.H{
@@ -110,7 +113,7 @@ func authorizeHandler(c *gin.Context) {
 				c.Redirect(http.StatusFound, location)
 				return
 			}
-			result, err := AuthorizationCodeGrant(utils.H{
+			result, err := ImplicitFlowIdToken(utils.H{
 				"response_type": responseType,
 				"client":        client,
 				"user":          user,
@@ -119,6 +122,9 @@ func authorizeHandler(c *gin.Context) {
 				"redirect_uri":  redirectURI,
 				"scope":         scope,
 				"state":         state,
+				"nonce":         nonce,
+				"response_mode": response_mode,
+				"issuer":        shared.GetBaseUrl(c),
 			})
 			if err != nil {
 				location = fmt.Sprintf(shared.ErrorURI, redirectURI, result["error"], result["state"])
@@ -130,15 +136,21 @@ func authorizeHandler(c *gin.Context) {
 					"ErrorCode": result["error"],
 				})
 			} else {
-				location = fmt.Sprintf("%s?code=%s&scope=%s&state=%s",
-					redirectURI, result["code"], result["scope"], result["state"])
-				c.Redirect(http.StatusFound, location)
+				if response_mode == "form_post" || response_mode == "" {
+					c.HTML(http.StatusOK, "form_post", utils.H{
+						"Callback": redirectURI,
+						"IdToken":  result["id_token"],
+						"State":  result["state"],
+					})
+				}
 			}
 		} else {
 			c.String(http.StatusNotFound, "404 Not Found")
 		}
-	// Implicit Grant
-	case shared.Token:
+	// Authorization Code Grant (OAuth)
+	// Implicit Grant (OAuth)
+	// Hybrid Flow (OIDC)
+	case shared.Code, shared.Token, shared.CodeIdToken:
 		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.UnsupportedResponseType, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{

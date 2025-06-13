@@ -14,7 +14,7 @@ const (
 )
 
 const (
-	// OpenID Connect / Extensions Error types
+	// OpenID Connect Error types
 
 	// InvalidSession error type
 	InvalidSession string = "invalid_session"
@@ -24,6 +24,13 @@ const (
 	InvalidClient string = "invalid_client"
 	// InsufficientScope error type
 	InsufficientScope string = "insufficient_scope"
+
+	// OpenID Connect Response types
+
+	// IdToken response type
+	IdToken string = "id_token"
+	// CodeIdToken response type
+	CodeIdToken string = "code id_token"
 )
 
 const (
