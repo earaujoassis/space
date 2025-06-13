@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/models"
@@ -128,7 +129,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User was not updated",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -202,7 +203,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 		usersRoutes.POST("/update/request", requiresConformance, func(c *gin.Context) {
 			var holder = c.PostForm("holder")
 			var requestType = c.PostForm("request_type")
-			var host = fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+			var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 
 			const (
 				passwordType = "password"
@@ -285,7 +286,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User instropection failed",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -331,7 +332,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User's clients unavailable",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -365,7 +366,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client application irrevocable",
-					"error":    AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}

@@ -11,9 +11,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -142,11 +142,11 @@ func ExposeRoutes(router *gin.Engine) {
 			var scope = c.Query("scope")
 			var grantType = c.Query("grant_type")
 			var code = c.Query("code")
-			var clientID = c.Query("client_id")
+			var clientKey = c.Query("client_id")
 			var _nextPath = c.Query("_")
 			//var state string = c.Query("state")
 
-			if scope == "" || grantType == "" || code == "" || clientID == "" {
+			if scope == "" || grantType == "" || code == "" || clientKey == "" {
 				// Original response:
 				// c.String(http.StatusBadRequest, "Missing required parameters")
 				c.Redirect(http.StatusFound, "/signin")
@@ -159,7 +159,7 @@ func ExposeRoutes(router *gin.Engine) {
 			}
 
 			client := services.FindOrCreateClient(services.DefaultClient)
-			if client.Key == clientID && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
+			if client.Key == clientKey && grantType == shared.AuthorizationCode && scope == models.PublicScope {
 				grantToken := services.FindSessionByToken(code, models.GrantToken)
 				if grantToken.ID != 0 {
 					session.Set("user_public_id", grantToken.User.PublicID)

@@ -7,24 +7,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func scheme(request *http.Request) string {
-	if scheme := request.Header.Get("X-Forwarded-Proto"); scheme != "" {
-		return scheme
-	}
-	if request.TLS == nil {
-		return "http"
-	}
-
-	return "https"
-}
-
 func requiresConformance(c *gin.Context) {
-	host := fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+	host := fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 	correctXRequestedBy := c.Request.Header.Get("X-Requested-By") == "SpaceApi"
 	// WARNING The Origin header attribute sometimes is not sent; we should not block these requests
 	sameOriginPolicy := c.Request.Header.Get("Origin") == "" || host == c.Request.Header.Get("Origin")
@@ -54,7 +44,7 @@ func actionTokenBearerAuthorization(c *gin.Context) {
 	if action.UUID == "" || !services.ActionGrantsReadAbility(action) {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"error": AccessDenied,
+			"error": shared.AccessDenied,
 		})
 		c.Abort()
 		return

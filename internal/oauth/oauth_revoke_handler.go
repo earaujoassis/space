@@ -1,12 +1,12 @@
 package oauth
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
@@ -19,11 +19,11 @@ func revokeHandler(c *gin.Context) {
 	var session models.Session
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := clientAuthentication(authorizationBasic)
+	client := shared.ClientAuthentication(authorizationBasic)
 	if client.ID == 0 {
-		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
+		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"error":             InvalidClient,
+			"error":             shared.InvalidClient,
 			"error_description": "Client authentication failed",
 		})
 		return
@@ -31,7 +31,7 @@ func revokeHandler(c *gin.Context) {
 
 	if token == "" {
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error":             InvalidClient,
+			"error":             shared.InvalidClient,
 			"error_description": "Missing token parameter",
 		})
 		return

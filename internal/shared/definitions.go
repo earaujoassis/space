@@ -1,9 +1,26 @@
-package oauth
+package shared
 
-import (
-	"fmt"
+const (
+	// Definitions shared between:
+	// - OAuth
+	// - OpenID Connect
+	// - Web API
 
-	"github.com/gin-gonic/gin"
+	// AccessDenied error type
+	AccessDenied string = "access_denied"
+)
+
+const (
+	// OpenID Connect / Extensions Error types
+
+	// InvalidSession error type
+	InvalidSession string = "invalid_session"
+	// InvalidSession error type
+	InvalidToken string = "invalid_token"
+	// InvalidClient error type
+	InvalidClient string = "invalid_client"
+	// InsufficientScope error type
+	InsufficientScope string = "insufficient_scope"
 )
 
 const (
@@ -11,12 +28,8 @@ const (
 
 	// InvalidRequest error type
 	InvalidRequest string = "invalid_request"
-	// InvalidClient error type
-	InvalidClient string = "invalid_client"
 	// UnauthorizedClient error type
 	UnauthorizedClient string = "unauthorized_client"
-	// AccessDenied error type
-	AccessDenied string = "access_denied"
 	// UnsupportedResponseType error type
 	UnsupportedResponseType string = "unsupported_response_type"
 	// InvalidScope error type
@@ -29,11 +42,6 @@ const (
 	UnsupportedGrantType string = "unsupported_grant_type"
 	// InvalidGrant error type
 	InvalidGrant string = "invalid_grant"
-
-	// OpenID Connect / Extensions Error types
-
-	// InvalidSession error type
-	InvalidSession string = "invalid_session"
 
 	// RFC 6749 Grant types
 
@@ -53,11 +61,3 @@ const (
 	// Token response type
 	Token string = "token"
 )
-
-func getBaseUrl(c *gin.Context) string {
-	scheme := "http"
-    if c.Request.TLS != nil {
-        scheme = "https"
-    }
-	return fmt.Sprintf("%s://%s", scheme, c.Request.Host)
-}

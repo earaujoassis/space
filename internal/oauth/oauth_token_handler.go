@@ -1,12 +1,12 @@
 package oauth
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -14,11 +14,11 @@ func tokenHandler(c *gin.Context) {
 	var grantType = c.PostForm("grant_type")
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := clientAuthentication(authorizationBasic)
+	client := shared.ClientAuthentication(authorizationBasic)
 	if client.ID == 0 {
-		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
+		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"error":             InvalidClient,
+			"error":             shared.InvalidClient,
 			"error_description": "Client authentication failed",
 		})
 		return
@@ -26,7 +26,7 @@ func tokenHandler(c *gin.Context) {
 
 	switch grantType {
 	// Authorization Code Grant
-	case AuthorizationCode:
+	case shared.AuthorizationCode:
 		result, err := AccessTokenRequest(utils.H{
 			"grant_type":   grantType,
 			"code":         c.PostForm("code"),
@@ -49,7 +49,7 @@ func tokenHandler(c *gin.Context) {
 		})
 		return
 	// Refreshing an Access Token
-	case RefreshToken:
+	case shared.RefreshToken:
 		result, err := RefreshTokenRequest(utils.H{
 			"grant_type":    grantType,
 			"refresh_token": c.PostForm("refresh_token"),
@@ -73,15 +73,15 @@ func tokenHandler(c *gin.Context) {
 		return
 	// Resource Owner Password Credentials Grant
 	// Client Credentials Grant
-	case Password, ClientCredentials:
+	case shared.Password, shared.ClientCredentials:
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error":    UnsupportedGrantType,
+			"error":    shared.UnsupportedGrantType,
 
 		})
 		return
 	default:
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error":    InvalidRequest,
+			"error":    shared.InvalidRequest,
 		})
 		return
 	}

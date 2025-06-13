@@ -6,11 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
 func getOAuthAuthorizationServerDefinitions(c *gin.Context) utils.H {
-	baseURL := getBaseUrl(c)
+	baseURL := shared.GetBaseUrl(c)
 
 	return utils.H{
 		"issuer": baseURL,

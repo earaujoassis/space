@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/policy"
 	"github.com/earaujoassis/space/internal/security"
@@ -77,7 +78,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusBadRequest, utils.H{
 				"_status":  "error",
 				"_message": "Session was not created",
-				"error":    AccessDenied,
+				"error":    shared.AccessDenied,
 				"attempts": statusSignInAttempts,
 			})
 		})
@@ -88,7 +89,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 			var next = c.PostForm("next")
 			var state = c.PostForm("state")
 
-			var host = fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+			var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 
 			var IP = c.Request.RemoteAddr
 			var userID = IP

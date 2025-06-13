@@ -1,12 +1,12 @@
 package oauth
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
@@ -20,12 +20,12 @@ func introspectHandler(c *gin.Context) {
 	var introspectType string
 	var client models.Client
 
-	baseURL := getBaseUrl(c)
+	baseURL := shared.GetBaseUrl(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	if client = clientAuthentication(authorizationBasic); client.ID == 0 {
-		c.Header("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", c.Request.RequestURI))
+	if client = shared.ClientAuthentication(authorizationBasic); client.ID == 0 {
+		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"error":             InvalidClient,
+			"error":             shared.InvalidClient,
 			"error_description": "Client authentication failed",
 		})
 		return
@@ -33,7 +33,7 @@ func introspectHandler(c *gin.Context) {
 
 	if token == "" {
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error":             InvalidClient,
+			"error":             shared.InvalidClient,
 			"error_description": "Missing token parameter",
 		})
 		return
@@ -93,9 +93,6 @@ func introspectHandler(c *gin.Context) {
 		// "aud": (audience) not defined nor required
 		"iss": baseURL,
 		// "jti": (String identifier for the token) not defined nor required
-		"user_id": user.PublicID,
-		"roles": []string{ "user" },
-		// "email": user.Email,
 	}
 
 	if introspectType == models.AccessToken {

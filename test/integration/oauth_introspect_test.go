@@ -80,7 +80,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal(clientModel.Key, json["client_id"])
 		s.Equal(userModel.Username, json["username"])
 		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 
 		response = s.Client.PostIntrospect(client.BasicAuthEncode(), refreshToken)
 		json = response.JSON
@@ -91,6 +90,5 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal(clientModel.Key, json["client_id"])
 		s.Equal(userModel.Username, json["username"])
 		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 	})
 }
