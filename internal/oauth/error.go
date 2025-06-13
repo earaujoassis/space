@@ -7,10 +7,6 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-const (
-	errorURI string = "%s?error=%s&state=%s"
-)
-
 func errorResult(errorType, state string) (utils.H, error) {
 	return utils.H{
 		"error": errorType,
