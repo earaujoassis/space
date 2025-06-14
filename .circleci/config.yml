@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@5.4.3
 jobs:
   test_unit_go:
     working_directory: ~/repo
@@ -26,6 +28,9 @@ jobs:
           name: Run unit tests
           command: |
             task test:unit
+      - codecov/upload:
+          files: tmp/cover.unit.out
+          flags: unit
   test_integration_go:
     working_directory: ~/repo
     machine:
@@ -58,6 +63,9 @@ jobs:
           name: Run integration tests
           command: |
             task test:integration
+      - codecov/upload:
+          files: tmp/cover.integration.out
+          flags: integration
   build_go:
     working_directory: ~/repo
     docker:
