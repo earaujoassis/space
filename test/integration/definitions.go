@@ -2,12 +2,14 @@ package integration
 
 import (
 	"fmt"
+	"strings"
 )
 
 const (
 	Code              string = "code"
 	AuthorizationCode string = "authorization_code"
 	Token             string = "token"
+	IdToken           string = "id_token"
 )
 
 func interfaceSliceToStringSlice(slice []interface{}) []string {
@@ -20,4 +22,8 @@ func interfaceSliceToStringSlice(slice []interface{}) []string {
 		}
 	}
 	return result
+}
+
+func jsonValueAsSingleString(value interface{}) string {
+	return strings.Join(interfaceSliceToStringSlice(value.([]interface{})), " ")
 }
