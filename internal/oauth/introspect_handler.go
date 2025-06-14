@@ -22,7 +22,7 @@ func introspectHandler(c *gin.Context) {
 
 	baseURL := shared.GetBaseUrl(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	if client = shared.ClientAuthentication(authorizationBasic); client.ID == 0 {
+	if client = shared.ClientAuthentication(authorizationBasic); client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             shared.InvalidClient,
@@ -62,16 +62,16 @@ func introspectHandler(c *gin.Context) {
 		introspectType = models.RefreshToken
 	}
 
-	if session.ID == 0 {
+	if session.IsNewRecord() {
 		session = services.FindSessionByToken(token, models.AccessToken)
 		introspectType = models.AccessToken
-		if session.ID == 0 {
+		if session.IsNewRecord() {
 			session = services.FindSessionByToken(token, models.RefreshToken)
 			introspectType = models.RefreshToken
 		}
 	}
 
-	if session.ID == 0 || session.Client.ID != client.ID {
+	if session.IsNewRecord() || session.Client.ID != client.ID {
 		c.JSON(http.StatusOK, utils.H{
 			"active": false,
 		})

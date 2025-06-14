@@ -24,7 +24,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 		session := sessions.Default(c)
 		userPublicID := session.Get("user_public_id")
 		user := services.FindUserByPublicID(userPublicID.(string))
-		if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
+		if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 			c.JSON(http.StatusUnauthorized, utils.H{
 				"_status":  "error",
@@ -50,7 +50,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 			action := c.MustGet("Action").(models.Action)
 			userPublicID := session.Get("user_public_id")
 			user := services.FindUserByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.ID == 0 || user.ID != action.UserID || !user.Admin {
+			if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -70,7 +70,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 				canonicalURI,
 				logoURI)
 
-			if service.ID == 0 {
+			if service.IsNewRecord() {
 				c.JSON(http.StatusBadRequest, utils.H{
 					"_status":  "error",
 					"_message": "Service was not created",

@@ -34,7 +34,7 @@ func userinfoHandler(c *gin.Context) {
 	}
 
 	session := services.FindSessionByToken(token, models.AccessToken)
-	if session.ID == 0 {
+	if session.IsNewRecord() {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             shared.InvalidToken,

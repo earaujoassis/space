@@ -15,7 +15,7 @@ func tokenHandler(c *gin.Context) {
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 	client := shared.ClientAuthentication(authorizationBasic)
-	if client.ID == 0 {
+	if client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             shared.InvalidClient,

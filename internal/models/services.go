@@ -7,13 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	// PublicService service type
-	PublicService string = "public"
-	// AttachedService service type
-	AttachedService string = "attached"
-)
-
 // Service is a service related to this application instance
 type Service struct {
 	Model

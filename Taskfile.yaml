@@ -55,7 +55,7 @@ tasks:
       - cp tmp/unit-tests.xml tmp/test-results
       - cp tmp/integration-tests.xml tmp/test-results
       - allure generate tmp/test-results --output tmp/test-report --clean
-      - echo "Run 'allure serve tmp/report' to open report"
+      - echo "> Run 'allure serve tmp/report' to open report"
   lint:
     desc: Lint go package (this repository package)
     cmds:

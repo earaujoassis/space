@@ -25,7 +25,7 @@ func ClientBasicAuthorization(c *gin.Context) {
 	}
 
 	client := ClientAuthentication(authorizationBasic)
-	if client.ID == 0 {
+	if client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error": AccessDenied,
@@ -50,7 +50,7 @@ func OAuthTokenBearerAuthorization(c *gin.Context) {
 	}
 
 	session := AccessAuthentication(authorizationBearer)
-	if session.ID == 0 || !services.SessionGrantsReadAbility(session) {
+	if session.IsNewRecord() || !services.SessionGrantsReadAbility(session) {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error": AccessDenied,
