@@ -9,13 +9,17 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
+	datastore "github.com/earaujoassis/space/internal/gateways/postgres"
+
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/oauth"
+	"github.com/earaujoassis/space/internal/oidc"
+	"github.com/earaujoassis/space/internal/web"
 	"github.com/earaujoassis/space/internal/api"
+
 	"github.com/earaujoassis/space/internal/config"
-	"github.com/earaujoassis/space/internal/datastore"
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/utils"
-	"github.com/earaujoassis/space/internal/web"
-	"github.com/earaujoassis/space/internal/oauth"
 )
 
 // Expose all routes
@@ -23,6 +27,7 @@ func Routes() *gin.Engine {
 	datastore.InitConnection()
 	gin.DisableConsoleColor()
 	router := gin.Default()
+	router.RedirectTrailingSlash = false
 	cfg := config.GetGlobalConfig()
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	store.Options(sessions.Options{
@@ -34,7 +39,7 @@ func Routes() *gin.Engine {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {
 				defer logs.Propagatef(logs.Error, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
-				if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
+				if shared.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",
 						"_message": "Bad server",
@@ -51,7 +56,7 @@ func Routes() *gin.Engine {
 		c.Next()
 	})
 	router.NoRoute(func(c *gin.Context) {
-		if utils.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
+		if shared.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 			c.JSON(http.StatusNotFound, utils.H{
 				"_status":  "error",
 				"_message": "Not found",
@@ -64,10 +69,10 @@ func Routes() *gin.Engine {
 			})
 		}
 	})
-	web.ExposeRoutes(router)
 	oauth.ExposeRoutes(router)
-	restAPI := router.Group("/api")
-	api.ExposeRoutes(restAPI)
+	oidc.ExposeRoutes(router)
+	api.ExposeRoutes(router)
+	web.ExposeRoutes(router)
 
 	return router
 }

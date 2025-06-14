@@ -1,30 +1,8 @@
 package volatile
 
 import (
-	"github.com/gomodule/redigo/redis"
-
-	"github.com/earaujoassis/space/internal/memstore"
+	memstore "github.com/earaujoassis/space/internal/gateways/redis"
 )
-
-type Value struct {
-	Result interface{}
-	Error  error
-}
-
-func (value Value) ToInt64() int64 {
-	result, _ := redis.Int64(value.Result, value.Error)
-	return result
-}
-
-func (value Value) ToInt() int {
-	result, _ := redis.Int(value.Result, value.Error)
-	return result
-}
-
-func (value Value) ToString() string {
-	result, _ := redis.String(value.Result, value.Error)
-	return result
-}
 
 func AddToSortedSetAtKey(key string, score, member interface{}) {
 	memstore.Do("ZADD", key, score, member)
@@ -35,7 +13,7 @@ func RemoveFromSortedSetAtKey(key string, member interface{}) {
 }
 
 func CheckFieldExistence(key, field string) bool {
-	keyExists, _ := redis.Bool(memstore.Do("HEXISTS", key, field))
+	keyExists, _ := Bool(memstore.Do("HEXISTS", key, field))
 	return keyExists
 }
 
@@ -56,7 +34,7 @@ func DeleteFieldAtKey(key, field string) {
 	memstore.Do("HDEL", key, field)
 }
 
-func TransactionsWrapper(f func()) {
+func TransactionWrapper(f func()) {
 	memstore.Start()
 	defer memstore.Close()
 

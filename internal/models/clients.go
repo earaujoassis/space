@@ -15,13 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	// PublicClient client type
-	PublicClient string = "public"
-	// ConfidentialClient client type
-	ConfidentialClient string = "confidential"
-)
-
 // Client is the client application model/struct
 type Client struct {
 	Model
@@ -38,8 +31,17 @@ type Client struct {
 
 func validClientScopes(fl validator.FieldLevel) bool {
 	scopesField := fl.Field().String()
+
 	// TODO A PublicClient can't have a ReadScope
-	if scopesField != PublicScope && scopesField != ReadScope {
+	// It's not a Client model
+	/*
+	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
+		return true
+	}
+	currentClient := fl.Top().Interface().(Client)
+	*/
+
+	if !HasValidScopes(strings.Split(scopesField, " ")) {
 		return false
 	}
 	return true
@@ -170,4 +172,20 @@ func (client Client) MarshalJSON() ([]byte, error) {
 		CanonicalURI: strings.Join(client.CanonicalURI, "\n"),
 		RedirectURI:  strings.Join(client.RedirectURI, "\n"),
 	})
+}
+
+func (client *Client) HasRequestedScopes(requestedScopes []string) bool {
+	validScopes := strings.Split(client.Scopes, " ")
+	validSet := make(map[string]bool)
+    for _, scope := range validScopes {
+        validSet[scope] = true
+    }
+
+    for _, requested := range requestedScopes {
+        if !validSet[requested] {
+            return false
+        }
+    }
+
+    return true
 }

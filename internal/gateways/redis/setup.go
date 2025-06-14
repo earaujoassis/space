@@ -1,4 +1,4 @@
-package memstore
+package redis
 
 import (
 	"fmt"
@@ -32,11 +32,6 @@ func Start() {
 	if err != nil {
 		logs.Propagate(logs.Panic, err.Error())
 	}
-}
-
-// Do is used to send commands to a Redis datastore, throguh an active connection
-func Do(commandName string, args ...interface{}) (reply interface{}, err error) {
-	return memoryStore.Do(commandName, args...)
 }
 
 // Close is used to end a connection to a Redis datastore; given an active connection

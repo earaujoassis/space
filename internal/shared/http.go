@@ -1,8 +1,11 @@
-package utils
+package shared
 
 import (
+	"fmt"
 	"encoding/base64"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // BasicAuthEncode encodes a key-secret pair to be used in a HTTP Basic Authentication
@@ -39,4 +42,17 @@ func MustServeJSON(path string, accept string) bool {
 		strings.HasPrefix(path, "/oauth/revoke") ||
 		strings.HasPrefix(path, "/introspect") ||
 		strings.HasPrefix(path, "/oauth/introspect")
+}
+
+func GetBaseUrl(c *gin.Context) string {
+	scheme := "http"
+    if c.Request.TLS != nil {
+        scheme = "https"
+    }
+	return fmt.Sprintf("%s://%s", scheme, c.Request.Host)
+}
+
+func SetHeadersCacheControl(c *gin.Context) {
+	c.Header("Cache-Control", "no-store")
+	c.Header("Pragma", "no-cache")
 }

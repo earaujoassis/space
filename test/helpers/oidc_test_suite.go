@@ -11,15 +11,15 @@ import (
 	"github.com/earaujoassis/space/internal/tasks"
 )
 
-type OAuthTestSuite struct {
+type OIDCTestSuite struct {
 	suite.Suite
 	Resources *TestResources
 	Server    *httptest.Server
-	Client    *OAuthTestClient
+	Client    *OIDCCTestlient
 }
 
-func (s *OAuthTestSuite) SetupSuite() {
-	if err := os.Chdir("../.."); err != nil {
+func (s *OIDCTestSuite) SetupSuite() {
+	if err := ensureProjectRoot(); err != nil {
 		s.T().Fatalf("Failed to change to project root: %v", err)
 	}
 
@@ -30,10 +30,10 @@ func (s *OAuthTestSuite) SetupSuite() {
 	router := s.setupTestRouter()
 	s.runMigrations()
 	s.Server = httptest.NewServer(router)
-	s.Client = NewOAuthTestClient(s.Server.URL)
+	s.Client = NewOIDCTestClient(s.Server.URL)
 }
 
-func (s *OAuthTestSuite) TearDownSuite() {
+func (s *OIDCTestSuite) TearDownSuite() {
 	if s.Resources != nil {
 		s.Resources.PurgeResources()
 	}
@@ -42,7 +42,7 @@ func (s *OAuthTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *OAuthTestSuite) setupConfigEnv() {
+func (s *OIDCTestSuite) setupConfigEnv() {
 	os.Setenv("SPACE_ENV", "testing")
 	os.Setenv("SPACE_APPLICATION_KEY", "masterapplicationkey")
 	os.Setenv("SPACE_MAIL_FROM", "example@example.com")
@@ -52,13 +52,13 @@ func (s *OAuthTestSuite) setupConfigEnv() {
 	os.Setenv("SPACE_STORAGE_SECRET", "KRgwMcZdLPfo9bck")
 }
 
-func (s *OAuthTestSuite) setupTestRouter() *gin.Engine {
+func (s *OIDCTestSuite) setupTestRouter() *gin.Engine {
 	config.LoadConfig()
 	router := tasks.Routes()
 
 	return router
 }
 
-func (s *OAuthTestSuite) runMigrations() {
+func (s *OIDCTestSuite) runMigrations() {
 	tasks.RunMigrations("./configs/migrations")
 }

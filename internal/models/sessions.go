@@ -7,28 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	// AccessToken token type
-	AccessToken string = "access_token"
-	// RefreshToken token type
-	RefreshToken string = "refresh_token"
-	// GrantToken token type
-	GrantToken string = "grant_token"
-
-	// PublicScope session scope
-	// This is used by public clients (they can't read or write user data)
-	PublicScope string = "public"
-	// ReadScope session scope
-	// This is used by confidential clients (they can only read user data)
-	ReadScope string = "read"
-	// WriteScope session scope
-	// No client is allowed to hold this scope (they can't write user data)
-	WriteScope string = "write"
-	// OpenIDScope session scope
-	// This is used for OpenID Connect
-	OpenIDScope string = "openid"
-)
-
 // Session model/struct
 type Session struct {
 	Model
@@ -57,7 +35,7 @@ func validScope(fl validator.FieldLevel) bool {
 
 func validTokenType(fl validator.FieldLevel) bool {
 	tokenType := fl.Field().String()
-	if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken {
+	if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken && tokenType != IdToken {
 		return false
 	}
 	return true
@@ -83,7 +61,9 @@ func (session *Session) BeforeSave(tx *gorm.DB) error {
 
 // BeforeCreate Session model/struct hook
 func (session *Session) BeforeCreate(tx *gorm.DB) error {
-	session.Token = GenerateRandomString(64)
+	if session.Token == "" {
+		session.Token = GenerateRandomString(64)
+	}
 	session.UUID = generateUUID()
 	session.Moment = time.Now().UTC().Unix()
 	session.ExpiresIn = expirationLengthForTokenType(session.TokenType)
@@ -94,4 +74,20 @@ func (session *Session) BeforeCreate(tx *gorm.DB) error {
 func (session *Session) WithinExpirationWindow() bool {
 	now := time.Now().UTC().Unix()
 	return session.ExpiresIn == eternalExpirationLength || session.Moment+session.ExpiresIn >= now
+}
+
+func HasValidScopes(requestedScopes []string) bool {
+	validScopes := []string{ PublicScope, ReadScope, OpenIDScope, ProfileScope }
+	validSet := make(map[string]bool)
+    for _, scope := range validScopes {
+        validSet[scope] = true
+    }
+
+    for _, requested := range requestedScopes {
+        if !validSet[requested] {
+            return false
+        }
+    }
+
+    return true
 }

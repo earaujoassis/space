@@ -1,4 +1,4 @@
-package datastore
+package postgres
 
 import (
 	"fmt"
@@ -37,17 +37,4 @@ func InitConnection() {
 	if err != nil {
 		logs.Propagatef(logs.Panic, "Failed to connect datastore: %v\n", err)
 	}
-}
-
-// GetDatastoreConnection is used to obtain a connection with
-//
-//	the Postgres datastore
-func GetDatastoreConnection() *gorm.DB {
-	if datastore != nil {
-		return datastore
-	}
-
-	InitConnection()
-
-	return datastore
 }

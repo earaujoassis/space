@@ -12,6 +12,7 @@ go install honnef.co/go/tools/cmd/staticcheck@latest
 go install gotest.tools/gotestsum@latest
 go install github.com/go-task/task/v3/cmd/task@latest
 task setup
+task setup:jwks
 task --list-all
 
 echo "> Setup completed"

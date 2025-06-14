@@ -9,13 +9,6 @@ import (
 	"github.com/earaujoassis/space/internal/services/volatile"
 )
 
-const (
-	// NotSpecialAction action description, used for ephemeral actions with no special meaning
-	NotSpecialAction string = "not_special"
-	// UpdateUserAction action description, user for ephemeral actions updating user data
-	UpdateUserAction string = "update_user"
-)
-
 // Action is a model/struct used to represent ephemeral actions/sessions in the application
 type Action struct {
 	UUID        string    `validate:"omitempty,uuid4" json:"uuid"`
@@ -54,7 +47,7 @@ func (action *Action) Save() error {
 		return err
 	}
 	actionJSON, _ := json.Marshal(action)
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		volatile.SetFieldAtKey("models.actions", action.UUID, actionJSON)
 		volatile.SetFieldAtKey("models.actions.indexes", action.Token, action.UUID)
 		volatile.AddToSortedSetAtKey("models.actions.rank", action.Moment, action.UUID)
@@ -64,7 +57,7 @@ func (action *Action) Save() error {
 
 // Delete deletes an Action entry in a memory store (Redis)
 func (action *Action) Delete() {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		if !volatile.CheckFieldExistence("models.actions", action.UUID) {
 			return
 		}
@@ -89,7 +82,7 @@ func (action *Action) CanUpdateUser() bool {
 func RetrieveActionByUUID(uuid string) Action {
 	var action Action
 
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		if !volatile.CheckFieldExistence("models.actions", uuid) {
 			action = Action{}
 			return
@@ -108,7 +101,7 @@ func RetrieveActionByUUID(uuid string) Action {
 func RetrieveActionByToken(token string) Action {
 	var action Action
 
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		if !volatile.CheckFieldExistence("models.actions.indexes", token) {
 			action = Action{}
 			return
