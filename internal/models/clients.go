@@ -15,13 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	// PublicClient client type
-	PublicClient string = "public"
-	// ConfidentialClient client type
-	ConfidentialClient string = "confidential"
-)
-
 // Client is the client application model/struct
 type Client struct {
 	Model

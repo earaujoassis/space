@@ -20,7 +20,7 @@ func revokeHandler(c *gin.Context) {
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 	client := shared.ClientAuthentication(authorizationBasic)
-	if client.ID == 0 {
+	if client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             shared.InvalidClient,
@@ -49,9 +49,9 @@ func revokeHandler(c *gin.Context) {
 		session = services.FindSessionByToken(token, models.RefreshToken)
 	}
 
-	if session.ID == 0 {
+	if session.IsNewRecord() {
 		session = services.FindSessionByToken(token, models.AccessToken)
-		if session.ID == 0 {
+		if session.IsNewRecord() {
 			session = services.FindSessionByToken(token, models.RefreshToken)
 		}
 	}

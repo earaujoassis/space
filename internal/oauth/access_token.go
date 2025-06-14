@@ -29,7 +29,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 
 	authorizationSession := services.FindSessionByToken(code, models.GrantToken)
 	defer services.InvalidateSession(authorizationSession)
-	if authorizationSession.ID == 0 {
+	if authorizationSession.IsNewRecord() {
 		return shared.InvalidGrantResult("")
 	}
 	user = authorizationSession.User
@@ -54,7 +54,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 		authorizationSession.Scopes,
 		models.RefreshToken)
 
-	if accessToken.ID == 0 || refreshToken.ID == 0 {
+	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
 		return shared.ServerErrorResult("")
 	}
 
@@ -88,7 +88,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 
 	refreshSession := services.FindSessionByToken(token, models.RefreshToken)
 	defer services.InvalidateSession(refreshSession)
-	if refreshSession.ID == 0 {
+	if refreshSession.IsNewRecord() {
 		return shared.InvalidGrantResult("")
 	}
 	user = refreshSession.User
@@ -113,7 +113,7 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 		scope,
 		models.RefreshToken)
 
-	if accessToken.ID == 0 || refreshToken.ID == 0 {
+	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
 		return shared.ServerErrorResult("")
 	}
 

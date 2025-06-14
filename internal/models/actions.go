@@ -9,13 +9,6 @@ import (
 	"github.com/earaujoassis/space/internal/services/volatile"
 )
 
-const (
-	// NotSpecialAction action description, used for ephemeral actions with no special meaning
-	NotSpecialAction string = "not_special"
-	// UpdateUserAction action description, user for ephemeral actions updating user data
-	UpdateUserAction string = "update_user"
-)
-
 // Action is a model/struct used to represent ephemeral actions/sessions in the application
 type Action struct {
 	UUID        string    `validate:"omitempty,uuid4" json:"uuid"`

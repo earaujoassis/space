@@ -124,7 +124,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -165,7 +165,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			user := services.FindUserByID(action.UserID)
-			if user.ID == 0 {
+			if user.IsNewRecord() {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User password was not updated",
@@ -281,7 +281,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -327,7 +327,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
@@ -361,7 +361,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(userUUID)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",

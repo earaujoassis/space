@@ -33,7 +33,7 @@ func authorizeHandler(c *gin.Context) {
 		return
 	}
 	user := services.FindUserByPublicID(userPublicID.(string))
-	if user.ID == 0 {
+	if user.IsNewRecord() {
 		session.Delete("user_public_id")
 		session.Save()
 		location = fmt.Sprintf("/signin?_=%s", nextPath)
@@ -57,7 +57,7 @@ func authorizeHandler(c *gin.Context) {
 	}
 
 	client := services.FindClientByKey(clientKey)
-	if client.ID == 0 {
+	if client.IsNewRecord() {
 		// WARNING This scenario is the trickiest one
 		// It is not safe to return to the caller or redirect to callback
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{

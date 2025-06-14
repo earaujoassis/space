@@ -67,7 +67,7 @@ func ExposeRoutes(router *gin.Engine) {
 
 			action := services.ActionAuthentication(authorizationBearer)
 			user := services.FindUserByID(action.UserID)
-			if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() || user.ID == 0 {
+			if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() || user.IsNewRecord() {
 				c.HTML(http.StatusUnauthorized, "error.password_update", utils.H{
 					"Title":    " - Update Resource Owner Credential",
 					"Internal": true,
