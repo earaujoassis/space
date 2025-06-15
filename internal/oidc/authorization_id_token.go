@@ -5,13 +5,13 @@ import (
 	"strings"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/repository"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
 // ImplicitFlowIDToken returns an OIDC id_token grant, given the right details
-func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
+func ImplicitFlowIDToken(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
 	var redirectURI string
 	var scope string
 	var state string
@@ -45,10 +45,10 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 
 	nonce := data["nonce"].(string)
 	if nonce != "" {
-		if !isValidNonce(nonce) {
+		if !repositories.Nonces().IsValid(nonce) {
 			return shared.InvalidRequestResult(state)
 		}
-		if ok := storeNonceForClient(client.Key, nonce, ""); !ok {
+		if ok := repositories.Nonces().StoreForClient(client.Key, nonce, ""); !ok {
 			return shared.InvalidRequestResult(state)
 		}
 	}
@@ -66,7 +66,16 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	}
 
 	idToken := createIDToken(issuer, user.PublicID, client.Key, nonce)
-	session := services.CreateSessionWithToken(user, client, ip, userAgent, scope, models.IDToken, idToken)
+	session := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        ip,
+		UserAgent: userAgent,
+		Scopes:    scope,
+		TokenType: models.GrantToken,
+		Token:     idToken,
+	}
+	repositories.Sessions().Create(&session)
 	if idToken != "" && session.ID > 0 {
 		return utils.H{
 			"id_token": idToken,

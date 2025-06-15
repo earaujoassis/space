@@ -2,13 +2,11 @@ package integration
 
 import (
 	"strings"
-
-	"github.com/earaujoassis/space/test/factory"
 )
 
 func (s *OIDCProviderSuite) TestAuthorizeIdTokenGrant() {
-	user := factory.NewUser()
-	client := factory.NewClientWithScopes("openid profile")
+	user := s.Factory.NewUser()
+	client := s.Factory.NewClientWithScopes("openid profile")
 
 	s.Run("should have a valid cookie", func() {
 		s.Client.StartSession(user)

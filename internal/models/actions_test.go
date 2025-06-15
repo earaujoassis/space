@@ -29,21 +29,19 @@ func TestValidActionModel(t *testing.T) {
 	err = client.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	user := User{
-		FirstName:  gofakeit.FirstName(),
-		LastName:   gofakeit.LastName(),
-		Username:   gofakeit.Username(),
-		Email:      gofakeit.Email(),
-		Passphrase: gofakeit.Password(true, true, true, true, false, 10),
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         gofakeit.Email(),
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 10),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
 	}
 	user.Client = client
 	user.Language = Language{
 		Name:    "English",
 		IsoCode: "en-US",
 	}
-	val := user.GenerateCodeSecret()
-	assert.NotNil(t, val)
-	_, err = user.GenerateRecoverSecret()
-	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	err = user.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	action = Action{
@@ -59,6 +57,7 @@ func TestValidActionModel(t *testing.T) {
 		Scopes:      ReadScope,
 		Description: NotSpecialAction,
 	}
+	action.BeforeSave()
 	err = validateModel("validate", action)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	assert.True(t, IsValid("validate", action), "should return true for valid action")

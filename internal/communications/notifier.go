@@ -5,15 +5,25 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/logs"
-	"github.com/earaujoassis/space/internal/services/mailer"
+	"github.com/earaujoassis/space/internal/mailer"
 	"github.com/earaujoassis/space/internal/utils"
 )
+
+type Notifier struct {
+	cfg *config.Config
+}
+
+func NewNotifier(cfg *config.Config) *Notifier {
+	return &Notifier{
+		cfg: cfg,
+	}
+}
 
 // Announce is used to communicate actions throughout the application,
 //
 //	using e-mail messages (production-only) or stdout (development-only)
-func Announce(name string, data utils.H) {
-	if config.IsEnvironment("production") {
+func (n *Notifier) Announce(name string, data utils.H) {
+	if n.cfg.Environment == "production" {
 		var err error
 		switch name {
 		case "user.created":
@@ -61,7 +71,7 @@ func Announce(name string, data utils.H) {
 		}
 
 	}
-	if config.IsEnvironment("development") {
+	if n.cfg.Environment == "development" {
 		logs.Propagatef(logs.Info, "Action `%s` with data `%v`\n", name, data)
 	}
 }

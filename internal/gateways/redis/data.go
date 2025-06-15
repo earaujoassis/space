@@ -1,4 +1,4 @@
-package volatile
+package redis
 
 import (
 	"github.com/gomodule/redigo/redis"

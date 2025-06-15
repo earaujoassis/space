@@ -8,9 +8,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -22,10 +22,11 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 	// Requires X-Requested-By and Origin (same-origin policy)
 	// Authorization type: action token / Bearer (for web use)
 	router.GET("/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+		repositories := ioc.GetRepositories(c)
 		action := c.MustGet("Action").(models.Action)
 		session := sessions.Default(c)
 		userPublicID := session.Get("user_public_id")
-		user := services.FindUserByPublicID(userPublicID.(string))
+		user := repositories.Users().FindByPublicID(userPublicID.(string))
 		if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 			c.JSON(http.StatusUnauthorized, utils.H{
@@ -39,7 +40,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		c.JSON(http.StatusOK, utils.H{
 			"_status":  "success",
 			"_message": "Clients are available",
-			"clients":  services.ActiveClients(),
+			"clients":  repositories.Clients().GetActive(),
 		})
 	})
 
@@ -48,10 +49,11 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		clientsRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+			repositories := ioc.GetRepositories(c)
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
 			userPublicID := session.Get("user_public_id")
-			user := services.FindUserByPublicID(userPublicID.(string))
+			user := repositories.Users().FindByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
@@ -71,8 +73,8 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				Type:         models.ConfidentialClient,
 			}
 
-			ok, err := services.CreateNewClient(&client)
-			if !ok {
+			err := repositories.Clients().Create(&client)
+			if err != nil {
 				c.JSON(http.StatusBadRequest, utils.H{
 					"_status":  "error",
 					"_message": "Client was not created",
@@ -90,10 +92,11 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		clientsRoutes.PATCH("/:client_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
 			var clientUUID = c.Param("client_id")
 
+			repositories := ioc.GetRepositories(c)
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
 			userPublicID := session.Get("user_public_id")
-			user := services.FindUserByPublicID(userPublicID.(string))
+			user := repositories.Users().FindByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
@@ -119,13 +122,13 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				newScopes = ""
 			}
 
-			client := services.FindClientByUUID(clientUUID)
+			client := repositories.Clients().FindByUUID(clientUUID)
 			client.CanonicalURI = utils.TrimStrings(strings.Split(c.PostForm("canonical_uri"), "\n"))
 			client.RedirectURI = utils.TrimStrings(strings.Split(c.PostForm("redirect_uri"), "\n"))
 			if newScopes != "" {
 				client.Scopes = newScopes
 			}
-			services.SaveClient(&client)
+			repositories.Clients().Save(&client)
 			c.JSON(http.StatusNoContent, nil)
 		})
 
@@ -134,9 +137,10 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		clientsRoutes.GET("/:client_id/credentials", func(c *gin.Context) {
 			var clientUUID = c.Param("client_id")
 
+			repositories := ioc.GetRepositories(c)
 			session := sessions.Default(c)
 			userPublicID := session.Get("user_public_id")
-			user := services.FindUserByPublicID(userPublicID.(string))
+			user := repositories.Users().FindByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.IsNewRecord() || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
@@ -156,11 +160,11 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			client := services.FindClientByUUID(clientUUID)
+			client := repositories.Clients().FindByUUID(clientUUID)
 			// For security reasons, the client's secret is regenerated
 			clientSecret := models.GenerateRandomString(64)
-			client.UpdateSecret(clientSecret)
-			services.SaveClient(&client)
+			client.SetSecret(clientSecret)
+			repositories.Clients().Save(&client)
 
 			contentString := fmt.Sprintf("name,client_key,client_secret\n%s,%s,%s\n", client.Name, client.Key, clientSecret)
 			content := strings.NewReader(contentString)

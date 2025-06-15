@@ -15,25 +15,24 @@ import (
 	"github.com/earaujoassis/space/internal/logs"
 )
 
-func buildDatabaseUrl() string {
-	cfg := config.GetGlobalConfig()
+func buildDatabaseUrl(cfg *config.Config) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s_%s?sslmode=%s",
 		cfg.DatastoreUser,
 		cfg.DatastorePassword,
 		cfg.DatastoreHost,
 		cfg.DatastorePort,
 		cfg.DatastoreNamePrefix,
-		config.Environment(),
+		cfg.Environment,
 		cfg.DatastoreSslMode)
 }
 
-func createMigrator(relativePath string) (*migrate.Migrate, error) {
+func createMigrator(cfg *config.Config, relativePath string) (*migrate.Migrate, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
 	migrationsPath := fmt.Sprintf("file:///%s", filepath.Join(pwd, relativePath))
-	db, err := sql.Open("postgres", buildDatabaseUrl())
+	db, err := sql.Open("postgres", buildDatabaseUrl(cfg))
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +48,8 @@ func createMigrator(relativePath string) (*migrate.Migrate, error) {
 	return migrator, nil
 }
 
-func RunMigrations(relativePath string) {
-	migrator, err := createMigrator(relativePath)
+func RunMigrations(cfg *config.Config, relativePath string) {
+	migrator, err := createMigrator(cfg, relativePath)
 	if err != nil {
 		logs.Propagate(logs.Panic, err.Error())
 	}
@@ -59,8 +58,8 @@ func RunMigrations(relativePath string) {
 	}
 }
 
-func RollbackMigrations(relativePath string) {
-	migrator, err := createMigrator(relativePath)
+func RollbackMigrations(cfg *config.Config, relativePath string) {
+	migrator, err := createMigrator(cfg, relativePath)
 	if err != nil {
 		logs.Propagate(logs.Panic, err.Error())
 	}

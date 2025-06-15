@@ -4,7 +4,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/repository"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -12,8 +12,7 @@ import (
 // AccessTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
 //
 //	basically, a `code` from `AuthorizationCodeGrant`
-func AccessTokenRequest(data utils.H) (utils.H, error) {
-	var user models.User
+func AccessTokenRequest(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
 	var client models.Client
 
 	var code string
@@ -27,13 +26,12 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 	code = data["code"].(string)
 	client = data["client"].(models.Client)
 
-	authorizationSession := services.FindSessionByToken(code, models.GrantToken)
-	defer services.InvalidateSession(authorizationSession)
+	authorizationSession := repositories.Sessions().FindByToken(code, models.GrantToken)
+	defer repositories.Sessions().Invalidate(&authorizationSession)
 	if authorizationSession.IsNewRecord() {
 		return shared.InvalidGrantResult("")
 	}
-	user = authorizationSession.User
-	user = services.FindUserByPublicID(user.PublicID)
+	user := authorizationSession.User
 	if authorizationSession.Client.ID != client.ID {
 		return shared.InvalidGrantResult("")
 	}
@@ -41,18 +39,24 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 		return shared.InvalidGrantResult("")
 	}
 
-	accessToken := services.CreateSession(user,
-		client,
-		authorizationSession.IP,
-		authorizationSession.UserAgent,
-		authorizationSession.Scopes,
-		models.AccessToken)
-	refreshToken := services.CreateSession(user,
-		client,
-		authorizationSession.IP,
-		authorizationSession.UserAgent,
-		authorizationSession.Scopes,
-		models.RefreshToken)
+	accessToken := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        authorizationSession.IP,
+		UserAgent: authorizationSession.UserAgent,
+		Scopes:    authorizationSession.Scopes,
+		TokenType: models.AccessToken,
+	}
+	repositories.Sessions().Create(&accessToken)
+	refreshToken := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        authorizationSession.IP,
+		UserAgent: authorizationSession.UserAgent,
+		Scopes:    authorizationSession.Scopes,
+		TokenType: models.RefreshToken,
+	}
+	repositories.Sessions().Create(&refreshToken)
 
 	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
 		return shared.ServerErrorResult("")

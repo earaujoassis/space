@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -17,12 +17,14 @@ func introspectHandler(c *gin.Context) {
 	var token = c.PostForm("token")
 	var tokenTypeHint = c.PostForm("token_type_hint")
 	var session models.Session
-	var introspectType string
 	var client models.Client
+	var introspectType string
 
 	baseURL := shared.GetBaseUrl(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	if client = shared.ClientAuthentication(authorizationBasic); client.IsNewRecord() {
+	key, secret := shared.BasicAuthDecode(authorizationBasic)
+	repositories := ioc.GetRepositories(c)
+	if client = repositories.Clients().Authentication(key, secret); client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             shared.InvalidClient,
@@ -55,18 +57,18 @@ func introspectHandler(c *gin.Context) {
 
 	switch tokenTypeHint {
 	case models.AccessToken:
-		session = services.FindSessionByToken(token, models.AccessToken)
+		session = repositories.Sessions().FindByToken(token, models.AccessToken)
 		introspectType = models.AccessToken
 	case models.RefreshToken:
-		session = services.FindSessionByToken(token, models.RefreshToken)
+		session = repositories.Sessions().FindByToken(token, models.RefreshToken)
 		introspectType = models.RefreshToken
 	}
 
 	if session.IsNewRecord() {
-		session = services.FindSessionByToken(token, models.AccessToken)
+		session = repositories.Sessions().FindByToken(token, models.AccessToken)
 		introspectType = models.AccessToken
 		if session.IsNewRecord() {
-			session = services.FindSessionByToken(token, models.RefreshToken)
+			session = repositories.Sessions().FindByToken(token, models.RefreshToken)
 			introspectType = models.RefreshToken
 		}
 	}
@@ -80,7 +82,6 @@ func introspectHandler(c *gin.Context) {
 
 	user := session.User
 	client = session.Client
-
 	introspectionData := utils.H{
 		"active":    true,
 		"scope":     session.Scopes,

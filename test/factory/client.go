@@ -1,12 +1,9 @@
 package factory
 
 import (
-	"log"
-
 	"github.com/brianvoe/gofakeit/v7"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 )
 
@@ -17,7 +14,7 @@ type Client struct {
 	Model  models.Client
 }
 
-func NewClient() *Client {
+func (f *TestRepositoryFactory) NewClient() *Client {
 	client := models.Client{
 		Name:         gofakeit.Company(),
 		Scopes:       models.PublicScope,
@@ -25,13 +22,10 @@ func NewClient() *Client {
 		RedirectURI:  []string{"http://localhost/callback"},
 		Type:         models.ConfidentialClient,
 	}
-	ok, err := services.CreateNewClient(&client)
-	if !ok {
-		log.Printf("Could not create client: %s", err)
-	}
+	f.manager.Clients().Create(&client)
 	clientSecret := models.GenerateRandomString(64)
-	client.UpdateSecret(clientSecret)
-	services.SaveClient(&client)
+	client.SetSecret(clientSecret)
+	f.manager.Clients().Save(&client)
 	localClient := Client{
 		Name:   client.Name,
 		Key:    client.Key,
@@ -41,7 +35,7 @@ func NewClient() *Client {
 	return &localClient
 }
 
-func NewClientWithScopes(scopes string) *Client {
+func (f *TestRepositoryFactory) NewClientWithScopes(scopes string) *Client {
 	client := models.Client{
 		Name:         gofakeit.Company(),
 		Scopes:       scopes,
@@ -49,13 +43,10 @@ func NewClientWithScopes(scopes string) *Client {
 		RedirectURI:  []string{"http://localhost/callback"},
 		Type:         models.ConfidentialClient,
 	}
-	ok, err := services.CreateNewClient(&client)
-	if !ok {
-		log.Printf("Could not create client: %s", err)
-	}
+	f.manager.Clients().Create(&client)
 	clientSecret := models.GenerateRandomString(64)
-	client.UpdateSecret(clientSecret)
-	services.SaveClient(&client)
+	client.SetSecret(clientSecret)
+	f.manager.Clients().Save(&client)
 	localClient := Client{
 		Name:   client.Name,
 		Key:    client.Key,
