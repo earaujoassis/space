@@ -1,7 +1,8 @@
 <html>
 <body onload="document.forms[0].submit()">
 <form method="post" action="{{ .Callback }}">
-  <input type="hidden" name="id_token" value="{{ .IdToken }}"/>
+  <input type="hidden" name="error" value="{{ .Error }}"/>
+  <input type="hidden" name="error_description" value="{{ .ErrorDescription }}"/>
   <input type="hidden" name="state" value="{{ .State }}"/>
 </form>
 </body>

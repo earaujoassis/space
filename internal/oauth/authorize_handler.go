@@ -80,7 +80,7 @@ func authorizeHandler(c *gin.Context) {
 	}
 
 	if scope == "" || !models.HasValidScopes(strings.Split(scope, " ")) {
-		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.InvalidScope, state)
+		location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.InvalidScope, state)
 		c.Redirect(http.StatusFound, location)
 		return
 	}
@@ -106,7 +106,7 @@ func authorizeHandler(c *gin.Context) {
 		} else if c.Request.Method == "POST" || (activeSessions > 0 && c.Request.Method == "GET") {
 			if c.PostForm("access_denied") == "true" {
 				// The user requested to deny access
-				location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.AccessDenied, state)
+				location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.AccessDenied, state)
 				c.Redirect(http.StatusFound, location)
 				return
 			}
@@ -121,7 +121,7 @@ func authorizeHandler(c *gin.Context) {
 				"state":         state,
 			})
 			if err != nil {
-				location = fmt.Sprintf(shared.ErrorURI, redirectURI, result["error"], result["state"])
+				location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, result["error"], result["state"])
 				// Previous return: c.HTML(http.StatusFound, location)
 				c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 					"Title":     " - Authorization Error",
@@ -139,7 +139,7 @@ func authorizeHandler(c *gin.Context) {
 		}
 	// Implicit Grant
 	case shared.Token:
-		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.UnsupportedResponseType, state)
+		location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.UnsupportedResponseType, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",
@@ -148,7 +148,7 @@ func authorizeHandler(c *gin.Context) {
 			"ErrorCode": shared.UnsupportedResponseType,
 		})
 	default:
-		location = fmt.Sprintf(shared.ErrorURI, redirectURI, shared.InvalidRequest, state)
+		location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.InvalidRequest, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 			"Title":     " - Authorization Error",

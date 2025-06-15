@@ -35,7 +35,7 @@ func validScope(fl validator.FieldLevel) bool {
 
 func validTokenType(fl validator.FieldLevel) bool {
 	tokenType := fl.Field().String()
-	if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken && tokenType != IdToken {
+	if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken && tokenType != IDToken {
 		return false
 	}
 	return true
@@ -46,7 +46,7 @@ func expirationLengthForTokenType(tokenType string) int64 {
 	case AccessToken:
 		return largestExpirationLength
 	case RefreshToken:
-		return eternalExpirationLength
+		return refreshableExpirationLength
 	case GrantToken:
 		return machineryExpirationLength
 	default:
@@ -73,7 +73,7 @@ func (session *Session) BeforeCreate(tx *gorm.DB) error {
 // WithinExpirationWindow checks if a Session entry is still valid (time-based)
 func (session *Session) WithinExpirationWindow() bool {
 	now := time.Now().UTC().Unix()
-	return session.ExpiresIn == eternalExpirationLength || session.Moment+session.ExpiresIn >= now
+	return now <= session.Moment + session.ExpiresIn
 }
 
 func HasValidScopes(requestedScopes []string) bool {

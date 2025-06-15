@@ -18,7 +18,7 @@ func TestValidClientModel(t *testing.T) {
 		Type:         PublicClient,
 	}
 
-	assert.True(t, IsValid("validate", client), "should return true for the valid client")
+	assert.True(t, IsValid("validate", client), "should return true for valid client")
 }
 
 func TestInvalidClientMissingRequiredFields(t *testing.T) {

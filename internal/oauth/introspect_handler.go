@@ -86,7 +86,7 @@ func introspectHandler(c *gin.Context) {
 		"scope": session.Scopes,
 		"client_id": client.Key,
 		"username": user.Username,
-		"exp": session.ExpiresIn,
+		"exp": session.Moment + session.ExpiresIn,
 		"iat": session.Moment,
 		// "nbf": (not before) not defined nor required
 		"sub": user.PublicID,

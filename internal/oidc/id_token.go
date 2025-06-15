@@ -14,7 +14,7 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func ImplicitFlowIdToken(data utils.H) (utils.H, error) {
+func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	var redirectURI string
 	var scope string
 	var state string
@@ -58,8 +58,8 @@ func ImplicitFlowIdToken(data utils.H) (utils.H, error) {
 		return shared.InvalidScopeResult(state)
 	}
 
-	idToken := createIDToken(issuer, user.PublicID, client.Key)
-	session := services.CreateSessionWithToken(user, client, ip, userAgent, scope, models.IdToken, idToken)
+	idToken := createIDToken(issuer, user.PublicID, client.Key, scope)
+	session := services.CreateSessionWithToken(user, client, ip, userAgent, scope, models.IDToken, idToken)
 	if idToken != "" && session.ID > 0 {
 		return utils.H{
 			"id_token": idToken,
@@ -70,7 +70,7 @@ func ImplicitFlowIdToken(data utils.H) (utils.H, error) {
 	return shared.ServerErrorResult(state)
 }
 
-func createIDToken(issuer, userPublicId, clientKey string) string {
+func createIDToken(issuer, userPublicId, clientKey, scope string) string {
 	keyManager, err := initKeyManager()
 	if err != nil || len(keyManager.Keys) == 0 {
 		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
@@ -82,11 +82,14 @@ func createIDToken(issuer, userPublicId, clientKey string) string {
 		"iss": issuer,
 		"sub": userPublicId,
 		"aud": clientKey,
+		"scope": scope,
 		"exp": time.Now().Add(time.Hour).Unix(),
 		"iat": time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token.Header["alg"] = "RS256"
+	token.Header["typ"] = "JWT"
 	token.Header["kid"] = key.ID
 
 	signedToken, err := token.SignedString(key.PrivateKey)
