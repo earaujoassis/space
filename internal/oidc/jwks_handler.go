@@ -10,17 +10,6 @@ import (
 	"github.com/earaujoassis/space/internal/logs"
 )
 
-func initKeyManager() (*KeyManager, error) {
-    km := &KeyManager{}
-
-    err := km.LoadKeysFromPath("configs/jwks")
-    if err != nil {
-        return nil, err
-    }
-
-    return km, nil
-}
-
 func jwksHandler(c *gin.Context) {
 	keyManager, err := initKeyManager()
 	if err != nil {
@@ -33,6 +22,6 @@ func jwksHandler(c *gin.Context) {
 	}
 	publicKeys := keyManager.GetPublicKeys()
 	c.Header("Cache-Control", "public, max-age=86400")
-	c.Header("ETag", GenerateJWKSETag(publicKeys))
+	c.Header("ETag", generateJWKSETag(publicKeys))
 	c.JSON(http.StatusOK, publicKeys)
 }

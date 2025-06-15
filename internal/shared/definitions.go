@@ -9,8 +9,17 @@ const (
 	// AccessDenied error type
 	AccessDenied string = "access_denied"
 
-	// ErrorURI defines the query string for the callback redirect
-	ErrorURI string = "%s?error=%s&state=%s"
+	// ErrorQueryURI defines the query string for the callback redirect
+	ErrorQueryURI string = "%s?error=%s&state=%s"
+	// ErrorFragmentURI defines the fragment string for the callback redirect
+	ErrorFragmentURI string = "%s#error=%s&state=%s"
+
+	// QueryReponseType defines the response_mode for query
+	QueryReponseType string = "query"
+	// FragmentResponseType defines the response_mode for fragment
+	FragmentResponseType string = "fragment"
+	// FormPostReponseType defines the response_mode for form_post
+	FormPostReponseType string = "form_post"
 )
 
 const (
@@ -24,13 +33,15 @@ const (
 	InvalidClient string = "invalid_client"
 	// InsufficientScope error type
 	InsufficientScope string = "insufficient_scope"
+	// InvalidResponseMode error type
+	InvalidResponseMode string = "invalid_response_mode"
 
 	// OpenID Connect Response types
 
-	// IdToken response type
-	IdToken string = "id_token"
-	// CodeIdToken response type
-	CodeIdToken string = "code id_token"
+	// IDToken response type
+	IDToken string = "id_token"
+	// CodeIDToken response type
+	CodeIDToken string = "code id_token"
 )
 
 const (
@@ -70,4 +81,13 @@ const (
 	Code string = "code"
 	// Token response type
 	Token string = "token"
+)
+
+type TokenType int8
+
+const (
+	// TokenTypeIDToken
+	TokenTypeIDToken TokenType = iota
+	// TokenTypeAccessToken
+	TokenTypeAccessToken
 )

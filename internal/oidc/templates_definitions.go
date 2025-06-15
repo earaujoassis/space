@@ -6,6 +6,7 @@ import (
 
 func createCustomRender() multitemplate.Render {
 	render := multitemplate.New()
-	render.AddFromFiles("formt_post", "internal/oidc/templates/form_post.html")
+	render.AddFromFiles("formt_post.error", "internal/oidc/templates/form_post.error.html")
+	render.AddFromFiles("formt_post.success", "internal/oidc/templates/form_post.success.html")
 	return render
 }

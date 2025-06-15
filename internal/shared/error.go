@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"fmt"
 	"errors"
 
 	"github.com/earaujoassis/space/internal/utils"
@@ -9,6 +10,7 @@ import (
 func errorResult(errorType, state string) (utils.H, error) {
 	return utils.H{
 		"error": errorType,
+		"error_description": fmt.Sprintf("Could not fulfill your request: %s", errorType),
 		"state": state,
 	}, errors.New(errorType)
 }

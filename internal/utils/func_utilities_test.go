@@ -15,3 +15,10 @@ func TestTrimStrings(t *testing.T) {
 	concat = strings.Join(trimmedStrs, "")
 	assert.Equal(t, "with spacesin  between", concat)
 }
+
+func TestTrimStringsWithEmptyString(t *testing.T) {
+	srts := strings.Split("", " ")
+	assert.Equal(t, 1, len(srts))
+	trimmed := TrimStrings(srts)
+	assert.Equal(t, 1, len(trimmed))
+}

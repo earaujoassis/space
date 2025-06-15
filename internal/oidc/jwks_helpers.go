@@ -3,25 +3,19 @@ package oidc
 import (
 	"crypto/rsa"
 	"crypto/x509"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
-	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/utils"
+	"github.com/earaujoassis/space/internal/logs"
 )
-
-type KeyPair struct {
-	ID         string
-	PrivateKey *rsa.PrivateKey
-	PublicKey  *rsa.PublicKey
-	CreatedAt  time.Time
-}
-
-type KeyManager struct {
-	Keys []KeyPair
-}
 
 func parsePrivateKey(block *pem.Block) (*rsa.PrivateKey, error) {
 	if privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes); err == nil {
@@ -38,83 +32,78 @@ func parsePrivateKey(block *pem.Block) (*rsa.PrivateKey, error) {
 	return nil, fmt.Errorf("unable to parse private key")
 }
 
-func (km *KeyManager) loadPrivateKey(path string) error {
-	keyID := km.extractKeyID(path, ".private.pem")
-
-	keyData, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	block, _ := pem.Decode(keyData)
-	if block == nil {
-		return fmt.Errorf("failed to parse PEM block from %s", path)
-	}
-
-	privateKey, err := parsePrivateKey(block)
-	if err != nil {
-		return err
-	}
-
-	keyPair := km.findOrCreateKeyPair(keyID)
-	keyPair.PrivateKey = privateKey
-	keyPair.PublicKey = &privateKey.PublicKey
-
-	return nil
-}
-
-func (km *KeyManager) loadPublicKey(path string) error {
-	keyID := km.extractKeyID(path, ".public.pem")
-
-	keyData, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	block, _ := pem.Decode(keyData)
-	if block == nil {
-		return fmt.Errorf("failed to parse PEM block from %s", path)
-	}
-
-	publicKey, err := x509.ParsePKIXPublicKey(block.Bytes)
-	if err != nil {
-		return err
-	}
-
-	rsaPublicKey, ok := publicKey.(*rsa.PublicKey)
-	if !ok {
-		return fmt.Errorf("not an RSA public key: %s", path)
-	}
-
-	keyPair := km.findOrCreateKeyPair(keyID)
-	keyPair.PublicKey = rsaPublicKey
-
-	return nil
-}
-
-func (km *KeyManager) extractKeyID(path, suffix string) string {
-	filename := filepath.Base(path)
-	return strings.TrimSuffix(filename, suffix)
-}
-
-func (km *KeyManager) findOrCreateKeyPair(keyID string) *KeyPair {
-	for i := range km.Keys {
-		if km.Keys[i].ID == keyID {
-			return &km.Keys[i]
-		}
-	}
-
-	newKeyPair := KeyPair{
-		ID:        keyID,
-		CreatedAt: time.Now(),
-	}
-	km.Keys = append(km.Keys, newKeyPair)
-
-	return &km.Keys[len(km.Keys)-1]
-}
-
 func convertToBase64(b []byte) string {
 	return base64.URLEncoding.
 		WithPadding(base64.NoPadding).
 		EncodeToString(b)
+}
+
+func initKeyManager() (*KeyManager, error) {
+    km := &KeyManager{}
+
+    err := km.LoadKeysFromPath("configs/jwks")
+    if err != nil {
+        return nil, err
+    }
+
+    return km, nil
+}
+
+func getJWTValidationKey(token *jwt.Token) (interface{}, error) {
+	if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+	}
+
+	kidInterface, exists := token.Header["kid"]
+	if !exists {
+		return nil, fmt.Errorf("missing kid in token header")
+	}
+
+	kid, ok := kidInterface.(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid kid format")
+	}
+
+	publicKey, err := getPublicKeyByID(kid)
+	if err != nil {
+		return nil, fmt.Errorf("unknown key id: %s", kid)
+	}
+
+	return publicKey, nil
+}
+
+func getPublicKeyByID(keyID string) (*rsa.PublicKey, error) {
+	keyManager, err := initKeyManager()
+	if err != nil {
+		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
+		return nil, err
+	}
+	keyPair := keyManager.GetKeyByID(keyID)
+	if keyPair == nil {
+		return nil, fmt.Errorf("key not found: %s", keyID)
+	}
+
+	if keyPair.PublicKey == nil {
+		return nil, fmt.Errorf("public key not available: %s", keyID)
+	}
+
+	return keyPair.PublicKey, nil
+}
+
+func identifyTokenType(tokenString string) shared.TokenType {
+	parts := strings.Split(tokenString, ".")
+	if len(parts) == 3 {
+		if _, err := jwt.Parse(tokenString, getJWTValidationKey); err == nil {
+			return shared.TokenTypeIDToken
+		}
+	}
+
+	return shared.TokenTypeAccessToken
+}
+
+func generateJWKSETag(keys []utils.H) string {
+	data, _ := json.Marshal(keys)
+	hash := sha256.Sum256(data)
+
+	return fmt.Sprintf(`"%x"`, hash[:8])
 }

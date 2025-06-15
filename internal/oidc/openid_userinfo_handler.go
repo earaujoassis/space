@@ -16,44 +16,57 @@ import (
 
 func userinfoHandler(c *gin.Context) {
 	var userinfo utils.H
+	var user models.User
+	var scope string
 
-	token := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
+	authorizationHeader := c.GetHeader("Authorization")
+	token := strings.Replace(authorizationHeader, "Bearer ", "", 1)
 	if token == "" {
 		c.Header("WWW-Authenticate", "Bearer")
 		c.JSON(http.StatusUnauthorized, "")
 		return
 	}
 
-	if !security.ValidToken(token) {
+	tokenType := identifyTokenType(token)
+	switch tokenType {
+	case shared.TokenTypeIDToken:
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error":             shared.InvalidToken,
-			"error_description": "The access token expired",
+			"error_description": "ID token not accepted, use access token",
 		})
 		return
+	case shared.TokenTypeAccessToken:
+		if !security.ValidToken(token) {
+			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
+			c.JSON(http.StatusUnauthorized, utils.H{
+				"error":             shared.InvalidToken,
+				"error_description": "The access token expired",
+			})
+			return
+		}
+		session := services.FindSessionByToken(token, models.AccessToken)
+		if session.IsNewRecord() {
+			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
+			c.JSON(http.StatusUnauthorized, utils.H{
+				"error":             shared.InvalidToken,
+				"error_description": "The access token expired",
+			})
+			return
+		}
+		if !strings.Contains(session.Scopes, "openid") {
+			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InsufficientScope))
+			c.JSON(http.StatusForbidden, utils.H{
+				"error":             shared.InsufficientScope,
+				"error_description": "The access token does not have the required scope",
+			})
+			return
+		}
+		user = session.User
+		scope = session.Scopes
 	}
 
-	session := services.FindSessionByToken(token, models.AccessToken)
-	if session.IsNewRecord() {
-		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
-		c.JSON(http.StatusUnauthorized, utils.H{
-			"error":             shared.InvalidToken,
-			"error_description": "The access token expired",
-		})
-		return
-	}
-
-	if !strings.Contains(session.Scopes, "openid") {
-		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InsufficientScope))
-		c.JSON(http.StatusForbidden, utils.H{
-			"error":             shared.InsufficientScope,
-			"error_description": "The access token does not have the required scope",
-		})
-		return
-	}
-
-	user := session.User
-	if !strings.Contains(session.Scopes, "profile") {
+	if !strings.Contains(scope, "profile") {
 		userinfo = utils.H{
 			"sub": user.PublicID,
 		}

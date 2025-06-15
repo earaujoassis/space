@@ -21,8 +21,8 @@ const (
 	RefreshToken string = "refresh_token"
 	// GrantToken token type
 	GrantToken string = "grant_token"
-	// IdToken token type
-	IdToken string = "id_token"
+	// IDToken token type
+	IDToken string = "id_token"
 
 	// PublicScope session scope
 	// This is used by public clients (they can't read or write user data)

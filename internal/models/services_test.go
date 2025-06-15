@@ -16,7 +16,7 @@ func TestValidServiceModel(t *testing.T) {
 		Type:         AttachedService,
 	}
 
-	assert.True(t, IsValid("validate", service), "should return true for the valid service")
+	assert.True(t, IsValid("validate", service), "should return true for valid service")
 }
 
 func TestInvalidServiceMissingRequiredFields(t *testing.T) {
@@ -27,7 +27,7 @@ func TestInvalidServiceMissingRequiredFields(t *testing.T) {
 		Type:         "",
 	}
 
-	assert.False(t, IsValid("validate", service), "should return false for missing required fields")
+	assert.False(t, IsValid("validate", service), "should return false for invalid service")
 }
 
 func TestServiceModelCreation(t *testing.T) {
@@ -40,7 +40,7 @@ func TestServiceModelCreation(t *testing.T) {
 		Type:         PublicService,
 	}
 
-	assert.True(t, IsValid("validate", service), "should return true for the valid service")
+	assert.True(t, IsValid("validate", service), "should return true for valid service")
 	err = service.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	err = service.BeforeCreate(nil)
