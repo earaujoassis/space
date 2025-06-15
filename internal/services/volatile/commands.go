@@ -1,6 +1,8 @@
 package volatile
 
 import (
+	"time"
+
 	memstore "github.com/earaujoassis/space/internal/gateways/redis"
 )
 
@@ -19,6 +21,11 @@ func CheckFieldExistence(key, field string) bool {
 
 func SetFieldAtKey(key, field string, value interface{}) {
 	memstore.Do("HSET", key, field, value)
+}
+
+func SetKeyWithExpiration(key string, value interface{}, ttl time.Duration) bool {
+	_, err := memstore.Do("SET", key, value, "NX", "EX", ttl)
+	return err == nil
 }
 
 func IncrementFieldAtKeyBy(key, field string, value interface{}) {

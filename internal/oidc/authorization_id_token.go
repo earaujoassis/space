@@ -46,6 +46,16 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	user = data["user"].(models.User)
 	issuer := data["issuer"].(string)
 
+	nonce := data["nonce"].(string)
+	if nonce != "" {
+		if !isValidNonce(nonce) {
+			return shared.InvalidRequestResult(state)
+		}
+		if ok := storeNonceForClient(client.Key, nonce); !ok {
+			return shared.InvalidRequestResult(state)
+		}
+	}
+
 	if data["scope"] != nil {
 		scope = data["scope"].(string)
 	}
@@ -58,7 +68,7 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 		return shared.InvalidScopeResult(state)
 	}
 
-	idToken := createIDToken(issuer, user.PublicID, client.Key, scope)
+	idToken := createIDToken(issuer, user.PublicID, client.Key, scope, nonce)
 	session := services.CreateSessionWithToken(user, client, ip, userAgent, scope, models.IDToken, idToken)
 	if idToken != "" && session.ID > 0 {
 		return utils.H{
@@ -70,7 +80,7 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	return shared.ServerErrorResult(state)
 }
 
-func createIDToken(issuer, userPublicId, clientKey, scope string) string {
+func createIDToken(issuer, userPublicId, clientKey, scope, nonce string) string {
 	keyManager, err := initKeyManager()
 	if err != nil || len(keyManager.Keys) == 0 {
 		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
@@ -78,13 +88,17 @@ func createIDToken(issuer, userPublicId, clientKey, scope string) string {
 	}
 
 	key := keyManager.Keys[0]
+	now := time.Now()
 	claims := jwt.MapClaims{
 		"iss": issuer,
 		"sub": userPublicId,
 		"aud": clientKey,
-		"scope": scope,
-		"exp": time.Now().Add(time.Hour).Unix(),
-		"iat": time.Now().Unix(),
+		"exp": now.Add(time.Hour).Unix(),
+		"iat": now.Unix(),
+	}
+
+	if nonce != "" {
+		claims["nonce"] = nonce
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
