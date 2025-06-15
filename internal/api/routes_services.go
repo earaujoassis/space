@@ -7,8 +7,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -20,10 +20,11 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 	// Requires X-Requested-By and Origin (same-origin policy)
 	// Authorization type: action token / Bearer (for web use)
 	router.GET("/services", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+		repositories := ioc.GetRepositories(c)
 		action := c.MustGet("Action").(models.Action)
 		session := sessions.Default(c)
 		userPublicID := session.Get("user_public_id")
-		user := services.FindUserByPublicID(userPublicID.(string))
+		user := repositories.Users().FindByPublicID(userPublicID.(string))
 		if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 			c.JSON(http.StatusUnauthorized, utils.H{
@@ -37,7 +38,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 		c.JSON(http.StatusOK, utils.H{
 			"_status":  "success",
 			"_message": "Services are available",
-			"services": services.Services(),
+			"services": repositories.Services().GetAll(),
 		})
 	})
 
@@ -46,10 +47,11 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		servicesRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
+			repositories := ioc.GetRepositories(c)
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
 			userPublicID := session.Get("user_public_id")
-			user := services.FindUserByPublicID(userPublicID.(string))
+			user := repositories.Users().FindByPublicID(userPublicID.(string))
 			if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
@@ -65,7 +67,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 			canonicalURI := c.PostForm("canonical_uri")
 			logoURI := c.PostForm("logo_uri")
 
-			service := services.CreateNewService(serviceName,
+			service := repositories.Services().Create(serviceName,
 				serviceDescription,
 				canonicalURI,
 				logoURI)

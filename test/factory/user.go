@@ -1,12 +1,9 @@
 package factory
 
 import (
-	"log"
-
 	"github.com/brianvoe/gofakeit/v7"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
 )
 
 type User struct {
@@ -17,7 +14,7 @@ type User struct {
 	Model         models.User
 }
 
-func NewUser() *User {
+func (f *TestRepositoryFactory) NewUser() *User {
 	passphrase := gofakeit.Password(true, true, true, true, false, 32)
 	user := models.User{
 		FirstName:  gofakeit.FirstName(),
@@ -26,12 +23,11 @@ func NewUser() *User {
 		Email:      gofakeit.Email(),
 		Passphrase: passphrase,
 	}
-	user.GenerateRecoverSecret()
-	codeSecretKey := user.GenerateCodeSecret().Secret()
-	ok, err := services.CreateNewUser(&user)
-	if !ok {
-		log.Printf("Could not create user: %s", err)
-	}
+	f.manager.Users().SetRecoverSecret(&user)
+	codeSecretKey := f.manager.Users().SetCodeSecret(&user).Secret()
+	user.Client = f.manager.Clients().FindOrCreate(models.DefaultClient)
+	user.Language = f.manager.Languages().FindOrCreate("English", "en-US")
+	f.manager.Users().Create(&user)
 	localUser := User{
 		Username:      user.Username,
 		Email:         user.Email,

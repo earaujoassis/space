@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -20,25 +19,9 @@ type Session struct {
 	IP          string `gorm:"not null;index" validate:"required" json:"-"`
 	UserAgent   string `gorm:"not null" validate:"required" json:"-"`
 	Invalidated bool   `gorm:"not null;default:false"`
-	Token       string `gorm:"not null;unique;index" validate:"omitempty,alphanum" json:"token"`
+	Token       string `gorm:"not null;unique;index" validate:"omitempty,alphanum|jwt" json:"token"`
 	TokenType   string `gorm:"not null;index" validate:"required,token" json:"token_type"`
 	Scopes      string `gorm:"not null" validate:"required,scope" json:"-"`
-}
-
-func validScope(fl validator.FieldLevel) bool {
-	scope := fl.Field().String()
-	if scope != PublicScope && scope != ReadScope && scope != WriteScope && scope != OpenIDScope {
-		return false
-	}
-	return true
-}
-
-func validTokenType(fl validator.FieldLevel) bool {
-	tokenType := fl.Field().String()
-	if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken && tokenType != IDToken {
-		return false
-	}
-	return true
 }
 
 func expirationLengthForTokenType(tokenType string) int64 {
@@ -74,6 +57,16 @@ func (session *Session) BeforeCreate(tx *gorm.DB) error {
 func (session *Session) WithinExpirationWindow() bool {
 	now := time.Now().UTC().Unix()
 	return now <= session.Moment+session.ExpiresIn
+}
+
+// GrantsReadAbility checks if a session entry has read-ability
+func (session *Session) GrantsReadAbility() bool {
+	return session.Scopes == ReadScope || session.Scopes == WriteScope || session.Scopes == OpenIDScope
+}
+
+// GrantsWriteAbility checks if a session entry has write-ability
+func (session *Session) GrantsWriteAbility() bool {
+	return session.Scopes == WriteScope
 }
 
 func HasValidScopes(requestedScopes []string) bool {

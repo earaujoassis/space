@@ -23,7 +23,7 @@ func (resources *TestResources) startDatabaseResource() {
 		Hostname:   "postgres",
 		Env: []string{
 			"listen_addresses='*'",
-			"POSTGRES_DB=space_testing",
+			"POSTGRES_DB=space_integration",
 			"POSTGRES_HOST_AUTH_METHOD=trust",
 			"POSTGRES_PASSWORD=password",
 			"POSTGRES_USER=user",
@@ -41,7 +41,7 @@ func (resources *TestResources) startDatabaseResource() {
 		log.Fatalf("Could not setup expire time: %s", err)
 	}
 	hostAndPort := databaseResource.GetHostPort("5432/tcp")
-	dbUrl := fmt.Sprintf("postgres://user:password@%s/space_testing?sslmode=disable", hostAndPort)
+	dbUrl := fmt.Sprintf("postgres://user:password@%s/space_integration?sslmode=disable", hostAndPort)
 	os.Setenv("SPACE_DATASTORE_HOST", "localhost")
 	os.Setenv("SPACE_DATASTORE_PORT", databaseResource.GetPort("5432/tcp"))
 	os.Setenv("SPACE_DATASTORE_NAME_PREFIX", "space")

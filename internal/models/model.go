@@ -4,10 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/satori/go.uuid"
-
-	"github.com/earaujoassis/space/internal/config"
 )
 
 // Model is the base model/struct for any model in the application/system
@@ -46,32 +43,6 @@ func GenerateRandomString(n int) string {
 
 func generateUUID() string {
 	return uuid.NewV4().String()
-}
-
-func validateModel(tagName string, model interface{}) error {
-	validate := validator.New()
-	validate.SetTagName(tagName)
-	validate.RegisterValidation("client", validClientType)
-	validate.RegisterValidation("scope", validScope)
-	validate.RegisterValidation("restrict", validClientScopes)
-	validate.RegisterValidation("token", validTokenType)
-	validate.RegisterValidation("canonical", validCanonicalURIs)
-	validate.RegisterValidation("redirect", validRedirectURIs)
-	validate.RegisterValidation("action", validAction)
-	validate.RegisterValidation("service", validServiceType)
-	err := validate.Struct(model)
-	return err
-}
-
-// IsValid checks if a `model` entry is valid, given the `tagName` (scope) for validation
-func IsValid(tagName string, model interface{}) bool {
-	err := validateModel(tagName, model)
-	return err == nil
-}
-
-func defaultKey() []byte {
-	keyString := config.GetGlobalConfig().StorageSecret
-	return []byte(keyString)
 }
 
 func (model Model) IsNewRecord() bool {

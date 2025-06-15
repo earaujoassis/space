@@ -13,7 +13,7 @@ import (
 
 // SendEmail uses the AWS SES service to send e-mail messages
 func SendEmail(subject, body, mailTo string) error {
-	var cfg config.Config = config.GetGlobalConfig()
+	var cfg config.Config
 	mailKey := strings.Split(cfg.MailerAccess, ":")
 	mailFrom := cfg.MailFrom
 	sess, err := session.NewSession(&aws.Config{

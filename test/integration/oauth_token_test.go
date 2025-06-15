@@ -1,13 +1,9 @@
 package integration
 
-import (
-	"github.com/earaujoassis/space/test/factory"
-)
-
 func (s *OAuthProviderSuite) TestTokenGrant() {
 	var code string
-	client := factory.NewClient()
-	user := factory.NewUser()
+	client := s.Factory.NewClient()
+	user := s.Factory.NewUser()
 
 	s.Run("should have a valid cookie and code", func() {
 		s.Client.StartSession(user)
@@ -31,7 +27,7 @@ func (s *OAuthProviderSuite) TestTokenGrant() {
 	})
 
 	s.Run("should return error if attempting to retrieve session token through another client", func() {
-		second_client := factory.NewClient()
+		second_client := s.Factory.NewClient()
 		response := s.Client.PostTokenComplete(second_client.BasicAuthEncode(), AuthorizationCode, code, "http://localhost/callback")
 		json := response.JSON
 

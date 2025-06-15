@@ -1,6 +1,11 @@
 package models
 
 const (
+	// DefaultClient is the default (and internal) client application
+	DefaultClient = "Jupiter"
+)
+
+const (
 	// PublicClient client type
 	PublicClient string = "public"
 	// ConfidentialClient client type

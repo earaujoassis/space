@@ -17,7 +17,7 @@ tasks:
   get:
     desc: go-get all packages
     cmds:
-      - go get -d ./...
+      - go get ./...
   build:
     desc: Build the go binary.
     cmds:

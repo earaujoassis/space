@@ -1,13 +1,9 @@
 package integration
 
-import (
-	"github.com/earaujoassis/space/test/factory"
-)
-
 func (s *OAuthProviderSuite) TestTokenRevoke() {
 	var accessToken, refreshToken string
-	client := factory.NewClient()
-	user := factory.NewUser()
+	client := s.Factory.NewClient()
+	user := s.Factory.NewUser()
 
 	s.Run("should successfully retrieve tokens", func() {
 		s.Client.StartSession(user)
@@ -34,7 +30,7 @@ func (s *OAuthProviderSuite) TestTokenRevoke() {
 	})
 
 	s.Run("should return 200 Ok if attempting to revoke token through another client", func() {
-		second_client := factory.NewClient()
+		second_client := s.Factory.NewClient()
 		response := s.Client.PostRevoke(second_client.BasicAuthEncode(), accessToken)
 
 		s.Equal(200, response.StatusCode)

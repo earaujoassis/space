@@ -1,11 +1,7 @@
 package integration
 
-import (
-	"github.com/earaujoassis/space/test/factory"
-)
-
 func (s *OAuthProviderSuite) TestTokenUnsupportedGrants() {
-	client := factory.NewClient()
+	client := s.Factory.NewClient()
 
 	s.Run("should return error if requesting unsupported Resource Owner Password Credentials Grant", func() {
 		response := s.Client.PostToken(client.BasicAuthEncode(), "password")

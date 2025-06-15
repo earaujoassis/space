@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -14,7 +15,9 @@ func tokenHandler(c *gin.Context) {
 	var grantType = c.PostForm("grant_type")
 
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
-	client := shared.ClientAuthentication(authorizationBasic)
+	key, secret := shared.BasicAuthDecode(authorizationBasic)
+	repositories := ioc.GetRepositories(c)
+	client := repositories.Clients().Authentication(key, secret)
 	if client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
@@ -33,7 +36,7 @@ func tokenHandler(c *gin.Context) {
 			"redirect_uri": c.PostForm("redirect_uri"),
 			"client":       client,
 			"issuer":       shared.GetBaseUrl(c),
-		})
+		}, repositories)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
 				"error": result["error"],
@@ -56,7 +59,7 @@ func tokenHandler(c *gin.Context) {
 			"scope":         c.PostForm("scope"),
 			"client":        client,
 			"issuer":        shared.GetBaseUrl(c),
-		})
+		}, repositories)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
 				"error": result["error"],

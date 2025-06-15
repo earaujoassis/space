@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -40,8 +40,9 @@ func actionTokenBearerAuthorization(c *gin.Context) {
 		return
 	}
 
-	action := services.ActionAuthentication(authorizationBearer)
-	if action.UUID == "" || !services.ActionGrantsReadAbility(action) {
+	repositories := ioc.GetRepositories(c)
+	action := repositories.Actions().Authentication(authorizationBearer)
+	if action.UUID == "" || !action.GrantsReadAbility() {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error": shared.AccessDenied,

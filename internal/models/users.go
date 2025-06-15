@@ -1,15 +1,8 @@
 package models
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/pquerna/otp"
-	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-
-	"github.com/earaujoassis/space/internal/security"
 )
 
 // User model/struct
@@ -31,62 +24,6 @@ type User struct {
 	TimezoneIdentifier string   `gorm:"not null;default:'GMT'" json:"timezone_identifier"`
 	CodeSecret         string   `gorm:"not null" validate:"required" json:"-"`
 	RecoverSecret      string   `gorm:"not null" validate:"required" json:"-"`
-}
-
-// Authentic checks if a password + passcode combination is valid for a given User
-func (user *User) Authentic(password, passcode string) bool {
-	var validPasscode bool
-	validPassword := bcrypt.CompareHashAndPassword([]byte(user.Passphrase), []byte(password)) == nil
-	codeSecret, err := security.Decrypt(defaultKey(), user.CodeSecret)
-	if err != nil {
-		return false
-	}
-
-	validPasscode = totp.Validate(passcode, string(codeSecret))
-	return validPasscode && validPassword
-}
-
-// UpdatePassword updates an User's password
-func (user *User) UpdatePassword(password string) error {
-	crypted, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err == nil {
-		user.Passphrase = string(crypted)
-		return nil
-	}
-	return err
-}
-
-// GenerateCodeSecret generates a code secret for an user, in order to generate and validate passcodes
-func (user *User) GenerateCodeSecret() *otp.Key {
-	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "quatroLABS.com",
-		AccountName: user.Username,
-	})
-	codeSecret := key.Secret()
-	if cryptedCodeSecret, err := security.Encrypt(defaultKey(), []byte(codeSecret)); err == nil {
-		user.CodeSecret = string(cryptedCodeSecret)
-	} else {
-		user.CodeSecret = codeSecret
-	}
-	if err != nil {
-		return nil
-	}
-	return key
-}
-
-// GenerateRecoverSecret generates a recover secret string for an user
-func (user *User) GenerateRecoverSecret() (string, error) {
-	var secret = strings.ToUpper(fmt.Sprintf("%s-%s-%s-%s",
-		GenerateRandomString(4),
-		GenerateRandomString(4),
-		GenerateRandomString(4),
-		GenerateRandomString(4)))
-	if cryptedRecoverSecret, err := bcrypt.GenerateFromPassword([]byte(secret), bcrypt.DefaultCost); err == nil {
-		user.RecoverSecret = string(cryptedRecoverSecret)
-	} else {
-		return secret, err
-	}
-	return secret, nil
 }
 
 // BeforeSave User model/struct hook

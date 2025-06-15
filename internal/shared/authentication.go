@@ -6,14 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
 // The following Authorization method is used by OAuth clients only
 func ClientBasicAuthorization(c *gin.Context) {
+	repositories := ioc.GetRepositories(c)
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 
 	if !security.ValidBase64(authorizationBasic) {
@@ -24,7 +25,8 @@ func ClientBasicAuthorization(c *gin.Context) {
 		return
 	}
 
-	client := ClientAuthentication(authorizationBasic)
+	key, secret := BasicAuthDecode(authorizationBasic)
+	client := repositories.Clients().Authentication(key, secret)
 	if client.IsNewRecord() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
@@ -39,6 +41,7 @@ func ClientBasicAuthorization(c *gin.Context) {
 
 // The following Authorization method is used by the OAuth clients, with an OAuth session token
 func OAuthTokenBearerAuthorization(c *gin.Context) {
+	repositories := ioc.GetRepositories(c)
 	authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
 
 	if !security.ValidToken(authorizationBearer) {
@@ -49,8 +52,8 @@ func OAuthTokenBearerAuthorization(c *gin.Context) {
 		return
 	}
 
-	session := AccessAuthentication(authorizationBearer)
-	if session.IsNewRecord() || !services.SessionGrantsReadAbility(session) {
+	session := repositories.Sessions().FindByToken(authorizationBearer, models.AccessToken)
+	if session.IsNewRecord() || !session.GrantsReadAbility() {
 		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"error": AccessDenied,
@@ -60,21 +63,6 @@ func OAuthTokenBearerAuthorization(c *gin.Context) {
 	}
 	c.Set("Session", session)
 	c.Next()
-}
-
-// ClientAuthentication authenticates a client application, extracting the key-secret pair;
-//
-//	and returns a client entry/model, given the key-secret pair
-func ClientAuthentication(authorizationHeader string) models.Client {
-	key, secret := BasicAuthDecode(authorizationHeader)
-	return services.ClientAuthentication(key, secret)
-}
-
-// AccessAuthentication obtains a Session entry (typed as an `Access Token`) through
-//
-//	its token string
-func AccessAuthentication(token string) models.Session {
-	return services.FindSessionByToken(token, models.AccessToken)
 }
 
 func Scheme(request *http.Request) string {

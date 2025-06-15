@@ -10,8 +10,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -32,7 +32,8 @@ func authorizeHandler(c *gin.Context) {
 		c.Redirect(http.StatusFound, location)
 		return
 	}
-	user := services.FindUserByPublicID(userPublicID.(string))
+	repositories := ioc.GetRepositories(c)
+	user := repositories.Users().FindByPublicID(userPublicID.(string))
 	if user.IsNewRecord() {
 		session.Delete("user_public_id")
 		session.Save()
@@ -56,7 +57,7 @@ func authorizeHandler(c *gin.Context) {
 		})
 	}
 
-	client := services.FindClientByKey(clientKey)
+	client := repositories.Clients().FindByKey(clientKey)
 	if client.IsNewRecord() {
 		// WARNING This scenario is the trickiest one
 		// It is not safe to return to the caller or redirect to callback
@@ -88,7 +89,7 @@ func authorizeHandler(c *gin.Context) {
 	switch responseType {
 	// Authorization Code Grant
 	case shared.Code:
-		activeSessions := services.ActiveSessionsForClient(client.ID, user.ID)
+		activeSessions := repositories.Sessions().ActiveForClient(client, user)
 		if c.Request.Method == "GET" && activeSessions == 0 {
 			c.HTML(http.StatusOK, "satellite", utils.H{
 				"Title":     " - Authorize",
@@ -119,7 +120,7 @@ func authorizeHandler(c *gin.Context) {
 				"redirect_uri":  redirectURI,
 				"scope":         scope,
 				"state":         state,
-			})
+			}, repositories)
 			if err != nil {
 				location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, result["error"], result["state"])
 				// Previous return: c.HTML(http.StatusFound, location)

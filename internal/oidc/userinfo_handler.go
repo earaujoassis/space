@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -27,6 +27,7 @@ func userinfoHandler(c *gin.Context) {
 		return
 	}
 
+	repositories := ioc.GetRepositories(c)
 	tokenType := identifyTokenType(token)
 	switch tokenType {
 	case shared.TokenTypeIDToken:
@@ -45,7 +46,7 @@ func userinfoHandler(c *gin.Context) {
 			})
 			return
 		}
-		session := services.FindSessionByToken(token, models.AccessToken)
+		session := repositories.Sessions().FindByToken(token, models.AccessToken)
 		if session.IsNewRecord() {
 			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InvalidToken))
 			c.JSON(http.StatusUnauthorized, utils.H{

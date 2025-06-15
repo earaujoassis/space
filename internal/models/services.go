@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -16,14 +15,6 @@ type Service struct {
 	CanonicalURI string `gorm:"not null" validate:"required,http_url" json:"uri"`
 	LogoURI      string `json:"logo_uri"`
 	Type         string `gorm:"not null" validate:"required,service" json:"-"`
-}
-
-func validServiceType(fl validator.FieldLevel) bool {
-	typeField := fl.Field().String()
-	if typeField != PublicService && typeField != AttachedService {
-		return false
-	}
-	return true
 }
 
 // BeforeSave Service model/struct hook

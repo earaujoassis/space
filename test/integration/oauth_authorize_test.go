@@ -2,13 +2,11 @@ package integration
 
 import (
 	"strings"
-
-	"github.com/earaujoassis/space/test/factory"
 )
 
 func (s *OAuthProviderSuite) TestAuthorizeGrant() {
-	user := factory.NewUser()
-	client := factory.NewClient()
+	user := s.Factory.NewUser()
+	client := s.Factory.NewClient()
 
 	s.Run("should have a valid cookie", func() {
 		s.Client.StartSession(user)

@@ -57,18 +57,16 @@ func TestUserCreation(t *testing.T) {
 	var err error
 
 	user := User{
-		FirstName:  gofakeit.FirstName(),
-		LastName:   gofakeit.LastName(),
-		Username:   gofakeit.Username(),
-		Email:      gofakeit.Email(),
-		Passphrase: gofakeit.Password(true, true, true, true, false, 10),
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         gofakeit.Email(),
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 10),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
 	}
 
 	assert.True(t, IsValid("essential", user), "should return true for essential user validation")
-	val := user.GenerateCodeSecret()
-	assert.NotNil(t, val)
-	_, err = user.GenerateRecoverSecret()
-	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	err = user.BeforeCreate(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 

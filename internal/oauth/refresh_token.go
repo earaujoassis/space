@@ -2,7 +2,7 @@ package oauth
 
 import (
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/repository"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -10,7 +10,7 @@ import (
 // RefreshTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
 //
 //	basically, a `refresh token` from `AccessTokenRequest`
-func RefreshTokenRequest(data utils.H) (utils.H, error) {
+func RefreshTokenRequest(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
 	var user models.User
 	var client models.Client
 
@@ -25,13 +25,12 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 	scope = data["scope"].(string)
 	client = data["client"].(models.Client)
 
-	refreshSession := services.FindSessionByToken(token, models.RefreshToken)
-	defer services.InvalidateSession(refreshSession)
+	refreshSession := repositories.Sessions().FindByToken(token, models.RefreshToken)
+	defer repositories.Sessions().Invalidate(&refreshSession)
 	if refreshSession.IsNewRecord() {
 		return shared.InvalidGrantResult("")
 	}
 	user = refreshSession.User
-	user = services.FindUserByPublicID(user.PublicID)
 	if refreshSession.Client.ID != client.ID {
 		return shared.InvalidGrantResult("")
 	}
@@ -39,18 +38,24 @@ func RefreshTokenRequest(data utils.H) (utils.H, error) {
 		return shared.InvalidScopeResult("")
 	}
 
-	accessToken := services.CreateSession(user,
-		client,
-		refreshSession.IP,
-		refreshSession.UserAgent,
-		scope,
-		models.AccessToken)
-	refreshToken := services.CreateSession(user,
-		client,
-		refreshSession.IP,
-		refreshSession.UserAgent,
-		scope,
-		models.RefreshToken)
+	accessToken := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        refreshSession.IP,
+		UserAgent: refreshSession.UserAgent,
+		Scopes:    scope,
+		TokenType: models.AccessToken,
+	}
+	repositories.Sessions().Create(&accessToken)
+	refreshToken := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        refreshSession.IP,
+		UserAgent: refreshSession.UserAgent,
+		Scopes:    scope,
+		TokenType: models.RefreshToken,
+	}
+	repositories.Sessions().Create(&refreshToken)
 
 	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
 		return shared.ServerErrorResult("")
