@@ -5,20 +5,20 @@ import (
 )
 
 func ParseQueryString(rawURL string) map[string]string {
-    result := make(map[string]string)
+	result := make(map[string]string)
 
-    u, err := url.Parse(rawURL)
-    if err != nil {
-        return result
-    }
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return result
+	}
 
-    for key, values := range u.Query() {
-        if len(values) > 0 {
-            result[key] = values[0]
-        }
-    }
+	for key, values := range u.Query() {
+		if len(values) > 0 {
+			result[key] = values[0]
+		}
+	}
 
-    return result
+	return result
 }
 
 func ParseFragment(rawURL string) map[string]string {

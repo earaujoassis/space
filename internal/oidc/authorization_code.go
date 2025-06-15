@@ -68,9 +68,9 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	session := services.CreateSession(user, client, ip, userAgent, scope, models.GrantToken)
 	if session.ID > 0 {
 		return utils.H{
-			"code":          session.Token,
-			"state":         state,
-			"scope":         scope,
+			"code":  session.Token,
+			"state": state,
+			"scope": scope,
 		}, nil
 	}
 

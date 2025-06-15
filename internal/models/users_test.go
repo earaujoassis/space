@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidUserModel(t *testing.T) {
-	user := User{
-	}
+	user := User{}
 
 	assert.False(t, IsValid("validate", user), "should return false for invalid user")
 	assert.False(t, IsValid("essential", user), "should return false for invalid user")

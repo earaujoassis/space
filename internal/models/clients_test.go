@@ -85,17 +85,17 @@ func TestHasRequestedScopes(t *testing.T) {
 		Scopes: PublicScope,
 	}
 
-	assert.True(t, client.HasRequestedScopes([]string{ PublicScope }), "should have the requested scope")
-	assert.False(t, client.HasRequestedScopes([]string{ OpenIDScope }), "should not have the requested scope")
+	assert.True(t, client.HasRequestedScopes([]string{PublicScope}), "should have the requested scope")
+	assert.False(t, client.HasRequestedScopes([]string{OpenIDScope}), "should not have the requested scope")
 
 	client = Client{
-		Scopes: strings.Join([]string{ ReadScope, OpenIDScope }, " "),
+		Scopes: strings.Join([]string{ReadScope, OpenIDScope}, " "),
 	}
 
-	assert.False(t, client.HasRequestedScopes([]string{ PublicScope }), "should not have the requested scope")
-	assert.False(t, client.HasRequestedScopes([]string{ WriteScope }), "should not have the requested scope")
-	assert.True(t, client.HasRequestedScopes([]string{ OpenIDScope, ReadScope }), "should have the requested scope")
-	assert.True(t, client.HasRequestedScopes([]string{ ReadScope, OpenIDScope }), "should have the requested scope")
-	scope := strings.Join([]string{ ReadScope, OpenIDScope }, " ")
+	assert.False(t, client.HasRequestedScopes([]string{PublicScope}), "should not have the requested scope")
+	assert.False(t, client.HasRequestedScopes([]string{WriteScope}), "should not have the requested scope")
+	assert.True(t, client.HasRequestedScopes([]string{OpenIDScope, ReadScope}), "should have the requested scope")
+	assert.True(t, client.HasRequestedScopes([]string{ReadScope, OpenIDScope}), "should have the requested scope")
+	scope := strings.Join([]string{ReadScope, OpenIDScope}, " ")
 	assert.True(t, client.HasRequestedScopes(strings.Split(scope, " ")), "should have the requested scope")
 }

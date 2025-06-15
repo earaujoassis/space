@@ -8,10 +8,10 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -62,7 +62,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			client:= models.Client{
+			client := models.Client{
 				Name:         c.PostForm("name"),
 				Description:  c.PostForm("description"),
 				Scopes:       models.PublicScope,

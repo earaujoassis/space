@@ -60,6 +60,11 @@ tasks:
     desc: Lint go package (this repository package)
     cmds:
       - staticcheck ./...
+      - test -z "$(gofmt -d .)"
+  security:
+    desc: Run gosec (security checker) over the codebase
+    cmds:
+      - gosec -tests ./...
   run:
     desc: Run the service component.
     cmds:

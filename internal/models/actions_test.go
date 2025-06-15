@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidActionModel(t *testing.T) {
@@ -70,9 +70,9 @@ func TestActionWithinExpirationWindow(t *testing.T) {
 	}
 
 	timeTravel := time.Duration(shortestExpirationLength)
-	action.Moment = time.Now().UTC().Add(- (timeTravel * time.Second)).Unix()
+	action.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
 	assert.True(t, action.WithinExpirationWindow())
 	timeTravel = time.Duration(shortestExpirationLength + 1)
-	action.Moment = time.Now().UTC().Add(- (timeTravel * time.Second)).Unix()
+	action.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
 	assert.False(t, action.WithinExpirationWindow())
 }

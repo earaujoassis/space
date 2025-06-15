@@ -11,11 +11,11 @@ import (
 
 	datastore "github.com/earaujoassis/space/internal/gateways/postgres"
 
-	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/api"
 	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/oidc"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/web"
-	"github.com/earaujoassis/space/internal/api"
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/logs"

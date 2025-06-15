@@ -1,8 +1,8 @@
 package shared
 
 import (
-	"fmt"
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -46,9 +46,9 @@ func MustServeJSON(path string, accept string) bool {
 
 func GetBaseUrl(c *gin.Context) string {
 	scheme := "http"
-    if c.Request.TLS != nil {
-        scheme = "https"
-    }
+	if c.Request.TLS != nil {
+		scheme = "https"
+	}
 	return fmt.Sprintf("%s://%s", scheme, c.Request.Host)
 }
 

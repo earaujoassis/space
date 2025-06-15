@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -39,7 +39,7 @@ func processResponseForAuthorizeHandlerIDToken(c *gin.Context, result utils.H, e
 			c.HTML(http.StatusOK, "form_post.id_token.success", utils.H{
 				"Callback": redirectURI,
 				"IDToken":  result["id_token"],
-				"State":  result["state"],
+				"State":    result["state"],
 			})
 		// case shared.FragmentResponseType:
 		default:
@@ -65,7 +65,7 @@ func processResponseForIDTokenAccessDenied(c *gin.Context) {
 	// case shared.FragmentResponseType:
 	default:
 		location := fmt.Sprintf(shared.ErrorFragmentURI, redirectURI, shared.AccessDenied, state)
-			c.Redirect(http.StatusFound, location)
+		c.Redirect(http.StatusFound, location)
 		c.Redirect(http.StatusFound, location)
 	}
 }
@@ -110,7 +110,7 @@ func validateScopeForIDToken(c *gin.Context) error {
 	// case shared.FragmentResponseType:
 	default:
 		location := fmt.Sprintf(shared.ErrorFragmentURI, redirectURI, shared.InvalidScope, state)
-			c.Redirect(http.StatusFound, location)
+		c.Redirect(http.StatusFound, location)
 		c.Redirect(http.StatusFound, location)
 	}
 
@@ -171,7 +171,7 @@ func processResponseForCodeAccessDenied(c *gin.Context) {
 	// case shared.QueryResponseType:
 	default:
 		location := fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.AccessDenied, state)
-			c.Redirect(http.StatusFound, location)
+		c.Redirect(http.StatusFound, location)
 		c.Redirect(http.StatusFound, location)
 	}
 }
@@ -216,7 +216,7 @@ func validateScopeForCode(c *gin.Context) error {
 	// case shared.QueryResponseType:
 	default:
 		location := fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.InvalidScope, state)
-			c.Redirect(http.StatusFound, location)
+		c.Redirect(http.StatusFound, location)
 		c.Redirect(http.StatusFound, location)
 	}
 

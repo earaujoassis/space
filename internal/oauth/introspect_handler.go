@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -82,12 +82,12 @@ func introspectHandler(c *gin.Context) {
 	client = session.Client
 
 	introspectionData := utils.H{
-		"active": true,
-		"scope": session.Scopes,
+		"active":    true,
+		"scope":     session.Scopes,
 		"client_id": client.Key,
-		"username": user.Username,
-		"exp": session.Moment + session.ExpiresIn,
-		"iat": session.Moment,
+		"username":  user.Username,
+		"exp":       session.Moment + session.ExpiresIn,
+		"iat":       session.Moment,
 		// "nbf": (not before) not defined nor required
 		"sub": user.PublicID,
 		// "aud": (audience) not defined nor required

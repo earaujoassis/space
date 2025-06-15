@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/utils"
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/logs"
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 func jwksHandler(c *gin.Context) {

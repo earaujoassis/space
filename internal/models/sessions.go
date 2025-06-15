@@ -73,11 +73,11 @@ func (session *Session) BeforeCreate(tx *gorm.DB) error {
 // WithinExpirationWindow checks if a Session entry is still valid (time-based)
 func (session *Session) WithinExpirationWindow() bool {
 	now := time.Now().UTC().Unix()
-	return now <= session.Moment + session.ExpiresIn
+	return now <= session.Moment+session.ExpiresIn
 }
 
 func HasValidScopes(requestedScopes []string) bool {
-	validScopes := []string{ PublicScope, ReadScope, OpenIDScope, ProfileScope }
+	validScopes := []string{PublicScope, ReadScope, OpenIDScope, ProfileScope}
 	validSet := make(map[string]bool)
 	for _, scope := range validScopes {
 		validSet[scope] = true

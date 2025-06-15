@@ -70,7 +70,7 @@ func (action *Action) Delete() {
 // WithinExpirationWindow checks if an Action entry is still valid (time-based)
 func (action *Action) WithinExpirationWindow() bool {
 	now := time.Now().UTC().Unix()
-	return now <= action.Moment + action.ExpiresIn
+	return now <= action.Moment+action.ExpiresIn
 }
 
 // CanUpdateUser checks if an Action description is valid for user update actions
