@@ -99,6 +99,7 @@ func (c *OIDCCTestlient) GetAuthorize(responseType, clientID, redirectURI, state
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
+	params.Set("scope", "openid")
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oidc/authorize?%s", c.baseURL, params.Encode())
 	resp, err := c.httpClient.Get(authURL)
@@ -110,6 +111,7 @@ func (c *OIDCCTestlient) PostAuthorize(responseType, clientID, redirectURI, stat
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
+	params.Set("scope", "openid")
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oidc/authorize?%s", c.baseURL, params.Encode())
 	if authorize {

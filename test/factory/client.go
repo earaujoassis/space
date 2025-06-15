@@ -41,6 +41,30 @@ func NewClient() *Client {
 	return &localClient
 }
 
+func NewClientWithScopes(scopes string) *Client {
+	client := models.Client{
+		Name:         gofakeit.Company(),
+		Scopes:       scopes,
+		CanonicalURI: []string{ "http://localhost" },
+		RedirectURI:  []string{ "http://localhost/callback" },
+		Type:         models.ConfidentialClient,
+	}
+	ok, err := services.CreateNewClient(&client)
+	if !ok {
+		log.Printf("Could not create client: %s", err)
+	}
+	clientSecret := models.GenerateRandomString(64)
+	client.UpdateSecret(clientSecret)
+	services.SaveClient(&client)
+	localClient := Client{
+		Name:   client.Name,
+		Key:    client.Key,
+		Secret: clientSecret,
+		Model:  client,
+	}
+	return &localClient
+}
+
 func (c *Client) BasicAuthEncode() string {
 	return shared.BasicAuthEncode(c.Key, c.Secret)
 }

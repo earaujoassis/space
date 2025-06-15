@@ -1,21 +1,18 @@
 package oidc
 
 import (
-	"slices"
 	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/exp/slices"
 
-	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-// ImplicitFlowIDToken returns an OIDC id_token grant, given the right details
-func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
+// AuthorizationCodeGrant returns an OIDC authorization code grant, given the right details
+func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	var redirectURI string
 	var scope string
 	var state string
@@ -45,7 +42,6 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	redirectURI = data["redirect_uri"].(string)
 	client = data["client"].(models.Client)
 	user = data["user"].(models.User)
-	issuer := data["issuer"].(string)
 
 	nonce := data["nonce"].(string)
 	if nonce != "" {
@@ -69,49 +65,14 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 		return shared.InvalidScopeResult(state)
 	}
 
-	idToken := createIDToken(issuer, user.PublicID, client.Key, scope, nonce)
-	session := services.CreateSessionWithToken(user, client, ip, userAgent, scope, models.IDToken, idToken)
-	if idToken != "" && session.ID > 0 {
+	session := services.CreateSession(user, client, ip, userAgent, scope, models.GrantToken)
+	if session.ID > 0 {
 		return utils.H{
-			"id_token": idToken,
-			"state": state,
+			"code":          session.Token,
+			"state":         state,
+			"scope":         scope,
 		}, nil
 	}
 
 	return shared.ServerErrorResult(state)
-}
-
-func createIDToken(issuer, userPublicId, clientKey, scope, nonce string) string {
-	keyManager, err := initKeyManager()
-	if err != nil || len(keyManager.Keys) == 0 {
-		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
-		return ""
-	}
-
-	key := keyManager.Keys[0]
-	now := time.Now()
-	claims := jwt.MapClaims{
-		"iss": issuer,
-		"sub": userPublicId,
-		"aud": clientKey,
-		"exp": now.Add(time.Hour).Unix(),
-		"iat": now.Unix(),
-	}
-
-	if nonce != "" {
-		claims["nonce"] = nonce
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	token.Header["alg"] = "RS256"
-	token.Header["typ"] = "JWT"
-	token.Header["kid"] = key.ID
-
-	signedToken, err := token.SignedString(key.PrivateKey)
-	if err != nil {
-		logs.Propagatef(logs.Error, "Could not sign id_token: %s", err)
-		return ""
-	}
-
-	return signedToken
 }

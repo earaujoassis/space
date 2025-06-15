@@ -1,0 +1,9 @@
+<html>
+<body onload="document.forms[0].submit()">
+<form method="post" action="{{ .Callback }}">
+  <input type="hidden" name="code" value="{{ .Code }}"/>
+  <input type="hidden" name="state" value="{{ .State }}"/>
+  <input type="hidden" name="scope" value="{{ .Scope }}"/>
+</form>
+</body>
+</html>

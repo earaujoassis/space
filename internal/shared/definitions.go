@@ -14,8 +14,8 @@ const (
 	// ErrorFragmentURI defines the fragment string for the callback redirect
 	ErrorFragmentURI string = "%s#error=%s&state=%s"
 
-	// QueryReponseType defines the response_mode for query
-	QueryReponseType string = "query"
+	// QueryResponseType defines the response_mode for query
+	QueryResponseType string = "query"
 	// FragmentResponseType defines the response_mode for fragment
 	FragmentResponseType string = "fragment"
 	// FormPostReponseType defines the response_mode for form_post
