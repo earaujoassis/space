@@ -35,7 +35,7 @@ func tokenHandler(c *gin.Context) {
 		})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"error":    result["error"],
+				"error": result["error"],
 			})
 			return
 		}
@@ -58,7 +58,7 @@ func tokenHandler(c *gin.Context) {
 		})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"error":    result["error"],
+				"error": result["error"],
 			})
 			return
 		}
@@ -75,13 +75,12 @@ func tokenHandler(c *gin.Context) {
 	// Client Credentials Grant
 	case shared.Password, shared.ClientCredentials:
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error":    shared.UnsupportedGrantType,
-
+			"error": shared.UnsupportedGrantType,
 		})
 		return
 	default:
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error":    shared.InvalidRequest,
+			"error": shared.InvalidRequest,
 		})
 		return
 	}

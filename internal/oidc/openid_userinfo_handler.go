@@ -7,10 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -72,14 +72,14 @@ func userinfoHandler(c *gin.Context) {
 		}
 	} else {
 		userinfo = utils.H{
-			"sub": user.PublicID,
-			"name": fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-			"given_name": user.FirstName,
-			"family_name": user.LastName,
+			"sub":                user.PublicID,
+			"name":               fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+			"given_name":         user.FirstName,
+			"family_name":        user.LastName,
 			"preferred_username": user.Username,
-			"zoneinfo": "UTC",
-			"locale": "en-US",
-			"updated_at": user.UpdatedAt.Unix(),
+			"zoneinfo":           "UTC",
+			"locale":             "en-US",
+			"updated_at":         user.UpdatedAt.Unix(),
 		}
 	}
 

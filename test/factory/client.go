@@ -21,8 +21,8 @@ func NewClient() *Client {
 	client := models.Client{
 		Name:         gofakeit.Company(),
 		Scopes:       models.PublicScope,
-		CanonicalURI: []string{ "http://localhost" },
-		RedirectURI:  []string{ "http://localhost/callback" },
+		CanonicalURI: []string{"http://localhost"},
+		RedirectURI:  []string{"http://localhost/callback"},
 		Type:         models.ConfidentialClient,
 	}
 	ok, err := services.CreateNewClient(&client)
@@ -45,8 +45,8 @@ func NewClientWithScopes(scopes string) *Client {
 	client := models.Client{
 		Name:         gofakeit.Company(),
 		Scopes:       scopes,
-		CanonicalURI: []string{ "http://localhost" },
-		RedirectURI:  []string{ "http://localhost/callback" },
+		CanonicalURI: []string{"http://localhost"},
+		RedirectURI:  []string{"http://localhost/callback"},
 		Type:         models.ConfidentialClient,
 	}
 	ok, err := services.CreateNewClient(&client)

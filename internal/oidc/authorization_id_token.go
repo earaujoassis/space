@@ -74,7 +74,7 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	if idToken != "" && session.ID > 0 {
 		return utils.H{
 			"id_token": idToken,
-			"state": state,
+			"state":    state,
 		}, nil
 	}
 

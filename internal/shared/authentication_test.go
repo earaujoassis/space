@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func defaultRoute(c *gin.Context) {
 	c.String(http.StatusOK, "All good")
 }

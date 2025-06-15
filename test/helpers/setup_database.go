@@ -18,9 +18,9 @@ func (resources *TestResources) startDatabaseResource() {
 		return
 	}
 	databaseResource, err := resources.Pool.RunWithOptions(&dockertest.RunOptions{
-		Repository:   "postgres",
-		Tag:          "14.18-alpine3.22",
-		Hostname:     "postgres",
+		Repository: "postgres",
+		Tag:        "14.18-alpine3.22",
+		Hostname:   "postgres",
 		Env: []string{
 			"listen_addresses='*'",
 			"POSTGRES_DB=space_testing",

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/earaujoassis/space/internal/services/volatile"
 	"github.com/earaujoassis/space/internal/security"
+	"github.com/earaujoassis/space/internal/services/volatile"
 )
 
 const (
-	NonceTTL = 48 * time.Hour
+	NonceTTL     = 48 * time.Hour
 	NoncePrepend = "oidc.nonce"
 )
 

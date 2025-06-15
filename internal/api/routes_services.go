@@ -7,9 +7,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -37,7 +37,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 		c.JSON(http.StatusOK, utils.H{
 			"_status":  "success",
 			"_message": "Services are available",
-			"services":  services.Services(),
+			"services": services.Services(),
 		})
 	})
 

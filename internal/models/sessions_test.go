@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidSessionModel(t *testing.T) {
@@ -47,14 +47,14 @@ func TestValidSessionModel(t *testing.T) {
 	err = user.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	session = Session{
-		User:        user,
-		Client:      client,
-		UUID:        generateUUID(),
-		Token:       GenerateRandomString(64),
-		IP:          gofakeit.IPv4Address(),
-		UserAgent:   gofakeit.UserAgent(),
-		Scopes:      ReadScope,
-		TokenType:   RefreshToken,
+		User:      user,
+		Client:    client,
+		UUID:      generateUUID(),
+		Token:     GenerateRandomString(64),
+		IP:        gofakeit.IPv4Address(),
+		UserAgent: gofakeit.UserAgent(),
+		Scopes:    ReadScope,
+		TokenType: RefreshToken,
 	}
 	err = session.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
@@ -64,11 +64,11 @@ func TestValidSessionModel(t *testing.T) {
 }
 
 func TestHasValidScopes(t *testing.T) {
-	assert.False(t, HasValidScopes([]string{ WriteScope }))
-	assert.True(t, HasValidScopes([]string{ PublicScope, OpenIDScope }))
-	assert.True(t, HasValidScopes([]string{ PublicScope, OpenIDScope, ProfileScope }))
-	assert.True(t, HasValidScopes([]string{ PublicScope, ReadScope, OpenIDScope, ProfileScope }))
-	assert.False(t, HasValidScopes([]string{ PublicScope, ReadScope, WriteScope, OpenIDScope, ProfileScope }))
+	assert.False(t, HasValidScopes([]string{WriteScope}))
+	assert.True(t, HasValidScopes([]string{PublicScope, OpenIDScope}))
+	assert.True(t, HasValidScopes([]string{PublicScope, OpenIDScope, ProfileScope}))
+	assert.True(t, HasValidScopes([]string{PublicScope, ReadScope, OpenIDScope, ProfileScope}))
+	assert.False(t, HasValidScopes([]string{PublicScope, ReadScope, WriteScope, OpenIDScope, ProfileScope}))
 }
 
 func TestSessionWithinExpirationWindow(t *testing.T) {
@@ -77,9 +77,9 @@ func TestSessionWithinExpirationWindow(t *testing.T) {
 	}
 
 	timeTravel := time.Duration(refreshableExpirationLength)
-	session.Moment = time.Now().UTC().Add(- (timeTravel * time.Second)).Unix()
+	session.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
 	assert.True(t, session.WithinExpirationWindow())
 	timeTravel = time.Duration(refreshableExpirationLength + 1)
-	session.Moment = time.Now().UTC().Add(- (timeTravel * time.Second)).Unix()
+	session.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
 	assert.False(t, session.WithinExpirationWindow())
 }

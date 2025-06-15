@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"time"
 	"strings"
+	"time"
 
-	"golang.org/x/net/publicsuffix"
 	"github.com/pquerna/otp/totp"
+	"golang.org/x/net/publicsuffix"
 
 	"github.com/earaujoassis/space/test/factory"
 )
@@ -29,7 +29,7 @@ func NewOIDCTestClient(baseURL string) *OIDCCTestlient {
 		log.Fatalf("Error creating cookiejar: %s", err)
 	}
 	return &OIDCCTestlient{
-		baseURL:    baseURL,
+		baseURL: baseURL,
 		httpClient: &http.Client{
 			Jar: jar,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {

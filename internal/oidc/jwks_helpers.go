@@ -2,8 +2,8 @@ package oidc
 
 import (
 	"crypto/rsa"
-	"crypto/x509"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
@@ -12,9 +12,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
-	"github.com/earaujoassis/space/internal/logs"
 )
 
 func parsePrivateKey(block *pem.Block) (*rsa.PrivateKey, error) {
@@ -39,14 +39,14 @@ func convertToBase64(b []byte) string {
 }
 
 func initKeyManager() (*KeyManager, error) {
-    km := &KeyManager{}
+	km := &KeyManager{}
 
-    err := km.LoadKeysFromPath("configs/jwks")
-    if err != nil {
-        return nil, err
-    }
+	err := km.LoadKeysFromPath("configs/jwks")
+	if err != nil {
+		return nil, err
+	}
 
-    return km, nil
+	return km, nil
 }
 
 func getJWTValidationKey(token *jwt.Token) (interface{}, error) {

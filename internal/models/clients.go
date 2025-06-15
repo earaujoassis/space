@@ -35,10 +35,10 @@ func validClientScopes(fl validator.FieldLevel) bool {
 	// TODO A PublicClient can't have a ReadScope
 	// It's not a Client model
 	/*
-	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
-		return true
-	}
-	currentClient := fl.Top().Interface().(Client)
+		if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
+			return true
+		}
+		currentClient := fl.Top().Interface().(Client)
 	*/
 
 	if !HasValidScopes(strings.Split(scopesField, " ")) {
@@ -177,15 +177,15 @@ func (client Client) MarshalJSON() ([]byte, error) {
 func (client *Client) HasRequestedScopes(requestedScopes []string) bool {
 	validScopes := strings.Split(client.Scopes, " ")
 	validSet := make(map[string]bool)
-    for _, scope := range validScopes {
-        validSet[scope] = true
-    }
+	for _, scope := range validScopes {
+		validSet[scope] = true
+	}
 
-    for _, requested := range requestedScopes {
-        if !validSet[requested] {
-            return false
-        }
-    }
+	for _, requested := range requestedScopes {
+		if !validSet[requested] {
+			return false
+		}
+	}
 
-    return true
+	return true
 }
