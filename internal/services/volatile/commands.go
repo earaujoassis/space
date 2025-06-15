@@ -23,9 +23,18 @@ func SetFieldAtKey(key, field string, value interface{}) {
 	memstore.Do("HSET", key, field, value)
 }
 
-func SetKeyWithExpiration(key string, value interface{}, ttl time.Duration) bool {
+func SetKeyNXWithExpiration(key string, value interface{}, ttl time.Duration) bool {
 	_, err := memstore.Do("SET", key, value, "NX", "EX", ttl)
 	return err == nil
+}
+
+func SetKeyWithExpiration(key string, value interface{}, ttl time.Duration) {
+	memstore.Do("SET", key, value, "EX", ttl)
+}
+
+func GetKey(key string) Value {
+	result, err := memstore.Do("GET", key)
+	return Value{Result: result, Error: err}
 }
 
 func IncrementFieldAtKeyBy(key, field string, value interface{}) {

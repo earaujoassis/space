@@ -3,11 +3,7 @@ package oidc
 import (
 	"slices"
 	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
-
-	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/shared"
@@ -52,7 +48,7 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 		if !isValidNonce(nonce) {
 			return shared.InvalidRequestResult(state)
 		}
-		if ok := storeNonceForClient(client.Key, nonce); !ok {
+		if ok := storeNonceForClient(client.Key, nonce, ""); !ok {
 			return shared.InvalidRequestResult(state)
 		}
 	}
@@ -65,11 +61,11 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 		return shared.InvalidRequestResult(state)
 	}
 
-	if scope == "" || !client.HasRequestedScopes(strings.Split(scope, " ")) || !strings.Contains(scope, models.OpenIDScope) {
+	if scope != "" && !client.HasRequestedScopes(strings.Split(scope, " ")) && !strings.Contains(scope, models.OpenIDScope) {
 		return shared.InvalidScopeResult(state)
 	}
 
-	idToken := createIDToken(issuer, user.PublicID, client.Key, scope, nonce)
+	idToken := createIDToken(issuer, user.PublicID, client.Key, nonce)
 	session := services.CreateSessionWithToken(user, client, ip, userAgent, scope, models.IDToken, idToken)
 	if idToken != "" && session.ID > 0 {
 		return utils.H{
@@ -79,39 +75,4 @@ func ImplicitFlowIDToken(data utils.H) (utils.H, error) {
 	}
 
 	return shared.ServerErrorResult(state)
-}
-
-func createIDToken(issuer, userPublicId, clientKey, scope, nonce string) string {
-	keyManager, err := initKeyManager()
-	if err != nil || len(keyManager.Keys) == 0 {
-		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
-		return ""
-	}
-
-	key := keyManager.Keys[0]
-	now := time.Now()
-	claims := jwt.MapClaims{
-		"iss": issuer,
-		"sub": userPublicId,
-		"aud": clientKey,
-		"exp": now.Add(time.Hour).Unix(),
-		"iat": now.Unix(),
-	}
-
-	if nonce != "" {
-		claims["nonce"] = nonce
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	token.Header["alg"] = "RS256"
-	token.Header["typ"] = "JWT"
-	token.Header["kid"] = key.ID
-
-	signedToken, err := token.SignedString(key.PrivateKey)
-	if err != nil {
-		logs.Propagatef(logs.Error, "Could not sign id_token: %s", err)
-		return ""
-	}
-
-	return signedToken
 }

@@ -1,4 +1,4 @@
-package oauth
+package oidc
 
 import (
 	"net/http"
@@ -32,6 +32,7 @@ func tokenHandler(c *gin.Context) {
 			"code":         c.PostForm("code"),
 			"redirect_uri": c.PostForm("redirect_uri"),
 			"client":       client,
+			"issuer":       shared.GetBaseUrl(c),
 		})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
@@ -44,6 +45,7 @@ func tokenHandler(c *gin.Context) {
 			"token_type":    result["token_type"],
 			"expires_in":    result["expires_in"],
 			"refresh_token": result["refresh_token"],
+			"id_token":      result["id_token"],
 		})
 		return
 	// Refreshing an Access Token
@@ -53,6 +55,7 @@ func tokenHandler(c *gin.Context) {
 			"refresh_token": c.PostForm("refresh_token"),
 			"scope":         c.PostForm("scope"),
 			"client":        client,
+			"issuer":        shared.GetBaseUrl(c),
 		})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
@@ -65,6 +68,7 @@ func tokenHandler(c *gin.Context) {
 			"token_type":    result["token_type"],
 			"expires_in":    result["expires_in"],
 			"refresh_token": result["refresh_token"],
+			"id_token":      result["id_token"],
 		})
 		return
 	// Resource Owner Password Credentials Grant

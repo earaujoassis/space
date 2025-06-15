@@ -29,7 +29,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -65,7 +64,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)

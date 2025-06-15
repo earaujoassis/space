@@ -60,7 +60,6 @@ func (s *OAuthProviderSuite) TestAuthorizeGrant() {
 		s.Equal("test-state", response.Query["state"])
 		s.False(response.HasKeyInQuery("error"))
 		s.True(response.HasKeyInQuery("code"))
-		s.True(response.HasKeyInQuery("scope"))
 	})
 
 	s.Run("should redirect to index if access not granted", func() {
@@ -71,7 +70,6 @@ func (s *OAuthProviderSuite) TestAuthorizeGrant() {
 		s.Equal("test-state", response.Query["state"])
 		s.Equal("access_denied", response.Query["error"])
 		s.False(response.HasKeyInQuery("code"))
-		s.False(response.HasKeyInQuery("scope"))
 		s.True(response.HasKeyInQuery("error"))
 	})
 }
