@@ -17,5 +17,6 @@ func ExposeRoutes(router *gin.Engine) {
 		endpoints.GET("/oidc/jwks", jwksHandler)
 		endpoints.GET("/oidc/authorize", authorizeHandler)
 		endpoints.POST("/oidc/authorize", authorizeHandler)
+		endpoints.POST("/oidc/token", tokenHandler)
 	}
 }

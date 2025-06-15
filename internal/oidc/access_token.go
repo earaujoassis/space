@@ -1,4 +1,4 @@
-package oauth
+package oidc
 
 import (
 	"golang.org/x/exp/slices"
@@ -26,6 +26,7 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 	redirectURI = data["redirect_uri"].(string)
 	code = data["code"].(string)
 	client = data["client"].(models.Client)
+	issuer := data["issuer"].(string)
 
 	authorizationSession := services.FindSessionByToken(code, models.GrantToken)
 	defer services.InvalidateSession(authorizationSession)
@@ -58,10 +59,13 @@ func AccessTokenRequest(data utils.H) (utils.H, error) {
 		return shared.ServerErrorResult("")
 	}
 
+	nonce := retrieveNonceForCode(code)
+	idToken := createIDToken(issuer, user.PublicID, client.Key, nonce)
 	return utils.H{
 		"access_token":  accessToken.Token,
 		"token_type":    "Bearer",
 		"expires_in":    accessToken.ExpiresIn,
 		"refresh_token": refreshToken.Token,
+		"id_token":      idToken,
 	}, nil
 }

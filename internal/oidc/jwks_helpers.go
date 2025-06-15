@@ -9,6 +9,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 
@@ -106,4 +107,39 @@ func generateJWKSETag(keys []utils.H) string {
 	hash := sha256.Sum256(data)
 
 	return fmt.Sprintf(`"%x"`, hash[:8])
+}
+
+func createIDToken(issuer, userPublicId, clientKey, nonce string) string {
+	keyManager, err := initKeyManager()
+	if err != nil || len(keyManager.Keys) == 0 {
+		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
+		return ""
+	}
+
+	key := keyManager.Keys[0]
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"iss": issuer,
+		"sub": userPublicId,
+		"aud": clientKey,
+		"exp": now.Add(time.Hour).Unix(),
+		"iat": now.Unix(),
+	}
+
+	if nonce != "" {
+		claims["nonce"] = nonce
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token.Header["alg"] = "RS256"
+	token.Header["typ"] = "JWT"
+	token.Header["kid"] = key.ID
+
+	signedToken, err := token.SignedString(key.PrivateKey)
+	if err != nil {
+		logs.Propagatef(logs.Error, "Could not sign id_token: %s", err)
+		return ""
+	}
+
+	return signedToken
 }

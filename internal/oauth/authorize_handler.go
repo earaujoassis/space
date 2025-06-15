@@ -79,7 +79,7 @@ func authorizeHandler(c *gin.Context) {
 		return
 	}
 
-	if scope == "" || !models.HasValidScopes(strings.Split(scope, " ")) {
+	if (scope != "" && !models.HasValidScopes(strings.Split(scope, " "))) || strings.Contains(scope, "openid") {
 		location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.InvalidScope, state)
 		c.Redirect(http.StatusFound, location)
 		return
@@ -130,12 +130,10 @@ func authorizeHandler(c *gin.Context) {
 					"ErrorCode": result["error"],
 				})
 			} else {
-				location = fmt.Sprintf("%s?code=%s&scope=%s&state=%s",
-					redirectURI, result["code"], result["scope"], result["state"])
+				location = fmt.Sprintf("%s?code=%s&state=%s",
+					redirectURI, result["code"], result["state"])
 				c.Redirect(http.StatusFound, location)
 			}
-		} else {
-			c.String(http.StatusNotFound, "404 Not Found")
 		}
 	// Implicit Grant
 	case shared.Token:

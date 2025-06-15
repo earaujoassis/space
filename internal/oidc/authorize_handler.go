@@ -171,8 +171,6 @@ func authorizeHandler(c *gin.Context) {
 			})
 			processResponseForAuthorizeHandlerCode(c, result, err)
 			return
-		} else {
-			c.String(http.StatusNotFound, "404 Not Found")
 		}
 	// Implicit Grant (OAuth)
 	// Hybrid Flow (OIDC)

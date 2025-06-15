@@ -43,16 +43,6 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	client = data["client"].(models.Client)
 	user = data["user"].(models.User)
 
-	nonce := data["nonce"].(string)
-	if nonce != "" {
-		if !isValidNonce(nonce) {
-			return shared.InvalidRequestResult(state)
-		}
-		if ok := storeNonceForClient(client.Key, nonce); !ok {
-			return shared.InvalidRequestResult(state)
-		}
-	}
-
 	if data["scope"] != nil {
 		scope = data["scope"].(string)
 	}
@@ -61,11 +51,20 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 		return shared.InvalidRequestResult(state)
 	}
 
-	if scope == "" || !client.HasRequestedScopes(strings.Split(scope, " ")) || !strings.Contains(scope, models.OpenIDScope) {
+	if scope != "" && !client.HasRequestedScopes(strings.Split(scope, " ")) && !strings.Contains(scope, models.OpenIDScope) {
 		return shared.InvalidScopeResult(state)
 	}
 
 	session := services.CreateSession(user, client, ip, userAgent, scope, models.GrantToken)
+	nonce := data["nonce"].(string)
+	if nonce != "" {
+		if !isValidNonce(nonce) {
+			return shared.InvalidRequestResult(state)
+		}
+		if ok := storeNonceForClient(client.Key, nonce, session.Token); !ok {
+			return shared.InvalidRequestResult(state)
+		}
+	}
 	if session.ID > 0 {
 		return utils.H{
 			"code":  session.Token,

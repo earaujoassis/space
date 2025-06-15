@@ -145,12 +145,11 @@ func processResponseForAuthorizeHandlerCode(c *gin.Context, result utils.H, err 
 				"Callback": redirectURI,
 				"Code":     result["code"],
 				"State":    result["state"],
-				"Scope":    result["scope"],
 			})
 		// case shared.QueryResponseType:
 		default:
-			location := fmt.Sprintf("%s?code=%s&scope=%s&state=%s",
-				redirectURI, result["code"], result["scope"], result["state"])
+			location := fmt.Sprintf("%s?code=%s&state=%s",
+				redirectURI, result["code"], result["state"])
 			c.Redirect(http.StatusFound, location)
 		}
 	}
