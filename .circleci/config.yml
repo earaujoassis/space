@@ -62,6 +62,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
+            task setup:jwks
             task test:integration
       - codecov/upload:
           files: tmp/cover.integration.out
