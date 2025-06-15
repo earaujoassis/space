@@ -1,8 +1,9 @@
 package services
 
 import (
-	"github.com/earaujoassis/space/internal/datastore"
 	"github.com/earaujoassis/space/internal/models"
+
+	datastore "github.com/earaujoassis/space/internal/gateways/postgres"
 )
 
 // CreateNewService creates a new service application entry

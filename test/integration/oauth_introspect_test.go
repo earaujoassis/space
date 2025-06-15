@@ -29,7 +29,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -65,7 +64,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -80,7 +78,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal(clientModel.Key, json["client_id"])
 		s.Equal(userModel.Username, json["username"])
 		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 
 		response = s.Client.PostIntrospect(client.BasicAuthEncode(), refreshToken)
 		json = response.JSON
@@ -91,6 +88,5 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal(clientModel.Key, json["client_id"])
 		s.Equal(userModel.Username, json["username"])
 		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 	})
 }

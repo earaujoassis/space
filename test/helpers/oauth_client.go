@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"time"
 	"strings"
+	"time"
 
-	"golang.org/x/net/publicsuffix"
 	"github.com/pquerna/otp/totp"
+	"golang.org/x/net/publicsuffix"
 
 	"github.com/earaujoassis/space/test/factory"
 )
@@ -29,7 +29,7 @@ func NewOAuthTestClient(baseURL string) *OAuthTestClient {
 		log.Fatalf("Error creating cookiejar: %s", err)
 	}
 	return &OAuthTestClient{
-		baseURL:    baseURL,
+		baseURL: baseURL,
 		httpClient: &http.Client{
 			Jar: jar,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -99,6 +99,7 @@ func (c *OAuthTestClient) GetAuthorize(responseType, clientID, redirectURI, stat
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
+	params.Set("scope", "public")
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	resp, err := c.httpClient.Get(authURL)
@@ -110,6 +111,7 @@ func (c *OAuthTestClient) PostAuthorize(responseType, clientID, redirectURI, sta
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
 	params.Set("redirect_uri", redirectURI)
+	params.Set("scope", "public")
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oauth/authorize?%s", c.baseURL, params.Encode())
 	if authorize {

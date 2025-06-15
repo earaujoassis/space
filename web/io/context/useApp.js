@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react'
 
-import SpaceApi from '@core/utils/space-api'
+import { createUser } from './fetch'
 
 const ACTIONS = {
     LOAD_SERVER_DATA: 'LOAD_SERVER_DATA',
@@ -88,7 +88,7 @@ export function AppProvider({ children }) {
             dispatch({ type: ACTIONS.FETCH_START })
 
             try {
-                const response = await SpaceApi.createUser(data)
+                const response = await createUser(data)
 
                 if (!response.ok) {
                     throw {

@@ -8,7 +8,7 @@ import (
 
 // RegisterSignInAttempt records a sign-in attempt (in order to control it)
 func RegisterSignInAttempt(id string) {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		nowMoment := time.Now().UTC().Unix()
 		if volatile.CheckFieldExistence("sign-in.blocked", id) {
 			blockMoment := volatile.GetFieldAtKey("sign-in.blocked", id).ToInt64()
@@ -32,7 +32,7 @@ func RegisterSignInAttempt(id string) {
 
 // RegisterSuccessfulSignIn records a successful sign-in attempt (in order to clear it)
 func RegisterSuccessfulSignIn(id string) {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		volatile.DeleteFieldAtKey("sign-in.attempt", id)
 		volatile.DeleteFieldAtKey("sign-in.blocked", id)
 	})
@@ -40,7 +40,7 @@ func RegisterSuccessfulSignIn(id string) {
 
 // RegisterSignUpAttempt records a sign-up attempt (in order to control it)
 func RegisterSignUpAttempt(id string) {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		nowMoment := time.Now().UTC().Unix()
 		if volatile.CheckFieldExistence("sign-up.blocked", id) {
 			blockMoment := volatile.GetFieldAtKey("sign-up.blocked", id).ToInt64()
@@ -64,7 +64,7 @@ func RegisterSignUpAttempt(id string) {
 
 // RegisterSuccessfulSignUp records a successful sign-up attempt (in order to clear it)
 func RegisterSuccessfulSignUp(id string) {
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		volatile.DeleteFieldAtKey("sign-up.attempt", id)
 		volatile.DeleteFieldAtKey("sign-up.blocked", id)
 	})

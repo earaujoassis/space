@@ -1,0 +1,8 @@
+<html>
+<body onload="document.forms[0].submit()">
+<form method="post" action="{{ .Callback }}">
+  <input type="hidden" name="id_token" value="{{ .IDToken }}"/>
+  <input type="hidden" name="state" value="{{ .State }}"/>
+</form>
+</body>
+</html>

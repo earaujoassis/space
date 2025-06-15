@@ -1,0 +1,68 @@
+package oidc
+
+import (
+	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/utils"
+)
+
+// RefreshTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
+//
+//	basically, a `refresh token` from `AccessTokenRequest`
+func RefreshTokenRequest(data utils.H) (utils.H, error) {
+	var user models.User
+	var client models.Client
+
+	var token string
+	var scope string
+
+	if data["refresh_token"] == nil || data["scope"] == nil || data["client"] == nil {
+		return shared.InvalidRequestResult("")
+	}
+
+	token = data["refresh_token"].(string)
+	scope = data["scope"].(string)
+	client = data["client"].(models.Client)
+	issuer := data["issuer"].(string)
+
+	refreshSession := services.FindSessionByToken(token, models.RefreshToken)
+	defer services.InvalidateSession(refreshSession)
+	if refreshSession.IsNewRecord() {
+		return shared.InvalidGrantResult("")
+	}
+	user = refreshSession.User
+	user = services.FindUserByPublicID(user.PublicID)
+	if refreshSession.Client.ID != client.ID {
+		return shared.InvalidGrantResult("")
+	}
+	if scope != refreshSession.Scopes {
+		return shared.InvalidScopeResult("")
+	}
+
+	accessToken := services.CreateSession(user,
+		client,
+		refreshSession.IP,
+		refreshSession.UserAgent,
+		scope,
+		models.AccessToken)
+	refreshToken := services.CreateSession(user,
+		client,
+		refreshSession.IP,
+		refreshSession.UserAgent,
+		scope,
+		models.RefreshToken)
+
+	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
+		return shared.ServerErrorResult("")
+	}
+
+	idToken := createIDToken(issuer, user.PublicID, client.Key, "")
+	return utils.H{
+		"access_token":  accessToken.Token,
+		"token_type":    "Bearer",
+		"expires_in":    accessToken.ExpiresIn,
+		"refresh_token": refreshToken.Token,
+		"id_token":      idToken,
+	}, nil
+}

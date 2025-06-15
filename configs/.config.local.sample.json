@@ -4,7 +4,7 @@
   "datastore_port": 5432,
   "datastore_name_prefix": "space",
   "datastore_user": "user",
-  "datastore_password": "secret",
+  "datastore_password": "password",
   "datastore_ssl_mode": "disable",
   "mail_from": "example@example.com",
   "mailer_access": "AccessKeyId:SecretAccessKey:Region",

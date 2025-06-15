@@ -17,9 +17,9 @@ func (resources *TestResources) startMemoryResource() {
 		return
 	}
 	memoryResource, err := resources.Pool.RunWithOptions(&dockertest.RunOptions{
-		Repository:   "redis",
-		Tag:          "7.4-alpine3.21",
-		Hostname:     "redis",
+		Repository: "redis",
+		Tag:        "7.4-alpine3.21",
+		Hostname:   "redis",
 	}, func(config *docker.HostConfig) {
 		config.AutoRemove = true
 		config.RestartPolicy = docker.RestartPolicy{Name: "no"}

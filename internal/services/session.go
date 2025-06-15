@@ -1,12 +1,31 @@
 package services
 
 import (
-	"github.com/earaujoassis/space/internal/datastore"
 	"github.com/earaujoassis/space/internal/models"
+
+	datastore "github.com/earaujoassis/space/internal/gateways/postgres"
 )
 
 // CreateSession creates a session entry
 func CreateSession(user models.User, client models.Client, ip, userAgent, scopes, tokenType string) models.Session {
+	var session models.Session = models.Session{
+		User:      user,
+		Client:    client,
+		IP:        ip,
+		UserAgent: userAgent,
+		Scopes:    scopes,
+		TokenType: tokenType,
+	}
+	datastore := datastore.GetDatastoreConnection()
+	result := datastore.Create(&session)
+	if count := result.RowsAffected; count > 0 {
+		return session
+	}
+	return models.Session{}
+}
+
+// CreateSessionWithToken creates a session entry with a defined token
+func CreateSessionWithToken(user models.User, client models.Client, ip, userAgent, scopes, tokenType, token string) models.Session {
 	var session models.Session = models.Session{
 		User:      user,
 		Client:    client,

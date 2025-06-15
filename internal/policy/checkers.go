@@ -8,7 +8,7 @@ import (
 func SignInAttemptStatus(id string) string {
 	var result string
 
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		if volatile.CheckFieldExistence("sign-in.blocked", id) {
 			result = Blocked
 		} else if volatile.CheckFieldExistence("sign-in.attempt", id) {
@@ -33,7 +33,7 @@ func SignInAttemptStatus(id string) string {
 func SignUpAttemptStatus(id string) string {
 	var result string
 
-	volatile.TransactionsWrapper(func() {
+	volatile.TransactionWrapper(func() {
 		if volatile.CheckFieldExistence("sign-up.blocked", id) {
 			result = Blocked
 		} else if volatile.CheckFieldExistence("sign-up.attempt", id) {

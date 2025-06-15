@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
+
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 type TestResponse struct {
@@ -15,23 +16,7 @@ type TestResponse struct {
 	Location   string
 	JSON       map[string]interface{}
 	Query      map[string]string
-}
-
-func parseQueryString(rawURL string) map[string]string {
-    result := make(map[string]string)
-
-    u, err := url.Parse(rawURL)
-    if err != nil {
-        return result
-    }
-
-    for key, values := range u.Query() {
-        if len(values) > 0 {
-            result[key] = values[0]
-        }
-    }
-
-    return result
+	Fragment   map[string]string
 }
 
 func parseResponse(response *http.Response, err error) *TestResponse {
@@ -58,7 +43,8 @@ func parseResponse(response *http.Response, err error) *TestResponse {
 	}
 
 	if result.Location != "" {
-		result.Query = parseQueryString(result.Location)
+		result.Query = utils.ParseQueryString(result.Location)
+		result.Fragment = utils.ParseFragment(result.Location)
 	}
 
 	return result
@@ -66,6 +52,11 @@ func parseResponse(response *http.Response, err error) *TestResponse {
 
 func (r *TestResponse) HasKeyInQuery(key string) bool {
 	_, ok := r.Query[key]
+	return ok
+}
+
+func (r *TestResponse) HasKeyInFragment(key string) bool {
+	_, ok := r.Fragment[key]
 	return ok
 }
 

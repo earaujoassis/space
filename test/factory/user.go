@@ -37,7 +37,7 @@ func NewUser() *User {
 		Email:         user.Email,
 		Passphrase:    passphrase,
 		CodeSecretKey: codeSecretKey,
-		Model: user,
+		Model:         user,
 	}
 	return &localUser
 }

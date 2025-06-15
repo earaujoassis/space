@@ -12,10 +12,10 @@ import (
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/services"
 	"github.com/earaujoassis/space/internal/services/communications"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -124,12 +124,12 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User was not updated",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -165,7 +165,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			user := services.FindUserByID(action.UserID)
-			if user.ID == 0 {
+			if user.IsNewRecord() {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User password was not updated",
@@ -203,7 +203,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 		usersRoutes.POST("/update/request", requiresConformance, func(c *gin.Context) {
 			var holder = c.PostForm("holder")
 			var requestType = c.PostForm("request_type")
-			var host = fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+			var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 
 			const (
 				passwordType = "password"
@@ -265,37 +265,6 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusNoContent, nil)
 		})
 
-		// Authorization type: access session / Bearer (for OAuth sessions)
-		usersRoutes.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
-			var publicID = c.PostForm("user_id")
-
-			if !security.ValidRandomString(publicID) {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "User instropection failed",
-					"error":    "must use valid identification string",
-				})
-				return
-			}
-			session := c.MustGet("Session").(models.Session)
-			user := services.FindUserByPublicID(publicID)
-			if user.ID == 0 || user.ID != session.UserID {
-				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "User instropection failed",
-					"error":    oauth.AccessDenied,
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, utils.H{
-				"_status":  "success",
-				"_message": "User instropection fulfilled",
-				"user":     user,
-			})
-		})
-
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		usersRoutes.GET("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
@@ -312,12 +281,12 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User instropection failed",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -358,12 +327,12 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User's clients unavailable",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -392,12 +361,12 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 			action := c.MustGet("Action").(models.Action)
 			user := services.FindUserByUUID(userUUID)
-			if user.ID == 0 || user.ID != action.UserID {
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client application irrevocable",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
