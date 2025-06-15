@@ -38,7 +38,7 @@ const (
 	OpenIDScope string = "openid"
 	// ProfileScope session scope
 	// This is used for OpenID Connect and confidential clients
-	ProfileScope string = "openid"
+	ProfileScope string = "profile"
 )
 
 const (

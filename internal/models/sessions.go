@@ -79,15 +79,15 @@ func (session *Session) WithinExpirationWindow() bool {
 func HasValidScopes(requestedScopes []string) bool {
 	validScopes := []string{ PublicScope, ReadScope, OpenIDScope, ProfileScope }
 	validSet := make(map[string]bool)
-    for _, scope := range validScopes {
-        validSet[scope] = true
-    }
+	for _, scope := range validScopes {
+		validSet[scope] = true
+	}
 
-    for _, requested := range requestedScopes {
-        if !validSet[requested] {
-            return false
-        }
-    }
+	for _, requested := range requestedScopes {
+		if !validSet[requested] {
+			return false
+		}
+	}
 
-    return true
+	return true
 }

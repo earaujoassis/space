@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -19,6 +20,22 @@ func TestValidClientModel(t *testing.T) {
 	}
 
 	assert.True(t, IsValid("validate", client), "should return true for valid client")
+}
+
+func TestValidClientModelWithMultipleScopes(t *testing.T) {
+	var client Client = Client{
+		Name:         "internal",
+		Description:  "test internal model only",
+		Secret:       GenerateRandomString(64),
+		Scopes:       "openid profile public read",
+		CanonicalURI: []string{"https://localhost:5000"},
+		RedirectURI:  []string{"https://localhost:5000/callback"},
+		Type:         PublicClient,
+	}
+
+	assert.True(t, IsValid("validate", client), "should return true for valid client")
+	err := validateModel("validate", client)
+	assert.Nil(t, err, fmt.Sprintf("%s", err))
 }
 
 func TestInvalidClientMissingRequiredFields(t *testing.T) {

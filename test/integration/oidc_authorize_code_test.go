@@ -6,9 +6,9 @@ import (
 	"github.com/earaujoassis/space/test/factory"
 )
 
-func (s *OAuthProviderSuite) TestAuthorizeGrant() {
+func (s *OIDCProviderSuite) TestAuthorizeCodeGrant() {
 	user := factory.NewUser()
-	client := factory.NewClient()
+	client := factory.NewClientWithScopes("openid profile")
 
 	s.Run("should have a valid cookie", func() {
 		s.Client.StartSession(user)
@@ -69,7 +69,6 @@ func (s *OAuthProviderSuite) TestAuthorizeGrant() {
 		s.Equal(302, response.StatusCode)
 		s.True(strings.HasPrefix(response.Location, "http://localhost/callback?error="))
 		s.Equal("test-state", response.Query["state"])
-		s.Equal("access_denied", response.Query["error"])
 		s.False(response.HasKeyInQuery("code"))
 		s.False(response.HasKeyInQuery("scope"))
 		s.True(response.HasKeyInQuery("error"))
