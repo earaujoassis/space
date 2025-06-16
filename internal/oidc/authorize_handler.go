@@ -175,7 +175,7 @@ func authorizeHandler(c *gin.Context) {
 		}
 	// Implicit Grant (OAuth)
 	// Hybrid Flow (OIDC)
-	case shared.Token, shared.CodeIDToken:
+	case shared.Token, shared.CodeIDToken, shared.IDTokenToken, shared.CodeToken, shared.CodeIDTokenToken:
 		location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.UnsupportedResponseType, state)
 		// Previous return: c.HTML(http.StatusFound, location)
 		c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
