@@ -11,11 +11,20 @@ import (
 	"github.com/earaujoassis/space/internal/config"
 )
 
+type Mailer struct {
+	cfg *config.Config
+}
+
+func NewMailer(cfg *config.Config) *Mailer {
+	return &Mailer{
+		cfg: cfg,
+	}
+}
+
 // SendEmail uses the AWS SES service to send e-mail messages
-func SendEmail(subject, body, mailTo string) error {
-	var cfg config.Config
-	mailKey := strings.Split(cfg.MailerAccess, ":")
-	mailFrom := cfg.MailFrom
+func (m *Mailer) SendEmail(subject, body, mailTo string) error {
+	mailKey := strings.Split(m.cfg.MailerAccess, ":")
+	mailFrom := m.cfg.MailFrom
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(mailKey[2]),
 		Credentials: credentials.NewStaticCredentials(mailKey[0], mailKey[1], ""),
