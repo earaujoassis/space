@@ -16,8 +16,8 @@ func TrimStrings(strs []string) []string {
 
 func removeEmptyStrings(slice []string) []string {
 	return slices.DeleteFunc(slice, func(s string) bool {
-        return s == ""
-    })
+		return s == ""
+	})
 }
 
 func Scopes(scopes string) []string {
