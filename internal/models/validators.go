@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 func validAction(fl validator.FieldLevel) bool {
@@ -86,16 +88,20 @@ func validRedirectURIs(fl validator.FieldLevel) bool {
 func validClientScopes(fl validator.FieldLevel) bool {
 	scopesField := fl.Field().String()
 
-	// TODO A PublicClient can't have a ReadScope
-	// It's not a Client model
-	/*
-		if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
-			return true
-		}
-		currentClient := fl.Top().Interface().(Client)
-	*/
+	// WARNING A PublicClient can't have a ReadScope
+	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
+		// It's not a Client struct
+		return true
+	}
+	currentClient := fl.Top().Interface().(Client)
+	if currentClient.Type == PublicClient && (strings.Contains(scopesField, ReadScope) ||
+		strings.Contains(scopesField, WriteScope) ||
+		strings.Contains(scopesField, OpenIDScope) ||
+		strings.Contains(scopesField, ProfileScope)) {
+		return false
+	}
 
-	if !HasValidScopes(strings.Split(scopesField, " ")) {
+	if !HasValidScopes(utils.Scopes(scopesField)) {
 		return false
 	}
 	return true
@@ -144,4 +150,20 @@ func validateModel(tagName string, model interface{}) error {
 func IsValid(tagName string, model interface{}) bool {
 	err := validateModel(tagName, model)
 	return err == nil
+}
+
+func HasValidScopes(requestedScopes []string) bool {
+	validScopes := []string{PublicScope, ReadScope, OpenIDScope, ProfileScope}
+	validSet := make(map[string]bool)
+	for _, scope := range validScopes {
+		validSet[scope] = true
+	}
+
+	for _, requested := range requestedScopes {
+		if !validSet[requested] {
+			return false
+		}
+	}
+
+	return true
 }

@@ -95,7 +95,7 @@ func validateScopeForIDToken(c *gin.Context) error {
 	state := c.Query("state")
 	scope := c.Query("scope")
 
-	scopes := utils.TrimStrings(strings.Split(scope, " "))
+	scopes := utils.Scopes(scope)
 	if scope != "" && models.HasValidScopes(scopes) && strings.Contains(scope, models.OpenIDScope) {
 		return nil
 	}
@@ -200,7 +200,7 @@ func validateScopeForCode(c *gin.Context) error {
 	state := c.Query("state")
 	scope := c.Query("scope")
 
-	scopes := utils.TrimStrings(strings.Split(scope, " "))
+	scopes := utils.Scopes(scope)
 	if scope != "" && models.HasValidScopes(scopes) && strings.Contains(scope, models.OpenIDScope) {
 		return nil
 	}

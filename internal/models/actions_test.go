@@ -14,7 +14,7 @@ func TestValidActionModel(t *testing.T) {
 	var action Action
 
 	action = Action{}
-	assert.False(t, IsValid("validate", action), "should return false for invalid action")
+	assert.False(t, IsValid("validate", action))
 	err = validateModel("validate", action)
 	assert.NotNil(t, err)
 
@@ -60,7 +60,7 @@ func TestValidActionModel(t *testing.T) {
 	action.BeforeSave()
 	err = validateModel("validate", action)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
-	assert.True(t, IsValid("validate", action), "should return true for valid action")
+	assert.True(t, IsValid("validate", action))
 }
 
 func TestActionWithinExpirationWindow(t *testing.T) {

@@ -68,19 +68,3 @@ func (session *Session) GrantsReadAbility() bool {
 func (session *Session) GrantsWriteAbility() bool {
 	return session.Scopes == WriteScope
 }
-
-func HasValidScopes(requestedScopes []string) bool {
-	validScopes := []string{PublicScope, ReadScope, OpenIDScope, ProfileScope}
-	validSet := make(map[string]bool)
-	for _, scope := range validScopes {
-		validSet[scope] = true
-	}
-
-	for _, requested := range requestedScopes {
-		if !validSet[requested] {
-			return false
-		}
-	}
-
-	return true
-}

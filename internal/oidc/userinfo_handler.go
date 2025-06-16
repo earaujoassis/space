@@ -55,7 +55,7 @@ func userinfoHandler(c *gin.Context) {
 			})
 			return
 		}
-		if !strings.Contains(session.Scopes, "openid") {
+		if !strings.Contains(session.Scopes, models.OpenIDScope) {
 			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer error=\"%s\"", shared.InsufficientScope))
 			c.JSON(http.StatusForbidden, utils.H{
 				"error":             shared.InsufficientScope,
@@ -67,7 +67,7 @@ func userinfoHandler(c *gin.Context) {
 		scope = session.Scopes
 	}
 
-	if !strings.Contains(scope, "profile") {
+	if !strings.Contains(scope, models.ProfileScope) {
 		userinfo = utils.H{
 			"sub": user.PublicID,
 		}

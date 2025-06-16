@@ -61,7 +61,7 @@ func ImplicitFlowIDToken(data utils.H, repositories *repository.RepositoryManage
 		return shared.InvalidRequestResult(state)
 	}
 
-	if scope != "" && !client.HasRequestedScopes(strings.Split(scope, " ")) && !strings.Contains(scope, models.OpenIDScope) {
+	if scope != "" && !client.HasRequestedScopes(utils.Scopes(scope)) && !strings.Contains(scope, models.OpenIDScope) {
 		return shared.InvalidScopeResult(state)
 	}
 
