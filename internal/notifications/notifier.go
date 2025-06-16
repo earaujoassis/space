@@ -1,4 +1,4 @@
-package communications
+package notifications
 
 import (
 	"time"

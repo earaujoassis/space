@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
-	"github.com/earaujoassis/space/internal/communications"
+	"github.com/earaujoassis/space/internal/notifications"
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/gateways/redis"
@@ -49,6 +49,6 @@ func GetRateLimitService(c *gin.Context) *policy.RateLimitService {
 	return GetAppContext(c).RateLimit
 }
 
-func GetNotifier(c *gin.Context) *communications.Notifier {
+func GetNotifier(c *gin.Context) *notifications.Notifier {
 	return GetAppContext(c).Notifier
 }

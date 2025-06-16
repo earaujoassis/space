@@ -1,7 +1,7 @@
 package ioc
 
 import (
-	"github.com/earaujoassis/space/internal/communications"
+	"github.com/earaujoassis/space/internal/notifications"
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/gateways/database"
@@ -17,7 +17,7 @@ type AppContext struct {
 	Repositories *repository.RepositoryManager
 	FeatureGate  *feature.FeatureGate
 	RateLimit    *policy.RateLimitService
-	Notifier     *communications.Notifier
+	Notifier     *notifications.Notifier
 }
 
 func NewAppContext(cfg *config.Config) (*AppContext, error) {
@@ -32,7 +32,7 @@ func NewAppContext(cfg *config.Config) (*AppContext, error) {
 	repoManager := repository.NewRepositoryManager(db, ms)
 	fg := feature.NewFeatureGate(ms)
 	rls := policy.NewRateLimitService(ms)
-	ntfr := communications.NewNotifier(cfg)
+	ntfr := notifications.NewNotifier(cfg)
 
 	return &AppContext{
 		Config:       cfg,
