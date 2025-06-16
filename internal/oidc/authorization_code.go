@@ -1,8 +1,6 @@
 package oidc
 
 import (
-	"strings"
-
 	"golang.org/x/exp/slices"
 
 	"github.com/earaujoassis/space/internal/models"
@@ -51,7 +49,7 @@ func AuthorizationCodeGrant(data utils.H, repositories *repository.RepositoryMan
 		return shared.InvalidRequestResult(state)
 	}
 
-	if scope != "" && !client.HasRequestedScopes(strings.Split(scope, " ")) && !strings.Contains(scope, models.OpenIDScope) {
+	if scope != "" && !client.HasRequestedScopes(utils.Scopes(scope)) && !client.HasScope(models.OpenIDScope) {
 		return shared.InvalidScopeResult(state)
 	}
 

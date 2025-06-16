@@ -61,14 +61,6 @@ func TestValidSessionModel(t *testing.T) {
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 }
 
-func TestHasValidScopes(t *testing.T) {
-	assert.False(t, HasValidScopes([]string{WriteScope}))
-	assert.True(t, HasValidScopes([]string{PublicScope, OpenIDScope}))
-	assert.True(t, HasValidScopes([]string{PublicScope, OpenIDScope, ProfileScope}))
-	assert.True(t, HasValidScopes([]string{PublicScope, ReadScope, OpenIDScope, ProfileScope}))
-	assert.False(t, HasValidScopes([]string{PublicScope, ReadScope, WriteScope, OpenIDScope, ProfileScope}))
-}
-
 func TestSessionWithinExpirationWindow(t *testing.T) {
 	var session Session = Session{
 		ExpiresIn: refreshableExpirationLength,

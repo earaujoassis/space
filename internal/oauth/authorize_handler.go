@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
-	"strings"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -80,7 +79,7 @@ func authorizeHandler(c *gin.Context) {
 		return
 	}
 
-	if (scope != "" && !models.HasValidScopes(strings.Split(scope, " "))) || strings.Contains(scope, "openid") {
+	if (scope != "" && !models.HasValidScopes(utils.Scopes(scope))) || client.HasScope(models.OpenIDScope) {
 		location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, shared.InvalidScope, state)
 		c.Redirect(http.StatusFound, location)
 		return

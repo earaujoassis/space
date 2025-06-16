@@ -68,8 +68,8 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				Name:         c.PostForm("name"),
 				Description:  c.PostForm("description"),
 				Scopes:       models.PublicScope,
-				CanonicalURI: strings.Split(c.PostForm("canonical_uri"), "\n"),
-				RedirectURI:  strings.Split(c.PostForm("redirect_uri"), "\n"),
+				CanonicalURI: utils.URIs(c.PostForm("canonical_uri")),
+				RedirectURI:  utils.URIs(c.PostForm("redirect_uri")),
 				Type:         models.ConfidentialClient,
 			}
 
@@ -90,8 +90,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		// Authorization type: action token / Bearer (for web use)
 		// TODO Improve security for this endpoint avoiding any overhead
 		clientsRoutes.PATCH("/:client_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			var clientUUID = c.Param("client_id")
-
+			clientUUID := c.Param("client_id")
 			repositories := ioc.GetRepositories(c)
 			session := sessions.Default(c)
 			action := c.MustGet("Action").(models.Action)
@@ -116,17 +115,18 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			var newScopes = c.PostForm("scopes")
-			// Clients can only have read or public scopes
-			if newScopes != models.PublicScope && newScopes != models.ReadScope {
-				newScopes = ""
-			}
-
 			client := repositories.Clients().FindByUUID(clientUUID)
-			client.CanonicalURI = utils.TrimStrings(strings.Split(c.PostForm("canonical_uri"), "\n"))
-			client.RedirectURI = utils.TrimStrings(strings.Split(c.PostForm("redirect_uri"), "\n"))
-			if newScopes != "" {
-				client.Scopes = newScopes
+			canonicalURI := c.PostForm("canonical_uri")
+			redirectURI := c.PostForm("redirect_uri")
+			scopes := c.PostForm("scopes")
+			if canonicalURI != "" {
+				client.CanonicalURI = utils.URIs(canonicalURI)
+			}
+			if redirectURI != "" {
+				client.RedirectURI = utils.URIs(redirectURI)
+			}
+			if scopes != "" {
+				client.Scopes = strings.Join(utils.Scopes(scopes), " ")
 			}
 			repositories.Clients().Save(&client)
 			c.JSON(http.StatusNoContent, nil)
@@ -135,8 +135,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 		// In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
 		// TODO Improve security for this endpoint avoiding any overhead
 		clientsRoutes.GET("/:client_id/credentials", func(c *gin.Context) {
-			var clientUUID = c.Param("client_id")
-
+			clientUUID := c.Param("client_id")
 			repositories := ioc.GetRepositories(c)
 			session := sessions.Default(c)
 			userPublicID := session.Get("user_public_id")

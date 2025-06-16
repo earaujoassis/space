@@ -7,6 +7,8 @@ import (
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 // Client is the client application model/struct
@@ -85,8 +87,12 @@ func (client Client) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (client *Client) HasScope(scope string) bool {
+	return strings.Contains(client.Scopes, scope)
+}
+
 func (client *Client) HasRequestedScopes(requestedScopes []string) bool {
-	validScopes := strings.Split(client.Scopes, " ")
+	validScopes := utils.Scopes(client.Scopes)
 	validSet := make(map[string]bool)
 	for _, scope := range validScopes {
 		validSet[scope] = true
