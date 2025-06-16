@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
-	"github.com/earaujoassis/space/internal/notifications"
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/notifications"
 	"github.com/earaujoassis/space/internal/policy"
 	"github.com/earaujoassis/space/internal/repository"
 )
