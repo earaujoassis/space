@@ -1,1 +1,2 @@
-web: go run main.go serve
+api: go run main.go launch
+web: yarn watch

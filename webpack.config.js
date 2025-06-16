@@ -49,6 +49,11 @@ module.exports = {
     optimization: {
         minimizer: [new TerserPlugin({ extractComments: false })]
     },
+    watchOptions: {
+        ignored: /node_modules/,
+        aggregateTimeout: 200,
+        poll: false
+    },
     module: {
         rules: [
             {
