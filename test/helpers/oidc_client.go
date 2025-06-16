@@ -126,6 +126,46 @@ func (c *OIDCCTestlient) PostAuthorize(responseType, clientID, redirectURI, stat
 	}
 }
 
+func (c *OIDCCTestlient) PostToken(clientBasicAuth, grantType string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("grant_type", grantType)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oidc/token", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}
+
+func (c *OIDCCTestlient) PostTokenComplete(clientBasicAuth, grantType, code, redirectURI string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("grant_type", grantType)
+	formData.Set("code", code)
+	formData.Set("redirect_uri", redirectURI)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oidc/token", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}
+
+func (c *OIDCCTestlient) PostTokenRefresh(clientBasicAuth, refreshToken, scope string) *TestResponse {
+	formData := url.Values{}
+	formData.Set("grant_type", "refresh_token")
+	formData.Set("refresh_token", refreshToken)
+	formData.Set("scope", scope)
+	encoded := formData.Encode()
+	requestUrl := fmt.Sprintf("%s/oidc/token", c.baseURL)
+	request, _ := http.NewRequest("POST", requestUrl, strings.NewReader(encoded))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
+	response, err := c.httpClient.Do(request)
+	return parseResponse(response, err)
+}
+
 func (c *OIDCCTestlient) GetMetadata() *TestResponse {
 	requestUrl := c.baseURL + "/.well-known/openid-configuration"
 	response, err := c.httpClient.Get(requestUrl)

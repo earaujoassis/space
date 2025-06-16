@@ -42,6 +42,12 @@ const (
 	IDToken string = "id_token"
 	// CodeIDToken response type
 	CodeIDToken string = "code id_token"
+	// IDTokenToken response type
+	IDTokenToken string = "id_token token"
+	// CodeToken response type
+	CodeToken string = "code token"
+	// CodeToken response type
+	CodeIDTokenToken string = "code id_token token"
 )
 
 const (
