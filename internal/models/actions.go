@@ -1,19 +1,8 @@
 package models
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"time"
-
-	"github.com/go-playground/validator/v10"
-
-	"github.com/earaujoassis/space/internal/services/volatile"
-)
-
-const (
-	// NotSpecialAction action description, used for ephemeral actions with no special meaning
-	NotSpecialAction string = "not_special"
-	// UpdateUserAction action description, user for ephemeral actions updating user data
-	UpdateUserAction string = "update_user"
 )
 
 // Action is a model/struct used to represent ephemeral actions/sessions in the application
@@ -33,16 +22,12 @@ type Action struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-func validAction(fl validator.FieldLevel) bool {
-	description := fl.Field().String()
-	if description != NotSpecialAction && description != UpdateUserAction {
-		return false
-	}
-	return true
+func (action *Action) Validate() error {
+	return validateModel("validate", action)
 }
 
-// Save saves an Action entry in a memory store (Redis)
-func (action *Action) Save() error {
+// BeforeSave sets defaults values for fields in action token
+func (action *Action) BeforeSave() {
 	action.UserID = action.User.ID
 	action.ClientID = action.Client.ID
 	action.UUID = generateUUID()
@@ -50,34 +35,12 @@ func (action *Action) Save() error {
 	action.Token = GenerateRandomString(64)
 	action.Moment = time.Now().UTC().Unix()
 	action.ExpiresIn = shortestExpirationLength
-	if err := validateModel("validate", action); err != nil {
-		return err
-	}
-	actionJSON, _ := json.Marshal(action)
-	volatile.TransactionsWrapper(func() {
-		volatile.SetFieldAtKey("models.actions", action.UUID, actionJSON)
-		volatile.SetFieldAtKey("models.actions.indexes", action.Token, action.UUID)
-		volatile.AddToSortedSetAtKey("models.actions.rank", action.Moment, action.UUID)
-	})
-	return nil
-}
-
-// Delete deletes an Action entry in a memory store (Redis)
-func (action *Action) Delete() {
-	volatile.TransactionsWrapper(func() {
-		if !volatile.CheckFieldExistence("models.actions", action.UUID) {
-			return
-		}
-		volatile.DeleteFieldAtKey("models.actions.indexes", action.Token)
-		volatile.DeleteFieldAtKey("models.actions", action.UUID)
-		volatile.RemoveFromSortedSetAtKey("models.actions.rank", action.UUID)
-	})
 }
 
 // WithinExpirationWindow checks if an Action entry is still valid (time-based)
 func (action *Action) WithinExpirationWindow() bool {
 	now := time.Now().UTC().Unix()
-	return action.ExpiresIn == eternalExpirationLength || action.Moment+action.ExpiresIn >= now
+	return now <= action.Moment+action.ExpiresIn
 }
 
 // CanUpdateUser checks if an Action description is valid for user update actions
@@ -85,38 +48,12 @@ func (action *Action) CanUpdateUser() bool {
 	return action.Description == UpdateUserAction
 }
 
-// RetrieveActionByUUID obtains an Action entry from its UUID
-func RetrieveActionByUUID(uuid string) Action {
-	var action Action
-
-	volatile.TransactionsWrapper(func() {
-		if !volatile.CheckFieldExistence("models.actions", uuid) {
-			action = Action{}
-			return
-		}
-		actionString := volatile.GetFieldAtKey("models.actions", uuid).ToString()
-		if err := json.Unmarshal([]byte(actionString), &action); err != nil {
-			action = Action{}
-			return
-		}
-	})
-
-	return action
+// ActionGrantsReadAbility checks if an action entry has read-ability
+func (action *Action) GrantsReadAbility() bool {
+	return action.Scopes == ReadScope || action.Scopes == WriteScope || action.Scopes == OpenIDScope
 }
 
-// RetrieveActionByToken obtains an Action entry from its token-string
-func RetrieveActionByToken(token string) Action {
-	var action Action
-
-	volatile.TransactionsWrapper(func() {
-		if !volatile.CheckFieldExistence("models.actions.indexes", token) {
-			action = Action{}
-			return
-		}
-
-		actionUUID := volatile.GetFieldAtKey("models.actions.indexes", token).ToString()
-		action = RetrieveActionByUUID(actionUUID)
-	})
-
-	return action
+// ActionGrantsWriteAbility checks if an action entry has write-ability
+func (action *Action) GrantsWriteAbility() bool {
+	return action.Scopes == WriteScope
 }

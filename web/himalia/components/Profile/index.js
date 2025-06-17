@@ -21,27 +21,27 @@ const personal = ({ fetchUserProfile, loading, application, user }) => {
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="personal__full-name">Full name</label>
-                        <input disabled id="personal__full-name" value={`${user.first_name} ${user.last_name}`} type="text" />
+                        <input className="read-only" disabled id="personal__full-name" value={`${user.first_name} ${user.last_name}`} type="text" />
                     </div>
                     <div className="globals__input-wrapper">
                         <label htmlFor="personal__username">Username</label>
-                        <input disabled id="personal__username" value={user.username} type="text" />
+                        <input className="read-only" disabled id="personal__username" value={user.username} type="text" />
                     </div>
                 </div>
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="personal__email">Email</label>
-                        <input disabled id="personal__email" value={user.email} type="text" />
+                        <input className="read-only" disabled id="personal__email" value={user.email} type="text" />
                     </div>
                     <div className="globals__input-wrapper">
                         <label htmlFor="personal__role">Role</label>
-                        <input disabled id="personal__role" value={user.is_admin ? 'Administrator' : 'Member' } type="text" />
+                        <input className="read-only" disabled id="personal__role" value={user.is_admin ? 'Administrator' : 'Member' } type="text" />
                     </div>
                 </div>
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="personal__timezone">Timezone</label>
-                        <input disabled id="personal__timezone" value={user.timezone_identifier} type="text" />
+                        <input className="read-only" disabled id="personal__timezone" value={user.timezone_identifier} type="text" />
                     </div>
                     <div className="globals__input-wrapper"></div>
                 </div>

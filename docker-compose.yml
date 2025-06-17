@@ -30,8 +30,8 @@ services:
     volumes:
       - space-postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: space
-      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: space_development
       POSTGRES_HOST_AUTH_METHOD: "trust"
       listen_addresses: "*"

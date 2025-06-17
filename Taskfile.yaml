@@ -10,10 +10,14 @@ tasks:
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
       - go install github.com/rakyll/gotest@latest
       - go install honnef.co/go/tools/cmd/staticcheck@latest
+  setup:jwks:
+    desc: Setup local keys for JWKS
+    cmds:
+      - scripts/jwks.sh
   get:
     desc: go-get all packages
     cmds:
-      - go get -d ./...
+      - go get ./...
   build:
     desc: Build the go binary.
     cmds:
@@ -51,11 +55,16 @@ tasks:
       - cp tmp/unit-tests.xml tmp/test-results
       - cp tmp/integration-tests.xml tmp/test-results
       - allure generate tmp/test-results --output tmp/test-report --clean
-      - echo "Run 'allure serve tmp/report' to open report"
+      - echo "> Run 'allure serve tmp/report' to open report"
   lint:
     desc: Lint go package (this repository package)
     cmds:
       - staticcheck ./...
+      - test -z "$(gofmt -d .)"
+  security:
+    desc: Run gosec (security checker) over the codebase
+    cmds:
+      - gosec -tests ./...
   run:
     desc: Run the service component.
     cmds:

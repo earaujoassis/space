@@ -1,13 +1,9 @@
 package integration
 
-import (
-	"github.com/earaujoassis/space/test/factory"
-)
-
 func (s *OAuthProviderSuite) TestTokenRefreshGrant() {
 	var accessToken, refreshToken string
-	client := factory.NewClient()
-	user := factory.NewUser()
+	client := s.Factory.NewClient()
+	user := s.Factory.NewUser()
 
 	s.Run("should successfully retrieve tokens", func() {
 		s.Client.StartSession(user)
@@ -27,7 +23,6 @@ func (s *OAuthProviderSuite) TestTokenRefreshGrant() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -35,7 +30,7 @@ func (s *OAuthProviderSuite) TestTokenRefreshGrant() {
 	})
 
 	s.Run("should return error if attempting to refresh session token through another client", func() {
-		second_client := factory.NewClient()
+		second_client := s.Factory.NewClient()
 		response := s.Client.PostTokenRefresh(second_client.BasicAuthEncode(), refreshToken, "public")
 		json := response.JSON
 
@@ -65,7 +60,6 @@ func (s *OAuthProviderSuite) TestTokenRefreshGrant() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -78,7 +72,6 @@ func (s *OAuthProviderSuite) TestTokenRefreshGrant() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 	})
 }

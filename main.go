@@ -13,23 +13,21 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func init() {
+func main() {
 	defer utils.RecoverHandler()
 	err := godotenv.Load()
 	if err == nil {
 		logs.Propagate(logs.Info, "Application has found a .env file")
 	}
-	config.LoadConfig()
-	cfg := config.GetGlobalConfig()
+	cfg, err := config.Load()
+	if err != nil {
+		logs.Propagatef(logs.Panic, "Could not load configuration: %s\n", err)
+	}
 	logs.Setup(logs.Options{
-		Environment: config.Environment(),
-		Release:     config.Release(),
+		Environment: cfg.Environment,
+		Release:     cfg.Release(),
 		SentryUrl:   cfg.SentryUrl,
 	})
-}
-
-func main() {
-	defer utils.RecoverHandler()
 	app := cli.NewApp()
 	app.Name = "space"
 	app.Version = internal.Version
@@ -52,7 +50,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						tasks.RunMigrations(c.String("path"))
+						tasks.RunMigrations(cfg, c.String("path"))
 						return nil
 					},
 				},
@@ -67,7 +65,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						tasks.RollbackMigrations(c.String("path"))
+						tasks.RollbackMigrations(cfg, c.String("path"))
 						return nil
 					},
 				},
@@ -77,7 +75,7 @@ func main() {
 			Name:  "serve",
 			Usage: "Serve the application server",
 			Action: func(c *cli.Context) error {
-				tasks.Server()
+				tasks.Server(cfg)
 				return nil
 			},
 		},
@@ -92,8 +90,8 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				tasks.RunMigrations(c.String("path"))
-				tasks.Server()
+				tasks.RunMigrations(cfg, c.String("path"))
+				tasks.Server(cfg)
 				return nil
 			},
 		},
@@ -101,7 +99,7 @@ func main() {
 			Name:  "feature",
 			Usage: "Toggle feature flags ON/OFF",
 			Action: func(c *cli.Context) error {
-				tasks.ToggleFeature()
+				tasks.ToggleFeature(cfg)
 				return nil
 			},
 		},

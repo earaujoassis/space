@@ -34,3 +34,8 @@
 .clients-root__entry .button-anchor ~ .button-anchor {
   margin-left: 12px;
 }
+
+.clients-root__entry .button-anchor:hover {
+  color: #007095;
+  text-decoration: underline;
+}

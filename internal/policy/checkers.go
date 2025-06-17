@@ -1,18 +1,26 @@
 package policy
 
 import (
-	"github.com/earaujoassis/space/internal/services/volatile"
+	"github.com/earaujoassis/space/internal/gateways/redis"
 )
 
+type RateLimitService struct {
+	ms *redis.MemoryService
+}
+
+func NewRateLimitService(ms *redis.MemoryService) *RateLimitService {
+	return &RateLimitService{ms: ms}
+}
+
 // SignInAttemptStatus checks and controls sign-in attempts from a Web browser/User
-func SignInAttemptStatus(id string) string {
+func (rls *RateLimitService) SignInAttemptStatus(id string) string {
 	var result string
 
-	volatile.TransactionsWrapper(func() {
-		if volatile.CheckFieldExistence("sign-in.blocked", id) {
+	rls.ms.Transaction(func(c *redis.Commands) {
+		if c.CheckFieldExistence("sign-in.blocked", id) {
 			result = Blocked
-		} else if volatile.CheckFieldExistence("sign-in.attempt", id) {
-			numberOfAttempts := volatile.GetFieldAtKey("sign-in.attempt", id).ToInt()
+		} else if c.CheckFieldExistence("sign-in.attempt", id) {
+			numberOfAttempts := c.GetFieldAtKey("sign-in.attempt", id).ToInt()
 			switch {
 			case numberOfAttempts > 0 && numberOfAttempts <= attemptsUntilPreblock:
 				result = Clear
@@ -30,14 +38,14 @@ func SignInAttemptStatus(id string) string {
 }
 
 // SignUpAttemptStatus checks and controls sign-up attempts from a Web browser/User
-func SignUpAttemptStatus(id string) string {
+func (rls *RateLimitService) SignUpAttemptStatus(id string) string {
 	var result string
 
-	volatile.TransactionsWrapper(func() {
-		if volatile.CheckFieldExistence("sign-up.blocked", id) {
+	rls.ms.Transaction(func(c *redis.Commands) {
+		if c.CheckFieldExistence("sign-up.blocked", id) {
 			result = Blocked
-		} else if volatile.CheckFieldExistence("sign-up.attempt", id) {
-			numberOfAttempts := volatile.GetFieldAtKey("sign-up.attempt", id).ToInt()
+		} else if c.CheckFieldExistence("sign-up.attempt", id) {
+			numberOfAttempts := c.GetFieldAtKey("sign-up.attempt", id).ToInt()
 			switch {
 			case numberOfAttempts > 0 && numberOfAttempts <= attemptsUntilPreblock:
 				result = Clear

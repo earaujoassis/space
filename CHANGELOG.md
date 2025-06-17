@@ -1,6 +1,12 @@
 # Changelog
 
-## v0.2.0 - TBA
+## v0.3.0 - TBD
+
+- Basic functionalities for the OIDC Provider
+- Improvements on Client Scope selection
+- Automated tests for both the OAuth and OIDC Providers
+
+## v0.2.0 - N/A
 
 - Basic functionality for the OAuth Provider
 - Sign-up and sign-in for users are created and fully functional

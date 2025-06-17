@@ -9,13 +9,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/config"
-	"github.com/earaujoassis/space/internal/feature"
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/services"
-	"github.com/earaujoassis/space/internal/services/communications"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -30,7 +27,8 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			var buf bytes.Buffer
 			var imageData string
 
-			if !feature.IsActive("user.create") {
+			fg := ioc.GetFeatureGate(c)
+			if !fg.IsActive("user.create") {
 				c.JSON(http.StatusForbidden, utils.H{
 					"_status":  "error",
 					"_message": "User was not created",
@@ -55,8 +53,9 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				})
 				return
 			}
-			codeSecretKey := user.GenerateCodeSecret()
-			recoverSecret, _ := user.GenerateRecoverSecret()
+			repositories := ioc.GetRepositories(c)
+			codeSecretKey := repositories.Users().SetCodeSecret(&user)
+			recoverSecret, _ := repositories.Users().SetRecoverSecret(&user)
 			img, err := codeSecretKey.Image(200, 200)
 			if err != nil {
 				imageData = ""
@@ -65,8 +64,10 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				imageData = base64.StdEncoding.EncodeToString(buf.Bytes())
 			}
 
-			ok, err := services.CreateNewUser(&user)
-			if !ok {
+			user.Client = repositories.Clients().FindOrCreate(models.DefaultClient)
+			user.Language = repositories.Languages().FindOrCreate("English", "en-US")
+			err = repositories.Users().Create(&user)
+			if err != nil {
 				c.JSON(http.StatusBadRequest, utils.H{
 					"_status":  "error",
 					"_message": "User was not created",
@@ -74,7 +75,8 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					"user":     user,
 				})
 			} else {
-				go communications.Announce("user.created", utils.H{
+				notifier := ioc.GetNotifier(c)
+				go notifier.Announce("user.created", utils.H{
 					"Email":     user.Email,
 					"FirstName": user.FirstName,
 				})
@@ -91,11 +93,11 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		usersRoutes.PATCH("/update/adminify", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			var cfg config.Config = config.GetGlobalConfig()
 			var uuid = c.PostForm("user_id")
 			var providedApplicationKey = c.PostForm("application_key")
 
-			if !feature.IsActive("user.adminify") {
+			fg := ioc.GetFeatureGate(c)
+			if !fg.IsActive("user.adminify") {
 				c.JSON(http.StatusForbidden, utils.H{
 					"_status":  "error",
 					"_message": "User was not updated",
@@ -104,6 +106,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				return
 			}
 
+			cfg := ioc.GetConfig(c)
 			if providedApplicationKey != cfg.ApplicationKey {
 				c.JSON(http.StatusForbidden, utils.H{
 					"_status":  "error",
@@ -123,19 +126,20 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			action := c.MustGet("Action").(models.Action)
-			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			repositories := ioc.GetRepositories(c)
+			user := repositories.Users().FindByUUID(uuid)
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User was not updated",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
 
 			user.Admin = true
-			services.SaveUser(&user)
+			repositories.Users().Save(&user)
 			c.JSON(http.StatusNoContent, nil)
 		})
 
@@ -154,8 +158,9 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			action := services.ActionAuthentication(bearer)
-			if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() {
+			repositories := ioc.GetRepositories(c)
+			action := repositories.Actions().Authentication(bearer)
+			if action.UUID == "" || !action.GrantsWriteAbility() || !action.CanUpdateUser() {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User password was not updated",
@@ -164,8 +169,8 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			user := services.FindUserByID(action.UserID)
-			if user.ID == 0 {
+			user := repositories.Users().FindByID(action.UserID)
+			if user.IsNewRecord() {
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User password was not updated",
@@ -183,7 +188,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			user.UpdatePassword(newPassword)
+			repositories.Users().SetPassword(&user, newPassword)
 			if !models.IsValid("essential", user) {
 				c.JSON(http.StatusBadRequest, utils.H{
 					"_status":  "error",
@@ -194,8 +199,8 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				return
 			}
 
-			services.SaveUser(&user)
-			action.Delete()
+			repositories.Users().Save(&user)
+			repositories.Actions().Delete(action)
 			c.JSON(http.StatusNoContent, nil)
 		})
 
@@ -203,7 +208,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 		usersRoutes.POST("/update/request", requiresConformance, func(c *gin.Context) {
 			var holder = c.PostForm("holder")
 			var requestType = c.PostForm("request_type")
-			var host = fmt.Sprintf("%s://%s", scheme(c.Request), c.Request.Host)
+			var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 
 			const (
 				passwordType = "password"
@@ -219,34 +224,43 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 				return
 			}
 
+			repositories := ioc.GetRepositories(c)
 			switch requestType {
 			case passwordType:
-				user := services.FindUserByAccountHolder(holder)
-				client := services.FindOrCreateClient(services.DefaultClient)
+				user := repositories.Users().FindByAccountHolder(holder)
+				client := repositories.Clients().FindOrCreate(models.DefaultClient)
 				if user.ID != 0 {
-					actionToken := services.CreateAction(user, client,
-						c.Request.RemoteAddr,
-						c.Request.UserAgent(),
-						models.WriteScope,
-						models.UpdateUserAction,
-					)
-					go communications.Announce("session.magic", utils.H{
+					actionToken := models.Action{
+						User:        user,
+						Client:      client,
+						IP:          c.Request.RemoteAddr,
+						UserAgent:   c.Request.UserAgent(),
+						Scopes:      models.WriteScope,
+						Description: models.UpdateUserAction,
+					}
+					repositories.Actions().Create(&actionToken)
+					notifier := ioc.GetNotifier(c)
+					go notifier.Announce("session.magic", utils.H{
 						"Email":     user.Email,
 						"FirstName": user.FirstName,
 						"Callback":  fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
 					})
 				}
 			case secretsType:
-				user := services.FindUserByAccountHolder(holder)
-				client := services.FindOrCreateClient(services.DefaultClient)
+				user := repositories.Users().FindByAccountHolder(holder)
+				client := repositories.Clients().FindOrCreate(models.DefaultClient)
 				if user.ID != 0 {
-					actionToken := services.CreateAction(user, client,
-						c.Request.RemoteAddr,
-						c.Request.UserAgent(),
-						models.WriteScope,
-						models.UpdateUserAction,
-					)
-					go communications.Announce("session.magic", utils.H{
+					actionToken := models.Action{
+						User:        user,
+						Client:      client,
+						IP:          c.Request.RemoteAddr,
+						UserAgent:   c.Request.UserAgent(),
+						Scopes:      models.WriteScope,
+						Description: models.UpdateUserAction,
+					}
+					repositories.Actions().Create(&actionToken)
+					notifier := ioc.GetNotifier(c)
+					go notifier.Announce("session.magic", utils.H{
 						"Email":     user.Email,
 						"FirstName": user.FirstName,
 						"Callback":  fmt.Sprintf("%s/profile/secrets?_=%s", host, actionToken.Token),
@@ -265,37 +279,6 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusNoContent, nil)
 		})
 
-		// Authorization type: access session / Bearer (for OAuth sessions)
-		usersRoutes.POST("/introspect", oAuthTokenBearerAuthorization, func(c *gin.Context) {
-			var publicID = c.PostForm("user_id")
-
-			if !security.ValidRandomString(publicID) {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "User instropection failed",
-					"error":    "must use valid identification string",
-				})
-				return
-			}
-			session := c.MustGet("Session").(models.Session)
-			user := services.FindUserByPublicID(publicID)
-			if user.ID == 0 || user.ID != session.UserID {
-				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "User instropection failed",
-					"error":    oauth.AccessDenied,
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, utils.H{
-				"_status":  "success",
-				"_message": "User instropection fulfilled",
-				"user":     user,
-			})
-		})
-
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
 		usersRoutes.GET("/:user_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
@@ -311,13 +294,14 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			action := c.MustGet("Action").(models.Action)
-			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			repositories := ioc.GetRepositories(c)
+			user := repositories.Users().FindByUUID(uuid)
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User instropection failed",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -357,13 +341,14 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			action := c.MustGet("Action").(models.Action)
-			user := services.FindUserByUUID(uuid)
-			if user.ID == 0 || user.ID != action.UserID {
+			repositories := ioc.GetRepositories(c)
+			user := repositories.Users().FindByUUID(uuid)
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "User's clients unavailable",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
@@ -371,7 +356,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			c.JSON(http.StatusOK, utils.H{
 				"_status":  "success",
 				"_message": "User's clients available",
-				"clients":  services.ActiveClientsForUser(user.ID),
+				"clients":  repositories.Users().ActiveClients(user),
 			})
 		})
 
@@ -391,19 +376,20 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			}
 
 			action := c.MustGet("Action").(models.Action)
-			user := services.FindUserByUUID(userUUID)
-			if user.ID == 0 || user.ID != action.UserID {
+			repositories := ioc.GetRepositories(c)
+			user := repositories.Users().FindByUUID(userUUID)
+			if user.IsNewRecord() || user.ID != action.UserID {
 				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 				c.JSON(http.StatusUnauthorized, utils.H{
 					"_status":  "error",
 					"_message": "Client application irrevocable",
-					"error":    oauth.AccessDenied,
+					"error":    shared.AccessDenied,
 				})
 				return
 			}
 
-			client := services.FindClientByUUID(clientUUID)
-			services.RevokeClientAccess(client.ID, user.ID)
+			client := repositories.Clients().FindByUUID(clientUUID)
+			repositories.Sessions().RevokeAccess(client, user)
 			c.JSON(http.StatusNoContent, nil)
 		})
 	}

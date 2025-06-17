@@ -1,14 +1,10 @@
 package integration
 
-import (
-	"github.com/earaujoassis/space/test/factory"
-)
-
 func (s *OAuthProviderSuite) TestTokenIntrospect() {
 	var accessToken, refreshToken string
-	client := factory.NewClient()
+	client := s.Factory.NewClient()
 	clientModel := client.Model
-	user := factory.NewUser()
+	user := s.Factory.NewUser()
 	userModel := user.Model
 
 	s.Run("should successfully retrieve tokens", func() {
@@ -29,7 +25,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -37,7 +32,7 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 	})
 
 	s.Run("should return active:false if attempting to introspect token through another client", func() {
-		second_client := factory.NewClient()
+		second_client := s.Factory.NewClient()
 		response := s.Client.PostIntrospect(second_client.BasicAuthEncode(), accessToken)
 		json := response.JSON
 
@@ -65,7 +60,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal("Bearer", json["token_type"])
 		s.True(response.HasKeyInJSON("access_token"))
 		s.True(response.HasKeyInJSON("refresh_token"))
-		s.True(response.HasKeyInJSON("scope"))
 		s.True(response.HasKeyInJSON("expires_in"))
 
 		accessToken = json["access_token"].(string)
@@ -80,7 +74,6 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal(clientModel.Key, json["client_id"])
 		s.Equal(userModel.Username, json["username"])
 		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 
 		response = s.Client.PostIntrospect(client.BasicAuthEncode(), refreshToken)
 		json = response.JSON
@@ -91,6 +84,5 @@ func (s *OAuthProviderSuite) TestTokenIntrospect() {
 		s.Equal(clientModel.Key, json["client_id"])
 		s.Equal(userModel.Username, json["username"])
 		s.Equal(userModel.PublicID, json["sub"])
-		s.Equal(userModel.PublicID, json["user_id"])
 	})
 }

@@ -1,13 +1,23 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const submenu = ({ activeAction, editingClient }) => {
+const submenu = ({ activeAction, editingClient, editingScopes }) => {
     var clientEditingLink
 
     if (editingClient) {
         clientEditingLink = (
             <li className={activeAction === 'edit-client' ? 'submenu__list-active' : ''}>
                 <span>Edit client</span>
+            </li>
+        )
+    } else {
+        clientEditingLink = null
+    }
+
+    if (editingScopes) {
+        clientEditingLink = (
+            <li className={activeAction === 'edit-scopes' ? 'submenu__list-active' : ''}>
+                <span>Select client scopes</span>
             </li>
         )
     } else {
