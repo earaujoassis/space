@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 
 import Layout from '@containers/Layout'
 import Applications from '@components/Applications'
-import { AllClients, EditClient, NewClient } from '@components/Clients'
+import { AllClients, EditClient, EditScopes, NewClient } from '@components/Clients'
 import Notifications from '@components/Notifications'
 import Profile from '@components/Profile'
 import Security from '@components/Security'
@@ -18,6 +18,10 @@ const app = () => {
             element: <Layout />,
             children: [
                 {
+                    index: true,
+                    element: <Navigate to="/profile" replace />,
+                },
+                {
                     path: 'applications',
                     element: <Applications />,
                 },
@@ -28,6 +32,10 @@ const app = () => {
                 {
                     path: 'clients/edit',
                     element: <EditClient />,
+                },
+                {
+                    path: 'clients/edit/scopes',
+                    element: <EditScopes />,
                 },
                 {
                     path: 'clients/new',
