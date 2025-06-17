@@ -10,6 +10,8 @@ tasks:
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
       - go install github.com/rakyll/gotest@latest
       - go install honnef.co/go/tools/cmd/staticcheck@latest
+      - go install gotest.tools/gotestsum@latest
+      - go install github.com/securego/gosec/v2/cmd/gosec@latest
   setup:jwks:
     desc: Setup local keys for JWKS
     cmds:

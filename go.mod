@@ -2,7 +2,7 @@ module github.com/earaujoassis/space
 
 go 1.23.0
 
-toolchain go1.23.9
+toolchain go1.23.10
 
 require (
 	github.com/aws/aws-sdk-go v1.34.0
@@ -91,8 +91,10 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/mattn/goreman v0.3.16 // indirect
 	github.com/mitchellh/go-homedir v1.0.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
