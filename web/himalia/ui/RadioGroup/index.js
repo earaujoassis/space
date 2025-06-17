@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-
 const radioGroup = ({ label, defaultOption, leftOption, rightOption, onChange = null }) => {
     const [selectedRadio, setSelectedRadio] = useState(defaultOption)
 

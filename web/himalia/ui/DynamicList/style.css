@@ -35,6 +35,7 @@
   border-radius: 50%;
   color: #007095;
   padding: 10px;
+  cursor: pointer;
 }
 
 .dynamic-list__shared-wrapper {

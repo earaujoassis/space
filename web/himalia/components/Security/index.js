@@ -79,7 +79,7 @@ const security = ({
                     setResetSecretCodesRequested(true)
                 }}
                 className="button-anchor">
-                Proceed to recreate recovery code and secret code generator
+                Recreate recovery code and secret code generator (TOTP)
             </button>
         </p>
     )
@@ -96,7 +96,7 @@ const security = ({
     return (
         <>
             <h2>Password &amp; Security</h2>
-            <div className="security-root">
+            <div className="globals__siblings security-root">
                 <div className="globals__warning-box">
                     <h3>Update password through a magic link</h3>
                     <p>

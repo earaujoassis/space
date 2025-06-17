@@ -133,6 +133,11 @@ button,.button {
   border: 0;
   box-shadow: none;
   cursor: pointer;
+
+  &:hover {
+    color: #007095;
+    text-decoration: underline;
+  }
 }
 .form-common {
   position: relative;
