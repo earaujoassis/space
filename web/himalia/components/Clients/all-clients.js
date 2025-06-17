@@ -35,6 +35,12 @@ const allClients = ({ fetchClients, setClientForEdition, loading, application, c
                                             navigate('/clients/edit')
                                         }}
                                         className="button-anchor">Edit</button>
+                                    <button
+                                        onClick={() => {
+                                            setClientForEdition(client)
+                                            navigate('/clients/edit/scopes')
+                                        }}
+                                        className="button-anchor">Select Scopes</button>
                                     <a
                                         href={`/api/clients/${client.id}/credentials`}
                                         title="It regenerates the client's secret for security reasons"

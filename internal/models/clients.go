@@ -2,24 +2,13 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
-	"net/url"
-	"reflect"
 	"strings"
 
-	"golang.org/x/exp/slices"
-
-	"github.com/go-playground/validator/v10"
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-)
 
-const (
-	// PublicClient client type
-	PublicClient string = "public"
-	// ConfidentialClient client type
-	ConfidentialClient string = "confidential"
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 // Client is the client application model/struct
@@ -36,88 +25,14 @@ type Client struct {
 	Type         string         `gorm:"not null" validate:"required,client" json:"-"`
 }
 
-func validClientScopes(fl validator.FieldLevel) bool {
-	scopesField := fl.Field().String()
-	// TODO A PublicClient can't have a ReadScope
-	if scopesField != PublicScope && scopesField != ReadScope {
-		return false
-	}
-	return true
-}
-
-func validClientType(fl validator.FieldLevel) bool {
-	typeField := fl.Field().String()
-	if typeField != PublicClient && typeField != ConfidentialClient {
-		return false
-	}
-	return true
-}
-
-func validCanonicalURIs(fl validator.FieldLevel) bool {
-	// It's not a Client model
-	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
-		return true
-	}
-
-	currentClient := fl.Top().Interface().(Client)
-	// The Jupiter (internal client) is created with the following value
-	if len(currentClient.CanonicalURI) == 1 && currentClient.CanonicalURI[0] == "localhost" {
-		return true
-	}
-
-	for i := range currentClient.CanonicalURI {
-		currentEntry := currentClient.CanonicalURI[i]
-		u, err := url.Parse(currentEntry)
-		if err != nil {
-			return false
-		}
-
-		if !strings.Contains(u.Scheme, "http") || u.Path != "" || u.Host == "" {
-			return false
-		}
-	}
-
-	return true
-}
-
-func validRedirectURIs(fl validator.FieldLevel) bool {
-	// It's not a Client model
-	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
-		return true
-	}
-
-	currentClient := fl.Top().Interface().(Client)
-	canonicalUri := currentClient.CanonicalURI
-	redirectUri := currentClient.RedirectURI
-
-	// The Jupiter (internal client) is created with the following values
-	if len(canonicalUri) == 1 && canonicalUri[0] == "localhost" && len(redirectUri) == 1 && redirectUri[0] == "/" {
-		return true
-	}
-
-	for i := range redirectUri {
-		currentEntry := redirectUri[i]
-		u, err := url.Parse(currentEntry)
-		if err != nil {
-			return false
-		}
-		currentCanonical := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-		if !slices.Contains(canonicalUri, currentCanonical) {
-			return false
-		}
-	}
-
-	return true
-}
-
 // Authentic checks if a secret is valid for a given Client
 func (client *Client) Authentic(secret string) bool {
 	validSecret := bcrypt.CompareHashAndPassword([]byte(client.Secret), []byte(secret)) == nil
 	return validSecret
 }
 
-// UpdateSecret updates an Client's secret
-func (client *Client) UpdateSecret(secret string) error {
+// SetSecret updates an Client's secret
+func (client *Client) SetSecret(secret string) error {
 	crypted, err := bcrypt.GenerateFromPassword([]byte(secret), bcrypt.DefaultCost)
 	if err == nil {
 		client.Secret = string(crypted)
@@ -170,4 +85,24 @@ func (client Client) MarshalJSON() ([]byte, error) {
 		CanonicalURI: strings.Join(client.CanonicalURI, "\n"),
 		RedirectURI:  strings.Join(client.RedirectURI, "\n"),
 	})
+}
+
+func (client *Client) HasScope(scope string) bool {
+	return strings.Contains(client.Scopes, scope)
+}
+
+func (client *Client) HasRequestedScopes(requestedScopes []string) bool {
+	validScopes := utils.Scopes(client.Scopes)
+	validSet := make(map[string]bool)
+	for _, scope := range validScopes {
+		validSet[scope] = true
+	}
+
+	for _, requested := range requestedScopes {
+		if !validSet[requested] {
+			return false
+		}
+	}
+
+	return true
 }

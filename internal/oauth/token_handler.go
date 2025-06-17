@@ -1,0 +1,86 @@
+package oauth
+
+import (
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/earaujoassis/space/internal/ioc"
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/utils"
+)
+
+func tokenHandler(c *gin.Context) {
+	var grantType = c.PostForm("grant_type")
+
+	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
+	key, secret := shared.BasicAuthDecode(authorizationBasic)
+	repositories := ioc.GetRepositories(c)
+	client := repositories.Clients().Authentication(key, secret)
+	if client.IsNewRecord() {
+		c.Header("WWW-Authenticate", "Basic realm=\"OAuth\"")
+		c.JSON(http.StatusUnauthorized, utils.H{
+			"error":             shared.InvalidClient,
+			"error_description": "Client authentication failed",
+		})
+		return
+	}
+
+	switch grantType {
+	// Authorization Code Grant
+	case shared.AuthorizationCode:
+		result, err := AccessTokenRequest(utils.H{
+			"grant_type":   grantType,
+			"code":         c.PostForm("code"),
+			"redirect_uri": c.PostForm("redirect_uri"),
+			"client":       client,
+		}, repositories)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, utils.H{
+				"error": result["error"],
+			})
+			return
+		}
+		c.JSON(http.StatusOK, utils.H{
+			"access_token":  result["access_token"],
+			"token_type":    result["token_type"],
+			"expires_in":    result["expires_in"],
+			"refresh_token": result["refresh_token"],
+		})
+		return
+	// Refreshing an Access Token
+	case shared.RefreshToken:
+		result, err := RefreshTokenRequest(utils.H{
+			"grant_type":    grantType,
+			"refresh_token": c.PostForm("refresh_token"),
+			"scope":         c.PostForm("scope"),
+			"client":        client,
+		}, repositories)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, utils.H{
+				"error": result["error"],
+			})
+			return
+		}
+		c.JSON(http.StatusOK, utils.H{
+			"access_token":  result["access_token"],
+			"token_type":    result["token_type"],
+			"expires_in":    result["expires_in"],
+			"refresh_token": result["refresh_token"],
+		})
+		return
+	// Resource Owner Password Credentials Grant
+	// Client Credentials Grant
+	case shared.Password, shared.ClientCredentials:
+		c.JSON(http.StatusBadRequest, utils.H{
+			"error": shared.UnsupportedGrantType,
+		})
+		return
+	default:
+		c.JSON(http.StatusBadRequest, utils.H{
+			"error": shared.InvalidRequest,
+		})
+		return
+	}
+}

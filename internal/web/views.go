@@ -11,10 +11,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/earaujoassis/space/internal/feature"
+	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/oauth"
-	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -31,6 +30,7 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/applications", satelliteHandler)
 		views.GET("/clients", satelliteHandler)
 		views.GET("/clients/edit", satelliteHandler)
+		views.GET("/clients/edit/scopes", satelliteHandler)
 		views.GET("/clients/new", satelliteHandler)
 		views.GET("/services", satelliteHandler)
 		views.GET("/services/new", satelliteHandler)
@@ -39,10 +39,10 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/security", satelliteHandler)
 
 		views.GET("/profile/password", func(c *gin.Context) {
-			var authorizationBearer = c.Query("_")
-			action := services.ActionAuthentication(authorizationBearer)
-
-			if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() {
+			authorizationBearer := c.Query("_")
+			repositories := ioc.GetRepositories(c)
+			action := repositories.Actions().Authentication(authorizationBearer)
+			if action.UUID == "" || !action.GrantsWriteAbility() || !action.CanUpdateUser() {
 				c.HTML(http.StatusUnauthorized, "error.password_update", utils.H{
 					"Title":    " - Update Resource Owner Credential",
 					"Internal": true,
@@ -61,13 +61,14 @@ func ExposeRoutes(router *gin.Engine) {
 		})
 
 		views.GET("/profile/secrets", func(c *gin.Context) {
-			var authorizationBearer = c.Query("_")
 			var buf bytes.Buffer
 			var imageData string
 
-			action := services.ActionAuthentication(authorizationBearer)
-			user := services.FindUserByID(action.UserID)
-			if action.UUID == "" || !services.ActionGrantsWriteAbility(action) || !action.CanUpdateUser() || user.ID == 0 {
+			authorizationBearer := c.Query("_")
+			repositories := ioc.GetRepositories(c)
+			action := repositories.Actions().Authentication(authorizationBearer)
+			user := repositories.Users().FindByID(action.UserID)
+			if action.UUID == "" || !action.GrantsWriteAbility() || !action.CanUpdateUser() || user.IsNewRecord() {
 				c.HTML(http.StatusUnauthorized, "error.password_update", utils.H{
 					"Title":    " - Update Resource Owner Credential",
 					"Internal": true,
@@ -75,8 +76,8 @@ func ExposeRoutes(router *gin.Engine) {
 				return
 			}
 
-			codeSecretKey := user.GenerateCodeSecret()
-			recoverSecret, _ := user.GenerateRecoverSecret()
+			codeSecretKey := repositories.Users().SetCodeSecret(&user)
+			recoverSecret, _ := repositories.Users().SetRecoverSecret(&user)
 			img, err := codeSecretKey.Image(200, 200)
 			if err != nil {
 				imageData = ""
@@ -85,8 +86,8 @@ func ExposeRoutes(router *gin.Engine) {
 				imageData = base64.StdEncoding.EncodeToString(buf.Bytes())
 			}
 
-			services.SaveUser(&user)
-			action.Delete()
+			repositories.Users().Save(&user)
+			repositories.Actions().Delete(action)
 			c.HTML(http.StatusOK, "user.update.secrets", utils.H{
 				"Title":           " - Update Resource Owner Credential",
 				"Satellite":       "amalthea",
@@ -97,23 +98,25 @@ func ExposeRoutes(router *gin.Engine) {
 		})
 
 		views.GET("/signup", func(c *gin.Context) {
+			fg := ioc.GetFeatureGate(c)
 			c.HTML(http.StatusOK, "satellite", utils.H{
 				"Title":             " - Sign Up",
 				"Satellite":         "io",
-				"UserCreateEnabled": feature.IsActive("user.create"),
+				"UserCreateEnabled": fg.IsActive("user.create"),
 				"Data": utils.H{
 					"feature.gates": utils.H{
-						"user.create": feature.IsActive("user.create"),
+						"user.create": fg.IsActive("user.create"),
 					},
 				},
 			})
 		})
 
 		views.GET("/signin", func(c *gin.Context) {
+			fg := ioc.GetFeatureGate(c)
 			c.HTML(http.StatusOK, "satellite", utils.H{
 				"Title":             " - Sign In",
 				"Satellite":         "ganymede",
-				"UserCreateEnabled": feature.IsActive("user.create"),
+				"UserCreateEnabled": fg.IsActive("user.create"),
 			})
 		})
 
@@ -142,11 +145,11 @@ func ExposeRoutes(router *gin.Engine) {
 			var scope = c.Query("scope")
 			var grantType = c.Query("grant_type")
 			var code = c.Query("code")
-			var clientID = c.Query("client_id")
+			var clientKey = c.Query("client_id")
 			var _nextPath = c.Query("_")
 			//var state string = c.Query("state")
 
-			if scope == "" || grantType == "" || code == "" || clientID == "" {
+			if scope == "" || grantType == "" || code == "" || clientKey == "" {
 				// Original response:
 				// c.String(http.StatusBadRequest, "Missing required parameters")
 				c.Redirect(http.StatusFound, "/signin")
@@ -158,13 +161,14 @@ func ExposeRoutes(router *gin.Engine) {
 				}
 			}
 
-			client := services.FindOrCreateClient(services.DefaultClient)
-			if client.Key == clientID && grantType == oauth.AuthorizationCode && scope == models.PublicScope {
-				grantToken := services.FindSessionByToken(code, models.GrantToken)
+			repositories := ioc.GetRepositories(c)
+			client := repositories.Clients().FindOrCreate(models.DefaultClient)
+			if client.Key == clientKey && grantType == shared.AuthorizationCode && scope == models.PublicScope {
+				grantToken := repositories.Sessions().FindByToken(code, models.GrantToken)
 				if grantToken.ID != 0 {
 					session.Set("user_public_id", grantToken.User.PublicID)
 					session.Save()
-					services.InvalidateSession(grantToken)
+					repositories.Sessions().Invalidate(&grantToken)
 					c.Redirect(http.StatusFound, nextPath)
 					return
 				}

@@ -3,9 +3,7 @@ import { connect } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import * as actions from '@actions'
-import RadioGroup from '@ui/RadioGroup'
 import DynamicList from '@ui/DynamicList'
-import { toCamelCase } from '@utils/strings'
 
 import Submenu from './submenu'
 
@@ -16,7 +14,6 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
     const [formSent, setFormSent] = useState(false)
     const [canonicalUri, setCanonicalUri] = useState(client ? client.uri.split('\n') : new Array())
     const [redirectUri, setRedirectUri] = useState(client ? client.redirect.split('\n') : new Array())
-    const [scopes, setScopes] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -30,8 +27,10 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
     }, [stateSignal])
 
     useEffect(() => {
-        setCanonicalUri(client ? client.uri.split('\n') : [])
-        setRedirectUri(client ? client.redirect.split('\n') : [])
+        if (client) {
+            setCanonicalUri(client.uri.split('\n'))
+            setRedirectUri(client.redirect.split('\n'))
+        }
     }, [clients])
 
     if (client) {
@@ -41,32 +40,19 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
                 const data = new FormData()
                 data.append('canonical_uri', canonicalUri.join('\n'))
                 data.append('redirect_uri', redirectUri.join('\n'))
-                data.append('scopes', scopes)
                 updateClient(client.id, data, application.action_token)
                 setFormSent(true)
             }}>
-                <p>
-                    By default, all applications are created with &quot;Public&quot; scope, which
-                    can&apos;t introspect user data (read user&apos;s full name, email etc.) If
-                    your application needs to read user data, you must set the &quot;Application scope&quot;
-                    to &quot;Read&quot;.
-                </p>
-                <RadioGroup
-                    onChange={(v) => setScopes(v.toLowerCase())}
-                    defaultOption={toCamelCase(client.scopes)}
-                    label="Application scope:"
-                    leftOption="Public"
-                    rightOption="Read" />
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="new-client__name">Name</label>
-                        <input disabled id="new-client__name" defaultValue={client.name} type="text" />
+                        <input className="read-only" disabled id="new-client__name" defaultValue={client.name} type="text" />
                     </div>
                 </div>
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="new-client__description">Description</label>
-                        <input disabled id="new-client__description" defaultValue={client.description} type="text" />
+                        <input className="read-only" disabled id="new-client__description" defaultValue={client.description} type="text" />
                     </div>
                 </div>
                 <DynamicList
@@ -87,7 +73,12 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
                     tabIndex="2" />
                 <div className="globals__siblings globals__form-actions">
                     <div className="globals__input-wrapper">
-                        <input tabIndex="3" type="submit" className="button" value="Save client application" />
+                        <input
+                            disabled={formSent}
+                            tabIndex="3"
+                            type="submit"
+                            className="button"
+                            value="Save client application" />
                         <button
                             tabIndex="4"
                             onClick={(e) => {

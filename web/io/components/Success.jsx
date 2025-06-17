@@ -10,7 +10,7 @@ const success = ({ codeSecretImage, recoverSecret }) => {
                 <Columns className="small-8 small-offset-2 end columns">
                     <h2>Congrats!</h2>
                     <p>
-                        You&apos;ve just created a new account! If our sign up system is open, you will
+                        You&#39;ve just created a new account! If our sign up system is open, you will
                         receive an email message in order to activate your newly created account.
                         Otherwise, we will contact you when your account is ready to be activated.
                     </p>

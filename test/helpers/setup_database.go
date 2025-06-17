@@ -18,14 +18,14 @@ func (resources *TestResources) startDatabaseResource() {
 		return
 	}
 	databaseResource, err := resources.Pool.RunWithOptions(&dockertest.RunOptions{
-		Repository:   "postgres",
-		Tag:          "14.18-alpine3.22",
-		Hostname:     "postgres",
+		Repository: "postgres",
+		Tag:        "14.18-alpine3.22",
+		Hostname:   "postgres",
 		Env: []string{
 			"listen_addresses='*'",
-			"POSTGRES_DB=space_testing",
+			"POSTGRES_DB=space_integration",
 			"POSTGRES_HOST_AUTH_METHOD=trust",
-			"POSTGRES_PASSWORD=secret",
+			"POSTGRES_PASSWORD=password",
 			"POSTGRES_USER=user",
 		},
 	}, func(config *docker.HostConfig) {
@@ -41,12 +41,12 @@ func (resources *TestResources) startDatabaseResource() {
 		log.Fatalf("Could not setup expire time: %s", err)
 	}
 	hostAndPort := databaseResource.GetHostPort("5432/tcp")
-	dbUrl := fmt.Sprintf("postgres://user:secret@%s/space_testing?sslmode=disable", hostAndPort)
+	dbUrl := fmt.Sprintf("postgres://user:password@%s/space_integration?sslmode=disable", hostAndPort)
 	os.Setenv("SPACE_DATASTORE_HOST", "localhost")
 	os.Setenv("SPACE_DATASTORE_PORT", databaseResource.GetPort("5432/tcp"))
 	os.Setenv("SPACE_DATASTORE_NAME_PREFIX", "space")
 	os.Setenv("SPACE_DATASTORE_USER", "user")
-	os.Setenv("SPACE_DATASTORE_PASSWORD", "secret")
+	os.Setenv("SPACE_DATASTORE_PASSWORD", "password")
 	os.Setenv("SPACE_DATASTORE_SSL_MODE", "disable")
 	resources.Pool.MaxWait = 120 * time.Second
 	if err = resources.Pool.Retry(func() error {

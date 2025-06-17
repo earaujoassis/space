@@ -1,17 +1,16 @@
 package oauth
 
 import (
-	"strings"
-
 	"golang.org/x/exp/slices"
 
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/services"
+	"github.com/earaujoassis/space/internal/repository"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
 // AuthorizationCodeGrant returns an OAuth 2 authorization code grant, given the right details
-func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
+func AuthorizationCodeGrant(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
 	var redirectURI string
 	var scope string
 	var state string
@@ -23,7 +22,7 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	var client models.Client
 
 	if data["redirect_uri"] == nil || data["user"] == nil || data["client"] == nil {
-		return invalidRequestResult(state)
+		return shared.InvalidRequestResult(state)
 	}
 
 	if data["state"] != nil {
@@ -47,20 +46,22 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 	}
 
 	if !slices.Contains(client.RedirectURI, redirectURI) {
-		return invalidRequestResult(state)
+		return shared.InvalidRequestResult(state)
 	}
 
-	/*
-	 * WARNING
-	 * If the scope is not available for the Client,
-	 * it will grant access, but with a public-only scope.
-	 * So basically it downgrades the scope.
-	 */
-	if scope != "" && !strings.Contains(client.Scopes, scope) {
-		scope = models.PublicScope
+	if (scope != "" && !client.HasRequestedScopes(utils.Scopes(scope))) || !client.HasScope(models.PublicScope) {
+		return shared.InvalidScopeResult(state)
 	}
 
-	session := services.CreateSession(user, client, ip, userAgent, scope, models.GrantToken)
+	session := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        ip,
+		UserAgent: userAgent,
+		Scopes:    scope,
+		TokenType: models.GrantToken,
+	}
+	repositories.Sessions().Create(&session)
 	if session.ID > 0 {
 		return utils.H{
 			"code":  session.Token,
@@ -69,5 +70,5 @@ func AuthorizationCodeGrant(data utils.H) (utils.H, error) {
 		}, nil
 	}
 
-	return serverErrorResult(state)
+	return shared.ServerErrorResult(state)
 }

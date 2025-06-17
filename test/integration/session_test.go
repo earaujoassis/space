@@ -4,14 +4,12 @@ import (
 	"time"
 
 	"github.com/pquerna/otp/totp"
-
-	"github.com/earaujoassis/space/test/factory"
 )
 
 func (s *OAuthProviderSuite) TestSessionCreation() {
 	s.Run("should create user session", func() {
 		s.Client.ClearSession()
-		user := factory.NewUser()
+		user := s.Factory.NewUser()
 		code, err := totp.GenerateCode(user.CodeSecretKey, time.Now())
 
 		s.Require().NoError(err)

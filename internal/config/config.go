@@ -20,6 +20,7 @@ const (
 
 // Config struct with configuration data for the application
 type Config struct {
+	Environment         string
 	ApplicationKey      string `json:"application_key" env:"SPACE_APPLICATION_KEY,unset"`
 	DatastoreHost       string `json:"datastore_host" env:"SPACE_DATASTORE_HOST"`
 	DatastorePort       int    `json:"datastore_port" env:"SPACE_DATASTORE_PORT"`
@@ -39,65 +40,13 @@ type Config struct {
 	SentryUrl           string `json:"sentry_url" env:"SPACE_SENTRY_URL,unset" envDefault:""`
 }
 
-var globalConfig Config
-var environment string
-
-// LoadEnvironment loads the environment from the SPACE_ENV env var;
-//
-//	it could be: development, testing, production
-func LoadEnvironment() {
-	environment = strings.ToLower(os.Getenv("SPACE_ENV"))
-	if environment == "" {
-		environment = "development"
-	}
-	if environment != "production" && environment != "testing" && environment != "development" {
-		environment = ""
-	}
-}
-
-// Environment returns the current environment for the application;
-//
-//	it could be: development, testing, production
-func Environment() string {
-	return environment
-}
-
-// IsEnvironment checks if the current environment for the application
-//
-//	is the same as defined in `env`
-func IsEnvironment(env string) bool {
-	return strings.ToLower(env) == Environment()
-}
-
-func Release() string {
-	if commitHash := GetEnvVar("COMMIT_HASH"); commitHash != "" {
-		return fmt.Sprintf("%s+%s", internal.Version, GetEnvVar("COMMIT_HASH"))
-	}
-	return internal.Version
-}
-
-// GetEnvVar gets a `key` from the environment variables
-func GetEnvVar(key string) string {
-	return os.Getenv(key)
-}
-
-// GetGlobalConfig returns the global configuration struct for the application
-func GetGlobalConfig() Config {
-	return globalConfig
-}
-
-// SetConfig sets the global configuration struct for the application
-func SetConfig(config Config) {
-	globalConfig = config
-}
-
-// LoadConfig loads the globalConfig structure from a JSON-based stream:
+// Load loads the globalConfig structure from a JSON-based stream:
 //  1. it attempts to load it from the .config.local.json file;
 //  2. it checks for the .config.yml file and loads it from Vault; or
 //  3. it attempts to load it from .env and the environment;
 //  4. it attempts to load it from the environment, directly (no .env file); or
 //  5. it fails without any configuration option available
-func LoadConfig() {
+func Load() (*Config, error) {
 	var globalService Service
 	var dataStream []byte
 	var err error
@@ -106,9 +55,16 @@ func LoadConfig() {
 	var loadFromEnvVarsFlag bool = false
 	var loadedFlag bool = false
 
-	LoadEnvironment()
+	globalConfig := Config{}
 
-	if environment == "testing" {
+	environment := strings.ToLower(os.Getenv("SPACE_ENV"))
+	if environment == "" {
+		environment = "development"
+	}
+	if environment != "development" && environment != "test" && environment != "integration" && environment != "production" {
+		environment = "development"
+	}
+	if environment == "test" || environment == "integration" {
 		loadFromEnvVarsFlag = true
 	}
 
@@ -161,7 +117,44 @@ func LoadConfig() {
 	}
 
 	if !loadedFlag {
-		// no configuration option available
-		logs.Propagate(logs.Panic, "Application is not configured")
+		return nil, fmt.Errorf("application is not configured")
 	}
+
+	globalConfig.Environment = environment
+	return &globalConfig, nil
+}
+
+func (cfg *Config) DatabaseDSN() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s_%s?sslmode=%s",
+		cfg.DatastoreUser,
+		cfg.DatastorePassword,
+		cfg.DatastoreHost,
+		cfg.DatastorePort,
+		cfg.DatastoreNamePrefix,
+		cfg.Environment,
+		cfg.DatastoreSslMode,
+	)
+}
+
+func (cfg *Config) DatabaseFilepath() string {
+	return ":memory:"
+}
+
+// IsEnvironment checks if the current environment for the application
+//
+//	is the same as defined in `env`
+func (cfg *Config) IsEnvironment(env string) bool {
+	return strings.ToLower(env) == cfg.Environment
+}
+
+func (cfg *Config) Release() string {
+	if commitHash := cfg.GetEnvVar("COMMIT_HASH"); commitHash != "" {
+		return fmt.Sprintf("%s+%s", internal.Version, cfg.GetEnvVar("COMMIT_HASH"))
+	}
+	return internal.Version
+}
+
+// GetEnvVar gets a `key` from the environment variables
+func (cfg *Config) GetEnvVar(key string) string {
+	return os.Getenv(key)
 }

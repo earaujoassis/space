@@ -20,7 +20,7 @@ if [ "$1" == "-u" ]; then
     echo "`date`: space/deploy: Containers updated"
     exit 0
 else
-    echo "`date`: space/deploy: Buidling and creating containers"
+    echo "`date`: space/deploy: Building and creating containers"
     create_containers
     echo "`date`: space/deploy: Containers created"
     exit 0

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint -c .eslintrc.json ./web/{amalthea,callisto,core,ganymede,himalia,io}/**/*.js*",
-    "build": "webpack --config webpack.config.js --mode production"
+    "build": "webpack --config webpack.config.js --mode production",
+    "dev": "webpack --config webpack.config.js --mode development --progress --color",
+    "watch": "webpack --config webpack.config.js --mode development --watch --progress --color"
   },
   "repository": {
     "type": "git",

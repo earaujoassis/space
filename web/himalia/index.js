@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
-import { applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 
 import App from '@app'
@@ -11,15 +10,13 @@ import reducers from '@stores/reducers'
 import '@core/styles/core.scss'
 import './globals.css'
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-
 const store = configureStore({
     reducer: {
         root: reducers,
-        composeEnhancers: composeEnhancers(
-            applyMiddleware(thunk)
-        )
-    }
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(thunk),
+    devTools: process.env.NODE_ENV !== 'production'
 })
 
 const app = (

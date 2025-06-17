@@ -68,6 +68,15 @@
   padding: 18px 12px;
 }
 
+.globals__input-wrapper input.read-only,
+.globals__input-wrapper input:disabled.read-only {
+  padding-bottom: 16px;
+  border: 0;
+  border-bottom: 1px solid #cacaca;
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .globals__input-wrapper input[type="submit"],
 .globals__input-wrapper button.submit {
   display: inline-block;
@@ -111,6 +120,10 @@
 
 .globals__warning-box ~ .globals__warning-box {
   margin-top: 16px;
+}
+
+.globals__siblings .globals__warning-box ~ .globals__warning-box {
+  margin-top: 0;
 }
 
 .globals__warning-box > h3 {
