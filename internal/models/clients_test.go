@@ -114,13 +114,16 @@ func TestPublicClientRestrictions(t *testing.T) {
 	var client Client = Client{
 		Type: PublicClient,
 	}
+
 	err := validateModel("validate", client)
 	message := fmt.Sprintf("%s", err)
 	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'required' tag")
+
 	client.Scopes = "public"
 	err = validateModel("validate", client)
 	message = fmt.Sprintf("%s", err)
 	assert.NotContains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'required' tag")
+
 	client.Scopes = "public read"
 	err = validateModel("validate", client)
 	message = fmt.Sprintf("%s", err)
@@ -129,14 +132,33 @@ func TestPublicClientRestrictions(t *testing.T) {
 	err = validateModel("validate", client)
 	message = fmt.Sprintf("%s", err)
 	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
-	client.Scopes = "public openid"
-	err = validateModel("validate", client)
-	message = fmt.Sprintf("%s", err)
-	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
 	client.Scopes = "public profile"
 	err = validateModel("validate", client)
 	message = fmt.Sprintf("%s", err)
 	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
+	client.Scopes = "public email"
+	err = validateModel("validate", client)
+	message = fmt.Sprintf("%s", err)
+	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
+
+	client.Scopes = "openid"
+	err = validateModel("validate", client)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
+
+	client.Scopes = "openid profile"
+	err = validateModel("validate", client)
+	message = fmt.Sprintf("%s", err)
+	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
+	client.Scopes = "openid email"
+	err = validateModel("validate", client)
+	message = fmt.Sprintf("%s", err)
+	assert.Contains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
+
+	client.Scopes = "public openid"
+	err = validateModel("validate", client)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Client.Scopes' Error:Field validation for 'Scopes' failed on the 'restrict' tag")
 }
 
 func TestClientHasScope(t *testing.T) {

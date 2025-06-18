@@ -83,6 +83,10 @@ func userinfoHandler(c *gin.Context) {
 			"updated_at":         user.UpdatedAt.Unix(),
 		}
 	}
+	if strings.Contains(scope, models.EmailScope) {
+		userinfo["email"] = user.Email
+		userinfo["email_verified"] = user.EmailVerified
+	}
 
 	c.JSON(http.StatusOK, userinfo)
 }
