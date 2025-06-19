@@ -28,7 +28,7 @@ func expirationLengthForTokenType(tokenType string) int64 {
 	switch tokenType {
 	case AccessToken:
 		return largestExpirationLength
-	case RefreshToken:
+	case RefreshToken, ApplicationToken:
 		return refreshableExpirationLength
 	case GrantToken:
 		return machineryExpirationLength

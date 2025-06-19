@@ -124,10 +124,8 @@ func validScope(fl validator.FieldLevel) bool {
 
 func validTokenType(fl validator.FieldLevel) bool {
 	tokenType := fl.Field().String()
-	if tokenType != AccessToken && tokenType != RefreshToken && tokenType != GrantToken && tokenType != IDToken {
-		return false
-	}
-	return true
+	validTokenTypes := []string{ApplicationToken, AccessToken, RefreshToken, GrantToken, IDToken}
+	return slices.Contains(validTokenTypes, tokenType)
 }
 
 func validateModel(tagName string, model interface{}) error {

@@ -20,6 +20,8 @@ const (
 )
 
 const (
+	// ApplicationToken token type
+	ApplicationToken string = "application_token"
 	// AccessToken token type
 	AccessToken string = "access_token"
 	// RefreshToken token type

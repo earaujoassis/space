@@ -73,3 +73,40 @@ func TestSessionWithinExpirationWindow(t *testing.T) {
 	session.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
 	assert.False(t, session.WithinExpirationWindow())
 }
+
+func TestValidTokenType(t *testing.T) {
+	var err error
+	var message string
+
+	session := Session{}
+
+	session.TokenType = "application_token"
+	err = validateModel("validate", session)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+
+	session.TokenType = "access_token"
+	err = validateModel("validate", session)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+
+	session.TokenType = "refresh_token"
+	err = validateModel("validate", session)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+
+	session.TokenType = "grant_token"
+	err = validateModel("validate", session)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+
+	session.TokenType = "id_token"
+	err = validateModel("validate", session)
+	message = fmt.Sprintf("%s", err)
+	assert.NotContains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+
+	session.TokenType = "invalid_token"
+	err = validateModel("validate", session)
+	message = fmt.Sprintf("%s", err)
+	assert.Contains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+}
