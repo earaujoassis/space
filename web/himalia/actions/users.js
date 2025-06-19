@@ -21,6 +21,26 @@ export const userRecordError = (error) => {
     }
 }
 
+export const userRequestStart = () => {
+    return {
+        type: actionTypes.USER_REQUEST_START
+    }
+}
+
+export const userRequestSuccess = (data) => {
+    return {
+        type: actionTypes.USER_REQUEST_SUCCESS,
+        user: data.user
+    }
+}
+
+export const userRequestError = (error) => {
+    return {
+        type: actionTypes.USER_REQUEST_ERROR,
+        error: error
+    }
+}
+
 export const fetchUserProfile = (id, token) => {
     return dispatch => {
         dispatch(userRecordStart())
@@ -51,18 +71,34 @@ export const adminifyUser = (id, key, token) => {
     }
 }
 
+export const requestEmailVerification = (username) => {
+    return dispatch => {
+        const data = new FormData()
+        data.append('request_type', 'email_verification')
+        data.append('holder', username)
+        dispatch(userRequestStart())
+        fetch.post('users/update/request', data)
+            .then(response => {
+                dispatch(userRequestSuccess(response.data))
+            })
+            .catch(error => {
+                dispatch(userRequestError(error))
+            })
+    }
+}
+
 export const requestResetPassword = (username) => {
     return dispatch => {
         const data = new FormData()
         data.append('request_type', 'password')
         data.append('holder', username)
-        dispatch(userRecordStart())
+        dispatch(userRequestStart())
         fetch.post('users/update/request', data)
             .then(response => {
-                dispatch(userRecordSuccess(response.data))
+                dispatch(userRequestSuccess(response.data))
             })
             .catch(error => {
-                dispatch(userRecordError(error))
+                dispatch(userRequestError(error))
             })
     }
 }
@@ -72,13 +108,13 @@ export const requestResetSecretCodes = (username) => {
         const data = new FormData()
         data.append('request_type', 'secrets')
         data.append('holder', username)
-        dispatch(userRecordStart())
+        dispatch(userRequestStart())
         fetch.post('users/update/request', data)
             .then(response => {
-                dispatch(userRecordSuccess(response.data))
+                dispatch(userRequestSuccess(response.data))
             })
             .catch(error => {
-                dispatch(userRecordError(error))
+                dispatch(userRequestError(error))
             })
     }
 }

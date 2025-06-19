@@ -9,6 +9,7 @@ func createCustomRender() multitemplate.Render {
 	render.AddFromFiles("satellite", "web/templates/default.html", "web/templates/satellite.html")
 	render.AddFromFiles("user.update.secrets", "web/templates/default.html", "web/templates/user.update.secrets.html")
 	render.AddFromFiles("error.generic", "web/templates/default.html", "web/templates/error.generic.html")
+	render.AddFromFiles("error.email_confirmation", "web/templates/default.html", "web/templates/error.email_confirmation.html")
 	render.AddFromFiles("error.password_update", "web/templates/default.html", "web/templates/error.password_update.html")
 	render.AddFromFiles("error.secrets_update", "web/templates/default.html", "web/templates/error.secrets_update.html")
 	render.AddFromFiles("error.authorization", "web/templates/default.html", "web/templates/error.authorization.html")
