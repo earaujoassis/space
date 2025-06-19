@@ -14,7 +14,7 @@ type User struct {
 	FirstName          string   `gorm:"not null" validate:"required,min=3,max=20" essential:"required,min=3,max=20" json:"first_name"`
 	LastName           string   `gorm:"not null" validate:"required,min=3,max=20" essential:"required,min=3,max=20" json:"last_name"`
 	Email              string   `gorm:"not null;unique;index" validate:"required,email" essential:"required,email" json:"email"`
-	EmailVerified      string   `gorm:"not null;default:false" json:"email_verified"`
+	EmailVerified      bool     `gorm:"not null;default:false" json:"email_verified"`
 	Passphrase         string   `gorm:"not null" validate:"required" essential:"required,min=10" json:"-"`
 	Active             bool     `gorm:"not null;default:false" json:"active"`
 	Admin              bool     `gorm:"not null;default:false" json:"-"`

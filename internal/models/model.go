@@ -48,3 +48,7 @@ func generateUUID() string {
 func (model Model) IsNewRecord() bool {
 	return model.ID == 0
 }
+
+func (model Model) IsSavedRecord() bool {
+	return model.ID != 0
+}

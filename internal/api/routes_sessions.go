@@ -44,7 +44,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 
 			user := repositories.Users().FindByAccountHolder(holder)
 			client := repositories.Clients().FindOrCreate(models.DefaultClient)
-			if user.ID != 0 && statusSignInAttempts != policy.Blocked {
+			if user.IsSavedRecord() && statusSignInAttempts != policy.Blocked {
 				userID = user.UUID
 				statusSignInAttempts = rls.SignInAttemptStatus(userID)
 				if repositories.Users().Authentic(user, c.PostForm("password"), c.PostForm("passcode")) && statusSignInAttempts != policy.Blocked {
@@ -57,7 +57,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 						TokenType: models.GrantToken,
 					}
 					repositories.Sessions().Create(&session)
-					if session.ID != 0 {
+					if session.IsSavedRecord() {
 						notifier := ioc.GetNotifier(c)
 						go notifier.Announce("session.created", utils.H{
 							"Email":     user.Email,
@@ -116,7 +116,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 
 			user := repositories.Users().FindByAccountHolder(holder)
 			client := repositories.Clients().FindOrCreate(models.DefaultClient)
-			if user.ID != 0 && statusSignInAttempts != policy.Blocked {
+			if user.IsSavedRecord() && statusSignInAttempts != policy.Blocked {
 				userID = user.UUID
 				statusSignInAttempts = rls.SignInAttemptStatus(userID)
 				if statusSignInAttempts != policy.Blocked {
@@ -129,7 +129,7 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 						TokenType: models.GrantToken,
 					}
 					repositories.Sessions().Create(&session)
-					if session.ID != 0 {
+					if session.IsSavedRecord() {
 						notifier := ioc.GetNotifier(c)
 						go notifier.Announce("session.magic", utils.H{
 							"Email":     user.Email,
