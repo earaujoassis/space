@@ -58,7 +58,7 @@ func revokeHandler(c *gin.Context) {
 		}
 	}
 
-	if session.ID != 0 {
+	if session.IsSavedRecord() {
 		repositories.Sessions().Invalidate(&session)
 	}
 

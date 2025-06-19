@@ -97,6 +97,26 @@ func ExposeRoutes(router *gin.Engine) {
 			})
 		})
 
+		views.GET("/profile/email_verification", func(c *gin.Context) {
+			authorizationBearer := c.Query("_")
+			repositories := ioc.GetRepositories(c)
+			action := repositories.Actions().Authentication(authorizationBearer)
+			user := repositories.Users().FindByID(action.UserID)
+			if action.UUID == "" || !action.GrantsWriteAbility() || !action.CanUpdateUser() {
+				c.HTML(http.StatusUnauthorized, "error.email_confirmation", utils.H{
+					"Title":    " - Email Confirmation",
+					"Internal": true,
+				})
+				return
+			}
+
+			user.EmailVerified = true
+
+			repositories.Users().Save(&user)
+			repositories.Actions().Delete(action)
+			c.Redirect(http.StatusFound, "/")
+		})
+
 		views.GET("/signup", func(c *gin.Context) {
 			fg := ioc.GetFeatureGate(c)
 			c.HTML(http.StatusOK, "satellite", utils.H{
@@ -165,7 +185,7 @@ func ExposeRoutes(router *gin.Engine) {
 			client := repositories.Clients().FindOrCreate(models.DefaultClient)
 			if client.Key == clientKey && grantType == shared.AuthorizationCode && scope == models.PublicScope {
 				grantToken := repositories.Sessions().FindByToken(code, models.GrantToken)
-				if grantToken.ID != 0 {
+				if grantToken.IsSavedRecord() {
 					session.Set("user_public_id", grantToken.User.PublicID)
 					session.Save()
 					repositories.Sessions().Invalidate(&grantToken)

@@ -6,17 +6,15 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 printf "Running linters:\n"
-
-linter=$(bin/linter)
+linter=$(task lint)
 ret_code=$?
 
 # Run linters and check return code
 if [ $ret_code != 0 ]; then
-  printf "${RED}Failed (commit was not created)${NC}.\n"
-  echo "$linter\n"
+  printf "${RED}Failed; commit was not created${NC}\n"
   pass=false
 else
-  printf "${GREEN}Passed${NC}.\n"
+  printf "${GREEN}Successfully completed${NC}\n"
 fi
 
 # If there were no failures, it is good to commit

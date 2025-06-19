@@ -88,22 +88,21 @@ func validRedirectURIs(fl validator.FieldLevel) bool {
 func validClientScopes(fl validator.FieldLevel) bool {
 	scopesField := fl.Field().String()
 
-	// WARNING A PublicClient can't have a ReadScope
+	// WARNING A PublicClient can't have a set of prohibitive scopes
+	// It can hold only Public and OpenID scopes
 	if !fl.Top().CanConvert(reflect.TypeOf(Client{})) {
 		// It's not a Client struct
 		return true
 	}
 	currentClient := fl.Top().Interface().(Client)
-	if currentClient.Type == PublicClient && (strings.Contains(scopesField, ReadScope) ||
-		strings.Contains(scopesField, WriteScope) ||
-		strings.Contains(scopesField, OpenIDScope) ||
-		strings.Contains(scopesField, ProfileScope)) {
+	if currentClient.Type == PublicClient && anyProhibitiveScopeForPublicClient(scopesField) {
 		return false
 	}
 
 	if !HasValidScopes(utils.Scopes(scopesField)) {
 		return false
 	}
+
 	return true
 }
 
@@ -152,8 +151,25 @@ func IsValid(tagName string, model interface{}) bool {
 	return err == nil
 }
 
+func anyProhibitiveScopeForPublicClient(scopeStr string) bool {
+	prohibitiveScopes := []string{ReadScope, WriteScope, ProfileScope, EmailScope}
+	prohibitiveSet := make(map[string]bool)
+	for _, scope := range prohibitiveScopes {
+		prohibitiveSet[scope] = true
+	}
+
+	scopes := utils.Scopes(scopeStr)
+	for _, scope := range scopes {
+		if prohibitiveSet[scope] {
+			return true
+		}
+	}
+
+	return false
+}
+
 func HasValidScopes(requestedScopes []string) bool {
-	validScopes := []string{PublicScope, ReadScope, OpenIDScope, ProfileScope}
+	validScopes := []string{PublicScope, ReadScope, OpenIDScope, ProfileScope, EmailScope}
 	validSet := make(map[string]bool)
 	for _, scope := range validScopes {
 		validSet[scope] = true

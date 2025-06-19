@@ -82,6 +82,32 @@ const userRecordError = (state, action) => {
     })
 }
 
+const userRequestStart = (state) => {
+    NProgress.start()
+    return Object.assign({}, state, { loading: addLoading(state, 'user'), stateSignal: 'user_request_start' })
+}
+
+const userRequestSuccess = (state) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'user'),
+        success: true,
+        error: null,
+        stateSignal: 'user_request_success'
+    })
+}
+
+const userRequestError = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'user'),
+        displayToast: true,
+        success: false,
+        error: action.error,
+        stateSignal: 'user_request_error'
+    })
+}
+
 const clientRecordStart = (state) => {
     NProgress.start()
     return Object.assign({}, state, { loading: addLoading(state, 'client'), stateSignal: 'client_record_start' })
@@ -147,6 +173,9 @@ const reducer = (state = initialState, action) => {
     case actionTypes.USER_RECORD_START: return userRecordStart(state, action)
     case actionTypes.USER_RECORD_SUCCESS: return userRecordSuccess(state, action)
     case actionTypes.USER_RECORD_ERROR: return userRecordError(state, action)
+    case actionTypes.USER_REQUEST_START: return userRequestStart(state, action)
+    case actionTypes.USER_REQUEST_SUCCESS: return userRequestSuccess(state, action)
+    case actionTypes.USER_REQUEST_ERROR: return userRequestError(state, action)
     case actionTypes.CLIENT_RECORD_START: return clientRecordStart(state, action)
     case actionTypes.CLIENT_RECORD_SUCCESS: return clientRecordSuccess(state, action)
     case actionTypes.CLIENT_RECORD_ERROR: return clientRecordError(state, action)
