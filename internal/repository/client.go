@@ -76,7 +76,7 @@ func (r *ClientRepository) FindByID(id uint) models.Client {
 // Authentication gets a client application by its key-secret pair
 func (r *ClientRepository) Authentication(key, secret string) models.Client {
 	client := r.FindByKey(key)
-	if client.ID != 0 && client.Authentic(secret) {
+	if client.IsSavedRecord() && client.Authentic(secret) {
 		return client
 	}
 

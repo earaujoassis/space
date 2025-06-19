@@ -51,6 +51,7 @@
   margin-right: 8px;
 }
 
+.globals__children,
 .globals__input-wrapper {
   flex: 1;
 }

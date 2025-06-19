@@ -44,6 +44,9 @@ const (
 	// ProfileScope session scope
 	// This is used for OpenID Connect and confidential clients
 	ProfileScope string = "profile"
+	// EmailScope session scope
+	// This is used for OpenID Connect and confidential clients
+	EmailScope string = "email"
 )
 
 const (

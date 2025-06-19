@@ -211,8 +211,9 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 
 			const (
-				passwordType = "password"
-				secretsType  = "secrets"
+				passwordType      = "password"
+				secretsType       = "secrets"
+				emailVerification = "email_verification"
 			)
 
 			if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
@@ -229,7 +230,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			case passwordType:
 				user := repositories.Users().FindByAccountHolder(holder)
 				client := repositories.Clients().FindOrCreate(models.DefaultClient)
-				if user.ID != 0 {
+				if user.IsSavedRecord() {
 					actionToken := models.Action{
 						User:        user,
 						Client:      client,
@@ -249,7 +250,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			case secretsType:
 				user := repositories.Users().FindByAccountHolder(holder)
 				client := repositories.Clients().FindOrCreate(models.DefaultClient)
-				if user.ID != 0 {
+				if user.IsSavedRecord() {
 					actionToken := models.Action{
 						User:        user,
 						Client:      client,
@@ -264,6 +265,26 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 						"Email":     user.Email,
 						"FirstName": user.FirstName,
 						"Callback":  fmt.Sprintf("%s/profile/secrets?_=%s", host, actionToken.Token),
+					})
+				}
+			case emailVerification:
+				user := repositories.Users().FindByAccountHolder(holder)
+				client := repositories.Clients().FindOrCreate(models.DefaultClient)
+				if user.IsSavedRecord() {
+					actionToken := models.Action{
+						User:        user,
+						Client:      client,
+						IP:          c.Request.RemoteAddr,
+						UserAgent:   c.Request.UserAgent(),
+						Scopes:      models.WriteScope,
+						Description: models.UpdateUserAction,
+					}
+					repositories.Actions().Create(&actionToken)
+					notifier := ioc.GetNotifier(c)
+					go notifier.Announce("user.update.email_verification", utils.H{
+						"Email":     user.Email,
+						"FirstName": user.FirstName,
+						"Callback":  fmt.Sprintf("%s/profile/email_verification?_=%s", host, actionToken.Token),
 					})
 				}
 			default:
@@ -315,6 +336,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 					"first_name":          user.FirstName,
 					"last_name":           user.LastName,
 					"email":               user.Email,
+					"email_verified":      user.EmailVerified,
 					"timezone_identifier": user.TimezoneIdentifier,
 				},
 			})

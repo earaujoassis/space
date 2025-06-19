@@ -30,7 +30,7 @@ func (r *SessionRepository) FindByUUID(uuid string) models.Session {
 		Preload("User.Language").
 		Where("uuid = ? AND invalidated = false", uuid).
 		First(&session)
-	if session.ID != 0 {
+	if session.IsSavedRecord() {
 		if !session.WithinExpirationWindow() {
 			r.Invalidate(&session)
 			return models.Session{}
@@ -49,7 +49,7 @@ func (r *SessionRepository) FindByToken(token, tokenType string) models.Session 
 		Preload("User.Language").
 		Where("token = ? AND token_type = ? AND invalidated = false", token, tokenType).
 		First(&session)
-	if session.ID != 0 {
+	if session.IsSavedRecord() {
 		if !session.WithinExpirationWindow() {
 			r.Invalidate(&session)
 			return models.Session{}

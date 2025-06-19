@@ -3,7 +3,7 @@
 The following files are used for versioning the codebase:
 
 - `CHANGELOG.md`
-- `internal\version.go`
+- `internal/version.go`
 - `package.json`
 - `VERSION`
 
