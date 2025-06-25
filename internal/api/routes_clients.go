@@ -1,180 +1,32 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
-	"strings"
-
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-
-	"github.com/earaujoassis/space/internal/ioc"
-	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/shared"
-	"github.com/earaujoassis/space/internal/utils"
 )
 
 // exposeClientsRoutes defines and exposes HTTP routes for a given gin.RouterGroup
 //
 //	in the REST API scope, for the clients resource
 func exposeClientsRoutes(router *gin.RouterGroup) {
-	// Requires X-Requested-By and Origin (same-origin policy)
-	// Authorization type: action token / Bearer (for web use)
-	router.GET("/clients", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-		repositories := ioc.GetRepositories(c)
-		action := c.MustGet("Action").(models.Action)
-		session := sessions.Default(c)
-		userPublicID := session.Get("user_public_id")
-		user := repositories.Users().FindByPublicID(userPublicID.(string))
-		if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
-			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-			c.JSON(http.StatusUnauthorized, utils.H{
-				"_status":  "error",
-				"_message": "Clients are not available",
-				"error":    shared.AccessDenied,
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, utils.H{
-			"_status":  "success",
-			"_message": "Clients are available",
-			"clients":  repositories.Clients().GetActive(),
-		})
-	})
+	// In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
+	// TODO Improve security for this endpoint avoiding any overhead
+	router.GET("/clients/:client_id/credentials", clientsCredentialsHandler)
 
 	clientsRoutes := router.Group("/clients")
+	clientsRoutes.Use(requiresConformance())
+	clientsRoutes.Use(actionTokenBearerAuthorization())
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		clientsRoutes.POST("/create", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			repositories := ioc.GetRepositories(c)
-			session := sessions.Default(c)
-			action := c.MustGet("Action").(models.Action)
-			userPublicID := session.Get("user_public_id")
-			user := repositories.Users().FindByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
-				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "Client was not created",
-					"error":    shared.AccessDenied,
-				})
-				return
-			}
+		clientsRoutes.GET("", clientsListHandler)
 
-			client := models.Client{
-				Name:         c.PostForm("name"),
-				Description:  c.PostForm("description"),
-				Scopes:       models.PublicScope,
-				CanonicalURI: utils.URIs(c.PostForm("canonical_uri")),
-				RedirectURI:  utils.URIs(c.PostForm("redirect_uri")),
-				Type:         models.ConfidentialClient,
-			}
-
-			err := repositories.Clients().Create(&client)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "Client was not created",
-					"error":    fmt.Sprintf("%v", err),
-					"client":   client,
-				})
-			} else {
-				c.JSON(http.StatusNoContent, nil)
-			}
-		})
+		// Requires X-Requested-By and Origin (same-origin policy)
+		// Authorization type: action token / Bearer (for web use)
+		clientsRoutes.POST("/create", clientsCreateHandler)
 
 		// In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
 		// Authorization type: action token / Bearer (for web use)
 		// TODO Improve security for this endpoint avoiding any overhead
-		clientsRoutes.PATCH("/:client_id/profile", requiresConformance, actionTokenBearerAuthorization, func(c *gin.Context) {
-			clientUUID := c.Param("client_id")
-			repositories := ioc.GetRepositories(c)
-			session := sessions.Default(c)
-			action := c.MustGet("Action").(models.Action)
-			userPublicID := session.Get("user_public_id")
-			user := repositories.Users().FindByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
-				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "Client was not updated",
-					"error":    shared.AccessDenied,
-				})
-				return
-			}
-
-			if !security.ValidUUID(clientUUID) {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "Client was not updated",
-					"error":    "must use valid UUID for identification",
-				})
-				return
-			}
-
-			client := repositories.Clients().FindByUUID(clientUUID)
-			canonicalURI := c.PostForm("canonical_uri")
-			redirectURI := c.PostForm("redirect_uri")
-			scopes := c.PostForm("scopes")
-			if canonicalURI != "" {
-				client.CanonicalURI = utils.URIs(canonicalURI)
-			}
-			if redirectURI != "" {
-				client.RedirectURI = utils.URIs(redirectURI)
-			}
-			if scopes != "" {
-				client.Scopes = strings.Join(utils.Scopes(scopes), " ")
-			}
-			repositories.Clients().Save(&client)
-			c.JSON(http.StatusNoContent, nil)
-		})
-
-		// In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
-		// TODO Improve security for this endpoint avoiding any overhead
-		clientsRoutes.GET("/:client_id/credentials", func(c *gin.Context) {
-			clientUUID := c.Param("client_id")
-			repositories := ioc.GetRepositories(c)
-			session := sessions.Default(c)
-			userPublicID := session.Get("user_public_id")
-			user := repositories.Users().FindByPublicID(userPublicID.(string))
-			if userPublicID == nil || user.IsNewRecord() || !user.Admin {
-				c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-				c.JSON(http.StatusUnauthorized, utils.H{
-					"_status":  "error",
-					"_message": "Client credentials are not available",
-					"error":    shared.AccessDenied,
-				})
-				return
-			}
-
-			if !security.ValidUUID(clientUUID) {
-				c.JSON(http.StatusBadRequest, utils.H{
-					"_status":  "error",
-					"_message": "Client credentials are not available",
-					"error":    "must use valid UUID for identification",
-				})
-				return
-			}
-
-			client := repositories.Clients().FindByUUID(clientUUID)
-			// For security reasons, the client's secret is regenerated
-			clientSecret := models.GenerateRandomString(64)
-			client.SetSecret(clientSecret)
-			repositories.Clients().Save(&client)
-
-			contentString := fmt.Sprintf("name,client_key,client_secret\n%s,%s,%s\n", client.Name, client.Key, clientSecret)
-			content := strings.NewReader(contentString)
-			contentLength := int64(len(contentString))
-			contentType := "text/csv"
-
-			extraHeaders := map[string]string{
-				"Content-Disposition": `attachment; filename="credentials.csv"`,
-			}
-
-			c.DataFromReader(http.StatusOK, contentLength, contentType, content, extraHeaders)
-		})
+		clientsRoutes.PATCH("/:client_id/profile", clientsProfileHandler)
 	}
 }

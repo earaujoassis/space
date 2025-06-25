@@ -1,0 +1,74 @@
+package api
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/earaujoassis/space/internal/ioc"
+	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/policy"
+	"github.com/earaujoassis/space/internal/security"
+	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/utils"
+)
+
+func sessionsMagicHandler(c *gin.Context) {
+	repositories := ioc.GetRepositories(c)
+	rls := ioc.GetRateLimitService(c)
+
+	var holder = c.PostForm("holder")
+	var next = c.PostForm("next")
+	var state = c.PostForm("state")
+
+	var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
+
+	var IP = c.Request.RemoteAddr
+	var userID = IP
+	var statusSignInAttempts = rls.SignInAttemptStatus(IP)
+
+	if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
+		c.JSON(http.StatusBadRequest, utils.H{
+			"_status":  "error",
+			"_message": "Magic Session was not created",
+			"error":    "must use valid holder string",
+		})
+		return
+	}
+
+	user := repositories.Users().FindByAccountHolder(holder)
+	client := repositories.Clients().FindOrCreate(models.DefaultClient)
+	if user.IsSavedRecord() && statusSignInAttempts != policy.Blocked {
+		userID = user.UUID
+		statusSignInAttempts = rls.SignInAttemptStatus(userID)
+		if statusSignInAttempts != policy.Blocked {
+			session := models.Session{
+				User:      user,
+				Client:    client,
+				IP:        c.Request.RemoteAddr,
+				UserAgent: c.Request.UserAgent(),
+				Scopes:    models.PublicScope,
+				TokenType: models.GrantToken,
+			}
+			repositories.Sessions().Create(&session)
+			if session.IsSavedRecord() {
+				notifier := ioc.GetNotifier(c)
+				go notifier.Announce("session.magic", utils.H{
+					"Email":     user.Email,
+					"FirstName": user.FirstName,
+					"CreatedAt": session.CreatedAt.Format(time.RFC850),
+					"Callback": fmt.Sprintf("%s/session?client_id=%s&code=%s&grant_type=authorization_code&scope=%s&state=%s&_=%s",
+						host, client.Key, session.Token, session.Scopes, state, next),
+				})
+				rls.RegisterSuccessfulSignIn(user.UUID)
+				rls.RegisterSuccessfulSignIn(IP)
+				c.JSON(http.StatusNoContent, nil)
+				return
+			}
+		}
+	}
+	rls.RegisterSignInAttempt(userID)
+	c.JSON(http.StatusNoContent, nil)
+}
