@@ -22,18 +22,44 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		usersRoutes.PATCH("/update/adminify", actionTokenBearerAuthorization(), usersUpdateAdminifyHandler)
+		usersRoutes.PATCH("/update/adminify",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersUpdateAdminifyHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		usersRoutes.GET("/:user_id/profile", actionTokenBearerAuthorization(), usersProfileHandler)
+		usersRoutes.GET("/:user_id/profile",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersProfileHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		usersRoutes.GET("/:user_id/clients", actionTokenBearerAuthorization(), usersClientsListHandler)
+		usersRoutes.GET("/:user_id/clients",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersClientsListHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		usersRoutes.DELETE("/:user_id/clients/:client_id/revoke", actionTokenBearerAuthorization(), usersClientsRevokeHandler)
+		usersRoutes.DELETE("/:user_id/clients/:client_id/revoke",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersClientsRevokeHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		// Authorization type: action token / Bearer (for web use)
+		usersRoutes.GET("/:user_id/sessions",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersSessionsListHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		// Authorization type: action token / Bearer (for web use)
+		usersRoutes.DELETE("/:user_id/sessions/:session_id/revoke",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersSessionsRevokeHandler)
 	}
 }

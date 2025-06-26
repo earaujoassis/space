@@ -12,6 +12,22 @@
   padding: 8px 0;
 }
 
+.globals__max {
+  max-height: calc(100vh - 370px);
+}
+
+.globals__overlay {
+  overflow-y: auto;
+}
+
+.globals__subheader {
+  font-size: 1.2rem;
+}
+
+.globals__subheader ~ .globals__subheader {
+  margin-top: 20px;
+}
+
 .globals__form-actions {
   padding-top: 16px;
   border-top: 1px solid #fafafa;

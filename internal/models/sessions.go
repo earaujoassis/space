@@ -9,18 +9,18 @@ import (
 // Session model/struct
 type Session struct {
 	Model
-	UUID        string `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"-"`
+	UUID        string `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
 	User        User   `gorm:"not null" validate:"required" json:"-"`
 	UserID      uint   `gorm:"not null" json:"-"`
 	Client      Client `gorm:"not null" validate:"required" json:"-"`
 	ClientID    uint   `gorm:"not null" json:"-"`
-	Moment      int64  `gorm:"not null" json:"moment"`
-	ExpiresIn   int64  `gorm:"not null;default:0" json:"expires_in"`
-	IP          string `gorm:"not null;index" validate:"required" json:"-"`
-	UserAgent   string `gorm:"not null" validate:"required" json:"-"`
-	Invalidated bool   `gorm:"not null;default:false"`
-	Token       string `gorm:"not null;unique;index" validate:"omitempty,alphanum|jwt" json:"token"`
-	TokenType   string `gorm:"not null;index" validate:"required,token" json:"token_type"`
+	Moment      int64  `gorm:"not null" json:"-"`
+	ExpiresIn   int64  `gorm:"not null;default:0" json:"-"`
+	IP          string `gorm:"not null;index" validate:"required" json:"ip"`
+	UserAgent   string `gorm:"not null" validate:"required" json:"user_agent"`
+	Invalidated bool   `gorm:"not null;default:false" json:"-"`
+	Token       string `gorm:"not null;unique;index" validate:"omitempty,alphanum|jwt" json:"-"`
+	TokenType   string `gorm:"not null;index" validate:"required,token" json:"-"`
 	Scopes      string `gorm:"not null" validate:"required,scope" json:"-"`
 }
 

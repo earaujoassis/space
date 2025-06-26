@@ -34,17 +34,18 @@ func requiresConformance() gin.HandlerFunc {
 
 func requiresApplicationSession() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var applicationSession models.Session
+
 		session := sessions.Default(c)
 		repositories := ioc.GetRepositories(c)
 		applicationTokenInterface := session.Get(shared.CookieSessionKey)
 		applicationToken := utils.StringValue(applicationTokenInterface)
-		if !security.ValidToken(applicationToken) {
-			c.Redirect(http.StatusFound, "/signout")
-			c.Abort()
-			return
+		if applicationToken != "" && !security.ValidToken(applicationToken) {
+			applicationSession = models.Session{}
+		} else {
+			applicationSession = repositories.Sessions().FindByToken(applicationToken, models.ApplicationToken)
 		}
-		applicationSession := repositories.Sessions().FindByToken(applicationToken, models.ApplicationToken)
-		if applicationTokenInterface != nil && applicationSession.IsSavedRecord() {
+		if applicationSession.IsSavedRecord() {
 			c.Set("User", applicationSession.User)
 			c.Next()
 			return
