@@ -22,7 +22,7 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 
 func TestRequiresConformance(t *testing.T) {
 	router := gin.New()
-	router.Use(requiresConformance)
+	router.Use(requiresConformance())
 	router.GET("/", defaultRoute)
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, w.Code, 400)
@@ -30,7 +30,7 @@ func TestRequiresConformance(t *testing.T) {
 
 func TestActionTokenBearerAuthorization(t *testing.T) {
 	router := gin.New()
-	router.Use(actionTokenBearerAuthorization)
+	router.Use(actionTokenBearerAuthorization())
 	router.GET("/", defaultRoute)
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, w.Code, 400)

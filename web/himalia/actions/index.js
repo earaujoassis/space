@@ -1,4 +1,5 @@
 export { bootstrapApplication, internalSetToastDisplay } from './internal'
 export { fetchUserProfile, adminifyUser, requestEmailVerification, requestResetPassword, requestResetSecretCodes } from './users'
+export { fetchApplicationSessionsForUser, revokeApplicationSessionForUser } from './sessions'
 export { createClient, fetchClients, setClientForEdition, updateClient, fetchClientApplicationsFromUser, revokeClientApplicationFromUser } from './clients'
 export { createService, fetchServices } from './services'

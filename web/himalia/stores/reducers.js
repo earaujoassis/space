@@ -5,6 +5,7 @@ const initialState = {
     displayToast: false,
     application: undefined,
     user: undefined,
+    sessions: undefined,
     clients: undefined,
     services: undefined,
     error: undefined,
@@ -108,6 +109,34 @@ const userRequestError = (state, action) => {
     })
 }
 
+const sessionRecordStart = (state) => {
+    NProgress.start()
+    return Object.assign({}, state, { loading: addLoading(state, 'session'), stateSignal: 'session_record_start' })
+}
+
+const sessionRecordSuccess = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'session'),
+        success: true,
+        error: null,
+        sessions: action.sessions,
+        stateSignal: 'session_record_success'
+    })
+}
+
+const sessionRecordError = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'session'),
+        displayToast: true,
+        success: false,
+        error: action.error,
+        sessions: action.sessions,
+        stateSignal: 'session_record_error'
+    })
+}
+
 const clientRecordStart = (state) => {
     NProgress.start()
     return Object.assign({}, state, { loading: addLoading(state, 'client'), stateSignal: 'client_record_start' })
@@ -176,6 +205,9 @@ const reducer = (state = initialState, action) => {
     case actionTypes.USER_REQUEST_START: return userRequestStart(state, action)
     case actionTypes.USER_REQUEST_SUCCESS: return userRequestSuccess(state, action)
     case actionTypes.USER_REQUEST_ERROR: return userRequestError(state, action)
+    case actionTypes.SESSION_RECORD_START: return sessionRecordStart(state, action)
+    case actionTypes.SESSION_RECORD_SUCCESS: return sessionRecordSuccess(state, action)
+    case actionTypes.SESSION_RECORD_ERROR: return sessionRecordError(state, action)
     case actionTypes.CLIENT_RECORD_START: return clientRecordStart(state, action)
     case actionTypes.CLIENT_RECORD_SUCCESS: return clientRecordSuccess(state, action)
     case actionTypes.CLIENT_RECORD_ERROR: return clientRecordError(state, action)

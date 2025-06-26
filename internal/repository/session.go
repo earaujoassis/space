@@ -63,6 +63,19 @@ func (r *SessionRepository) Invalidate(session *models.Session) {
 	r.db.GetDB().Model(&session).Select("invalidated").Update("invalidated", true)
 }
 
+func (r *SessionRepository) ApplicationSessions(user models.User) []models.Session {
+	var sessions []models.Session
+
+	r.db.GetDB().
+		Raw("SELECT sessions.uuid, sessions.ip, sessions.user_agent "+
+			"FROM sessions "+
+			"WHERE token_type = 'application_token' AND invalidated = false AND user_id = ?"+
+			"ORDER BY sessions.created_at DESC", user.ID).
+		Scan(&sessions)
+
+	return sessions
+}
+
 // ActiveForClient gets the number of active sessions for a given user in a client application
 func (r *SessionRepository) ActiveForClient(client models.Client, user models.User) int64 {
 	var count struct {

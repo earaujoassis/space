@@ -1,6 +1,10 @@
 package shared
 
 const (
+	CookieSessionKey = "application_token"
+)
+
+const (
 	// Definitions shared between:
 	// - OAuth
 	// - OpenID Connect
