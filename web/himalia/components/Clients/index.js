@@ -1,7 +1,7 @@
-import AllClients from './all-clients'
-import EditClient from './edit-client'
-import EditScopes from './edit-scopes'
-import NewClient from './new-client'
+import AllClients from './allClients'
+import EditClient from './editClient'
+import EditScopes from './editScopes'
+import NewClient from './newClient'
 
 import './style.css'
 

@@ -1,5 +1,5 @@
-import AllServices from './all-services'
-import NewService from './new-service'
+import AllServices from './allServices'
+import NewService from './newService'
 
 import './style.css'
 
