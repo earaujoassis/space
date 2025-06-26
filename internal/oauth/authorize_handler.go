@@ -11,6 +11,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -24,22 +25,29 @@ func authorizeHandler(c *gin.Context) {
 	var state string
 
 	session := sessions.Default(c)
-	userPublicID := session.Get("user_public_id")
+	applicationTokenInterface := session.Get(shared.CookieSessionKey)
+	applicationToken := utils.StringValue(applicationTokenInterface)
 	nextPath := url.QueryEscape(fmt.Sprintf("%s?%s", c.Request.URL.Path, c.Request.URL.RawQuery))
-	if userPublicID == nil {
-		location = fmt.Sprintf("/signin?_=%s", nextPath)
+	location = fmt.Sprintf("/signin?_=%s", nextPath)
+	if applicationTokenInterface == nil {
+		c.Redirect(http.StatusFound, location)
+		return
+	}
+	if !security.ValidToken(applicationToken) {
+		session.Delete(shared.CookieSessionKey)
+		session.Save()
 		c.Redirect(http.StatusFound, location)
 		return
 	}
 	repositories := ioc.GetRepositories(c)
-	user := repositories.Users().FindByPublicID(userPublicID.(string))
-	if user.IsNewRecord() {
-		session.Delete("user_public_id")
+	applicationSession := repositories.Sessions().FindByToken(applicationToken, models.ApplicationToken)
+	if applicationSession.IsNewRecord() || applicationSession.User.IsNewRecord() {
+		session.Delete(shared.CookieSessionKey)
 		session.Save()
-		location = fmt.Sprintf("/signin?_=%s", nextPath)
 		c.Redirect(http.StatusFound, location)
 		return
 	}
+	user := applicationSession.User
 
 	responseType = c.Query("response_type")
 	clientKey = c.Query("client_id")

@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/ioc"
+	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
@@ -27,6 +29,32 @@ func requiresConformance() gin.HandlerFunc {
 			})
 			c.Abort()
 		}
+	}
+}
+
+func requiresApplicationSession() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		repositories := ioc.GetRepositories(c)
+		applicationTokenInterface := session.Get(shared.CookieSessionKey)
+		applicationToken := utils.StringValue(applicationTokenInterface)
+		if !security.ValidToken(applicationToken) {
+			c.Redirect(http.StatusFound, "/signout")
+			c.Abort()
+			return
+		}
+		applicationSession := repositories.Sessions().FindByToken(applicationToken, models.ApplicationToken)
+		if applicationTokenInterface != nil && applicationSession.IsSavedRecord() {
+			c.Set("User", applicationSession.User)
+			c.Next()
+			return
+		}
+		c.JSON(http.StatusUnauthorized, utils.H{
+			"_status":  "error",
+			"_message": "User must be authenticated",
+			"error":    "unauthorized request",
+		})
+		c.Abort()
 	}
 }
 

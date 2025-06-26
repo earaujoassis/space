@@ -29,3 +29,10 @@ func URIs(uris string) []string {
 	strs := TrimStrings(strings.Split(strings.TrimSpace(uris), "\n"))
 	return removeEmptyStrings(strs)
 }
+
+func StringValue(value interface{}) string {
+	if s, ok := value.(string); ok {
+		return s
+	}
+	return ""
+}

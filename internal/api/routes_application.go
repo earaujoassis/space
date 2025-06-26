@@ -12,6 +12,7 @@ import (
 func exposeApplicationRoutes(router *gin.RouterGroup) {
 	applicationRoutes := router.Group("/application")
 	applicationRoutes.Use(requiresConformance())
+	applicationRoutes.Use(requiresApplicationSession())
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
 		applicationRoutes.GET("/bootstrap", applicationBootstrapHandler)

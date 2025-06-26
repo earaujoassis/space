@@ -11,6 +11,7 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 	servicesRoutes := router.Group("/services")
 	servicesRoutes.Use(requiresConformance())
 	servicesRoutes.Use(actionTokenBearerAuthorization())
+	servicesRoutes.Use(requiresApplicationSession())
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)

@@ -10,13 +10,17 @@ import (
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/shared"
+	"github.com/earaujoassis/space/internal/utils"
 )
 
 func sessionHandler(c *gin.Context) {
 	session := sessions.Default(c)
+	repositories := ioc.GetRepositories(c)
 
-	userPublicID := session.Get("user_public_id")
-	if userPublicID != nil {
+	applicationTokenInterface := session.Get(shared.CookieSessionKey)
+	applicationToken := utils.StringValue(applicationTokenInterface)
+	applicationSession := repositories.Sessions().FindByToken(applicationToken, models.ApplicationToken)
+	if applicationTokenInterface != nil && applicationSession.IsSavedRecord() {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -35,20 +39,35 @@ func sessionHandler(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/signin")
 		return
 	}
+
+	grantToken := repositories.Sessions().FindByToken(code, models.GrantToken)
+	if grantToken.IsNewRecord() {
+		c.Redirect(http.StatusFound, "/signin")
+		return
+	}
+	repositories.Sessions().Invalidate(&grantToken)
+
 	if _nextPath != "" {
 		if _nextPath, err := url.QueryUnescape(_nextPath); err == nil {
 			nextPath = _nextPath
 		}
 	}
 
-	repositories := ioc.GetRepositories(c)
 	client := repositories.Clients().FindOrCreate(models.DefaultClient)
 	if client.Key == clientKey && grantType == shared.AuthorizationCode && scope == models.PublicScope {
-		grantToken := repositories.Sessions().FindByToken(code, models.GrantToken)
-		if grantToken.IsSavedRecord() {
-			session.Set("user_public_id", grantToken.User.PublicID)
+		applicationSession = models.Session{
+			User:      grantToken.User,
+			Client:    client,
+			IP:        c.Request.RemoteAddr,
+			UserAgent: c.Request.UserAgent(),
+			Scopes:    models.PublicScope,
+			TokenType: models.ApplicationToken,
+		}
+
+		err := repositories.Sessions().Create(&applicationSession)
+		if err == nil {
+			session.Set(shared.CookieSessionKey, applicationSession.Token)
 			session.Save()
-			repositories.Sessions().Invalidate(&grantToken)
 			c.Redirect(http.StatusFound, nextPath)
 			return
 		}

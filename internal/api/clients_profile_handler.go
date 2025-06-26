@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/ioc"
@@ -18,11 +17,9 @@ import (
 func clientsProfileHandler(c *gin.Context) {
 	clientUUID := c.Param("client_id")
 	repositories := ioc.GetRepositories(c)
-	session := sessions.Default(c)
 	action := c.MustGet("Action").(models.Action)
-	userPublicID := session.Get("user_public_id")
-	user := repositories.Users().FindByPublicID(userPublicID.(string))
-	if userPublicID == nil || user.IsNewRecord() || user.ID != action.UserID || !user.Admin {
+	user := c.MustGet("User").(models.User)
+	if user.ID != action.UserID || !user.Admin {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",

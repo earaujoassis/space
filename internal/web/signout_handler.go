@@ -5,14 +5,16 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+
+	"github.com/earaujoassis/space/internal/shared"
 )
 
 func signoutHandler(c *gin.Context) {
 	session := sessions.Default(c)
 
-	userPublicID := session.Get("user_public_id")
-	if userPublicID != nil {
-		session.Delete("user_public_id")
+	sessionToken := session.Get(shared.CookieSessionKey)
+	if sessionToken != nil {
+		session.Delete(shared.CookieSessionKey)
 		session.Save()
 	}
 

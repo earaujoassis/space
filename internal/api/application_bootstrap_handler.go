@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/ioc"
@@ -14,17 +13,8 @@ import (
 func applicationBootstrapHandler(c *gin.Context) {
 	repositories := ioc.GetRepositories(c)
 	fg := ioc.GetFeatureGate(c)
-	session := sessions.Default(c)
-	userPublicID := session.Get("user_public_id")
-	if userPublicID == nil {
-		c.JSON(http.StatusUnauthorized, utils.H{
-			"_status":  "error",
-			"_message": "Application bootstrap failed",
-			"error":    "unauthorized application bootstrap",
-		})
-	}
+	user := c.MustGet("User").(models.User)
 	client := repositories.Clients().FindOrCreate(models.DefaultClient)
-	user := repositories.Users().FindByPublicID(userPublicID.(string))
 
 	actionToken := models.Action{
 		User:        user,

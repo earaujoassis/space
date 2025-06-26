@@ -6,13 +6,14 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
 func satelliteHandler(c *gin.Context) {
 	session := sessions.Default(c)
-	userPublicID := session.Get("user_public_id")
-	if userPublicID == nil {
+	sessionToken := session.Get(shared.CookieSessionKey)
+	if sessionToken == nil {
 		c.Redirect(http.StatusFound, "/signin")
 		return
 	}
