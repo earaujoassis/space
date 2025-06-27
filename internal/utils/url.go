@@ -7,12 +7,12 @@ import (
 func ParseQueryString(rawURL string) map[string]string {
 	result := make(map[string]string)
 
-	u, err := url.Parse(rawURL)
+	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
 		return result
 	}
 
-	for key, values := range u.Query() {
+	for key, values := range parsedURL.Query() {
 		if len(values) > 0 {
 			result[key] = values[0]
 		}
@@ -21,7 +21,7 @@ func ParseQueryString(rawURL string) map[string]string {
 	return result
 }
 
-func ParseFragment(rawURL string) map[string]string {
+func ParseFragmentString(rawURL string) map[string]string {
 	result := make(map[string]string)
 
 	parsedURL, err := url.Parse(rawURL)

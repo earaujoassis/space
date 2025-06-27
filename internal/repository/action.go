@@ -58,7 +58,7 @@ func (r *ActionRepository) FindByUUID(uuid string) models.Action {
 	return action
 }
 
-func (r *ActionRepository) FindByToken(token string) (models.Action, error) {
+func (r *ActionRepository) FindByToken(token string) models.Action {
 	var action models.Action
 
 	r.ms.Transaction(func(c *redis.Commands) {
@@ -71,14 +71,11 @@ func (r *ActionRepository) FindByToken(token string) (models.Action, error) {
 		action = r.FindByUUID(actionUUID)
 	})
 
-	return action, nil
+	return action
 }
 
 func (r *ActionRepository) Authentication(token string) models.Action {
-	action, err := r.FindByToken(token)
-	if err != nil {
-		return models.Action{}
-	}
+	action := r.FindByToken(token)
 	if action.UUID != "" && !action.WithinExpirationWindow() {
 		r.Delete(action)
 		return models.Action{}

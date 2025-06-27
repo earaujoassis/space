@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -16,7 +17,7 @@ func TestValidServiceModel(t *testing.T) {
 		Type:         AttachedService,
 	}
 
-	assert.True(t, IsValid("validate", service), "should return true for valid service")
+	assert.True(t, IsValid("validate", service))
 }
 
 func TestInvalidServiceMissingRequiredFields(t *testing.T) {
@@ -27,7 +28,7 @@ func TestInvalidServiceMissingRequiredFields(t *testing.T) {
 		Type:         "",
 	}
 
-	assert.False(t, IsValid("validate", service), "should return false for invalid service")
+	assert.False(t, IsValid("validate", service))
 }
 
 func TestServiceModelCreation(t *testing.T) {
@@ -40,9 +41,30 @@ func TestServiceModelCreation(t *testing.T) {
 		Type:         PublicService,
 	}
 
-	assert.True(t, IsValid("validate", service), "should return true for valid service")
+	assert.True(t, IsValid("validate", service))
 	err = service.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	err = service.BeforeCreate(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
+}
+
+func TestServiceMarshalJSON(t *testing.T) {
+	service := Service{
+		Name:         "testing",
+		Description:  gofakeit.ProductDescription(),
+		CanonicalURI: gofakeit.URL(),
+		Type:         PublicService,
+	}
+
+	assert.True(t, IsValid("validate", service))
+	err := validateModel("validate", service)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = service.BeforeSave(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = service.BeforeCreate(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+
+	jsonData, err := json.Marshal(service)
+	assert.NoError(t, err)
+	assert.Contains(t, string(jsonData), "\"name\":\"testing\"")
 }

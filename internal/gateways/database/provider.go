@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/earaujoassis/space/internal/config"
+	"github.com/earaujoassis/space/internal/logs"
 )
 
 type DatabaseProvider interface {
@@ -33,6 +34,7 @@ func NewDatabaseProvider(cfg *config.Config) DatabaseProvider {
 	case "test":
 		return &SQLiteProvider{}
 	default:
-		return &SQLiteProvider{}
+		logs.Propagate(logs.Panic, "gateway misconfigured")
+		return nil
 	}
 }

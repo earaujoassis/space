@@ -14,7 +14,12 @@ type Client struct {
 	Model  models.Client
 }
 
+func (c *Client) BasicAuthEncode() string {
+	return shared.BasicAuthEncode(c.Key, c.Secret)
+}
+
 func (f *TestRepositoryFactory) NewClient() *Client {
+	repositories := f.manager
 	client := models.Client{
 		Name:         gofakeit.Company(),
 		Scopes:       models.PublicScope,
@@ -22,10 +27,10 @@ func (f *TestRepositoryFactory) NewClient() *Client {
 		RedirectURI:  []string{"http://localhost/callback"},
 		Type:         models.ConfidentialClient,
 	}
-	f.manager.Clients().Create(&client)
+	repositories.Clients().Create(&client)
 	clientSecret := models.GenerateRandomString(64)
 	client.SetSecret(clientSecret)
-	f.manager.Clients().Save(&client)
+	repositories.Clients().Save(&client)
 	localClient := Client{
 		Name:   client.Name,
 		Key:    client.Key,
@@ -36,6 +41,7 @@ func (f *TestRepositoryFactory) NewClient() *Client {
 }
 
 func (f *TestRepositoryFactory) NewClientWithScopes(scopes string) *Client {
+	repositories := f.manager
 	client := models.Client{
 		Name:         gofakeit.Company(),
 		Scopes:       scopes,
@@ -43,10 +49,10 @@ func (f *TestRepositoryFactory) NewClientWithScopes(scopes string) *Client {
 		RedirectURI:  []string{"http://localhost/callback"},
 		Type:         models.ConfidentialClient,
 	}
-	f.manager.Clients().Create(&client)
+	repositories.Clients().Create(&client)
 	clientSecret := models.GenerateRandomString(64)
 	client.SetSecret(clientSecret)
-	f.manager.Clients().Save(&client)
+	repositories.Clients().Save(&client)
 	localClient := Client{
 		Name:   client.Name,
 		Key:    client.Key,
@@ -56,6 +62,12 @@ func (f *TestRepositoryFactory) NewClientWithScopes(scopes string) *Client {
 	return &localClient
 }
 
-func (c *Client) BasicAuthEncode() string {
-	return shared.BasicAuthEncode(c.Key, c.Secret)
+func (f *TestRepositoryFactory) DefaultClient() *Client {
+	client := f.manager.Clients().FindOrCreate(models.DefaultClient)
+	localClient := Client{
+		Name:  client.Name,
+		Key:   client.Key,
+		Model: client,
+	}
+	return &localClient
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"testing"
@@ -10,8 +11,56 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
+func TestSetSecret(t *testing.T) {
+	secret := GenerateRandomString(64)
+
+	client := Client{
+		Name:         "internal",
+		Description:  "test internal model only",
+		Scopes:       PublicScope,
+		CanonicalURI: []string{"https://localhost:5000"},
+		RedirectURI:  []string{"https://localhost:5000/callback"},
+		Type:         PublicClient,
+	}
+
+	assert.True(t, IsValid("validate", client))
+	err := validateModel("validate", client)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeSave(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeCreate(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+
+	assert.False(t, client.Authentic(secret))
+
+	client.SetSecret(secret)
+	assert.True(t, client.Authentic(secret))
+}
+
+func TestDefaultValues(t *testing.T) {
+	client := Client{
+		Name:         "internal",
+		Description:  "test internal model only",
+		Scopes:       PublicScope,
+		CanonicalURI: []string{"https://localhost:5000"},
+		RedirectURI:  []string{"https://localhost:5000/callback"},
+		Type:         PublicClient,
+	}
+
+	assert.True(t, IsValid("validate", client))
+	err := validateModel("validate", client)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeSave(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeCreate(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+
+	assert.Equal(t, "https://localhost:5000", client.DefaultCanonicalURI())
+	assert.Equal(t, "https://localhost:5000/callback", client.DefaultRedirectURI())
+}
+
 func TestValidClientModel(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Name:         "internal",
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
@@ -23,11 +72,15 @@ func TestValidClientModel(t *testing.T) {
 
 	assert.True(t, IsValid("validate", client))
 	err := validateModel("validate", client)
-	assert.Nil(t, err, fmt.Sprintf("%s", err))
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeSave(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeCreate(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
 }
 
 func TestValidClientModelWithMultipleScopes(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Name:         "internal",
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
@@ -39,11 +92,13 @@ func TestValidClientModelWithMultipleScopes(t *testing.T) {
 
 	assert.True(t, IsValid("validate", client))
 	err := validateModel("validate", client)
-	assert.Nil(t, err, fmt.Sprintf("%s", err))
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeSave(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
 }
 
 func TestInvalidClientMissingRequiredFields(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Name:         "",
 		Description:  "", // this can be empty
 		Secret:       "",
@@ -59,7 +114,7 @@ func TestInvalidClientMissingRequiredFields(t *testing.T) {
 }
 
 func TestInvalidURIClientModel(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Name:         "internal",
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
@@ -72,10 +127,12 @@ func TestInvalidURIClientModel(t *testing.T) {
 	assert.False(t, IsValid("validate", client))
 	err := validateModel("validate", client)
 	assert.NotNil(t, err)
+	err = client.BeforeSave(nil)
+	assert.NotNil(t, err)
 }
 
 func TestInvalidCanonicalURIClientModel(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Name:         "internal",
 		Description:  "test internal model only",
 		Secret:       GenerateRandomString(64),
@@ -86,12 +143,14 @@ func TestInvalidCanonicalURIClientModel(t *testing.T) {
 	}
 
 	assert.False(t, IsValid("validate", client))
-	err := validateModel("validate", client)
+	val := validateModel("validate", client)
+	assert.NotNil(t, val)
+	err := client.BeforeSave(nil)
 	assert.NotNil(t, err)
 }
 
 func TestHasRequestedScopes(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Scopes: PublicScope,
 	}
 
@@ -111,7 +170,7 @@ func TestHasRequestedScopes(t *testing.T) {
 }
 
 func TestPublicClientRestrictions(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Type: PublicClient,
 	}
 
@@ -162,11 +221,34 @@ func TestPublicClientRestrictions(t *testing.T) {
 }
 
 func TestClientHasScope(t *testing.T) {
-	var client Client = Client{
+	client := Client{
 		Scopes: "public read",
 	}
 	assert.True(t, client.HasScope("public"))
 	assert.True(t, client.HasScope("read"))
 	assert.False(t, client.HasScope("openid"))
 	assert.False(t, client.HasScope("write"))
+}
+
+func TestClientMarshalJSON(t *testing.T) {
+	client := Client{
+		Name:         "internal",
+		Description:  "test internal model only",
+		Scopes:       PublicScope,
+		CanonicalURI: []string{"https://localhost:5000"},
+		RedirectURI:  []string{"https://localhost:5000/callback"},
+		Type:         PublicClient,
+	}
+
+	assert.True(t, IsValid("validate", client))
+	err := validateModel("validate", client)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeSave(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+	err = client.BeforeCreate(nil)
+	assert.Nil(t, err, fmt.Sprintf("%v", err))
+
+	jsonData, err := json.Marshal(client)
+	assert.NoError(t, err)
+	assert.Contains(t, string(jsonData), "\"name\":\"internal\"")
 }

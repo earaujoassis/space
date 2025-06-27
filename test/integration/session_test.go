@@ -1,18 +1,10 @@
 package integration
 
-import (
-	"time"
-
-	"github.com/pquerna/otp/totp"
-)
-
 func (s *OAuthProviderSuite) TestSessionCreation() {
 	s.Run("should create user session", func() {
 		s.Client.ClearSession()
 		user := s.Factory.NewUser()
-		code, err := totp.GenerateCode(user.CodeSecretKey, time.Now())
-
-		s.Require().NoError(err)
+		code := user.GenerateCode()
 
 		response := s.Client.LoginUser(user.Email, user.Passphrase, code)
 

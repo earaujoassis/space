@@ -15,8 +15,8 @@ import (
 // The following Authorization method is used by OAuth clients only
 func ClientBasicAuthorization(c *gin.Context) {
 	repositories := ioc.GetRepositories(c)
-	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 
+	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 	if !security.ValidBase64(authorizationBasic) {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"error": "must use valid Authorization string",
@@ -42,8 +42,8 @@ func ClientBasicAuthorization(c *gin.Context) {
 // The following Authorization method is used by the OAuth clients, with an OAuth session token
 func OAuthTokenBearerAuthorization(c *gin.Context) {
 	repositories := ioc.GetRepositories(c)
-	authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
 
+	authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
 	if !security.ValidToken(authorizationBearer) {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"error": "must use valid token string",
