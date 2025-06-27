@@ -11,11 +11,11 @@ type User struct {
 	UUID               string   `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"-"`
 	PublicID           string   `gorm:"not null;unique;index" json:"public_id"`
 	Username           string   `gorm:"not null;unique;index" validate:"required,alphanum,max=60" json:"-"`
-	FirstName          string   `gorm:"not null" validate:"required,min=3,max=20" essential:"required,min=3,max=20" json:"first_name"`
-	LastName           string   `gorm:"not null" validate:"required,min=3,max=20" essential:"required,min=3,max=20" json:"last_name"`
+	FirstName          string   `gorm:"not null" validate:"required,min=2,max=20" essential:"required,min=2,max=20" json:"first_name"`
+	LastName           string   `gorm:"not null" validate:"required,min=2,max=20" essential:"required,min=2,max=20" json:"last_name"`
 	Email              string   `gorm:"not null;unique;index" validate:"required,email" essential:"required,email" json:"email"`
 	EmailVerified      bool     `gorm:"not null;default:false" json:"email_verified"`
-	Passphrase         string   `gorm:"not null" validate:"required" essential:"required,min=10" json:"-"`
+	Passphrase         string   `gorm:"not null" validate:"required,min=10" essential:"required,min=10" json:"-"`
 	Active             bool     `gorm:"not null;default:false" json:"active"`
 	Admin              bool     `gorm:"not null;default:false" json:"-"`
 	Client             Client   `gorm:"not null" validate:"required" json:"-"`

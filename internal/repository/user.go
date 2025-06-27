@@ -23,16 +23,6 @@ func NewUserRepository(db *database.DatabaseService) *UserRepository {
 	}
 }
 
-// Create creates a user entry
-func (r *UserRepository) Create(user *models.User) error {
-	return r.db.GetDB().Create(user).Error
-}
-
-// Save saves a user entry
-func (r *UserRepository) Save(user *models.User) error {
-	return r.db.GetDB().Save(user).Error
-}
-
 // FindByAccountHolder gets an user by its account holder (username or email)
 func (r *UserRepository) FindByAccountHolder(holder string) models.User {
 	var user models.User
@@ -122,6 +112,10 @@ func (r *UserRepository) SetRecoverSecret(user *models.User) (string, error) {
 
 // SetPassword sets a User's password without saving
 func (r *UserRepository) SetPassword(user *models.User, password string) error {
+	user.Passphrase = password
+	if !models.IsValid("essential", user) {
+		return fmt.Errorf("user validation failed")
+	}
 	crypted, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err == nil {
 		user.Passphrase = string(crypted)

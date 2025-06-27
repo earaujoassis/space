@@ -53,8 +53,7 @@ func TestMustServeJSON(t *testing.T) {
 	assert.True(t, MustServeJSON("/api/users/instropect", ""), "should have return True to given path")
 	assert.True(t, MustServeJSON("/api/testing-only", ""), "should have return True to given path")
 	assert.False(t, MustServeJSON("/oauth/authorize", ""), "should have return False to given path")
-	assert.False(t, MustServeJSON("/authorize", ""), "should have return False to given path")
-	assert.True(t, MustServeJSON("/token", ""), "should have return True to given path")
 	assert.True(t, MustServeJSON("/oauth/token", ""), "should have return True to given path")
-	assert.False(t, MustServeJSON("/oauth", ""), "should have return False to given path")
+	assert.False(t, MustServeJSON("/oidc/authorize", ""), "should have return False to given path")
+	assert.True(t, MustServeJSON("/oidc/token", ""), "should have return True to given path")
 }

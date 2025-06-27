@@ -14,6 +14,7 @@ func NewRepositoryManager(db *database.DatabaseService, ms *redis.MemoryService)
 		factory: NewRepositoryFactory(db, ms),
 	}
 }
+
 func (rm *RepositoryManager) Actions() *ActionRepository {
 	return rm.factory.NewActionRepository()
 }

@@ -7,12 +7,11 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"strings"
-	"time"
 
-	"github.com/pquerna/otp/totp"
 	"golang.org/x/net/publicsuffix"
 
 	"github.com/earaujoassis/space/test/factory"
+	"github.com/earaujoassis/space/test/utils"
 )
 
 type OIDCCTestlient struct {
@@ -52,7 +51,7 @@ func (c *OIDCCTestlient) ClearSession() {
 
 func (c *OIDCCTestlient) StartSession(user *factory.User) {
 	c.ClearSession()
-	code, _ := totp.GenerateCode(user.CodeSecretKey, time.Now())
+	code := user.GenerateCode()
 	response := c.LoginUser(user.Username, user.Passphrase, code)
 	json := response.JSON
 	location := c.baseURL +
@@ -80,7 +79,7 @@ func (c *OIDCCTestlient) HasSessionCookie() bool {
 	return false
 }
 
-func (c *OIDCCTestlient) LoginUser(holder, password, passcode string) *TestResponse {
+func (c *OIDCCTestlient) LoginUser(holder, password, passcode string) *utils.TestResponse {
 	requestUrl := c.baseURL + "/api/sessions/create"
 	formData := url.Values{}
 	formData.Set("holder", holder)
@@ -91,10 +90,10 @@ func (c *OIDCCTestlient) LoginUser(holder, password, passcode string) *TestRespo
 	request.Header.Set("X-Requested-By", "SpaceApi")
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response, err := c.httpClient.Do(request)
-	return parseResponse(response, err)
+	return utils.ParseResponse(response, err)
 }
 
-func (c *OIDCCTestlient) GetAuthorize(responseType, clientID, redirectURI, state string) *TestResponse {
+func (c *OIDCCTestlient) GetAuthorize(responseType, clientID, redirectURI, state string) *utils.TestResponse {
 	params := url.Values{}
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
@@ -103,10 +102,10 @@ func (c *OIDCCTestlient) GetAuthorize(responseType, clientID, redirectURI, state
 	params.Set("state", state)
 	authURL := fmt.Sprintf("%s/oidc/authorize?%s", c.baseURL, params.Encode())
 	resp, err := c.httpClient.Get(authURL)
-	return parseResponse(resp, err)
+	return utils.ParseResponse(resp, err)
 }
 
-func (c *OIDCCTestlient) PostAuthorize(responseType, clientID, redirectURI, state string, authorize bool) *TestResponse {
+func (c *OIDCCTestlient) PostAuthorize(responseType, clientID, redirectURI, state string, authorize bool) *utils.TestResponse {
 	params := url.Values{}
 	params.Set("response_type", responseType)
 	params.Set("client_id", clientID)
@@ -116,17 +115,17 @@ func (c *OIDCCTestlient) PostAuthorize(responseType, clientID, redirectURI, stat
 	authURL := fmt.Sprintf("%s/oidc/authorize?%s", c.baseURL, params.Encode())
 	if authorize {
 		resp, err := c.httpClient.Post(authURL, "application/x-www-form-urlencoded", strings.NewReader(""))
-		return parseResponse(resp, err)
+		return utils.ParseResponse(resp, err)
 	} else {
 		formData := url.Values{}
 		formData.Set("access_denied", "true")
 		encoded := formData.Encode()
 		resp, err := c.httpClient.Post(authURL, "application/x-www-form-urlencoded", strings.NewReader(encoded))
-		return parseResponse(resp, err)
+		return utils.ParseResponse(resp, err)
 	}
 }
 
-func (c *OIDCCTestlient) PostToken(clientBasicAuth, grantType string) *TestResponse {
+func (c *OIDCCTestlient) PostToken(clientBasicAuth, grantType string) *utils.TestResponse {
 	formData := url.Values{}
 	formData.Set("grant_type", grantType)
 	encoded := formData.Encode()
@@ -135,10 +134,10 @@ func (c *OIDCCTestlient) PostToken(clientBasicAuth, grantType string) *TestRespo
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
 	response, err := c.httpClient.Do(request)
-	return parseResponse(response, err)
+	return utils.ParseResponse(response, err)
 }
 
-func (c *OIDCCTestlient) PostTokenComplete(clientBasicAuth, grantType, code, redirectURI string) *TestResponse {
+func (c *OIDCCTestlient) PostTokenComplete(clientBasicAuth, grantType, code, redirectURI string) *utils.TestResponse {
 	formData := url.Values{}
 	formData.Set("grant_type", grantType)
 	formData.Set("code", code)
@@ -149,10 +148,10 @@ func (c *OIDCCTestlient) PostTokenComplete(clientBasicAuth, grantType, code, red
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
 	response, err := c.httpClient.Do(request)
-	return parseResponse(response, err)
+	return utils.ParseResponse(response, err)
 }
 
-func (c *OIDCCTestlient) PostTokenRefresh(clientBasicAuth, refreshToken, scope string) *TestResponse {
+func (c *OIDCCTestlient) PostTokenRefresh(clientBasicAuth, refreshToken, scope string) *utils.TestResponse {
 	formData := url.Values{}
 	formData.Set("grant_type", "refresh_token")
 	formData.Set("refresh_token", refreshToken)
@@ -163,11 +162,11 @@ func (c *OIDCCTestlient) PostTokenRefresh(clientBasicAuth, refreshToken, scope s
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Authorization", fmt.Sprintf("Basic %s", clientBasicAuth))
 	response, err := c.httpClient.Do(request)
-	return parseResponse(response, err)
+	return utils.ParseResponse(response, err)
 }
 
-func (c *OIDCCTestlient) GetMetadata() *TestResponse {
+func (c *OIDCCTestlient) GetMetadata() *utils.TestResponse {
 	requestUrl := c.baseURL + "/.well-known/openid-configuration"
 	response, err := c.httpClient.Get(requestUrl)
-	return parseResponse(response, err)
+	return utils.ParseResponse(response, err)
 }

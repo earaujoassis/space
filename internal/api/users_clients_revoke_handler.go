@@ -40,6 +40,8 @@ func usersClientsRevokeHandler(c *gin.Context) {
 	}
 
 	client := repositories.Clients().FindByUUID(clientUUID)
-	repositories.Sessions().RevokeAccess(client, user)
+	if client.IsSavedRecord() {
+		repositories.Sessions().RevokeAccess(client, user)
+	}
 	c.JSON(http.StatusNoContent, nil)
 }

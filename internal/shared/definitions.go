@@ -12,6 +12,8 @@ const (
 
 	// AccessDenied error type
 	AccessDenied string = "access_denied"
+	// InternalError error type
+	InternalError string = "internal_error"
 
 	// ErrorQueryURI defines the query string for the callback redirect
 	ErrorQueryURI string = "%s?error=%s&state=%s"

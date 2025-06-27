@@ -58,9 +58,11 @@ func TestValidActionModel(t *testing.T) {
 		Description: NotSpecialAction,
 	}
 	action.BeforeSave()
+	assert.True(t, IsValid("validate", action))
 	err = validateModel("validate", action)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
-	assert.True(t, IsValid("validate", action))
+	err = action.Validate()
+	assert.Nil(t, err, fmt.Sprintf("%s", err))
 }
 
 func TestActionWithinExpirationWindow(t *testing.T) {
@@ -74,4 +76,40 @@ func TestActionWithinExpirationWindow(t *testing.T) {
 	timeTravel = time.Duration(shortestExpirationLength + 1)
 	action.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
 	assert.False(t, action.WithinExpirationWindow())
+}
+
+func TestActionCanUpdateUser(t *testing.T) {
+	action := Action{}
+	assert.False(t, action.CanUpdateUser())
+
+	action = Action{Description: UpdateUserAction}
+	assert.True(t, action.CanUpdateUser())
+
+	action = Action{Description: NotSpecialAction}
+	assert.False(t, action.CanUpdateUser())
+}
+
+func TestActionGrantsReadAbility(t *testing.T) {
+	action := Action{}
+	assert.False(t, action.GrantsReadAbility())
+
+	action = Action{Scopes: ReadScope}
+	assert.True(t, action.GrantsReadAbility())
+
+	action = Action{Scopes: OpenIDScope}
+	assert.True(t, action.GrantsReadAbility())
+
+	action = Action{Scopes: WriteScope}
+	assert.True(t, action.GrantsReadAbility())
+}
+
+func TestActionGrantsWriteAbility(t *testing.T) {
+	action := Action{}
+	assert.False(t, action.GrantsWriteAbility())
+
+	action = Action{Scopes: ReadScope}
+	assert.False(t, action.GrantsWriteAbility())
+
+	action = Action{Scopes: WriteScope}
+	assert.True(t, action.GrantsWriteAbility())
 }

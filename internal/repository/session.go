@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/earaujoassis/space/internal/gateways/database"
 	"github.com/earaujoassis/space/internal/models"
 )
@@ -13,11 +15,6 @@ func NewSessionRepository(db *database.DatabaseService) *SessionRepository {
 	return &SessionRepository{
 		BaseRepository: NewBaseRepository[models.Session](db),
 	}
-}
-
-// Create creates a session entry
-func (r *SessionRepository) Create(session *models.Session) error {
-	return r.db.GetDB().Create(&session).Error
 }
 
 // FindByUUID gets a session entry by its UUID
@@ -92,8 +89,9 @@ func (r *SessionRepository) ActiveForClient(client models.Client, user models.Us
 
 // RevokeAccess revokes client application access to user's data
 func (r *SessionRepository) RevokeAccess(client models.Client, user models.User) {
+	now := time.Now()
 	r.db.GetDB().
-		Exec("UPDATE sessions SET invalidated = true, updated_at = now() "+
+		Exec("UPDATE sessions SET invalidated = true, updated_at = ? "+
 			"WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND "+
-			"client_id = ? AND user_id = ?;", client.ID, user.ID)
+			"client_id = ? AND user_id = ?;", now, client.ID, user.ID)
 }

@@ -65,7 +65,7 @@ func AccessTokenRequest(data utils.H, repositories *repository.RepositoryManager
 	}
 
 	nonce := repositories.Nonces().RetrieveByCode(code)
-	idToken := createIDToken(issuer, user.PublicID, client.Key, nonce)
+	idToken := createIDToken(issuer, user.PublicID, client.Key, nonce.Nonce)
 	return utils.H{
 		"access_token":  accessToken.Token,
 		"token_type":    "Bearer",

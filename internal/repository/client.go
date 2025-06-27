@@ -15,16 +15,6 @@ func NewClientRepository(db *database.DatabaseService) *ClientRepository {
 	}
 }
 
-// Create creates a new client application entry
-func (r *ClientRepository) Create(client *models.Client) error {
-	return r.db.GetDB().Create(client).Error
-}
-
-// Save saves a client application entry
-func (r *ClientRepository) Save(client *models.Client) error {
-	return r.db.GetDB().Save(client).Error
-}
-
 // FindOrCreate attempts to find a client application by its name;
 // otherwise, it creates a new one
 func (r *ClientRepository) FindOrCreate(name string) models.Client {
@@ -60,15 +50,6 @@ func (r *ClientRepository) FindByUUID(uuid string) models.Client {
 	var client models.Client
 
 	r.db.GetDB().Where("uuid = ?", uuid).First(&client)
-
-	return client
-}
-
-// FindByID gets a client application by its ID
-func (r *ClientRepository) FindByID(id uint) models.Client {
-	var client models.Client
-
-	r.db.GetDB().Where("id = ?", id).First(&client)
 
 	return client
 }

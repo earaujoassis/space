@@ -1,4 +1,4 @@
-package helpers
+package utils
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ func fileExists(filename string) bool {
 	return err == nil
 }
 
-func ensureProjectRoot() error {
+func EnsureProjectRoot() error {
 	if fileExists("main.go") {
 		return nil
 	}

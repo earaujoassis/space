@@ -35,12 +35,13 @@ func BasicAuthDecode(token string) (string, string) {
 //
 //	using the HTTP request path and the request header attribute `Accept`
 func MustServeJSON(path string, accept string) bool {
-	return strings.HasPrefix(path, "/api") ||
-		strings.HasPrefix(path, "/token") ||
+	return strings.HasPrefix(path, "/.well-known") ||
+		strings.HasPrefix(path, "/api") ||
+		strings.HasPrefix(path, "/oidc/token") ||
+		strings.HasPrefix(path, "/oidc/userinfo") ||
+		strings.HasPrefix(path, "/oidc/jwks") ||
 		strings.HasPrefix(path, "/oauth/token") ||
-		strings.HasPrefix(path, "/revoke") ||
 		strings.HasPrefix(path, "/oauth/revoke") ||
-		strings.HasPrefix(path, "/introspect") ||
 		strings.HasPrefix(path, "/oauth/introspect")
 }
 

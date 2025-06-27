@@ -34,12 +34,15 @@ func (c *Commands) SetFieldAtKey(key, field string, value interface{}) {
 }
 
 func (c *Commands) SetKeyNXWithExpiration(key string, value interface{}, ttl time.Duration) bool {
-	_, err := c.conn.Do("SET", key, value, "NX", "EX", ttl)
+	ttlSeconds := int64(ttl.Seconds())
+	_, err := c.conn.Do("SET", key, value, "NX", "EX", ttlSeconds)
 	return err == nil
 }
 
-func (c *Commands) SetKeyWithExpiration(key string, value interface{}, ttl time.Duration) {
-	c.conn.Do("SET", key, value, "EX", ttl)
+func (c *Commands) SetKeyWithExpiration(key string, value interface{}, ttl time.Duration) bool {
+	ttlSeconds := int64(ttl.Seconds())
+	_, err := c.conn.Do("SET", key, value, "EX", ttlSeconds)
+	return err == nil
 }
 
 func (c *Commands) GetKey(key string) Value {

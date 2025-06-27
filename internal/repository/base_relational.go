@@ -31,7 +31,7 @@ func (r *BaseRepository[T]) GetAll() ([]T, error) {
 	return entities, err
 }
 
-func (r *BaseRepository[T]) Update(entity *T) error {
+func (r *BaseRepository[T]) Save(entity *T) error {
 	return r.db.GetDB().Save(entity).Error
 }
 

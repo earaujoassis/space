@@ -3,42 +3,44 @@ package feature
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/gateways/redis"
 )
 
-func getFeatureGate() *FeatureGate {
+type FeatureGateTestSuite struct {
+	suite.Suite
+	fg *FeatureGate
+}
+
+func (s *FeatureGateTestSuite) SetupSuite() {
 	cfg := &config.Config{
-		MemorystoreHost:     "localhost",
-		MemorystoreIndex:    0,
-		MemorystorePassword: "",
-		MemorystorePort:     6379,
+		Environment: "test",
 	}
 	ms, _ := redis.NewMemoryService(cfg)
-	fg := NewFeatureGate(ms)
-	return fg
+	s.fg = NewFeatureGate(ms)
 }
 
-func TestIsActive(t *testing.T) {
-	fg := getFeatureGate()
-	assert.False(t, fg.IsActive("no-feature"), "shouldn't have no-feature active")
+func (s *FeatureGateTestSuite) TestIsActive() {
+	s.False(s.fg.IsActive("no-feature"), "shouldn't have no-feature active")
 }
 
-func TestEnable(t *testing.T) {
-	fg := getFeatureGate()
-	assert.False(t, fg.IsActive("not-enabled"), "shouldn't have not-enabled active")
-	fg.Enable("not-enabled")
-	assert.True(t, fg.IsActive("not-enabled"), "should have no-feature active")
-	fg.Disable("not-enabled")
+func (s *FeatureGateTestSuite) TestEnable() {
+	s.False(s.fg.IsActive("not-enabled"), "shouldn't have not-enabled active")
+	s.fg.Enable("not-enabled")
+	s.True(s.fg.IsActive("not-enabled"), "should have no-feature active")
+	s.fg.Disable("not-enabled")
 }
 
-func TestDisable(t *testing.T) {
-	fg := getFeatureGate()
-	assert.False(t, fg.IsActive("to-disable"), "shouldn't have to-disable active")
-	fg.Enable("to-disable")
-	assert.True(t, fg.IsActive("to-disable"), "should have to-disable active")
-	fg.Disable("to-disable")
-	assert.False(t, fg.IsActive("to-disable"), "shouldn't have to-disable active")
+func (s *FeatureGateTestSuite) TestDisable() {
+	s.False(s.fg.IsActive("to-disable"), "shouldn't have to-disable active")
+	s.fg.Enable("to-disable")
+	s.True(s.fg.IsActive("to-disable"), "should have to-disable active")
+	s.fg.Disable("to-disable")
+	s.False(s.fg.IsActive("to-disable"), "shouldn't have to-disable active")
+}
+
+func TestFeatureGateSuite(t *testing.T) {
+	suite.Run(t, new(FeatureGateTestSuite))
 }

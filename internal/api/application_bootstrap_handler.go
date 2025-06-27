@@ -7,6 +7,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -24,15 +25,21 @@ func applicationBootstrapHandler(c *gin.Context) {
 		Scopes:      models.WriteScope,
 		Description: models.NotSpecialAction,
 	}
-	repositories.Actions().Create(&actionToken)
-	c.JSON(http.StatusOK, utils.H{
-		"application": utils.H{
-			"action_token":  actionToken.Token,
-			"user_id":       user.UUID,
-			"user_is_admin": user.Admin,
-			"feature.gates": utils.H{
-				"user.adminify": fg.IsActive("user.adminify"),
+	err := repositories.Actions().Create(&actionToken)
+	if err == nil {
+		c.JSON(http.StatusOK, utils.H{
+			"application": utils.H{
+				"action_token":  actionToken.Token,
+				"user_id":       user.UUID,
+				"user_is_admin": user.Admin,
+				"feature.gates": utils.H{
+					"user.adminify": fg.IsActive("user.adminify"),
+				},
 			},
-		},
-	})
+		})
+	} else {
+		c.JSON(http.StatusInternalServerError, utils.H{
+			"error": shared.InternalError,
+		})
+	}
 }

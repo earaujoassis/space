@@ -2,9 +2,56 @@ package redis
 
 import (
 	"fmt"
+	"time"
+
+	"github.com/alicebob/miniredis/v2"
+	"github.com/gomodule/redigo/redis"
 
 	"github.com/earaujoassis/space/internal/config"
+	"github.com/earaujoassis/space/internal/logs"
 )
+
+func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
+	switch cfg.Environment {
+	case "production", "staging", "development", "integration":
+		return &redis.Pool{
+			MaxIdle:     10,
+			MaxActive:   100,
+			IdleTimeout: 240 * time.Second,
+			Dial: func() (redis.Conn, error) {
+				c, err := redis.DialURL(getRedisURL(cfg))
+				if err != nil {
+					logs.Propagate(logs.Error, err.Error())
+					return nil, err
+				}
+
+				return c, nil
+			},
+			TestOnBorrow: func(c redis.Conn, t time.Time) error {
+				_, err := c.Do("PING")
+				if err != nil {
+					logs.Propagate(logs.Error, err.Error())
+				}
+				return err
+			},
+		}
+	case "test":
+		s, err := miniredis.Run()
+		if err != nil {
+			logs.Propagate(logs.Panic, err.Error())
+			return nil
+		}
+		return &redis.Pool{
+			MaxIdle: 3,
+			Dial: func() (redis.Conn, error) {
+				return redis.Dial("tcp", s.Addr())
+			},
+		}
+	default:
+		logs.Propagate(logs.Panic, "gateway misconfigured")
+		return nil
+	}
+}
 
 func getRedisURL(cfg *config.Config) string {
 	if cfg.IsEnvironment("production") {
