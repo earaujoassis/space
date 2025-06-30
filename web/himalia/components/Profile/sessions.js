@@ -15,12 +15,17 @@ const sessions = ({ revokeApplicationSessionForUser, sessions }) => {
                             <div className="profile_session__entry">
                                 <p>IP: {entry.ip}</p>
                                 <p>User-Agent: {entry.user_agent}</p>
-                                <p>
-                                    <button
-                                        onClick={() => revokeApplicationSessionForUser(entry.id)}
-                                        className="button-anchor">
-                                        Revoke session
-                                    </button>
+                                <p className="profile_session__entry-subsection">
+                                    <span>
+                                        <button
+                                            onClick={() => revokeApplicationSessionForUser(entry.id)}
+                                            className="button-anchor">
+                                            Revoke session
+                                        </button>
+                                    </span>
+                                    {entry.current ? (
+                                        <span className="profile_session__current">[current session]</span>
+                                    ) : null}
                                 </p>
                             </div>
                         </li>

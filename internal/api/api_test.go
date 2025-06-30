@@ -12,6 +12,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/test/factory"
 	"github.com/earaujoassis/space/test/unit"
@@ -36,6 +37,7 @@ func (s *ApiHandlerTestSuite) SetupTest() {
 
 func (s *ApiHandlerTestSuite) setupRouter() *gin.Engine {
 	router := gin.New()
+	security.SetTrustedProxies(router)
 	store := cookie.NewStore([]byte(s.Config.SessionSecret))
 	store.Options(sessions.Options{Secure: false, HttpOnly: true})
 	router.Use(sessions.Sessions("space.session", store))

@@ -204,6 +204,10 @@ func (s *RepositoryTestSuite) TestSessionRepository__ApplicationSessions() {
 	user = session.User
 	sessions := repository.ApplicationSessions(user)
 	s.Require().Equal(1, len(sessions))
+	s.False(sessions[0].Current)
+	sessions = repository.ApplicationSessionsWithActive(user, session)
+	s.Require().Equal(1, len(sessions))
+	s.True(sessions[0].Current)
 
 	session = models.Session{
 		User:      user,
