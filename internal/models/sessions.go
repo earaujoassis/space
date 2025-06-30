@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"gorm.io/gorm"
@@ -67,4 +68,16 @@ func (session *Session) GrantsReadAbility() bool {
 // GrantsWriteAbility checks if a session entry has write-ability
 func (session *Session) GrantsWriteAbility() bool {
 	return session.Scopes == WriteScope
+}
+
+func (session Session) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Id        string `json:"id"`
+		IP        string `json:"ip"`
+		UserAgent string `json:"user_agent"`
+	}{
+		Id:        session.UUID,
+		IP:        session.IP,
+		UserAgent: session.UserAgent,
+	})
 }
