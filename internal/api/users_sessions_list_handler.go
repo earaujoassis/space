@@ -27,6 +27,7 @@ func usersSessionsListHandler(c *gin.Context) {
 
 	repositories := ioc.GetRepositories(c)
 	action := c.MustGet("Action").(models.Action)
+	currentSession := c.MustGet("CurrentSession").(models.Session)
 	user := repositories.Users().FindByUUID(userUUID)
 	if user.IsNewRecord() || user.ID != action.UserID {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
@@ -41,6 +42,6 @@ func usersSessionsListHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.H{
 		"_status":  "success",
 		"_message": "Sessions are available",
-		"sessions": repositories.Sessions().ApplicationSessions(user),
+		"sessions": repositories.Sessions().ApplicationSessionsWithActive(user, currentSession),
 	})
 }

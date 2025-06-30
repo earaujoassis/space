@@ -26,3 +26,21 @@
 .profile_session__entry > p:last-child {
   margin-bottom: 0;
 }
+
+.profile_session__entry-subsection {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.profile_session__entry-subsection > * {
+  flex: 1;
+  display: inline-block;
+}
+
+.profile_session__current {
+  display: inline-block;
+  text-align: right;
+  cursor: default;
+  color: #3b82f6;
+}

@@ -46,6 +46,7 @@ func requiresApplicationSession() gin.HandlerFunc {
 			applicationSession = repositories.Sessions().FindByToken(applicationToken, models.ApplicationToken)
 		}
 		if applicationSession.IsSavedRecord() {
+			c.Set("CurrentSession", applicationSession)
 			c.Set("User", applicationSession.User)
 			c.Next()
 			return

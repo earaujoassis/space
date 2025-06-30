@@ -73,6 +73,16 @@ func (r *SessionRepository) ApplicationSessions(user models.User) []models.Sessi
 	return sessions
 }
 
+func (r *SessionRepository) ApplicationSessionsWithActive(user models.User, activeSession models.Session) []models.Session {
+	sessions := r.ApplicationSessions(user)
+
+	for i := range sessions {
+		sessions[i].Current = (sessions[i].UUID == activeSession.UUID)
+	}
+
+	return sessions
+}
+
 // ActiveForClient gets the number of active sessions for a given user in a client application
 func (r *SessionRepository) ActiveForClient(client models.Client, user models.User) int64 {
 	var count struct {
