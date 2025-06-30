@@ -5,7 +5,6 @@ set -ex
 git config core.hooksPath .githooks
 
 npm install -g yarn
-npm install -g allure-commandline
 yarn install && yarn build
 
 go install github.com/go-task/task/v3/cmd/task@latest
