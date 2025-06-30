@@ -26,7 +26,7 @@ func (r *BaseRepository[T]) GetByID(id uint) (*T, error) {
 }
 
 func (r *BaseRepository[T]) GetAll() ([]T, error) {
-	var entities []T
+	entities := make([]T, 0)
 	err := r.db.GetDB().Find(&entities).Error
 	return entities, err
 }
@@ -41,7 +41,7 @@ func (r *BaseRepository[T]) Delete(id uint) error {
 }
 
 func (r *BaseRepository[T]) FindWhere(condition string, args ...interface{}) ([]T, error) {
-	var entities []T
+	entities := make([]T, 0)
 	err := r.db.GetDB().Where(condition, args...).Find(&entities).Error
 	return entities, err
 }

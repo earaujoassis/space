@@ -66,7 +66,7 @@ func (r *ClientRepository) Authentication(key, secret string) models.Client {
 
 // GetActive lists all active client applications
 func (r *ClientRepository) GetActive() []models.Client {
-	var clients []models.Client
+	clients := make([]models.Client, 0)
 
 	r.db.GetDB().
 		Raw("SELECT clients.uuid, clients.name, clients.description, clients.scopes, clients.canonical_uri, clients.redirect_uri " +
