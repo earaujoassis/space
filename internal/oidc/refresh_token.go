@@ -4,39 +4,54 @@ import (
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/repository"
 	"github.com/earaujoassis/space/internal/shared"
-	"github.com/earaujoassis/space/internal/utils"
 )
+
+type RefreshTokenParams struct {
+	GrantType    string
+	RefreshToken string
+	Scope        string
+	Client       models.Client
+	Issuer       string
+}
+
+type RefreshTokenResult struct {
+	AccessToken  string
+	TokenType    string
+	ExpiresIn    int64
+	RefreshToken string
+	IDToken      string
+}
 
 // RefreshTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
 //
 //	basically, a `refresh token` from `AccessTokenRequest`
-func RefreshTokenRequest(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
+func RefreshTokenRequest(params RefreshTokenParams, repositories *repository.RepositoryManager) (*RefreshTokenResult, *shared.RequestError) {
 	var user models.User
 	var client models.Client
 
 	var token string
 	var scope string
 
-	if data["refresh_token"] == nil || data["scope"] == nil || data["client"] == nil {
-		return shared.InvalidRequestResult("")
+	if params.RefreshToken == "" || params.Scope == "" || params.Client.IsNewRecord() {
+		return nil, shared.InvalidRequestResult("")
 	}
 
-	token = data["refresh_token"].(string)
-	scope = data["scope"].(string)
-	client = data["client"].(models.Client)
-	issuer := data["issuer"].(string)
+	token = params.RefreshToken
+	scope = params.Scope
+	client = params.Client
+	issuer := params.Issuer
 
 	refreshSession := repositories.Sessions().FindByToken(token, models.RefreshToken)
 	defer repositories.Sessions().Invalidate(&refreshSession)
 	if refreshSession.IsNewRecord() {
-		return shared.InvalidGrantResult("")
+		return nil, shared.InvalidGrantResult("")
 	}
 	user = refreshSession.User
 	if refreshSession.Client.ID != client.ID {
-		return shared.InvalidGrantResult("")
+		return nil, shared.InvalidGrantResult("")
 	}
 	if scope != refreshSession.Scopes {
-		return shared.InvalidScopeResult("")
+		return nil, shared.InvalidScopeResult("")
 	}
 
 	accessToken := models.Session{
@@ -59,15 +74,15 @@ func RefreshTokenRequest(data utils.H, repositories *repository.RepositoryManage
 	repositories.Sessions().Create(&refreshToken)
 
 	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
-		return shared.ServerErrorResult("")
+		return nil, shared.ServerErrorResult("")
 	}
 
 	idToken := createIDToken(issuer, user.PublicID, client.Key, "")
-	return utils.H{
-		"access_token":  accessToken.Token,
-		"token_type":    "Bearer",
-		"expires_in":    accessToken.ExpiresIn,
-		"refresh_token": refreshToken.Token,
-		"id_token":      idToken,
+	return &RefreshTokenResult{
+		AccessToken:  accessToken.Token,
+		TokenType:    "Bearer",
+		ExpiresIn:    accessToken.ExpiresIn,
+		RefreshToken: refreshToken.Token,
+		IDToken:      idToken,
 	}, nil
 }

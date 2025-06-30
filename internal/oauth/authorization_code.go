@@ -9,8 +9,25 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
+type AuthorizationCodeParams struct {
+	ResponseType string
+	Client       models.Client
+	User         models.User
+	IP           string
+	UserAgent    string
+	RedirectURI  string
+	Scope        string
+	State        string
+}
+
+type AuthorizationCodeResult struct {
+	Code  string
+	Scope string
+	State string
+}
+
 // AuthorizationCodeGrant returns an OAuth 2 authorization code grant, given the right details
-func AuthorizationCodeGrant(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
+func AuthorizationCodeGrant(params AuthorizationCodeParams, repositories *repository.RepositoryManager) (*AuthorizationCodeResult, *shared.RequestError) {
 	var redirectURI string
 	var scope string
 	var state string
@@ -21,36 +38,24 @@ func AuthorizationCodeGrant(data utils.H, repositories *repository.RepositoryMan
 	var user models.User
 	var client models.Client
 
-	if data["redirect_uri"] == nil || data["user"] == nil || data["client"] == nil {
-		return shared.InvalidRequestResult(state)
+	if params.RedirectURI == "" || params.User.IsNewRecord() || params.Client.IsNewRecord() {
+		return nil, shared.InvalidRequestResult(state)
 	}
 
-	if data["state"] != nil {
-		state = data["state"].(string)
-	}
-
-	if data["ip"] != nil {
-		ip = data["ip"].(string)
-	}
-
-	if data["userAgent"] != nil {
-		userAgent = data["userAgent"].(string)
-	}
-
-	redirectURI = data["redirect_uri"].(string)
-	client = data["client"].(models.Client)
-	user = data["user"].(models.User)
-
-	if data["scope"] != nil {
-		scope = data["scope"].(string)
-	}
+	state = params.State
+	ip = params.IP
+	userAgent = params.UserAgent
+	redirectURI = params.RedirectURI
+	client = params.Client
+	user = params.User
+	scope = params.Scope
 
 	if !slices.Contains(client.RedirectURI, redirectURI) {
-		return shared.InvalidRequestResult(state)
+		return nil, shared.InvalidRequestResult(state)
 	}
 
 	if (scope != "" && !client.HasRequestedScopes(utils.Scopes(scope))) || !client.HasScope(models.PublicScope) {
-		return shared.InvalidScopeResult(state)
+		return nil, shared.InvalidScopeResult(state)
 	}
 
 	session := models.Session{
@@ -62,13 +67,13 @@ func AuthorizationCodeGrant(data utils.H, repositories *repository.RepositoryMan
 		TokenType: models.GrantToken,
 	}
 	repositories.Sessions().Create(&session)
-	if session.ID > 0 {
-		return utils.H{
-			"code":  session.Token,
-			"state": state,
-			"scope": scope,
+	if session.IsSavedRecord() {
+		return &AuthorizationCodeResult{
+			Code:  session.Token,
+			Scope: scope,
+			State: state,
 		}, nil
 	}
 
-	return shared.ServerErrorResult(state)
+	return nil, shared.ServerErrorResult(state)
 }

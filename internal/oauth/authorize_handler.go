@@ -118,28 +118,28 @@ func authorizeHandler(c *gin.Context) {
 				c.Redirect(http.StatusFound, location)
 				return
 			}
-			result, err := AuthorizationCodeGrant(utils.H{
-				"response_type": responseType,
-				"client":        client,
-				"user":          user,
-				"ip":            c.ClientIP(),
-				"userAgent":     c.Request.UserAgent(),
-				"redirect_uri":  redirectURI,
-				"scope":         scope,
-				"state":         state,
+			result, err := AuthorizationCodeGrant(AuthorizationCodeParams{
+				ResponseType: responseType,
+				Client:       client,
+				User:         user,
+				IP:           c.ClientIP(),
+				UserAgent:    c.Request.UserAgent(),
+				RedirectURI:  redirectURI,
+				Scope:        scope,
+				State:        state,
 			}, repositories)
 			if err != nil {
-				location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, result["error"], result["state"])
+				location = fmt.Sprintf(shared.ErrorQueryURI, redirectURI, err.ErrorType, err.State)
 				// Previous return: c.HTML(http.StatusFound, location)
 				c.HTML(http.StatusBadRequest, "error.authorization", utils.H{
 					"Title":     " - Authorization Error",
 					"Internal":  true,
 					"ProceedTo": location,
-					"ErrorCode": result["error"],
+					"ErrorCode": err.ErrorType,
 				})
 			} else {
 				location = fmt.Sprintf("%s?code=%s&state=%s",
-					redirectURI, result["code"], result["state"])
+					redirectURI, result.Code, result.State)
 				c.Redirect(http.StatusFound, location)
 			}
 		}

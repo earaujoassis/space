@@ -1,40 +1,47 @@
 package shared
 
 import (
-	"errors"
 	"fmt"
-
-	"github.com/earaujoassis/space/internal/utils"
 )
 
-func errorResult(errorType, state string) (utils.H, error) {
-	return utils.H{
-		"error":             errorType,
-		"error_description": fmt.Sprintf("Could not fulfill your request: %s", errorType),
-		"state":             state,
-	}, errors.New(errorType)
+type RequestError struct {
+	ErrorType        string
+	ErrorDescription string
+	State            string
 }
 
-func InvalidRequestResult(state string) (utils.H, error) {
+func (e *RequestError) Error() string {
+	return fmt.Sprintf("request error: %s", e.ErrorDescription)
+}
+
+func errorResult(errorType, state string) *RequestError {
+	return &RequestError{
+		ErrorType:        errorType,
+		ErrorDescription: fmt.Sprintf("could not fulfill your request: %s", errorType),
+		State:            state,
+	}
+}
+
+func InvalidRequestResult(state string) *RequestError {
 	return errorResult(InvalidRequest, state)
 }
 
-func UnauthorizedClientResult(state string) (utils.H, error) {
+func UnauthorizedClientResult(state string) *RequestError {
 	return errorResult(UnauthorizedClient, state)
 }
 
-func AccessDeniedResult(state string) (utils.H, error) {
+func AccessDeniedResult(state string) *RequestError {
 	return errorResult(AccessDenied, state)
 }
 
-func ServerErrorResult(state string) (utils.H, error) {
+func ServerErrorResult(state string) *RequestError {
 	return errorResult(ServerError, state)
 }
 
-func InvalidGrantResult(state string) (utils.H, error) {
+func InvalidGrantResult(state string) *RequestError {
 	return errorResult(InvalidGrant, state)
 }
 
-func InvalidScopeResult(state string) (utils.H, error) {
+func InvalidScopeResult(state string) *RequestError {
 	return errorResult(InvalidScope, state)
 }

@@ -103,8 +103,8 @@ func identifyTokenType(tokenString string) shared.TokenType {
 }
 
 func generateJWKSETag(keys []utils.H) string {
-	data, _ := json.Marshal(keys)
-	hash := sha256.Sum256(data)
+	params, _ := json.Marshal(keys)
+	hash := sha256.Sum256(params)
 
 	return fmt.Sprintf(`"%x"`, hash[:8])
 }
