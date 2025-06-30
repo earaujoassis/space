@@ -1,6 +1,7 @@
 package unit
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -80,11 +81,13 @@ func (s *BaseTestSuite) PerformRequest(r http.Handler, method, path string, head
 	if cookie != nil {
 		req.AddCookie(cookie)
 	}
-	req.Header.Set("User-Agent", gofakeit.UserAgent())
 	if form != nil {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}
-	req.RemoteAddr = gofakeit.IPv4Address()
+	req.Header.Set("User-Agent", gofakeit.UserAgent())
+	ip := gofakeit.IPv4Address()
+	req.RemoteAddr = fmt.Sprintf("%s:%d", ip, randomPort())
+	req.Header.Set("X-Real-IP", ip)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
