@@ -26,17 +26,16 @@ func servicesCreateHandler(c *gin.Context) {
 		return
 	}
 
-	serviceName := c.PostForm("name")
-	serviceDescription := c.PostForm("description")
-	canonicalURI := c.PostForm("canonical_uri")
-	logoURI := c.PostForm("logo_uri")
+	service := models.Service{
+		Name:         c.PostForm("name"),
+		Description:  c.PostForm("description"),
+		CanonicalURI: c.PostForm("canonical_uri"),
+		LogoURI:      c.PostForm("logo_uri"),
+		Type:         models.PublicService,
+	}
+	err := repositories.Services().Create(&service)
 
-	service := repositories.Services().Create(serviceName,
-		serviceDescription,
-		canonicalURI,
-		logoURI)
-
-	if service.IsNewRecord() {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "Service was not created",

@@ -12,6 +12,7 @@ import (
 	"github.com/earaujoassis/space/internal/gateways/redis"
 	"github.com/earaujoassis/space/internal/tasks"
 	"github.com/earaujoassis/space/test/factory"
+	"github.com/earaujoassis/space/test/utils"
 )
 
 type OIDCTestSuite struct {
@@ -24,7 +25,7 @@ type OIDCTestSuite struct {
 }
 
 func (s *OIDCTestSuite) SetupSuite() {
-	if err := ensureProjectRoot(); err != nil {
+	if err := utils.EnsureProjectRoot(); err != nil {
 		s.T().Fatalf("Failed to change to project root: %v", err)
 	}
 

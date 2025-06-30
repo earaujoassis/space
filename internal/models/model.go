@@ -11,7 +11,7 @@ import (
 type Model struct {
 	ID        uint      `gorm:"primary_key" json:"-"`
 	CreatedAt time.Time `gorm:"not null" json:"-"`
-	UpdatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"-"`
 }
 
 const (

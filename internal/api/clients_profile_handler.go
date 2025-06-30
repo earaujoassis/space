@@ -51,6 +51,14 @@ func clientsProfileHandler(c *gin.Context) {
 	if scopes != "" {
 		client.Scopes = strings.Join(utils.Scopes(scopes), " ")
 	}
-	repositories.Clients().Save(&client)
-	c.JSON(http.StatusNoContent, nil)
+	err := repositories.Clients().Save(&client)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.H{
+			"_status":  "error",
+			"_message": "Client was not patched",
+			"error":    fmt.Sprintf("%v", err),
+		})
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }

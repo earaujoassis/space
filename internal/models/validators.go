@@ -130,7 +130,6 @@ func validTokenType(fl validator.FieldLevel) bool {
 
 func validateModel(tagName string, model interface{}) error {
 	validate := validator.New()
-	validate.SetTagName(tagName)
 	validate.RegisterValidation("client", validClientType)
 	validate.RegisterValidation("scope", validScope)
 	validate.RegisterValidation("restrict", validClientScopes)
@@ -139,14 +138,17 @@ func validateModel(tagName string, model interface{}) error {
 	validate.RegisterValidation("redirect", validRedirectURIs)
 	validate.RegisterValidation("action", validAction)
 	validate.RegisterValidation("service", validServiceType)
-	err := validate.Struct(model)
-	return err
+	validate.SetTagName(tagName)
+	v := reflect.ValueOf(model)
+	if v.Kind() == reflect.Ptr {
+		model = v.Elem().Interface()
+	}
+	return validate.Struct(model)
 }
 
 // IsValid checks if a `model` entry is valid, given the `tagName` (scope) for validation
 func IsValid(tagName string, model interface{}) bool {
-	err := validateModel(tagName, model)
-	return err == nil
+	return validateModel(tagName, model) == nil
 }
 
 func anyProhibitiveScopeForPublicClient(scopeStr string) bool {

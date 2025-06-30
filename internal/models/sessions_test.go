@@ -14,7 +14,7 @@ func TestValidSessionModel(t *testing.T) {
 	var session Session
 
 	session = Session{}
-	assert.False(t, IsValid("validate", session), "should return false for invalid session")
+	assert.False(t, IsValid("validate", session))
 	err = validateModel("validate", session)
 	assert.NotNil(t, err)
 
@@ -56,7 +56,14 @@ func TestValidSessionModel(t *testing.T) {
 	}
 	err = session.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
-	assert.True(t, IsValid("validate", session), "should return true for valid session")
+	assert.True(t, IsValid("validate", session))
+	err = validateModel("validate", session)
+	assert.Nil(t, err, fmt.Sprintf("%s", err))
+
+	err = session.BeforeCreate(nil)
+	assert.Nil(t, err, fmt.Sprintf("%s", err))
+	assert.Nil(t, err, fmt.Sprintf("%s", err))
+	assert.True(t, IsValid("validate", session))
 	err = validateModel("validate", session)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 }
@@ -109,4 +116,29 @@ func TestValidTokenType(t *testing.T) {
 	err = validateModel("validate", session)
 	message = fmt.Sprintf("%s", err)
 	assert.Contains(t, message, "Key: 'Session.TokenType' Error:Field validation for 'TokenType' failed on the 'token' tag")
+}
+
+func TestSessionGrantsReadAbility(t *testing.T) {
+	session := Session{}
+	assert.False(t, session.GrantsReadAbility())
+
+	session = Session{Scopes: ReadScope}
+	assert.True(t, session.GrantsReadAbility())
+
+	session = Session{Scopes: OpenIDScope}
+	assert.True(t, session.GrantsReadAbility())
+
+	session = Session{Scopes: WriteScope}
+	assert.True(t, session.GrantsReadAbility())
+}
+
+func TestSessionGrantsWriteAbility(t *testing.T) {
+	session := Session{}
+	assert.False(t, session.GrantsWriteAbility())
+
+	session = Session{Scopes: ReadScope}
+	assert.False(t, session.GrantsWriteAbility())
+
+	session = Session{Scopes: WriteScope}
+	assert.True(t, session.GrantsWriteAbility())
 }

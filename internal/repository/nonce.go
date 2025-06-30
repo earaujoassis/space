@@ -6,7 +6,6 @@ import (
 
 	"github.com/earaujoassis/space/internal/gateways/redis"
 	"github.com/earaujoassis/space/internal/models"
-	"github.com/earaujoassis/space/internal/security"
 )
 
 const (
@@ -25,14 +24,18 @@ func NewNonceRepository(ms *redis.MemoryService) *NonceRepository {
 	}
 }
 
-func (r *NonceRepository) IsValid(nonce string) bool {
-	return security.ValidNonce(nonce)
-}
-
-func (r *NonceRepository) StoreForClient(key, nonce, code string) bool {
+func (r *NonceRepository) Create(nonce models.Nonce) bool {
 	var ok bool
 
-	nonceKey := fmt.Sprintf("%s:%s:%s", NoncePrepend, key, nonce)
+	if !nonce.IsValid() {
+		return false
+	}
+
+	key := nonce.ClientKey
+	code := nonce.Code
+	nonceStr := nonce.Nonce
+
+	nonceKey := fmt.Sprintf("%s:%s:%s", NoncePrepend, key, nonceStr)
 	r.ms.Transaction(func(c *redis.Commands) {
 		ok = c.SetKeyNXWithExpiration(nonceKey, 1, NonceTTL)
 	})
@@ -44,20 +47,27 @@ func (r *NonceRepository) StoreForClient(key, nonce, code string) bool {
 	if code != "" {
 		codeKey := fmt.Sprintf("oidc.code.nonce:%s", code)
 		r.ms.Transaction(func(c *redis.Commands) {
-			c.SetKeyWithExpiration(codeKey, nonce, NonceCodeTTL)
+			ok = c.SetKeyWithExpiration(codeKey, nonceStr, NonceCodeTTL)
 		})
 	}
 
 	return ok
 }
 
-func (r *NonceRepository) RetrieveByCode(code string) string {
+func (r *NonceRepository) RetrieveByCode(code string) models.Nonce {
 	var nonce string
+
+	if code == "" {
+		return models.Nonce{Code: code}
+	}
 
 	codeKey := fmt.Sprintf("oidc.code.nonce:%s", code)
 	r.ms.Transaction(func(c *redis.Commands) {
 		nonce = c.GetKey(codeKey).ToString()
 	})
 
-	return nonce
+	return models.Nonce{
+		Code:  code,
+		Nonce: nonce,
+	}
 }

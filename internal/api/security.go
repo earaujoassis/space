@@ -63,7 +63,6 @@ func requiresApplicationSession() gin.HandlerFunc {
 func actionTokenBearerAuthorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
-
 		if !security.ValidToken(authorizationBearer) {
 			c.JSON(http.StatusBadRequest, utils.H{
 				"error": "must use valid token string",

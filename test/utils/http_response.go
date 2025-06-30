@@ -1,4 +1,4 @@
-package helpers
+package utils
 
 import (
 	"encoding/json"
@@ -14,12 +14,12 @@ type TestResponse struct {
 	Body       string
 	Headers    http.Header
 	Location   string
-	JSON       map[string]interface{}
+	JSON       utils.H
 	Query      map[string]string
 	Fragment   map[string]string
 }
 
-func parseResponse(response *http.Response, err error) *TestResponse {
+func ParseResponse(response *http.Response, err error) *TestResponse {
 	if err != nil {
 		return &TestResponse{StatusCode: 0, Body: err.Error()}
 	}
@@ -36,7 +36,7 @@ func parseResponse(response *http.Response, err error) *TestResponse {
 	}
 
 	if strings.Contains(response.Header.Get("Content-Type"), "application/json") {
-		var jsonData map[string]interface{}
+		var jsonData utils.H
 		if json.Unmarshal(bodyBytes, &jsonData) == nil {
 			result.JSON = jsonData
 		}
@@ -44,7 +44,7 @@ func parseResponse(response *http.Response, err error) *TestResponse {
 
 	if result.Location != "" {
 		result.Query = utils.ParseQueryString(result.Location)
-		result.Fragment = utils.ParseFragment(result.Location)
+		result.Fragment = utils.ParseFragmentString(result.Location)
 	}
 
 	return result
