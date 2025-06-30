@@ -6,7 +6,6 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: cimg/go:1.23.9
-      - image: cimg/redis:7.2
     steps:
       - checkout
       - setup_remote_docker:

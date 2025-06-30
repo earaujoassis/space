@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/earaujoassis/space/internal/ioc"
-	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -31,7 +30,7 @@ func usersUpdatePasswordHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",
 			"_message": "User password was not updated",
-			"error":    "token string not valid",
+			"error":    "invalid token string",
 		})
 		return
 	}
@@ -55,8 +54,8 @@ func usersUpdatePasswordHandler(c *gin.Context) {
 		return
 	}
 
-	repositories.Users().SetPassword(&user, newPassword)
-	if !models.IsValid("essential", user) {
+	err := repositories.Users().SetPassword(&user, newPassword)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "User password was not updated",
@@ -65,7 +64,6 @@ func usersUpdatePasswordHandler(c *gin.Context) {
 		})
 		return
 	}
-
 	repositories.Users().Save(&user)
 	repositories.Actions().Delete(action)
 	c.JSON(http.StatusNoContent, nil)

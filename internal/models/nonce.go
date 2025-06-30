@@ -5,9 +5,11 @@ import (
 )
 
 type Nonce struct {
-	Key string
+	ClientKey string
+	Code      string
+	Nonce     string `validate:"required,min=8,max=128"`
 }
 
 func (nonce *Nonce) IsValid() bool {
-	return security.ValidNonce(nonce.Key)
+	return security.ValidNonce(nonce.Nonce)
 }

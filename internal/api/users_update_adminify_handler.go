@@ -29,7 +29,7 @@ func usersUpdateAdminifyHandler(c *gin.Context) {
 
 	cfg := ioc.GetConfig(c)
 	if providedApplicationKey != cfg.ApplicationKey {
-		c.JSON(http.StatusForbidden, utils.H{
+		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "User was not updated",
 			"error":    "application key is incorrect",

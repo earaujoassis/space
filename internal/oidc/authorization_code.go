@@ -62,12 +62,16 @@ func AuthorizationCodeGrant(data utils.H, repositories *repository.RepositoryMan
 		TokenType: models.GrantToken,
 	}
 	repositories.Sessions().Create(&session)
-	nonce := data["nonce"].(string)
-	if nonce != "" {
-		if !repositories.Nonces().IsValid(nonce) {
+	nonce := models.Nonce{
+		ClientKey: client.Key,
+		Code:      session.Token,
+		Nonce:     data["nonce"].(string),
+	}
+	if nonce.Nonce != "" {
+		if !nonce.IsValid() {
 			return shared.InvalidRequestResult(state)
 		}
-		if ok := repositories.Nonces().StoreForClient(client.Key, nonce, session.Token); !ok {
+		if ok := repositories.Nonces().Create(nonce); !ok {
 			return shared.InvalidRequestResult(state)
 		}
 	}

@@ -15,21 +15,6 @@ func NewServiceRepository(db *database.DatabaseService) *ServiceRepository {
 	}
 }
 
-// Create creates a new service application entry
-func (r *ServiceRepository) Create(name, description, canonicalURI, logoURI string) models.Service {
-	var service models.Service = models.Service{
-		Name:         name,
-		Description:  description,
-		CanonicalURI: canonicalURI,
-		LogoURI:      logoURI,
-		Type:         models.PublicService,
-	}
-
-	r.db.GetDB().Create(&service)
-
-	return service
-}
-
 // GetAll lists all services applications
 func (r *ServiceRepository) GetAll() []models.Service {
 	var services []models.Service

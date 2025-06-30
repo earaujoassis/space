@@ -2,7 +2,6 @@ package redis
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/gomodule/redigo/redis"
 
@@ -16,26 +15,9 @@ type MemoryService struct {
 }
 
 func NewMemoryService(cfg *config.Config) (*MemoryService, error) {
-	pool := &redis.Pool{
-		MaxIdle:     10,
-		MaxActive:   100,
-		IdleTimeout: 240 * time.Second,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.DialURL(getRedisURL(cfg))
-			if err != nil {
-				logs.Propagate(logs.Error, err.Error())
-				return nil, err
-			}
-
-			return c, nil
-		},
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			if err != nil {
-				logs.Propagate(logs.Error, err.Error())
-			}
-			return err
-		},
+	pool := NewRedisProviderPool(cfg)
+	if pool == nil {
+		return nil, fmt.Errorf("failed to create pool from provider")
 	}
 
 	conn := pool.Get()

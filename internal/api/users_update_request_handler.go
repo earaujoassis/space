@@ -13,16 +13,16 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
+const (
+	passwordType      = "password"
+	secretsType       = "secrets"
+	emailVerification = "email_verification"
+)
+
 func usersUpdateRequestHandler(c *gin.Context) {
 	var holder = c.PostForm("holder")
 	var requestType = c.PostForm("request_type")
 	var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
-
-	const (
-		passwordType      = "password"
-		secretsType       = "secrets"
-		emailVerification = "email_verification"
-	)
 
 	if !security.ValidEmail(holder) && !security.ValidRandomString(holder) {
 		c.JSON(http.StatusBadRequest, utils.H{
@@ -104,6 +104,6 @@ func usersUpdateRequestHandler(c *gin.Context) {
 		return
 	}
 
-	// No Content is the default response
+	// No Content is the default response for valid requests
 	c.JSON(http.StatusNoContent, nil)
 }
