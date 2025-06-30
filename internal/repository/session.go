@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/earaujoassis/space/internal/gateways/database"
+	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/models"
 )
 
@@ -61,14 +62,17 @@ func (r *SessionRepository) Invalidate(session *models.Session) {
 }
 
 func (r *SessionRepository) ApplicationSessions(user models.User) []models.Session {
-	var sessions []models.Session
+	sessions := make([]models.Session, 0)
 
-	r.db.GetDB().
+	result := r.db.GetDB().
 		Raw("SELECT sessions.uuid, sessions.ip, sessions.user_agent "+
 			"FROM sessions "+
 			"WHERE token_type = 'application_token' AND invalidated = false AND user_id = ?"+
 			"ORDER BY sessions.created_at DESC", user.ID).
 		Scan(&sessions)
+	if result.Error != nil {
+		logs.Propagate(logs.Error, result.Error.Error())
+	}
 
 	return sessions
 }

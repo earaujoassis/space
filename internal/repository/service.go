@@ -17,7 +17,7 @@ func NewServiceRepository(db *database.DatabaseService) *ServiceRepository {
 
 // GetAll lists all services applications
 func (r *ServiceRepository) GetAll() []models.Service {
-	var services []models.Service
+	services := make([]models.Service, 0)
 
 	r.db.GetDB().
 		Raw("SELECT services.uuid, services.name, services.description, services.canonical_uri, services.logo_uri " +

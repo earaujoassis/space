@@ -53,7 +53,7 @@ func (r *UserRepository) FindByID(id uint) models.User {
 
 // ActiveClients lists client applications for a given user
 func (r *UserRepository) ActiveClients(user models.User) []models.Client {
-	var clients []models.Client
+	clients := make([]models.Client, 0)
 
 	r.db.GetDB().
 		Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.canonical_uri "+
