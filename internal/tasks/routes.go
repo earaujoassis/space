@@ -15,6 +15,7 @@ import (
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/oidc"
+	"github.com/earaujoassis/space/internal/security"
 	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 	"github.com/earaujoassis/space/internal/web"
@@ -27,6 +28,7 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 	}
 	gin.DisableConsoleColor()
 	router := gin.Default()
+	security.SetTrustedProxies(router)
 	router.Use(ioc.InjectAppContext(appCtx))
 	router.RedirectTrailingSlash = false
 	store := cookie.NewStore([]byte(cfg.SessionSecret))

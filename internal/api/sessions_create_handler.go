@@ -21,7 +21,7 @@ func sessionsCreateHandler(c *gin.Context) {
 	var holder = c.PostForm("holder")
 	var state = c.PostForm("state")
 
-	var IP = c.Request.RemoteAddr
+	var IP = c.ClientIP()
 	var userID = IP
 	var statusSignInAttempts = rls.SignInAttemptStatus(IP)
 
@@ -43,7 +43,7 @@ func sessionsCreateHandler(c *gin.Context) {
 			session := models.Session{
 				User:      user,
 				Client:    client,
-				IP:        c.Request.RemoteAddr,
+				IP:        c.ClientIP(),
 				UserAgent: c.Request.UserAgent(),
 				Scopes:    models.PublicScope,
 				TokenType: models.GrantToken,

@@ -122,7 +122,7 @@ func authorizeHandler(c *gin.Context) {
 				"response_type": responseType,
 				"client":        client,
 				"user":          user,
-				"ip":            c.Request.RemoteAddr,
+				"ip":            c.ClientIP(),
 				"userAgent":     c.Request.UserAgent(),
 				"redirect_uri":  redirectURI,
 				"scope":         scope,

@@ -42,7 +42,7 @@ func usersUpdateRequestHandler(c *gin.Context) {
 			actionToken := models.Action{
 				User:        user,
 				Client:      client,
-				IP:          c.Request.RemoteAddr,
+				IP:          c.ClientIP(),
 				UserAgent:   c.Request.UserAgent(),
 				Scopes:      models.WriteScope,
 				Description: models.UpdateUserAction,
@@ -62,7 +62,7 @@ func usersUpdateRequestHandler(c *gin.Context) {
 			actionToken := models.Action{
 				User:        user,
 				Client:      client,
-				IP:          c.Request.RemoteAddr,
+				IP:          c.ClientIP(),
 				UserAgent:   c.Request.UserAgent(),
 				Scopes:      models.WriteScope,
 				Description: models.UpdateUserAction,
@@ -82,7 +82,7 @@ func usersUpdateRequestHandler(c *gin.Context) {
 			actionToken := models.Action{
 				User:        user,
 				Client:      client,
-				IP:          c.Request.RemoteAddr,
+				IP:          c.ClientIP(),
 				UserAgent:   c.Request.UserAgent(),
 				Scopes:      models.WriteScope,
 				Description: models.UpdateUserAction,

@@ -25,7 +25,7 @@ func sessionsMagicHandler(c *gin.Context) {
 
 	var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)
 
-	var IP = c.Request.RemoteAddr
+	var IP = c.ClientIP()
 	var userID = IP
 	var statusSignInAttempts = rls.SignInAttemptStatus(IP)
 
@@ -47,7 +47,7 @@ func sessionsMagicHandler(c *gin.Context) {
 			session := models.Session{
 				User:      user,
 				Client:    client,
-				IP:        c.Request.RemoteAddr,
+				IP:        c.ClientIP(),
 				UserAgent: c.Request.UserAgent(),
 				Scopes:    models.PublicScope,
 				TokenType: models.GrantToken,

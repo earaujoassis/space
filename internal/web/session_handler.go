@@ -58,7 +58,7 @@ func sessionHandler(c *gin.Context) {
 		applicationSession = models.Session{
 			User:      grantToken.User,
 			Client:    client,
-			IP:        c.Request.RemoteAddr,
+			IP:        c.ClientIP(),
 			UserAgent: c.Request.UserAgent(),
 			Scopes:    models.PublicScope,
 			TokenType: models.ApplicationToken,
