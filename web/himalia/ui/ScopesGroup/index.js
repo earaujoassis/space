@@ -86,6 +86,21 @@ const scopesGroup = ({ initialScopes, onChange }) => {
                     <p>OIDC only; read user profile data under OIDC Provider endpoints</p>
                 </div>
             </div>
+            <div className="scopes-group__entry" onClick={() => onSelection('email')}>
+                <div className="scopes-group__checkbox">
+                    <span className="scopes-group__icon">
+                        {setIcon('email')}
+                    </span>
+                    <span className="scopes-group__label">
+                        <code>email</code>
+                    </span>
+                </div>
+                <div className="scopes-group__description">
+                    <p>Can perform:</p>
+                    <p>Obtain data for user authentication and authorization only</p>
+                    <p>OIDC only; read user email data under OIDC Provider endpoints</p>
+                </div>
+            </div>
             <div className="scopes-group__entry">
                 <div className="scopes-group__checkbox">
                     <span className="scopes-group__icon">

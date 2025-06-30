@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -66,6 +67,12 @@ func TestValidSessionModel(t *testing.T) {
 	assert.True(t, IsValid("validate", session))
 	err = validateModel("validate", session)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
+
+	jsonData, err := json.Marshal(session)
+	assert.NoError(t, err)
+	assert.Contains(t, string(jsonData), "\"ip\":")
+	assert.Contains(t, string(jsonData), "\"user_agent\":")
+	assert.Contains(t, string(jsonData), "\"id\":")
 }
 
 func TestSessionWithinExpirationWindow(t *testing.T) {
