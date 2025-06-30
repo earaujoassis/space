@@ -20,9 +20,9 @@ func (r *ServiceRepository) GetAll() []models.Service {
 	services := make([]models.Service, 0)
 
 	r.db.GetDB().
-		Raw("SELECT services.uuid, services.name, services.description, services.canonical_uri, services.logo_uri " +
-			"FROM services " +
-			"ORDER BY services.name ASC").
+		Raw(`SELECT services.uuid, services.name, services.description, services.canonical_uri, services.logo_uri
+			FROM services
+			ORDER BY services.name ASC`).
 		Scan(&services)
 
 	return services

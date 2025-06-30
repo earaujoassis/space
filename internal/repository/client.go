@@ -69,9 +69,9 @@ func (r *ClientRepository) GetActive() []models.Client {
 	clients := make([]models.Client, 0)
 
 	r.db.GetDB().
-		Raw("SELECT clients.uuid, clients.name, clients.description, clients.scopes, clients.canonical_uri, clients.redirect_uri " +
-			"FROM clients " +
-			"WHERE clients.name != 'Jupiter' ORDER BY clients.created_at ASC").
+		Raw(`SELECT clients.uuid, clients.name, clients.description, clients.scopes, clients.canonical_uri, clients.redirect_uri
+			FROM clients
+			WHERE clients.name != 'Jupiter' ORDER BY clients.created_at ASC`).
 		Scan(&clients)
 
 	return clients

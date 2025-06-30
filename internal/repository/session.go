@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/models"
 )
 
@@ -64,15 +63,12 @@ func (r *SessionRepository) Invalidate(session *models.Session) {
 func (r *SessionRepository) ApplicationSessions(user models.User) []models.Session {
 	sessions := make([]models.Session, 0)
 
-	result := r.db.GetDB().
-		Raw("SELECT sessions.uuid, sessions.ip, sessions.user_agent "+
-			"FROM sessions "+
-			"WHERE token_type = 'application_token' AND invalidated = false AND user_id = ?"+
-			"ORDER BY sessions.created_at DESC", user.ID).
+	r.db.GetDB().
+		Raw(`SELECT sessions.uuid, sessions.ip, sessions.user_agent
+			FROM sessions
+			WHERE token_type = 'application_token' AND invalidated = false AND user_id = ?
+			ORDER BY sessions.created_at DESC;`, user.ID).
 		Scan(&sessions)
-	if result.Error != nil {
-		logs.Propagate(logs.Error, result.Error.Error())
-	}
 
 	return sessions
 }
@@ -84,9 +80,9 @@ func (r *SessionRepository) ActiveForClient(client models.Client, user models.Us
 	}
 
 	r.db.GetDB().
-		Raw("SELECT count(*) AS count "+
-			"FROM sessions WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND "+
-			"client_id = ? AND user_id = ?;", client.ID, user.ID).
+		Raw(`SELECT count(*) AS count
+			FROM sessions WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND
+			client_id = ? AND user_id = ?;`, client.ID, user.ID).
 		Scan(&count)
 	return count.Count
 }
@@ -95,7 +91,7 @@ func (r *SessionRepository) ActiveForClient(client models.Client, user models.Us
 func (r *SessionRepository) RevokeAccess(client models.Client, user models.User) {
 	now := time.Now()
 	r.db.GetDB().
-		Exec("UPDATE sessions SET invalidated = true, updated_at = ? "+
-			"WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND "+
-			"client_id = ? AND user_id = ?;", now, client.ID, user.ID)
+		Exec(`UPDATE sessions SET invalidated = true, updated_at = ?
+			WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND
+			client_id = ? AND user_id = ?;`, now, client.ID, user.ID)
 }

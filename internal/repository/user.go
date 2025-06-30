@@ -56,10 +56,10 @@ func (r *UserRepository) ActiveClients(user models.User) []models.Client {
 	clients := make([]models.Client, 0)
 
 	r.db.GetDB().
-		Raw("SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.canonical_uri "+
-			"FROM clients JOIN sessions ON clients.id = sessions.client_id "+
-			"WHERE sessions.token_type IN ('access_token', 'refresh_token') AND sessions.invalidated = false AND "+
-			"sessions.user_id = ?;", user.ID).
+		Raw(`SELECT DISTINCT clients.uuid, clients.name, clients.description, clients.canonical_uri
+			FROM clients JOIN sessions ON clients.id = sessions.client_id
+			WHERE sessions.token_type IN ('access_token', 'refresh_token') AND sessions.invalidated = false AND
+			sessions.user_id = ?;`, user.ID).
 		Scan(&clients)
 	return clients
 }
