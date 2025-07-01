@@ -119,18 +119,18 @@ func authorizeHandler(c *gin.Context) {
 				return
 			}
 			responseMode := c.Query("response_mode")
-			result, err := ImplicitFlowIDToken(utils.H{
-				"response_type": responseType,
-				"client":        client,
-				"user":          user,
-				"ip":            c.ClientIP(),
-				"userAgent":     c.Request.UserAgent(),
-				"redirect_uri":  redirectURI,
-				"scope":         scope,
-				"state":         state,
-				"nonce":         nonce,
-				"response_mode": responseMode,
-				"issuer":        shared.GetBaseUrl(c),
+			result, err := ImplicitFlowIDToken(ImplicitFlowIDTokenParams{
+				ResponseType: responseType,
+				Client:       client,
+				User:         user,
+				IP:           c.ClientIP(),
+				UserAgent:    c.Request.UserAgent(),
+				RedirectURI:  redirectURI,
+				Scope:        scope,
+				State:        state,
+				Nonce:        nonce,
+				ResponseMode: responseMode,
+				Issuer:       shared.GetBaseUrl(c),
 			}, repositories)
 			processResponseForAuthorizeHandlerIDToken(c, result, err)
 			return
@@ -167,17 +167,17 @@ func authorizeHandler(c *gin.Context) {
 				return
 			}
 			responseMode := c.Query("response_mode")
-			result, err := AuthorizationCodeGrant(utils.H{
-				"response_type": responseType,
-				"client":        client,
-				"user":          user,
-				"ip":            c.ClientIP(),
-				"userAgent":     c.Request.UserAgent(),
-				"redirect_uri":  redirectURI,
-				"scope":         scope,
-				"state":         state,
-				"nonce":         nonce,
-				"response_mode": responseMode,
+			result, err := AuthorizationCodeGrant(AuthorizationCodeParams{
+				ResponseType: responseType,
+				Client:       client,
+				User:         user,
+				IP:           c.ClientIP(),
+				UserAgent:    c.Request.UserAgent(),
+				RedirectURI:  redirectURI,
+				Scope:        scope,
+				State:        state,
+				Nonce:        nonce,
+				ResponseMode: responseMode,
 			}, repositories)
 			processResponseForAuthorizeHandlerCode(c, result, err)
 			return

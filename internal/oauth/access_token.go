@@ -6,37 +6,50 @@ import (
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/repository"
 	"github.com/earaujoassis/space/internal/shared"
-	"github.com/earaujoassis/space/internal/utils"
 )
+
+type AccessTokenParams struct {
+	GrantType   string
+	Code        string
+	RedirectURI string
+	Client      models.Client
+}
+
+type AccessTokenResult struct {
+	AccessToken  string
+	TokenType    string
+	ExpiresIn    int64
+	RefreshToken string
+}
 
 // AccessTokenRequest returns OAuth 2 access and refresh tokens, given the right details:
 //
 //	basically, a `code` from `AuthorizationCodeGrant`
-func AccessTokenRequest(data utils.H, repositories *repository.RepositoryManager) (utils.H, error) {
+func AccessTokenRequest(params AccessTokenParams, repositories *repository.RepositoryManager) (*AccessTokenResult, *shared.RequestError) {
 	var client models.Client
 
 	var code string
 	var redirectURI string
 
-	if data["code"] == nil || data["redirect_uri"] == nil || data["client"] == nil {
-		return shared.InvalidRequestResult("")
+	if params.Code == "" || params.RedirectURI == "" || params.Client.IsNewRecord() {
+		return nil, shared.InvalidRequestResult("")
 	}
 
-	redirectURI = data["redirect_uri"].(string)
-	code = data["code"].(string)
-	client = data["client"].(models.Client)
+	redirectURI = params.RedirectURI
+	code = params.Code
+	client = params.Client
 
 	authorizationSession := repositories.Sessions().FindByToken(code, models.GrantToken)
 	defer repositories.Sessions().Invalidate(&authorizationSession)
 	if authorizationSession.IsNewRecord() {
-		return shared.InvalidGrantResult("")
+		return nil, shared.InvalidGrantResult("")
 	}
 	user := authorizationSession.User
 	if authorizationSession.Client.ID != client.ID {
-		return shared.InvalidGrantResult("")
+		return nil, shared.InvalidGrantResult("")
 	}
 	if !slices.Contains(authorizationSession.Client.RedirectURI, redirectURI) {
-		return shared.InvalidGrantResult("")
+		return nil, shared.InvalidGrantResult("")
 	}
 
 	accessToken := models.Session{
@@ -59,13 +72,13 @@ func AccessTokenRequest(data utils.H, repositories *repository.RepositoryManager
 	repositories.Sessions().Create(&refreshToken)
 
 	if accessToken.IsNewRecord() || refreshToken.IsNewRecord() {
-		return shared.ServerErrorResult("")
+		return nil, shared.ServerErrorResult("")
 	}
 
-	return utils.H{
-		"access_token":  accessToken.Token,
-		"token_type":    "Bearer",
-		"expires_in":    accessToken.ExpiresIn,
-		"refresh_token": refreshToken.Token,
+	return &AccessTokenResult{
+		AccessToken:  accessToken.Token,
+		TokenType:    "Bearer",
+		ExpiresIn:    accessToken.ExpiresIn,
+		RefreshToken: refreshToken.Token,
 	}, nil
 }

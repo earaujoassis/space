@@ -30,44 +30,44 @@ func tokenHandler(c *gin.Context) {
 	switch grantType {
 	// Authorization Code Grant
 	case shared.AuthorizationCode:
-		result, err := AccessTokenRequest(utils.H{
-			"grant_type":   grantType,
-			"code":         c.PostForm("code"),
-			"redirect_uri": c.PostForm("redirect_uri"),
-			"client":       client,
+		result, err := AccessTokenRequest(AccessTokenParams{
+			GrantType:   grantType,
+			Code:        c.PostForm("code"),
+			RedirectURI: c.PostForm("redirect_uri"),
+			Client:      client,
 		}, repositories)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"error": result["error"],
+				"error": err.ErrorType,
 			})
 			return
 		}
 		c.JSON(http.StatusOK, utils.H{
-			"access_token":  result["access_token"],
-			"token_type":    result["token_type"],
-			"expires_in":    result["expires_in"],
-			"refresh_token": result["refresh_token"],
+			"access_token":  result.AccessToken,
+			"token_type":    result.TokenType,
+			"expires_in":    result.ExpiresIn,
+			"refresh_token": result.RefreshToken,
 		})
 		return
 	// Refreshing an Access Token
 	case shared.RefreshToken:
-		result, err := RefreshTokenRequest(utils.H{
-			"grant_type":    grantType,
-			"refresh_token": c.PostForm("refresh_token"),
-			"scope":         c.PostForm("scope"),
-			"client":        client,
+		result, err := RefreshTokenRequest(RefreshTokenParams{
+			GrantType:    grantType,
+			RefreshToken: c.PostForm("refresh_token"),
+			Scope:        c.PostForm("scope"),
+			Client:       client,
 		}, repositories)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"error": result["error"],
+				"error": err.ErrorType,
 			})
 			return
 		}
 		c.JSON(http.StatusOK, utils.H{
-			"access_token":  result["access_token"],
-			"token_type":    result["token_type"],
-			"expires_in":    result["expires_in"],
-			"refresh_token": result["refresh_token"],
+			"access_token":  result.AccessToken,
+			"token_type":    result.TokenType,
+			"expires_in":    result.ExpiresIn,
+			"refresh_token": result.RefreshToken,
 		})
 		return
 	// Resource Owner Password Credentials Grant
