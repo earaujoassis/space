@@ -5,8 +5,8 @@ import (
 )
 
 func exposeHealthCheck(router *gin.RouterGroup) {
-	healthCheckRoutes := router.Group("/")
+	healthCheckRoutes := router.Group("/health-check")
 	{
-		healthCheckRoutes.GET("/health-check", healthCheckHandler)
+		healthCheckRoutes.GET("", healthCheckHandler)
 	}
 }

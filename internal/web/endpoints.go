@@ -24,21 +24,13 @@ func ExposeRoutes(router *gin.Engine) {
 		views.GET("/notifications", satelliteHandler)
 		views.GET("/profile", satelliteHandler)
 		views.GET("/security", satelliteHandler)
-
 		views.GET("/profile/password", profilePasswordHandler)
-
 		views.GET("/profile/secrets", profileSecretsHandler)
-
 		views.GET("/profile/email_verification", profileEmailVerificationHandler)
-
 		views.GET("/signup", signupHandler)
-
 		views.GET("/signin", signinHandler)
-
 		views.GET("/signout", signoutHandler)
-
 		views.GET("/session", sessionHandler)
-
 		views.GET("/error", errorHandler)
 	}
 }
