@@ -3,6 +3,7 @@ package mailer
 import (
 	"time"
 
+	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/utils"
 )
@@ -11,7 +12,8 @@ import (
 //
 //	using e-mail messages (production-only) or stdout (development-only)
 func (m *Mailer) AnnounceMessage(name string, data utils.H) error {
-	if m.cfg.Environment == "production" {
+	switch m.cfg.Environment {
+	case config.Production:
 		var err error
 		switch name {
 		case "user.created":
@@ -65,8 +67,7 @@ func (m *Mailer) AnnounceMessage(name string, data utils.H) error {
 				data)
 			return err
 		}
-	}
-	if m.cfg.Environment == "development" {
+	case config.Development:
 		logs.Propagatef(logs.Info, "Action `%s` with data `%v`\n", name, data)
 	}
 

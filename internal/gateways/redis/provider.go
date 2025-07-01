@@ -13,7 +13,7 @@ import (
 
 func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 	switch cfg.Environment {
-	case "production", "staging", "development", "integration":
+	case config.Production, config.Development, config.Integration:
 		return &redis.Pool{
 			MaxIdle:     10,
 			MaxActive:   100,
@@ -35,7 +35,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 				return err
 			},
 		}
-	case "test":
+	case config.Test:
 		s, err := miniredis.Run()
 		if err != nil {
 			logs.Propagate(logs.Panic, err.Error())
@@ -54,13 +54,14 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 }
 
 func getRedisURL(cfg *config.Config) string {
-	if cfg.IsEnvironment("production") {
+	switch cfg.Environment {
+	case config.Production:
 		return fmt.Sprintf("redis://:%s@%s:%d/%d",
 			cfg.MemorystorePassword,
 			cfg.MemorystoreHost,
 			cfg.MemorystorePort,
 			cfg.MemorystoreIndex)
-	} else {
+	default:
 		return fmt.Sprintf("redis://%s:%d/%d",
 			cfg.MemorystoreHost,
 			cfg.MemorystorePort,

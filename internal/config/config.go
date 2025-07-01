@@ -59,12 +59,12 @@ func Load() (*Config, error) {
 
 	environment := strings.ToLower(os.Getenv("SPACE_ENV"))
 	if environment == "" {
-		environment = "development"
+		environment = Development
 	}
-	if environment != "development" && environment != "test" && environment != "integration" && environment != "production" {
-		environment = "development"
+	if environment != Development && environment != Test && environment != Integration && environment != Production {
+		environment = Development
 	}
-	if environment == "test" || environment == "integration" {
+	if environment == Test || environment == Integration {
 		loadFromEnvVarsFlag = true
 	}
 

@@ -45,7 +45,7 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 	router.RedirectTrailingSlash = false
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	store.Options(sessions.Options{
-		Secure:   (cfg.IsEnvironment("production") && cfg.SessionSecure),
+		Secure:   (cfg.IsEnvironment(config.Production) && cfg.SessionSecure),
 		HttpOnly: true,
 	})
 	router.Use(sessions.Sessions("space.session", store))

@@ -26,7 +26,7 @@ func NewNotifier(cfg *config.Config) *Notifier {
 //	using e-mail messages (production-only) or stdout (development-only)
 func (n *Notifier) Announce(name string, data utils.H) {
 	switch n.cfg.Environment {
-	case "production":
+	case config.Production:
 		cfg := n.cfg
 		enqueuer := asynq.NewClient(asynq.RedisClientOpt{
 			Addr: cfg.MemoryDNS(),
