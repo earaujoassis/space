@@ -58,11 +58,13 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 						"_message": "Bad server",
 						"error":    "The server found an error; aborting",
 					})
+					c.Abort()
 				} else {
 					c.HTML(http.StatusInternalServerError, "error.internal", utils.H{
 						"Title":    " - Bad Server",
 						"Internal": true,
 					})
+					c.Abort()
 				}
 			}
 		}(c)

@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/earaujoassis/space/internal/logs/plugins"
 )
 
@@ -36,6 +38,10 @@ func Setup(opts Options) {
 	}
 }
 
+func SetupRouter(router *gin.Engine) {
+	plugins.SetupSentryForRouter(router)
+}
+
 func setLogForLevel(level Level) {
 	switch level {
 	case Info:
@@ -52,11 +58,14 @@ func setLogForLevel(level Level) {
 func Propagate(level Level, msg string) {
 	setLogForLevel(level)
 	switch level {
-	case Error, Critical:
-		plugins.CaptureException(msg)
+	case Error:
+		plugins.CaptureMessage(fmt.Sprintf("[space][ERROR] %s", msg))
 		logger.Println(msg)
+	case Critical:
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", msg))
+		logger.Print(msg)
 	case Panic:
-		plugins.CaptureException(msg)
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", msg))
 		logger.Println(msg)
 		panic(msg)
 	default:
@@ -65,16 +74,21 @@ func Propagate(level Level, msg string) {
 }
 
 func Propagatef(level Level, msg string, args ...interface{}) {
+	formattedMsg := fmt.Sprintf(msg, args...)
 	setLogForLevel(level)
+
 	switch level {
-	case Error, Critical:
-		plugins.CaptureException(fmt.Sprintf(msg, args...))
-		logger.Printf(msg, args...)
+	case Error:
+		plugins.CaptureMessage(fmt.Sprintf("[space][ERROR] %s", formattedMsg))
+		logger.Print(formattedMsg)
+	case Critical:
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", formattedMsg))
+		logger.Print(formattedMsg)
 	case Panic:
-		plugins.CaptureException(fmt.Sprintf(msg, args...))
-		logger.Printf(msg, args...)
-		panic(fmt.Sprintf(msg, args...))
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", formattedMsg))
+		logger.Print(formattedMsg)
+		panic(formattedMsg)
 	default:
-		logger.Printf(msg, args...)
+		logger.Print(formattedMsg)
 	}
 }
