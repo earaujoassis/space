@@ -3,12 +3,12 @@ package policy
 import (
 	"time"
 
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 // RegisterSignInAttempt records a sign-in attempt (in order to control it)
 func (rls *RateLimitService) RegisterSignInAttempt(id string) {
-	rls.ms.Transaction(func(c *redis.Commands) {
+	rls.ms.Transaction(func(c *memory.Commands) {
 		nowMoment := time.Now().UTC().Unix()
 
 		if c.CheckFieldExistence("sign-in.blocked", id) {
@@ -33,7 +33,7 @@ func (rls *RateLimitService) RegisterSignInAttempt(id string) {
 
 // RegisterSuccessfulSignIn records a successful sign-in attempt (in order to clear it)
 func (rls *RateLimitService) RegisterSuccessfulSignIn(id string) {
-	rls.ms.Transaction(func(c *redis.Commands) {
+	rls.ms.Transaction(func(c *memory.Commands) {
 		c.DeleteFieldAtKey("sign-in.attempt", id)
 		c.DeleteFieldAtKey("sign-in.blocked", id)
 	})
@@ -41,7 +41,7 @@ func (rls *RateLimitService) RegisterSuccessfulSignIn(id string) {
 
 // RegisterSignUpAttempt records a sign-up attempt (in order to control it)
 func (rls *RateLimitService) RegisterSignUpAttempt(id string) {
-	rls.ms.Transaction(func(c *redis.Commands) {
+	rls.ms.Transaction(func(c *memory.Commands) {
 		nowMoment := time.Now().UTC().Unix()
 		if c.CheckFieldExistence("sign-up.blocked", id) {
 			blockMoment := c.GetFieldAtKey("sign-up.blocked", id).ToInt64()
@@ -65,7 +65,7 @@ func (rls *RateLimitService) RegisterSignUpAttempt(id string) {
 
 // RegisterSuccessfulSignUp records a successful sign-up attempt (in order to clear it)
 func (rls *RateLimitService) RegisterSuccessfulSignUp(id string) {
-	rls.ms.Transaction(func(c *redis.Commands) {
+	rls.ms.Transaction(func(c *memory.Commands) {
 		c.DeleteFieldAtKey("sign-up.attempt", id)
 		c.DeleteFieldAtKey("sign-up.blocked", id)
 	})

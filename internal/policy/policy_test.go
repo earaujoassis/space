@@ -6,20 +6,20 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/earaujoassis/space/internal/config"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/test/utils"
 )
 
 type PolicyTestSuite struct {
 	suite.Suite
-	memory *redis.MemoryService
+	memory *memory.MemoryService
 	rls    *RateLimitService
 }
 
 func (s *PolicyTestSuite) SetupSuite() {
 	utils.SetupConfigEnv()
 	config, _ := config.Load()
-	memory, err := redis.NewMemoryService(config)
+	memory, err := memory.NewMemoryService(config)
 	s.Require().NoError(err)
 	if err != nil {
 		s.T().Fatalf("Could not create new memory service: %v", err)

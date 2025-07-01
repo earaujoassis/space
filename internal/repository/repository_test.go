@@ -7,14 +7,14 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/test/utils"
 )
 
 type RepositoryTestSuite struct {
 	suite.Suite
 	Config *config.Config
-	Memory *redis.MemoryService
+	Memory *memory.MemoryService
 	DB     *database.DatabaseService
 }
 
@@ -29,7 +29,7 @@ func (s *RepositoryTestSuite) SetupSuite() {
 	s.DB = db
 	err = utils.RunUnitTestMigrator(db.GetDB())
 	s.Require().NoError(err)
-	ms, err := redis.NewMemoryService(s.Config)
+	ms, err := memory.NewMemoryService(s.Config)
 	s.Require().NoError(err)
 	if err != nil {
 		s.T().Fatalf("Could not create new memory service: %v", err)

@@ -4,7 +4,7 @@ import (
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/internal/notifications"
 	"github.com/earaujoassis/space/internal/policy"
 	"github.com/earaujoassis/space/internal/repository"
@@ -13,7 +13,7 @@ import (
 type AppContext struct {
 	Config       *config.Config
 	DB           *database.DatabaseService
-	Memory       *redis.MemoryService
+	Memory       *memory.MemoryService
 	Repositories *repository.RepositoryManager
 	FeatureGate  *feature.FeatureGate
 	RateLimit    *policy.RateLimitService
@@ -25,7 +25,7 @@ func NewAppContext(cfg *config.Config) (*AppContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	ms, err := redis.NewMemoryService(cfg)
+	ms, err := memory.NewMemoryService(cfg)
 	if err != nil {
 		return nil, err
 	}

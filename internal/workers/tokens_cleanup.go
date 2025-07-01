@@ -7,7 +7,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/repository"
 )
@@ -25,7 +25,7 @@ func NewTokenCleanupProcessor(cfg *config.Config) *TokenCleanupProcessor {
 	if err != nil {
 		logs.Propagate(logs.Panic, err.Error())
 	}
-	ms, err := redis.NewMemoryService(cfg)
+	ms, err := memory.NewMemoryService(cfg)
 	if err != nil {
 		logs.Propagate(logs.Panic, err.Error())
 	}

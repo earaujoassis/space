@@ -2,15 +2,15 @@ package repository
 
 import (
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 type RepositoryFactory struct {
 	db *database.DatabaseService
-	ms *redis.MemoryService
+	ms *memory.MemoryService
 }
 
-func NewRepositoryFactory(db *database.DatabaseService, ms *redis.MemoryService) *RepositoryFactory {
+func NewRepositoryFactory(db *database.DatabaseService, ms *memory.MemoryService) *RepositoryFactory {
 	return &RepositoryFactory{
 		db: db,
 		ms: ms,

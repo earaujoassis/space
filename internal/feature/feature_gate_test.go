@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/earaujoassis/space/internal/config"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 type FeatureGateTestSuite struct {
@@ -18,7 +18,7 @@ func (s *FeatureGateTestSuite) SetupSuite() {
 	cfg := &config.Config{
 		Environment: "test",
 	}
-	ms, _ := redis.NewMemoryService(cfg)
+	ms, _ := memory.NewMemoryService(cfg)
 	s.fg = NewFeatureGate(ms)
 }
 

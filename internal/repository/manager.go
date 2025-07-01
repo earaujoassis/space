@@ -2,14 +2,14 @@ package repository
 
 import (
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 type RepositoryManager struct {
 	factory *RepositoryFactory
 }
 
-func NewRepositoryManager(db *database.DatabaseService, ms *redis.MemoryService) *RepositoryManager {
+func NewRepositoryManager(db *database.DatabaseService, ms *memory.MemoryService) *RepositoryManager {
 	return &RepositoryManager{
 		factory: NewRepositoryFactory(db, ms),
 	}
