@@ -9,7 +9,7 @@ import (
 )
 
 func (s *ApiHandlerTestSuite) TestSessionsCreateHandlerWithoutHeader() {
-	w := s.PerformRequest(s.Router, "POST", "/api/sessions/create", nil, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/sessions", nil, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.Contains(r.Body, "missing X-Requested-By header attribute or Origin header does not comply with the same-origin policy")
@@ -20,7 +20,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandlerWithoutData() {
 		"X-Requested-By": []string{"SpaceApi"},
 	}
 
-	w := s.PerformRequest(s.Router, "POST", "/api/sessions/create", header, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/sessions", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
@@ -39,7 +39,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", userTest.GenerateCode())
 	encoded := formData.Encode()
-	w := s.PerformRequest(s.Router, "POST", "/api/sessions/create", header, nil, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "POST", "/api/sessions", header, nil, strings.NewReader(encoded))
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(200, w.Code)
 	s.True(r.HasKeyInJSON("scope"))
@@ -54,7 +54,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", userTest.GenerateCode())
 	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/sessions/create", header, nil, strings.NewReader(encoded))
+	w = s.PerformRequest(s.Router, "POST", "/api/sessions", header, nil, strings.NewReader(encoded))
 	r = utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(200, w.Code)
 	s.True(r.HasKeyInJSON("scope"))
@@ -69,7 +69,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", userTest.GenerateCode())
 	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/sessions/create", header, nil, strings.NewReader(encoded))
+	w = s.PerformRequest(s.Router, "POST", "/api/sessions", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(400, w.Code)
 
 	formData = url.Values{}
@@ -77,6 +77,6 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", "000000")
 	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/sessions/create", header, nil, strings.NewReader(encoded))
+	w = s.PerformRequest(s.Router, "POST", "/api/sessions", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(400, w.Code)
 }

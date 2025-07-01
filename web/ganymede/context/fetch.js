@@ -1,5 +1,5 @@
 export const createSession = async (data) => {
-    return await fetch('/api/sessions/create', {
+    return await fetch('/api/sessions', {
         method: 'POST',
         headers: {
             'X-Requested-By': 'SpaceApi',
@@ -10,7 +10,7 @@ export const createSession = async (data) => {
 }
 
 export const createMagicSession = async (data) => {
-    return await fetch('/api/sessions/magic', {
+    return await fetch('/api/sessions/requests', {
         method: 'POST',
         headers: {
             'X-Requested-By': 'SpaceApi',
@@ -21,7 +21,7 @@ export const createMagicSession = async (data) => {
 }
 
 export const requestUpdate = async (data) => {
-    return await fetch('/api/users/update/request', {
+    return await fetch('/api/users/me/requests', {
         method: 'POST',
         headers: {
             'X-Requested-By': 'SpaceApi',

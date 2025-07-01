@@ -13,7 +13,7 @@ const security = ({
     fetchUserProfile,
     requestResetPassword,
     requestResetSecretCodes,
-    adminifyUser,
+    becomeAdmin,
     loading,
     application,
     user }) => {
@@ -28,11 +28,11 @@ const security = ({
 
     const handleKeypressForAdminify = (e) => {
         if (e.key === 'Enter') {
-            adminifyUser(application.user_id, applicationKey, application.action_token)
+            becomeAdmin(application.user_id, applicationKey, application.action_token)
         }
     }
 
-    const adminifyUserBox = application && application.user_is_admin ? null : (
+    const becomeAdminUserBox = application && application.user_is_admin ? null : (
         <div className="globals__warning-box">
             <h3>Become an admin user</h3>
             <p>Using the application key, you can become an admin user.</p>
@@ -50,7 +50,7 @@ const security = ({
             </div>
             <p>
                 <button
-                    onClick={() => adminifyUser(application.user_id, applicationKey, application.action_token)}
+                    onClick={() => becomeAdmin(application.user_id, applicationKey, application.action_token)}
                     className="button-anchor">
                     Confirm application key and become an admin
                 </button>
@@ -113,7 +113,7 @@ const security = ({
                     </p>
                     {requestSecretCodesResetMessage}
                 </div>
-                {adminifyUserBox}
+                {becomeAdminUserBox}
             </div>
         </>
     )
@@ -132,7 +132,7 @@ const mapDispatchToProps = dispatch => {
         fetchUserProfile: (id, token) => dispatch(actions.fetchUserProfile(id, token)),
         requestResetPassword: (username) => dispatch(actions.requestResetPassword(username)),
         requestResetSecretCodes: (username) => dispatch(actions.requestResetSecretCodes(username)),
-        adminifyUser: (id, key, token) => dispatch(actions.adminifyUser(id, key, token))
+        becomeAdmin: (id, key, token) => dispatch(actions.becomeAdmin(id, key, token))
     }
 }
 

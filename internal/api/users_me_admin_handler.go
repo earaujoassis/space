@@ -13,7 +13,7 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func usersUpdateAdminifyHandler(c *gin.Context) {
+func usersMeAdminHandler(c *gin.Context) {
 	var uuid = c.PostForm("user_id")
 	var providedApplicationKey = c.PostForm("application_key")
 

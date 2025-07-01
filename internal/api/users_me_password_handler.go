@@ -10,7 +10,7 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func usersUpdatePasswordHandler(c *gin.Context) {
+func usersMePasswordHandler(c *gin.Context) {
 	var bearer = c.PostForm("_")
 	var newPassword = c.PostForm("new_password")
 	var passwordConfirmation = c.PostForm("password_confirmation")

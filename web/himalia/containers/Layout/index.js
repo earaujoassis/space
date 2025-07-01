@@ -10,9 +10,9 @@ import Toast from '@components/Toast'
 
 import './style.css'
 
-const layout = ({ bootstrapApplication, loading, application }) => {
+const layout = ({ fetchWorkspace, loading, application }) => {
     useEffect(() => {
-        bootstrapApplication()
+        fetchWorkspace()
     }, [])
 
     let outlet = (<Outlet />)
@@ -57,7 +57,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        bootstrapApplication: () => dispatch(actions.bootstrapApplication())
+        fetchWorkspace: () => dispatch(actions.fetchWorkspace())
     }
 }
 

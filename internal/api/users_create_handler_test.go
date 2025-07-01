@@ -11,7 +11,7 @@ import (
 )
 
 func (s *ApiHandlerTestSuite) TestUsersCreateHandlerWithoutHeader() {
-	w := s.PerformRequest(s.Router, "POST", "/api/users/create", nil, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/users", nil, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.Contains(r.Body, "missing X-Requested-By header attribute or Origin header does not comply with the same-origin policy")
@@ -23,7 +23,7 @@ func (s *ApiHandlerTestSuite) TestUsersCreateHandlerWhenFeatureIsDisabled() {
 	}
 
 	s.AppCtx.FeatureGate.Disable("user.create")
-	w := s.PerformRequest(s.Router, "POST", "/api/users/create", header, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/users", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(403, w.Code)
 	s.True(r.HasKeyInJSON("error"))
@@ -36,7 +36,7 @@ func (s *ApiHandlerTestSuite) TestUsersCreateHandlerWithoutData() {
 	}
 
 	s.AppCtx.FeatureGate.Enable("user.create")
-	w := s.PerformRequest(s.Router, "POST", "/api/users/create", header, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/users", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
@@ -56,7 +56,7 @@ func (s *ApiHandlerTestSuite) TestUsersCreateHandler() {
 	formData.Set("email", gofakeit.Email())
 	formData.Set("password", gofakeit.Password(true, true, true, true, false, 32))
 	encoded := formData.Encode()
-	w := s.PerformRequest(s.Router, "POST", "/api/users/create", header, nil, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "POST", "/api/users", header, nil, strings.NewReader(encoded))
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(200, w.Code)
 	s.True(r.HasKeyInJSON("user"))

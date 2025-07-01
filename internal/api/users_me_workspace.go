@@ -11,7 +11,7 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func applicationBootstrapHandler(c *gin.Context) {
+func usersMeWorkspaceHandler(c *gin.Context) {
 	repositories := ioc.GetRepositories(c)
 	fg := ioc.GetFeatureGate(c)
 	user := c.MustGet("User").(models.User)

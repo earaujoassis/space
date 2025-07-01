@@ -29,6 +29,7 @@ const RequestForm = ({ type, onRequest }) => {
         if (e) e.preventDefault()
 
         const formData = new FormData()
+        formData.append('request_type', 'passwordless_signin')
         formData.append('holder', holder)
         if (type === 'magic') {
             let next = getParameterByName('_')

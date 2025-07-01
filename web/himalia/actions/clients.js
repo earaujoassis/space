@@ -24,7 +24,7 @@ export const clientRecordError = (error) => {
 export const createClient = (data, token) => {
     return dispatch => {
         dispatch(clientRecordStart())
-        fetch.post('clients/create', data, { headers: { 'Authorization': `Bearer ${token}` } })
+        fetch.post('clients', data, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => {
                 dispatch(clientRecordSuccess(response.data))
             })

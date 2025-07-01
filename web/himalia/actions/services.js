@@ -24,7 +24,7 @@ export const serviceRecordError = (error) => {
 export const createService = (data, token) => {
     return dispatch => {
         dispatch(serviceRecordStart())
-        fetch.post('services/create', data, { headers: { 'Authorization': `Bearer ${token}` } })
+        fetch.post('services', data, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => {
                 dispatch(serviceRecordSuccess(response.data))
             })

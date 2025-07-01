@@ -28,10 +28,10 @@ export const internalRecordError = (error) => {
     }
 }
 
-export const bootstrapApplication = () => {
+export const fetchWorkspace = () => {
     return dispatch => {
         dispatch(internalRecordStart())
-        fetch.get('application/bootstrap')
+        fetch.get('users/me/workspace')
             .then(response => {
                 dispatch(internalRecordSuccess(response.data))
             })

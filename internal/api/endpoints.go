@@ -15,5 +15,4 @@ func ExposeRoutes(router *gin.Engine) {
 	exposeClientsRoutes(restAPI)
 	exposeServicesRoutes(restAPI)
 	exposeHealthCheck(restAPI)
-	exposeApplicationRoutes(restAPI)
 }

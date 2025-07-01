@@ -12,20 +12,7 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 	usersRoutes.Use(requiresConformance())
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
-		usersRoutes.POST("/create", usersCreateHandler)
-
-		// Requires X-Requested-By and Origin (same-origin policy)
-		usersRoutes.POST("/update/request", usersUpdateRequestHandler)
-
-		// Requires X-Requested-By and Origin (same-origin policy)
-		usersRoutes.PATCH("/update/password", usersUpdatePasswordHandler)
-
-		// Requires X-Requested-By and Origin (same-origin policy)
-		// Authorization type: action token / Bearer (for web use)
-		usersRoutes.PATCH("/update/adminify",
-			requiresApplicationSession(),
-			actionTokenBearerAuthorization(),
-			usersUpdateAdminifyHandler)
+		usersRoutes.POST("", usersCreateHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
@@ -61,5 +48,26 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			requiresApplicationSession(),
 			actionTokenBearerAuthorization(),
 			usersSessionsRevokeHandler)
+	}
+	usersMeRoutes := usersRoutes.Group("/me")
+	usersMeRoutes.Use(requiresConformance())
+	{
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.POST("/requests", usersMeRequestsHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.GET("/workspace",
+			requiresApplicationSession(),
+			usersMeWorkspaceHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.PATCH("/password", usersMePasswordHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		// Authorization type: action token / Bearer (for web use)
+		usersMeRoutes.PATCH("/admin",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersMeAdminHandler)
 	}
 }

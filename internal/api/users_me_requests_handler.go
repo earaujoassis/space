@@ -19,7 +19,7 @@ const (
 	emailVerification = "email_verification"
 )
 
-func usersUpdateRequestHandler(c *gin.Context) {
+func usersMeRequestsHandler(c *gin.Context) {
 	var holder = c.PostForm("holder")
 	var requestType = c.PostForm("request_type")
 	var host = fmt.Sprintf("%s://%s", shared.Scheme(c.Request), c.Request.Host)

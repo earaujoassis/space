@@ -12,9 +12,9 @@ func exposeSessionsRoutes(router *gin.RouterGroup) {
 	sessionsRoutes.Use(requiresConformance())
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
-		sessionsRoutes.POST("/create", sessionsCreateHandler)
+		sessionsRoutes.POST("", sessionsCreateHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
-		sessionsRoutes.POST("/magic", sessionsMagicHandler)
+		sessionsRoutes.POST("/requests", sessionsRequestsHandler)
 	}
 }

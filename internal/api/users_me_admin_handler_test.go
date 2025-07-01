@@ -9,26 +9,26 @@ import (
 	"github.com/earaujoassis/space/test/utils"
 )
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutHeader() {
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", nil, nil, nil)
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWithoutHeader() {
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", nil, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.Contains(r.Body, "missing X-Requested-By header attribute or Origin header does not comply with the same-origin policy")
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerByUnauthenticatedUser() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerByUnauthenticatedUser() {
 	header := &http.Header{
 		"X-Requested-By": []string{"SpaceApi"},
 	}
 
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, nil, nil)
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("User must be authenticated", r.JSON["_message"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutActionGrant() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWithoutActionGrant() {
 	header := &http.Header{
 		"X-Requested-By": []string{"SpaceApi"},
 	}
@@ -36,14 +36,14 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutActionGrant()
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, nil)
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("must use valid token string", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWhenFeatureIsDisabled() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWhenFeatureIsDisabled() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -56,14 +56,14 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWhenFeatureIsDisable
 	}
 
 	s.AppCtx.FeatureGate.Disable("user.adminify")
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, nil)
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(403, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("feature is not available at this time", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutKey() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWithoutKey() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -76,14 +76,14 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutKey() {
 	}
 
 	s.AppCtx.FeatureGate.Enable("user.adminify")
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, nil)
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("application key is incorrect", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutCorrectKey() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWithoutCorrectKey() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -99,14 +99,14 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutCorrectKey() 
 	formData := url.Values{}
 	formData.Set("application_key", "incorrect")
 	encoded := formData.Encode()
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, strings.NewReader(encoded))
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("application key is incorrect", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutUserId() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWithoutUserId() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -122,14 +122,14 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithoutUserId() {
 	formData := url.Values{}
 	formData.Set("application_key", "masterapplicationkey")
 	encoded := formData.Encode()
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, strings.NewReader(encoded))
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("must use valid UUID for identification", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithIncorrectUserId() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerWithIncorrectUserId() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -146,7 +146,7 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithIncorrectUserId(
 	formData.Set("application_key", "masterapplicationkey")
 	encoded := formData.Encode()
 	s.AppCtx.FeatureGate.Enable("user.adminify")
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, strings.NewReader(encoded))
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
@@ -157,14 +157,14 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerWithIncorrectUserId(
 	formData.Set("user_id", "1")
 	formData.Set("application_key", "masterapplicationkey")
 	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, strings.NewReader(encoded))
+	w = s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, strings.NewReader(encoded))
 	r = utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
 	s.Equal("must use valid UUID for identification", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerByAnotherUser() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandlerByAnotherUser() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -182,11 +182,11 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandlerByAnotherUser() {
 	formData.Set("user_id", anotherUser.UUID)
 	formData.Set("application_key", "masterapplicationkey")
 	encoded := formData.Encode()
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, strings.NewReader(encoded))
 	s.Require().Equal(401, w.Code)
 }
 
-func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandler() {
+func (s *ApiHandlerTestSuite) TestUsersMeAdminHandler() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -203,6 +203,6 @@ func (s *ApiHandlerTestSuite) TestUsersUpdateAdminifyHandler() {
 	formData.Set("user_id", user.UUID)
 	formData.Set("application_key", "masterapplicationkey")
 	encoded := formData.Encode()
-	w := s.PerformRequest(s.Router, "PATCH", "/api/users/update/adminify", header, cookie, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "PATCH", "/api/users/me/admin", header, cookie, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
 }

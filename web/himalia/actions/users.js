@@ -54,13 +54,13 @@ export const fetchUserProfile = (id, token) => {
     }
 }
 
-export const adminifyUser = (id, key, token) => {
+export const becomeAdmin = (id, key, token) => {
     return dispatch => {
         const data = new FormData()
         data.append('user_id', id)
         data.append('application_key', key)
         dispatch(userRecordStart())
-        fetch.patch('users/update/adminify', data, { headers: { 'Authorization': `Bearer ${token}` } })
+        fetch.patch('users/me/admin', data, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => {
                 dispatch(userRecordSuccess(response.data))
                 window.location.reload()
@@ -77,7 +77,7 @@ export const requestEmailVerification = (username) => {
         data.append('request_type', 'email_verification')
         data.append('holder', username)
         dispatch(userRequestStart())
-        fetch.post('users/update/request', data)
+        fetch.post('users/me/requests', data)
             .then(response => {
                 dispatch(userRequestSuccess(response.data))
             })
@@ -93,7 +93,7 @@ export const requestResetPassword = (username) => {
         data.append('request_type', 'password')
         data.append('holder', username)
         dispatch(userRequestStart())
-        fetch.post('users/update/request', data)
+        fetch.post('users/me/requests', data)
             .then(response => {
                 dispatch(userRequestSuccess(response.data))
             })
@@ -109,7 +109,7 @@ export const requestResetSecretCodes = (username) => {
         data.append('request_type', 'secrets')
         data.append('holder', username)
         dispatch(userRequestStart())
-        fetch.post('users/update/request', data)
+        fetch.post('users/me/requests', data)
             .then(response => {
                 dispatch(userRequestSuccess(response.data))
             })

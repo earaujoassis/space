@@ -80,7 +80,7 @@ func (c *OAuthTestClient) HasSessionCookie() bool {
 }
 
 func (c *OAuthTestClient) LoginUser(holder, password, passcode string) *utils.TestResponse {
-	requestUrl := c.baseURL + "/api/sessions/create"
+	requestUrl := c.baseURL + "/api/sessions"
 	formData := url.Values{}
 	formData.Set("holder", holder)
 	formData.Set("password", password)
