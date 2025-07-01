@@ -99,9 +99,17 @@ func (r *SessionRepository) ActiveForClient(client models.Client, user models.Us
 
 // RevokeAccess revokes client application access to user's data
 func (r *SessionRepository) RevokeAccess(client models.Client, user models.User) {
-	now := time.Now()
+	now := time.Now().UTC()
 	r.db.GetDB().
 		Exec(`UPDATE sessions SET invalidated = true, updated_at = ?
 			WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND
 			client_id = ? AND user_id = ?;`, now, client.ID, user.ID)
+}
+
+func (r *SessionRepository) InvalidateStaleSessions() error {
+	now := time.Now().UTC()
+	nowUnix := time.Now().UTC().Unix()
+	return r.db.GetDB().
+		Exec(`UPDATE sessions SET invalidated = true, updated_at = ?
+			WHERE invalidated = false AND (moment + expires_in) < ?;`, now, nowUnix).Error
 }

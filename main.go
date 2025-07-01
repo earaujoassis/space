@@ -96,6 +96,22 @@ func main() {
 			},
 		},
 		{
+			Name:  "workers",
+			Usage: "Start the workers server/service",
+			Action: func(c *cli.Context) error {
+				tasks.Workers(cfg)
+				return nil
+			},
+		},
+		{
+			Name:  "scheduler",
+			Usage: "Start the scheduler service",
+			Action: func(c *cli.Context) error {
+				tasks.Scheduler(cfg)
+				return nil
+			},
+		},
+		{
 			Name:  "feature",
 			Usage: "Toggle feature flags ON/OFF",
 			Action: func(c *cli.Context) error {

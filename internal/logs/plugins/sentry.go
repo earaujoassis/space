@@ -5,7 +5,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 )
 
 var isSentryAvailable bool
@@ -38,12 +41,26 @@ func SetupSentry(environment, release, sentryUrl string) error {
 	return nil
 }
 
+func SetupSentryForRouter(router *gin.Engine) {
+	router.Use(sentrygin.New(sentrygin.Options{
+		Repanic:         true,
+		WaitForDelivery: false,
+	}))
+}
+
 func IsSentryAvailable() bool {
 	return isSentryAvailable
 }
 
+func CaptureMessage(msg string) {
+	if isSentryAvailable {
+		sentry.CaptureMessage(msg)
+	}
+}
+
 func CaptureException(msg string) {
 	if isSentryAvailable {
-		sentry.CaptureException(errors.New(msg))
+		err := errors.New(msg)
+		sentry.CaptureException(err)
 	}
 }
