@@ -7,6 +7,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/logs"
+	"github.com/earaujoassis/space/internal/logs/plugins"
 	"github.com/earaujoassis/space/internal/workers"
 )
 
@@ -21,10 +22,12 @@ func Workers(cfg *config.Config) {
 				"default":  2,
 				"low":      1,
 			},
+			ErrorHandler: plugins.SentryErrorHandler(),
 		},
 	)
 
 	mux := asynq.NewServeMux()
+	mux.Use(plugins.SentryMiddleware())
 	mux.Handle(workers.TypeTokensCleanup, workers.NewTokenCleanupProcessor(cfg))
 
 	if err := srv.Run(mux); err != nil {
