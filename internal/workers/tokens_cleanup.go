@@ -35,7 +35,7 @@ func NewTokenCleanupProcessor(cfg *config.Config) *TokenCleanupProcessor {
 	}
 }
 
-func (processor *TokenCleanupProcessor) ProcessTask(ctx context.Context, t *asynq.Task) error {
-
-	return nil
+func (p *TokenCleanupProcessor) ProcessTask(ctx context.Context, t *asynq.Task) error {
+	err := p.repositories.Sessions().InvalidateStaleSessions()
+	return err
 }

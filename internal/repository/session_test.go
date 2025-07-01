@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/brianvoe/gofakeit/v7"
 
 	"github.com/earaujoassis/space/internal/models"
@@ -360,4 +362,55 @@ func (s *RepositoryTestSuite) TestSessionRepository__RevokeAccess() {
 	repository.RevokeAccess(client, user)
 	count = repository.ActiveForClient(client, user)
 	s.Require().Zero(count)
+}
+
+func (s *RepositoryTestSuite) TestSessionRepository__InvalidateStaleSessions() {
+	repository := NewSessionRepository(s.DB)
+
+	client := models.Client{
+		Name:         gofakeit.Company(),
+		Description:  gofakeit.ProductDescription(),
+		CanonicalURI: []string{"http://localhost"},
+		RedirectURI:  []string{"http://localhost/callback"},
+		Scopes:       models.PublicScope,
+		Type:         models.ConfidentialClient,
+	}
+	language := models.Language{
+		Name:    "Português (Brasil)",
+		IsoCode: "pt-BR",
+	}
+	user := models.User{
+		Client:        client,
+		Language:      language,
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         gofakeit.Email(),
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 10),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
+	}
+	session := models.Session{
+		User:      user,
+		Client:    client,
+		IP:        gofakeit.IPv4Address(),
+		UserAgent: gofakeit.UserAgent(),
+		Scopes:    models.PublicScope,
+		TokenType: models.ApplicationToken,
+	}
+	err := repository.Create(&session)
+	s.Require().NoError(err)
+	user = session.User
+	sessions := repository.ApplicationSessions(user)
+	s.Require().Equal(1, len(sessions))
+
+	timeTravel := time.Duration(90*86400 + 1)
+	session.Moment = time.Now().UTC().Add(-(timeTravel * time.Second)).Unix()
+	err = repository.Save(&session)
+	s.Require().NoError(err)
+
+	err = repository.InvalidateStaleSessions()
+	s.Require().NoError(err)
+	sessions = repository.ApplicationSessions(user)
+	s.Require().Equal(0, len(sessions))
 }
