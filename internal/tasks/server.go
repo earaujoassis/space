@@ -14,6 +14,7 @@ import (
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/logs"
+	"github.com/earaujoassis/space/internal/logs/plugins"
 	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/oidc"
 	"github.com/earaujoassis/space/internal/security"
@@ -52,6 +53,7 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {
 				defer logs.Propagatef(logs.Error, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
+				plugins.SentryForGin(c, err)
 				if shared.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",
