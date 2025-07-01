@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -13,9 +12,11 @@ import (
 )
 
 func Scheduler(cfg *config.Config) {
-	redisAddr := fmt.Sprintf("%s:%d", cfg.MemorystoreHost, cfg.MemorystorePort)
 	scheduler := asynq.NewScheduler(
-		asynq.RedisClientOpt{Addr: redisAddr, DB: cfg.MemorystoreIndex},
+		asynq.RedisClientOpt{
+			Addr: cfg.MemoryDNS(),
+			DB:   cfg.MemorystoreIndex,
+		},
 		&asynq.SchedulerOpts{Location: time.UTC},
 	)
 

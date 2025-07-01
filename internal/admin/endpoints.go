@@ -1,8 +1,6 @@
 package admin
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/hibiken/asynq"
 	"github.com/hibiken/asynqmon"
@@ -17,10 +15,12 @@ func ExposeRoutes(router *gin.Engine, cfg *config.Config) {
 	externalRoutes := router.Group("/_")
 	externalRoutes.Use(requiresAdminApplicationSession())
 
-	redisAddr := fmt.Sprintf("%s:%d", cfg.MemorystoreHost, cfg.MemorystorePort)
 	h := asynqmon.New(asynqmon.Options{
-		RootPath:     "/_/monitoring",
-		RedisConnOpt: asynq.RedisClientOpt{Addr: redisAddr, DB: cfg.MemorystoreIndex},
+		RootPath: "/_/monitoring",
+		RedisConnOpt: asynq.RedisClientOpt{
+			Addr: cfg.MemoryDNS(),
+			DB:   cfg.MemorystoreIndex,
+		},
 	})
 
 	externalRoutes.Any("/monitoring", func(c *gin.Context) {

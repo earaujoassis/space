@@ -124,6 +124,10 @@ func Load() (*Config, error) {
 	return &globalConfig, nil
 }
 
+func (cfg *Config) MemoryDNS() string {
+	return fmt.Sprintf("%s:%d", cfg.MemorystoreHost, cfg.MemorystorePort)
+}
+
 func (cfg *Config) DatabaseDSN() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s_%s?sslmode=%s",
 		cfg.DatastoreUser,

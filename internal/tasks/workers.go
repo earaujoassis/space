@@ -1,8 +1,6 @@
 package tasks
 
 import (
-	"fmt"
-
 	"github.com/hibiken/asynq"
 
 	"github.com/earaujoassis/space/internal/config"
@@ -12,9 +10,11 @@ import (
 )
 
 func Workers(cfg *config.Config) {
-	redisAddr := fmt.Sprintf("%s:%d", cfg.MemorystoreHost, cfg.MemorystorePort)
 	srv := asynq.NewServer(
-		asynq.RedisClientOpt{Addr: redisAddr, DB: cfg.MemorystoreIndex},
+		asynq.RedisClientOpt{
+			Addr: cfg.MemoryDNS(),
+			DB:   cfg.MemorystoreIndex,
+		},
 		asynq.Config{
 			Concurrency: 5,
 			Queues: map[string]int{
