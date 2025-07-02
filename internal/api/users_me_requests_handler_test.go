@@ -17,7 +17,7 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithoutHeader() {
 	s.Contains(r.Body, "missing X-Requested-By header attribute or Origin header does not comply with the same-origin policy")
 }
 
-func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithoutHolder() {
+func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithoutRequestType() {
 	header := &http.Header{
 		"X-Requested-By": []string{"SpaceApi"},
 	}
@@ -26,7 +26,7 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithoutHolder() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("must use valid holder string", r.JSON["error"])
+	s.Equal("request type not available", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithInvalidRequest() {
@@ -35,7 +35,6 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithInvalidRequest() {
 	}
 
 	formData := url.Values{}
-	formData.Set("holder", gofakeit.Email())
 	formData.Set("request_type", "invalid")
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
@@ -51,25 +50,36 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithUnknownHolder() {
 	}
 
 	formData := url.Values{}
-	formData.Set("holder", gofakeit.Email())
 	formData.Set("request_type", "password")
+	formData.Set("holder", gofakeit.Email())
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
+	r := utils.ParseResponse(w.Result(), nil)
+	s.Require().Equal(400, w.Code)
+	s.True(r.HasKeyInJSON("error"))
+	s.Equal("must use valid holder field", r.JSON["error"])
 
 	formData = url.Values{}
-	formData.Set("holder", gofakeit.Email())
 	formData.Set("request_type", "secrets")
-	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
-
-	formData = url.Values{}
 	formData.Set("holder", gofakeit.Email())
-	formData.Set("request_type", "email_verification")
 	encoded = formData.Encode()
 	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
+	r = utils.ParseResponse(w.Result(), nil)
+	s.Require().Equal(400, w.Code)
+	s.True(r.HasKeyInJSON("error"))
+	s.Equal("must use valid holder field", r.JSON["error"])
+
+	email := gofakeit.Email()
+	formData = url.Values{}
+	formData.Set("request_type", "email_verification")
+	formData.Set("holder", email)
+	formData.Set("email", email)
+	encoded = formData.Encode()
+	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
+	r = utils.ParseResponse(w.Result(), nil)
+	s.Require().Equal(400, w.Code)
+	s.True(r.HasKeyInJSON("error"))
+	s.Equal("must use valid holder field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithKnownHolder() {
@@ -79,44 +89,41 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithKnownHolder() {
 	}
 
 	formData := url.Values{}
-	formData.Set("holder", userTest.Email)
 	formData.Set("request_type", "password")
+	formData.Set("holder", userTest.Email)
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
 
 	formData = url.Values{}
-	formData.Set("holder", userTest.Email)
 	formData.Set("request_type", "secrets")
-	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
-
-	formData = url.Values{}
 	formData.Set("holder", userTest.Email)
+	encoded = formData.Encode()
+	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
+	s.Require().Equal(204, w.Code)
+
+	formData = url.Values{}
 	formData.Set("request_type", "email_verification")
+	formData.Set("holder", userTest.Email)
+	formData.Set("email", userTest.Email)
 	encoded = formData.Encode()
 	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
+}
 
-	formData = url.Values{}
-	formData.Set("holder", userTest.Username)
-	formData.Set("request_type", "password")
-	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
+func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithoutEmailForValidation() {
+	userTest := s.Factory.NewUser()
+	header := &http.Header{
+		"X-Requested-By": []string{"SpaceApi"},
+	}
 
-	formData = url.Values{}
-	formData.Set("holder", userTest.Username)
-	formData.Set("request_type", "secrets")
-	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
-
-	formData = url.Values{}
-	formData.Set("holder", userTest.Username)
+	formData := url.Values{}
 	formData.Set("request_type", "email_verification")
-	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
-	s.Require().Equal(204, w.Code)
+	formData.Set("holder", userTest.Username)
+	encoded := formData.Encode()
+	w := s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
+	r := utils.ParseResponse(w.Result(), nil)
+	s.Require().Equal(400, w.Code)
+	s.True(r.HasKeyInJSON("error"))
+	s.Equal("must use valid email field", r.JSON["error"])
 }

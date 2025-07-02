@@ -26,7 +26,7 @@ func (s *ApiHandlerTestSuite) TestUsersMePasswordHandlerWithoutToken() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("must use valid token string", r.JSON["error"])
+	s.Equal("must use valid token field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestUsersMePasswordHandlerWithoutData() {
@@ -111,7 +111,7 @@ func (s *ApiHandlerTestSuite) TestUsersMePasswordHandlerWithoutPermission() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("invalid token string", r.JSON["error"])
+	s.Equal("invalid token field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestUsersMePasswordHandler() {

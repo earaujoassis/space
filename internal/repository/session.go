@@ -91,8 +91,10 @@ func (r *SessionRepository) ActiveForClient(client models.Client, user models.Us
 
 	r.db.GetDB().
 		Raw(`SELECT count(*) AS count
-			FROM sessions WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND
-			client_id = ? AND user_id = ?;`, client.ID, user.ID).
+			FROM sessions WHERE token_type IN ('access_token', 'refresh_token') AND
+				invalidated = false AND
+				client_id = ? AND
+				user_id = ?;`, client.ID, user.ID).
 		Scan(&count)
 	return count.Count
 }
@@ -102,8 +104,10 @@ func (r *SessionRepository) RevokeAccess(client models.Client, user models.User)
 	now := time.Now().UTC()
 	r.db.GetDB().
 		Exec(`UPDATE sessions SET invalidated = true, updated_at = ?
-			WHERE token_type IN ('access_token', 'refresh_token') AND invalidated = false AND
-			client_id = ? AND user_id = ?;`, now, client.ID, user.ID)
+			WHERE token_type IN ('access_token', 'refresh_token') AND
+				invalidated = false AND
+				client_id = ? AND
+				user_id = ?;`, now, client.ID, user.ID)
 }
 
 func (r *SessionRepository) InvalidateStaleSessions() error {
@@ -111,5 +115,6 @@ func (r *SessionRepository) InvalidateStaleSessions() error {
 	nowUnix := time.Now().UTC().Unix()
 	return r.db.GetDB().
 		Exec(`UPDATE sessions SET invalidated = true, updated_at = ?
-			WHERE invalidated = false AND (moment + expires_in) < ?;`, now, nowUnix).Error
+			WHERE invalidated = false AND
+				(moment + expires_in) < ?;`, now, nowUnix).Error
 }

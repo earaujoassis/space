@@ -66,7 +66,7 @@ func actionTokenBearerAuthorization() gin.HandlerFunc {
 		authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
 		if !security.ValidToken(authorizationBearer) {
 			c.JSON(http.StatusBadRequest, utils.H{
-				"error": "must use valid token string",
+				"error": "must use valid token field",
 			})
 			c.Abort()
 			return

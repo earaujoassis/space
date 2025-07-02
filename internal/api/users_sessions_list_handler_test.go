@@ -45,7 +45,7 @@ func (s *ApiHandlerTestSuite) TestUsersSessionsListHandlerWithoutActionGrant() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("must use valid token string", r.JSON["error"])
+	s.Equal("must use valid token field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestUsersSessionsListHandlerByAnotherUser() {

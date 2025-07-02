@@ -12,12 +12,12 @@ func TestBasicAuthEncode(t *testing.T) {
 	key := "my-key"
 	authorization := key + ":" + secret
 	encodedAuth := base64.StdEncoding.EncodeToString([]byte(authorization))
-	assert.Equal(t, encodedAuth, BasicAuthEncode(key, secret), "should create correct encoded Basic Authorization")
+	assert.Equal(t, encodedAuth, BasicAuthEncode(key, secret))
 
 	fakeSecret := "fake-secret"
 	fakeAuthorization := key + ":" + fakeSecret
 	fakeEncodedAuth := base64.StdEncoding.EncodeToString([]byte(fakeAuthorization))
-	assert.NotEqual(t, fakeEncodedAuth, BasicAuthEncode(key, secret), "should create incorrect encoded Basic Authorization")
+	assert.NotEqual(t, fakeEncodedAuth, BasicAuthEncode(key, secret))
 }
 
 func TestBasicAuthDecode(t *testing.T) {
@@ -25,35 +25,35 @@ func TestBasicAuthDecode(t *testing.T) {
 	key := "my-key"
 	encodedAuth := BasicAuthEncode(key, secret)
 	keyDecoded, secretDecoded := BasicAuthDecode(encodedAuth)
-	assert.Equal(t, key, keyDecoded, "should have returned correct key")
-	assert.Equal(t, secret, secretDecoded, "should have returned correct secret")
+	assert.Equal(t, key, keyDecoded)
+	assert.Equal(t, secret, secretDecoded)
 
 	fakeSecret := "fake-secret"
 	fakeEncodedAuth := BasicAuthEncode(key, fakeSecret)
 	keyDecoded, secretDecoded = BasicAuthDecode(fakeEncodedAuth)
-	assert.Equal(t, key, keyDecoded, "should have returned correct key")
-	assert.NotEqual(t, secret, secretDecoded, "should not have returned correct secret")
-	assert.Equal(t, fakeSecret, secretDecoded, "should have returned fake secret")
+	assert.Equal(t, key, keyDecoded)
+	assert.NotEqual(t, secret, secretDecoded)
+	assert.Equal(t, fakeSecret, secretDecoded)
 }
 
 func TestBasicAuthDecodeWithNonEncodedData(t *testing.T) {
 	keyDecoded, secretDecoded := BasicAuthDecode("wrongstring")
-	assert.Equal(t, keyDecoded, "", "should have returned empty string")
-	assert.Equal(t, secretDecoded, "", "should have returned empty string")
+	assert.Equal(t, keyDecoded, "")
+	assert.Equal(t, secretDecoded, "")
 }
 
 func TestBasicAuthDecodeWithEncodedDataWithoutAColon(t *testing.T) {
 	encodedString := base64.StdEncoding.EncodeToString([]byte("wrongstring"))
 	keyDecoded, secretDecoded := BasicAuthDecode(encodedString)
-	assert.Equal(t, keyDecoded, "", "should have returned empty string")
-	assert.Equal(t, secretDecoded, "", "should have returned empty string")
+	assert.Equal(t, keyDecoded, "")
+	assert.Equal(t, secretDecoded, "")
 }
 
 func TestMustServeJSON(t *testing.T) {
-	assert.True(t, MustServeJSON("/api/users/instropect", ""), "should have return True to given path")
-	assert.True(t, MustServeJSON("/api/testing-only", ""), "should have return True to given path")
-	assert.False(t, MustServeJSON("/oauth/authorize", ""), "should have return False to given path")
-	assert.True(t, MustServeJSON("/oauth/token", ""), "should have return True to given path")
-	assert.False(t, MustServeJSON("/oidc/authorize", ""), "should have return False to given path")
-	assert.True(t, MustServeJSON("/oidc/token", ""), "should have return True to given path")
+	assert.True(t, MustServeJSON("/api/users/instropect", ""))
+	assert.True(t, MustServeJSON("/api/testing-only", ""))
+	assert.False(t, MustServeJSON("/oauth/authorize", ""))
+	assert.True(t, MustServeJSON("/oauth/token", ""))
+	assert.False(t, MustServeJSON("/oidc/authorize", ""))
+	assert.True(t, MustServeJSON("/oidc/token", ""))
 }

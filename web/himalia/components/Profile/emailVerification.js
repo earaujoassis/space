@@ -4,7 +4,7 @@ const processedRequestMessage = (
     <p>You should receive an e-mail message in the next few minutes.</p>
 )
 
-const emailVerification = ({ requestEmailVerification, username, emailVerified }) => {
+const emailVerification = ({ requestEmailVerification, holder, email, emailVerified }) => {
     if (emailVerified) {
         return null
     }
@@ -15,7 +15,7 @@ const emailVerification = ({ requestEmailVerification, username, emailVerified }
         <p>
             <button
                 onClick={() => {
-                    requestEmailVerification(username)
+                    requestEmailVerification(holder, email)
                     setEmailVerificationRequested(true)
                 }}
                 className="button-anchor">

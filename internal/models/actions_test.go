@@ -48,7 +48,6 @@ func TestValidActionModel(t *testing.T) {
 		User:        user,
 		Client:      client,
 		UUID:        generateUUID(),
-		CreatedAt:   time.Now().UTC(),
 		Token:       GenerateRandomString(64),
 		Moment:      time.Now().UTC().Unix(),
 		ExpiresIn:   shortestExpirationLength,

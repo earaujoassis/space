@@ -251,3 +251,68 @@ func (s *RepositoryTestSuite) TestUserRepository__Authentic() {
 	result = repository.Authentic(retrievedByEmail, newPassphrase, code)
 	s.True(result)
 }
+
+func (s *RepositoryTestSuite) TestUserRepository__HoldsEmail() {
+	repository := NewUserRepository(s.DB)
+	email := gofakeit.Email()
+	user := models.User{
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         email,
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 32),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
+	}
+	user.Client = models.Client{
+		Name:         gofakeit.Company(),
+		Secret:       models.GenerateRandomString(64),
+		CanonicalURI: []string{"localhost"},
+		RedirectURI:  []string{"/"},
+		Scopes:       models.PublicScope,
+		Type:         models.PublicClient,
+	}
+	user.Language = models.Language{
+		Name:    "English",
+		IsoCode: "en-US",
+	}
+	err := repository.Create(&user)
+	s.Require().NoError(err)
+
+	result := repository.HoldsEmail(user, email)
+	s.True(result)
+
+	result = repository.HoldsEmail(user, gofakeit.Email())
+	s.False(result)
+}
+
+func (s *RepositoryTestSuite) TestUserRepository__ValidateEmail() {
+	repository := NewUserRepository(s.DB)
+	email := gofakeit.Email()
+	user := models.User{
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         email,
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 32),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
+	}
+	user.Client = models.Client{
+		Name:         gofakeit.Company(),
+		Secret:       models.GenerateRandomString(64),
+		CanonicalURI: []string{"localhost"},
+		RedirectURI:  []string{"/"},
+		Scopes:       models.PublicScope,
+		Type:         models.PublicClient,
+	}
+	user.Language = models.Language{
+		Name:    "English",
+		IsoCode: "en-US",
+	}
+	err := repository.Create(&user)
+	s.Require().NoError(err)
+
+	result := repository.ValidateEmail(&user, email)
+	s.NoError(result)
+}

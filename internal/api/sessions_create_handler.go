@@ -29,7 +29,7 @@ func sessionsCreateHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "Session was not created",
-			"error":    "must use valid holder string",
+			"error":    "must use valid holder field",
 		})
 		return
 	}

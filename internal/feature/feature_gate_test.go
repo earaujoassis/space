@@ -23,22 +23,22 @@ func (s *FeatureGateTestSuite) SetupSuite() {
 }
 
 func (s *FeatureGateTestSuite) TestIsActive() {
-	s.False(s.fg.IsActive("no-feature"), "shouldn't have no-feature active")
+	s.False(s.fg.IsActive("no-feature"))
 }
 
 func (s *FeatureGateTestSuite) TestEnable() {
-	s.False(s.fg.IsActive("not-enabled"), "shouldn't have not-enabled active")
+	s.False(s.fg.IsActive("not-enabled"))
 	s.fg.Enable("not-enabled")
-	s.True(s.fg.IsActive("not-enabled"), "should have no-feature active")
+	s.True(s.fg.IsActive("not-enabled"))
 	s.fg.Disable("not-enabled")
 }
 
 func (s *FeatureGateTestSuite) TestDisable() {
-	s.False(s.fg.IsActive("to-disable"), "shouldn't have to-disable active")
+	s.False(s.fg.IsActive("to-disable"))
 	s.fg.Enable("to-disable")
-	s.True(s.fg.IsActive("to-disable"), "should have to-disable active")
+	s.True(s.fg.IsActive("to-disable"))
 	s.fg.Disable("to-disable")
-	s.False(s.fg.IsActive("to-disable"), "shouldn't have to-disable active")
+	s.False(s.fg.IsActive("to-disable"))
 }
 
 func TestFeatureGateSuite(t *testing.T) {

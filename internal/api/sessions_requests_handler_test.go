@@ -41,7 +41,7 @@ func (s *ApiHandlerTestSuite) TestSessionsRequestsHandlerWithoutHolder() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("must use valid holder string", r.JSON["error"])
+	s.Equal("must use valid holder field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestSessionsRequestsHandlerWithInvalidRequest() {

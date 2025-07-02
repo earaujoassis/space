@@ -62,7 +62,8 @@ const personal = ({
                 <div className="globals__children globals__overlay">
                     <EmailVerification
                         emailVerified={user.email_verified}
-                        username={user.username}
+                        holder={user.email}
+                        email={user.email}
                         requestEmailVerification={requestEmailVerification} />
                     <Sessions
                         sessions={sessions}
@@ -94,7 +95,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchUserProfile: (id, token) => dispatch(actions.fetchUserProfile(id, token)),
-        requestEmailVerification: (username) => dispatch(actions.requestEmailVerification(username)),
+        requestEmailVerification: (holder, email) => dispatch(actions.requestEmailVerification(holder, email)),
         fetchApplicationSessionsForUser: (id, token) => dispatch(actions.fetchApplicationSessionsForUser(id, token)),
         revokeApplicationSessionForUser: (userId, sessionId, token) => dispatch(actions.revokeApplicationSessionForUser(userId, sessionId, token))
     }

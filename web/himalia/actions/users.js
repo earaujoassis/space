@@ -71,11 +71,12 @@ export const becomeAdmin = (id, key, token) => {
     }
 }
 
-export const requestEmailVerification = (username) => {
+export const requestEmailVerification = (holder, email) => {
     return dispatch => {
         const data = new FormData()
         data.append('request_type', 'email_verification')
-        data.append('holder', username)
+        data.append('holder', holder)
+        data.append('email', email)
         dispatch(userRequestStart())
         fetch.post('users/me/requests', data)
             .then(response => {

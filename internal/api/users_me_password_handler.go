@@ -19,7 +19,7 @@ func usersMePasswordHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "User password was not updated",
-			"error":    "must use valid token string",
+			"error":    "must use valid token field",
 		})
 		return
 	}
@@ -30,7 +30,7 @@ func usersMePasswordHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",
 			"_message": "User password was not updated",
-			"error":    "invalid token string",
+			"error":    "invalid token field",
 		})
 		return
 	}
