@@ -9,10 +9,7 @@ import (
 )
 
 func TestValidEmailModel(t *testing.T) {
-	email := Email{
-		Address: "",
-	}
-
+	email := Email{}
 	assert.False(t, IsValid("validate", email))
 	val := validateModel("validate", email)
 	assert.NotNil(t, val, fmt.Sprintf("%v", val))

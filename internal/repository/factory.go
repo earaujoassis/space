@@ -44,3 +44,7 @@ func (f *RepositoryFactory) NewSessionRepository() *SessionRepository {
 func (f *RepositoryFactory) NewUserRepository() *UserRepository {
 	return NewUserRepository(f.db)
 }
+
+func (f *RepositoryFactory) NewEmailRepository() *EmailRepository {
+	return NewEmailRepository(f.db)
+}

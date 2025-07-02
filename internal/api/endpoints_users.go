@@ -69,5 +69,17 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			requiresApplicationSession(),
 			actionTokenBearerAuthorization(),
 			usersMeAdminHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.GET("/emails",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersMeEmailsListHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.POST("/emails",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersMeEmailsCreateHandler)
 	}
 }

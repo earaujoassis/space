@@ -10,8 +10,6 @@ import (
 )
 
 type User struct {
-	Username      string
-	Email         string
 	Passphrase    string
 	CodeSecretKey string
 	Model         models.User
@@ -52,8 +50,6 @@ func (f *TestRepositoryFactory) NewUserWithOption(opts UserOptions) *User {
 	user.Language = repositories.Languages().FindOrCreate("English", "en-US")
 	repositories.Users().Create(&user)
 	localUser := User{
-		Username:      user.Username,
-		Email:         user.Email,
 		Passphrase:    passphrase,
 		CodeSecretKey: codeSecretKey,
 		Model:         user,

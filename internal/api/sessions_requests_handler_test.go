@@ -82,7 +82,7 @@ func (s *ApiHandlerTestSuite) TestSessionsRequestsHandler() {
 
 	formData := url.Values{}
 	formData.Set("request_type", "passwordless_signin")
-	formData.Set("holder", userTest.Username)
+	formData.Set("holder", userTest.Model.Username)
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "POST", "/api/sessions/requests", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)

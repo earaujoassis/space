@@ -42,3 +42,7 @@ func (rm *RepositoryManager) Sessions() *SessionRepository {
 func (rm *RepositoryManager) Users() *UserRepository {
 	return rm.factory.NewUserRepository()
 }
+
+func (rm *RepositoryManager) Emails() *EmailRepository {
+	return rm.factory.NewEmailRepository()
+}

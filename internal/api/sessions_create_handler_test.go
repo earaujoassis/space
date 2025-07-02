@@ -35,7 +35,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	}
 
 	formData := url.Values{}
-	formData.Set("holder", userTest.Username)
+	formData.Set("holder", userTest.Model.Username)
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", userTest.GenerateCode())
 	encoded := formData.Encode()
@@ -50,7 +50,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	s.True(r.HasKeyInJSON("state"))
 
 	formData = url.Values{}
-	formData.Set("holder", userTest.Email)
+	formData.Set("holder", userTest.Model.Email)
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", userTest.GenerateCode())
 	encoded = formData.Encode()
@@ -73,7 +73,7 @@ func (s *ApiHandlerTestSuite) TestSessionsCreateHandler() {
 	s.Require().Equal(400, w.Code)
 
 	formData = url.Values{}
-	formData.Set("holder", userTest.Email)
+	formData.Set("holder", userTest.Model.Email)
 	formData.Set("password", userTest.Passphrase)
 	formData.Set("passcode", "000000")
 	encoded = formData.Encode()

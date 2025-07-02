@@ -90,22 +90,22 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithKnownHolder() {
 
 	formData := url.Values{}
 	formData.Set("request_type", "password")
-	formData.Set("holder", userTest.Email)
+	formData.Set("holder", userTest.Model.Email)
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
 
 	formData = url.Values{}
 	formData.Set("request_type", "secrets")
-	formData.Set("holder", userTest.Email)
+	formData.Set("holder", userTest.Model.Email)
 	encoded = formData.Encode()
 	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
 
 	formData = url.Values{}
 	formData.Set("request_type", "email_verification")
-	formData.Set("holder", userTest.Email)
-	formData.Set("email", userTest.Email)
+	formData.Set("holder", userTest.Model.Email)
+	formData.Set("email", userTest.Model.Email)
 	encoded = formData.Encode()
 	w = s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
@@ -119,7 +119,7 @@ func (s *ApiHandlerTestSuite) TestUsersMeRequestsHandlerWithoutEmailForValidatio
 
 	formData := url.Values{}
 	formData.Set("request_type", "email_verification")
-	formData.Set("holder", userTest.Username)
+	formData.Set("holder", userTest.Model.Username)
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "POST", "/api/users/me/requests", header, nil, strings.NewReader(encoded))
 	r := utils.ParseResponse(w.Result(), nil)

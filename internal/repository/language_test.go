@@ -7,19 +7,16 @@ import (
 func (s *RepositoryTestSuite) TestLanguageRepository__Create() {
 	repository := NewLanguageRepository(s.DB)
 
-	language := models.Language{
-		Name:    "",
-		IsoCode: "",
-	}
+	language := models.Language{}
 	err := repository.Create(&language)
-	s.NotNil(err)
+	s.Error(err)
 
 	language = models.Language{
 		Name:    "Português (Brasil)",
 		IsoCode: "pt-BR",
 	}
 	err = repository.Create(&language)
-	s.Nil(err)
+	s.NoError(err)
 }
 
 func (s *RepositoryTestSuite) TestLanguageRepository__GetByID() {
@@ -114,7 +111,7 @@ func (s *RepositoryTestSuite) TestLanguageRepository__Delete() {
 	err = repository.Delete(id)
 	s.Require().NoError(err)
 	_, err = repository.GetByID(id)
-	s.NotNil(err)
+	s.Error(err)
 	s.Equal(err.Error(), "record not found")
 }
 

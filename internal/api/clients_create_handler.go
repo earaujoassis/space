@@ -43,7 +43,8 @@ func clientsCreateHandler(c *gin.Context) {
 			"error":    fmt.Sprintf("%v", err),
 			"client":   client,
 		})
-	} else {
-		c.JSON(http.StatusNoContent, nil)
+		return
 	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

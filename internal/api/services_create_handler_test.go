@@ -44,7 +44,7 @@ func (s *ApiHandlerTestSuite) TestServicesCreateHandlerWithoutActionGrant() {
 	s.Equal("must use valid token field", r.JSON["error"])
 }
 
-func (s *ApiHandlerTestSuite) TestServicesCreateHandlerByAdminUser() {
+func (s *ApiHandlerTestSuite) TestServicesCreateHandlerWithoutData() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 	user := s.Factory.GetAvailableUser()
@@ -62,13 +62,26 @@ func (s *ApiHandlerTestSuite) TestServicesCreateHandlerByAdminUser() {
 	s.True(r.HasKeyInJSON("error"))
 	s.True(r.HasKeyInJSON("_message"))
 	s.Equal("Service was not created", r.JSON["_message"])
+}
+
+func (s *ApiHandlerTestSuite) TestServicesCreateHandlerByAdminUser() {
+	cookie := s.createSessionCookie(true)
+	s.NotNil(cookie)
+	user := s.Factory.GetAvailableUser()
+	actionToken := s.Factory.NewAction(user).Model.Token
+	s.Require().Equal(len(actionToken), 64)
+
+	header := &http.Header{
+		"X-Requested-By": []string{"SpaceApi"},
+		"Authorization":  []string{fmt.Sprintf("Bearer %s", actionToken)},
+	}
 
 	formData := url.Values{}
-	formData.Set("name", "")
+	formData.Set("name", "") // empty name
 	formData.Set("description", gofakeit.ProductDescription())
 	formData.Set("canonical_uri", "http://localhost")
 	encoded := formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/services", header, cookie, strings.NewReader(encoded))
+	w := s.PerformRequest(s.Router, "POST", "/api/services", header, cookie, strings.NewReader(encoded))
 	s.Require().Equal(400, w.Code)
 
 	formData = url.Values{}

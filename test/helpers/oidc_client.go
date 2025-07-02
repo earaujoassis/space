@@ -52,7 +52,7 @@ func (c *OIDCCTestlient) ClearSession() {
 func (c *OIDCCTestlient) StartSession(user *factory.User) {
 	c.ClearSession()
 	code := user.GenerateCode()
-	response := c.LoginUser(user.Username, user.Passphrase, code)
+	response := c.LoginUser(user.Model.Username, user.Passphrase, code)
 	json := response.JSON
 	location := c.baseURL +
 		fmt.Sprintf("%s", json["redirect_uri"]) +

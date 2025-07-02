@@ -8,11 +8,7 @@ import (
 )
 
 func TestValidLanguageModel(t *testing.T) {
-	language := Language{
-		Name:    "",
-		IsoCode: "",
-	}
-
+	language := Language{}
 	assert.False(t, IsValid("validate", language))
 	val := validateModel("validate", language)
 	assert.NotNil(t, val, fmt.Sprintf("%v", val))

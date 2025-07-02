@@ -12,7 +12,7 @@ import (
 	"github.com/earaujoassis/space/internal/utils"
 )
 
-func servicesListHandler(c *gin.Context) {
+func usersMeEmailsCreateHandler(c *gin.Context) {
 	repositories := ioc.GetRepositories(c)
 	action := c.MustGet("Action").(models.Action)
 	user := c.MustGet("User").(models.User)
@@ -20,15 +20,27 @@ func servicesListHandler(c *gin.Context) {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",
-			"_message": "Services are not available",
+			"_message": "Email was not created",
 			"error":    shared.AccessDenied,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, utils.H{
-		"_status":  "success",
-		"_message": "Services are available",
-		"services": repositories.Services().GetAll(),
-	})
+	email := models.Email{
+		User:    user,
+		Address: c.PostForm("address"),
+	}
+	err := repositories.Emails().Create(&email)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.H{
+			"_status":  "error",
+			"_message": "Email was not created",
+			"error":    "cannot create Email",
+			"email":    email,
+		})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

@@ -99,13 +99,8 @@ func TestValidClientModelWithMultipleScopes(t *testing.T) {
 
 func TestInvalidClientMissingRequiredFields(t *testing.T) {
 	client := Client{
-		Name:         "",
-		Description:  "", // this can be empty
-		Secret:       "",
-		Scopes:       "",
 		CanonicalURI: []string{""},
 		RedirectURI:  []string{""},
-		Type:         "",
 	}
 
 	assert.False(t, IsValid("validate", client))

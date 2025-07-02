@@ -42,7 +42,8 @@ func servicesCreateHandler(c *gin.Context) {
 			"error":    "cannot create Service",
 			"service":  service,
 		})
-	} else {
-		c.JSON(http.StatusNoContent, nil)
+		return
 	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
