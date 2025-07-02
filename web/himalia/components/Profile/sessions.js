@@ -23,9 +23,11 @@ const sessions = ({ revokeApplicationSessionForUser, sessions }) => {
                                             Revoke session
                                         </button>
                                     </span>
-                                    {entry.current ? (
-                                        <span className="profile_session__current">[current session]</span>
-                                    ) : null}
+                                    <span>
+                                        {entry.current ? (
+                                            <span className="profile_session__current">current session</span>
+                                        ) : null}
+                                    </span>
                                 </p>
                             </div>
                         </li>
