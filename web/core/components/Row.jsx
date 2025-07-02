@@ -2,20 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const row = ({ className, children }) => {
-    let finalClassName = `row ${className}`
+  let finalClassName = `row ${className}`
 
-    return (
-        <div className={finalClassName}>{children}</div>
-    )
+  return <div className={finalClassName}>{children}</div>
 }
 
 row.propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node
+  className: PropTypes.string,
+  children: PropTypes.node,
 }
 
 row.defaultProps = {
-    className: ''
+  className: '',
 }
 
 export default row

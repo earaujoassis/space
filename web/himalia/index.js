@@ -11,20 +11,19 @@ import '@core/styles/core.scss'
 import './globals.css'
 
 const store = configureStore({
-    reducer: {
-        root: reducers,
-    },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(thunk),
-    devTools: process.env.NODE_ENV !== 'production'
+  reducer: {
+    root: reducers,
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+  devTools: process.env.NODE_ENV !== 'production',
 })
 
 const app = (
-    <Provider store={store}>
-        <App />
-    </Provider>
+  <Provider store={store}>
+    <App />
+  </Provider>
 )
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(app, document.getElementById('application-context'))
+  ReactDOM.render(app, document.getElementById('application-context'))
 })

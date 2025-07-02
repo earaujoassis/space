@@ -5,9 +5,4 @@ import NewClient from './newClient'
 
 import './style.css'
 
-export {
-    AllClients,
-    EditClient,
-    EditScopes,
-    NewClient
-}
+export { AllClients, EditClient, EditScopes, NewClient }
