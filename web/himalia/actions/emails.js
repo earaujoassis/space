@@ -7,36 +7,36 @@ export const emailRecordStart = () => {
   }
 }
 
-export const emailRecordSuccess = (data) => {
+export const emailRecordSuccess = data => {
   return {
     type: actionTypes.EMAIL_RECORD_SUCCESS,
     emails: data.emails,
   }
 }
 
-export const emailRecordError = (error) => {
+export const emailRecordError = error => {
   return {
     type: actionTypes.EMAIL_RECORD_ERROR,
     error: error,
   }
 }
 
-export const fetchEmails = (token) => {
-  return (dispatch) => {
+export const fetchEmails = token => {
+  return dispatch => {
     dispatch(emailRecordStart())
     fetch
       .get('users/me/emails', { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      .then(response => {
         dispatch(emailRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(emailRecordError(error))
       })
   }
 }
 
 export const addEmail = (data, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(emailRecordStart())
     fetch
       .post('users/me/emails', data, {
@@ -45,7 +45,7 @@ export const addEmail = (data, token) => {
       .then(() => {
         dispatch(emailRecordSuccess())
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(emailRecordError(error))
       })
   }

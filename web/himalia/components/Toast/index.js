@@ -7,7 +7,7 @@ import * as actions from '@actions'
 
 import './style.css'
 
-const extractMessage = (error) => {
+const extractMessage = error => {
   if (
     error &&
     error.response &&
@@ -38,7 +38,7 @@ const toast = ({ internalSetToastDisplay, displayToast, success, error }) => {
         </div>
         <div className="toast-close-box">
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault()
               internalSetToastDisplay()
             }}
@@ -54,7 +54,7 @@ const toast = ({ internalSetToastDisplay, displayToast, success, error }) => {
   return null
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     success: state.root.success,
     error: state.root.error,
@@ -62,7 +62,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     internalSetToastDisplay: () => dispatch(actions.internalSetToastDisplay()),
   }

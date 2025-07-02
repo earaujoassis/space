@@ -28,7 +28,7 @@ const newService = ({ createService, application, stateSignal }) => {
           className="form-common"
           action="."
           method="post"
-          onSubmit={(e) => {
+          onSubmit={e => {
             e.preventDefault()
             const attrs = ['name', 'description', 'canonical_uri']
             const data = extractDataForm(e.target, attrs)
@@ -73,7 +73,7 @@ const newService = ({ createService, application, stateSignal }) => {
                 name="canonical_uri"
                 inputMode="url"
                 type="url"
-                onBlurCapture={(e) => prependUrlWithHttps(e)}
+                onBlurCapture={e => prependUrlWithHttps(e)}
               />
             </div>
           </div>
@@ -82,7 +82,7 @@ const newService = ({ createService, application, stateSignal }) => {
               <input
                 tabIndex="4"
                 type="submit"
-                className="button"
+                className="button submit"
                 value="Create service application"
               />
             </div>
@@ -93,14 +93,14 @@ const newService = ({ createService, application, stateSignal }) => {
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     application: state.root.application,
     stateSignal: state.root.stateSignal,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     createService: (data, token) =>
       dispatch(actions.createService(data, token)),

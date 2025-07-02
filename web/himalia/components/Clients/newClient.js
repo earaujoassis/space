@@ -41,7 +41,7 @@ const newClient = ({ createClient, application, stateSignal }) => {
           className="form-common"
           action="."
           method="post"
-          onSubmit={(e) => {
+          onSubmit={e => {
             e.preventDefault()
             const attrs = [
               'name',
@@ -92,7 +92,7 @@ const newClient = ({ createClient, application, stateSignal }) => {
                 name="canonical_uri"
                 inputMode="url"
                 type="url"
-                onBlurCapture={(e) => prependUrlWithHttps(e)}
+                onBlurCapture={e => prependUrlWithHttps(e)}
               />
             </div>
           </div>
@@ -107,7 +107,7 @@ const newClient = ({ createClient, application, stateSignal }) => {
                 name="redirect_uri"
                 inputMode="url"
                 type="url"
-                onBlurCapture={(e) => prependUrlWithHttps(e)}
+                onBlurCapture={e => prependUrlWithHttps(e)}
               />
             </div>
           </div>
@@ -116,7 +116,7 @@ const newClient = ({ createClient, application, stateSignal }) => {
               <input
                 tabIndex="5"
                 type="submit"
-                className="button"
+                className="button submit"
                 value="Create client application"
               />
             </div>
@@ -127,14 +127,14 @@ const newClient = ({ createClient, application, stateSignal }) => {
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     application: state.root.application,
     stateSignal: state.root.stateSignal,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     createClient: (data, token) => dispatch(actions.createClient(data, token)),
   }

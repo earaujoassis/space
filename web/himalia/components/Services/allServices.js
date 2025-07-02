@@ -42,7 +42,7 @@ const allServices = ({ fetchServices, loading, application, services }) => {
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
@@ -50,9 +50,9 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    fetchServices: (token) => dispatch(actions.fetchServices(token)),
+    fetchServices: token => dispatch(actions.fetchServices(token)),
   }
 }
 

@@ -57,13 +57,11 @@ const personal = ({
           emails={emailsComplete}
           requestedVerification={requestedVerification}
           setRequestedVerification={setRequestedVerification}
-          requestEmailVerification={(email) =>
+          requestEmailVerification={email =>
             requestEmailVerification(user.email, email)
           }
         />
-        <NewEmail
-          addEmail={(data) => addEmail(data, application.action_token)}
-        />
+        <NewEmail addEmail={data => addEmail(data, application.action_token)} />
       </>
     )
   }
@@ -76,7 +74,7 @@ const personal = ({
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
@@ -85,11 +83,11 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     fetchUserProfile: (id, token) =>
       dispatch(actions.fetchUserProfile(id, token)),
-    fetchEmails: (token) => dispatch(actions.fetchEmails(token)),
+    fetchEmails: token => dispatch(actions.fetchEmails(token)),
     requestEmailVerification: (holder, email) =>
       dispatch(actions.requestEmailVerification(holder, email)),
     addEmail: (data, token) => dispatch(actions.addEmail(data, token)),

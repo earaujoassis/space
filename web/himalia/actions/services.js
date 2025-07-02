@@ -7,14 +7,14 @@ export const serviceRecordStart = () => {
   }
 }
 
-export const serviceRecordSuccess = (data) => {
+export const serviceRecordSuccess = data => {
   return {
     type: actionTypes.SERVICE_RECORD_SUCCESS,
     services: data.services,
   }
 }
 
-export const serviceRecordError = (error) => {
+export const serviceRecordError = error => {
   return {
     type: actionTypes.SERVICE_RECORD_ERROR,
     error: error,
@@ -22,28 +22,28 @@ export const serviceRecordError = (error) => {
 }
 
 export const createService = (data, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(serviceRecordStart())
     fetch
       .post('services', data, { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      .then(response => {
         dispatch(serviceRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(serviceRecordError(error))
       })
   }
 }
 
-export const fetchServices = (token) => {
-  return (dispatch) => {
+export const fetchServices = token => {
+  return dispatch => {
     dispatch(serviceRecordStart())
     fetch
       .get('services', { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      .then(response => {
         dispatch(serviceRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(serviceRecordError(error))
       })
   }

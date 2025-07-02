@@ -48,7 +48,7 @@ const applications = ({
                   <p>{client.description}</p>
                   <p>
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault()
                         revokeClientApplicationFromUser(
                           user_id,
@@ -78,7 +78,7 @@ const applications = ({
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
@@ -86,7 +86,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     fetchClientApplicationsFromUser: (id, token) =>
       dispatch(actions.fetchClientApplicationsFromUser(id, token)),

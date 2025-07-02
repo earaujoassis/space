@@ -11,7 +11,7 @@ const scopesGroup = ({ initialScopes, onChange }) => {
     setSelect(initialScopes)
   }, [initialScopes])
 
-  const onSelection = (value) => {
+  const onSelection = value => {
     const newSelected = [...selected]
     if (newSelected.includes(value)) {
       const index = selected.indexOf(value)
@@ -23,7 +23,7 @@ const scopesGroup = ({ initialScopes, onChange }) => {
     onChange(newSelected)
   }
 
-  const setIcon = (value) => {
+  const setIcon = value => {
     if (selected.includes(value)) {
       return (
         <FontAwesomeIcon

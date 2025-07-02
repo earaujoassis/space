@@ -9,7 +9,7 @@ const sessions = ({ revokeApplicationSessionForUser, sessions }) => {
     <>
       <h3 className="globals__subheader">Active sessions</h3>
       <ul className="profile_session__list">
-        {sessions.map((entry) => {
+        {sessions.map(entry => {
           return (
             <li key={entry.id}>
               <div className="profile_session__entry">

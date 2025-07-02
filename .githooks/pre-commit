@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 printf "Running linters:\n"
-linter=$(task lint)
+linter=$(task lint && yarn lint)
 ret_code=$?
 
 # Run linters and check return code

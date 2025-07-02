@@ -22,7 +22,7 @@ const addLoading = (state, entity) => {
 
 const reduceLoading = (state, entity) => {
   const loading = JSON.parse(JSON.stringify(state.loading))
-  return loading.filter((element) => element !== entity)
+  return loading.filter(element => element !== entity)
 }
 
 const internalSetToastDisplay = (state, action) => {
@@ -31,7 +31,7 @@ const internalSetToastDisplay = (state, action) => {
   })
 }
 
-const internalRecordStart = (state) => {
+const internalRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'application'),
@@ -58,7 +58,7 @@ const internalRecordError = (state, action) => {
   })
 }
 
-const userRecordStart = (state) => {
+const userRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'user'),
@@ -89,7 +89,7 @@ const userRecordError = (state, action) => {
   })
 }
 
-const userRequestStart = (state) => {
+const userRequestStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'user'),
@@ -97,7 +97,7 @@ const userRequestStart = (state) => {
   })
 }
 
-const userRequestSuccess = (state) => {
+const userRequestSuccess = state => {
   NProgress.done()
   return Object.assign({}, state, {
     loading: reduceLoading(state, 'user'),
@@ -118,7 +118,7 @@ const userRequestError = (state, action) => {
   })
 }
 
-const emailRecordStart = (state) => {
+const emailRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'email'),
@@ -149,7 +149,7 @@ const emailRecordError = (state, action) => {
   })
 }
 
-const sessionRecordStart = (state) => {
+const sessionRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'session'),
@@ -180,7 +180,7 @@ const sessionRecordError = (state, action) => {
   })
 }
 
-const clientRecordStart = (state) => {
+const clientRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'client'),
@@ -211,7 +211,7 @@ const clientRecordError = (state, action) => {
   })
 }
 
-const serviceRecordStart = (state) => {
+const serviceRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
     loading: addLoading(state, 'service'),

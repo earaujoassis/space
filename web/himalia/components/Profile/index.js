@@ -104,7 +104,7 @@ const personal = ({
           />
           <Sessions
             sessions={sessions}
-            revokeApplicationSessionForUser={(id) =>
+            revokeApplicationSessionForUser={id =>
               revokeApplicationSessionForUser(
                 application.user_id,
                 id,
@@ -125,7 +125,7 @@ const personal = ({
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
@@ -134,7 +134,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     fetchUserProfile: (id, token) =>
       dispatch(actions.fetchUserProfile(id, token)),

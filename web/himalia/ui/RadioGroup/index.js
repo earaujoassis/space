@@ -15,7 +15,7 @@ const radioGroup = ({
     setSelectedRadio(defaultOption)
   }, [defaultOption])
 
-  const setRadio = (value) => {
+  const setRadio = value => {
     return () => {
       setSelectedRadio(value)
       if (onChange) {
@@ -24,11 +24,11 @@ const radioGroup = ({
     }
   }
 
-  const isSelected = (value) => {
+  const isSelected = value => {
     return selectedRadio === value ? 'selected' : ''
   }
 
-  const setIcon = (value) => {
+  const setIcon = value => {
     if (selectedRadio === value) {
       return (
         <FontAwesomeIcon

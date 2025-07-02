@@ -27,7 +27,7 @@ const security = ({
   const [resetSecretCodesRequested, setResetSecretCodesRequested] =
     useState(false)
 
-  const handleKeypressForAdminify = (e) => {
+  const handleKeypressForAdminify = e => {
     if (e.key === 'Enter') {
       becomeAdmin(application.user_id, applicationKey, application.action_token)
     }
@@ -44,7 +44,7 @@ const security = ({
             <input
               value={applicationKey}
               onKeyDown={handleKeypressForAdminify}
-              onChange={(e) => setApplicationKey(e.target.value)}
+              onChange={e => setApplicationKey(e.target.value)}
               id="settings__application-key"
               type="text"
             />
@@ -141,7 +141,7 @@ const security = ({
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
@@ -149,13 +149,13 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     fetchUserProfile: (id, token) =>
       dispatch(actions.fetchUserProfile(id, token)),
-    requestResetPassword: (username) =>
+    requestResetPassword: username =>
       dispatch(actions.requestResetPassword(username)),
-    requestResetSecretCodes: (username) =>
+    requestResetSecretCodes: username =>
       dispatch(actions.requestResetSecretCodes(username)),
     becomeAdmin: (id, key, token) =>
       dispatch(actions.becomeAdmin(id, key, token)),

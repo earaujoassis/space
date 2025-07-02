@@ -1,6 +1,6 @@
 import React from 'react'
 
-const emailEntryVerified = (verified) => {
+const emailEntryVerified = verified => {
   if (verified) {
     return <span className="emails__entry-tag verified">verified</span>
   } else {
@@ -8,7 +8,7 @@ const emailEntryVerified = (verified) => {
   }
 }
 
-const emailEntryPrimary = (primary) => {
+const emailEntryPrimary = primary => {
   if (primary) {
     return <span className="emails__entry-tag primary">primary</span>
   }
@@ -28,7 +28,7 @@ const emails = ({
 
   return (
     <ul className="emails__list">
-      {emails.map((entry) => (
+      {emails.map(entry => (
         <li key={entry.id || 'primary-email'}>
           <div className="emails__entry">
             <p>
@@ -40,7 +40,7 @@ const emails = ({
               {entry.verified ||
               requestedVerification.includes(entry.id) ? null : (
                 <button
-                  onClick={(e) => {
+                  onClick={e => {
                     e.preventDefault()
                     requestEmailVerification(entry.address)
                     setRequestedVerification([

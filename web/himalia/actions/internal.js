@@ -14,14 +14,14 @@ export const internalRecordStart = () => {
   }
 }
 
-export const internalRecordSuccess = (data) => {
+export const internalRecordSuccess = data => {
   return {
     type: actionTypes.INTERNAL_RECORD_SUCCESS,
     application: data.application,
   }
 }
 
-export const internalRecordError = (error) => {
+export const internalRecordError = error => {
   return {
     type: actionTypes.INTERNAL_RECORD_ERROR,
     error: error,
@@ -29,14 +29,14 @@ export const internalRecordError = (error) => {
 }
 
 export const fetchWorkspace = () => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(internalRecordStart())
     fetch
       .get('users/me/workspace')
-      .then((response) => {
+      .then(response => {
         dispatch(internalRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(internalRecordError(error))
       })
   }

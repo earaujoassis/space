@@ -7,14 +7,14 @@ export const clientRecordStart = () => {
   }
 }
 
-export const clientRecordSuccess = (data) => {
+export const clientRecordSuccess = data => {
   return {
     type: actionTypes.CLIENT_RECORD_SUCCESS,
     clients: data.clients,
   }
 }
 
-export const clientRecordError = (error) => {
+export const clientRecordError = error => {
   return {
     type: actionTypes.CLIENT_RECORD_ERROR,
     error: error,
@@ -22,82 +22,82 @@ export const clientRecordError = (error) => {
 }
 
 export const createClient = (data, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(clientRecordStart())
     fetch
       .post('clients', data, { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(clientRecordError(error))
       })
   }
 }
 
-export const fetchClients = (token) => {
-  return (dispatch) => {
+export const fetchClients = token => {
+  return dispatch => {
     dispatch(clientRecordStart())
     fetch
       .get('clients', { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(clientRecordError(error))
       })
   }
 }
 
-export const setClientForEdition = (client) => {
-  return (dispatch) => {
+export const setClientForEdition = client => {
+  return dispatch => {
     dispatch(clientRecordSuccess({ clients: [client] }))
   }
 }
 
 export const updateClient = (id, data, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(clientRecordStart())
     fetch
       .patch(`clients/${id}/profile`, data, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((response) => {
+      .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(clientRecordError(error))
       })
   }
 }
 
 export const fetchClientApplicationsFromUser = (id, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(clientRecordStart())
     fetch
       .get(`users/${id}/clients`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((response) => {
+      .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(clientRecordError(error))
       })
   }
 }
 
 export const revokeClientApplicationFromUser = (userId, clientId, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(clientRecordStart())
     fetch
       .delete(`users/${userId}/clients/${clientId}/revoke`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((response) => {
+      .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(clientRecordError(error))
       })
   }

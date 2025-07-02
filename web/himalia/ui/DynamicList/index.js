@@ -4,7 +4,7 @@ import { prependUrlWithHttps } from '@utils/forms'
 
 import './style.css'
 
-const convertListTopMap = (list) => {
+const convertListTopMap = list => {
   const map = new Map()
   list.forEach((value, index) => {
     map.set(index, value)
@@ -30,7 +30,7 @@ const dynamicList = ({
     setCounter(defaultList.length + 1)
   }, [defaultList])
 
-  const addEntry = (inputValue) => {
+  const addEntry = inputValue => {
     if (inputValue.length === 0) {
       return
     }
@@ -44,8 +44,8 @@ const dynamicList = ({
     }
   }
 
-  const removeEntry = (key) => {
-    return (e) => {
+  const removeEntry = key => {
+    return e => {
       e.preventDefault()
       localList.delete(key)
       setLocalList(new Map(localList))
@@ -78,7 +78,7 @@ const dynamicList = ({
     })
   }
 
-  const handleKeypress = (e) => {
+  const handleKeypress = e => {
     if (e.key === 'Enter') {
       e.preventDefault()
       e.stopPropagation()
@@ -99,8 +99,8 @@ const dynamicList = ({
             tabIndex={tabIndex}
             value={inputValue}
             onKeyDown={handleKeypress}
-            onChange={(e) => setInputValue(e.target.value)}
-            onBlurCapture={(e) => prependUrlWithHttps(e)}
+            onChange={e => setInputValue(e.target.value)}
+            onBlurCapture={e => prependUrlWithHttps(e)}
             id={`dynamic-list__${id}`}
             inputMode="url"
             type="text"

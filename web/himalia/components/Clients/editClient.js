@@ -43,7 +43,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
         className="form-common"
         action="."
         method="post"
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault()
           const data = new FormData()
           data.append('canonical_uri', canonicalUri.join('\n'))
@@ -77,7 +77,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
           </div>
         </div>
         <DynamicList
-          onChange={(list) => setCanonicalUri(Array.from(list))}
+          onChange={list => setCanonicalUri(Array.from(list))}
           defaultList={canonicalUri}
           label="Canonical URI"
           labelPlural="Canonical URIs"
@@ -86,7 +86,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
           tabIndex="1"
         />
         <DynamicList
-          onChange={(list) => setRedirectUri(Array.from(list))}
+          onChange={list => setRedirectUri(Array.from(list))}
           defaultList={redirectUri}
           label="Redirect URI"
           labelPlural="Redirect URIs"
@@ -100,12 +100,12 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
               disabled={formSent}
               tabIndex="3"
               type="submit"
-              className="button"
+              className="button submit"
               value="Save client application"
             />
             <button
               tabIndex="4"
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault()
                 navigate('/clients')
               }}
@@ -128,7 +128,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     application: state.root.application,
     clients: state.root.clients,
@@ -136,7 +136,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     updateClient: (id, data, token) =>
       dispatch(actions.updateClient(id, data, token)),

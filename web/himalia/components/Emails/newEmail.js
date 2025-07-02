@@ -10,7 +10,7 @@ const newEmail = ({ addEmail }) => {
         action="."
         method="post"
         data-form-type="other"
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault()
           const data = extractDataForm(e.target, ['address'])
           addEmail(data)
@@ -37,7 +37,7 @@ const newEmail = ({ addEmail }) => {
               <input
                 tabIndex="2"
                 type="submit"
-                className="button emails__button"
+                className="button-anchor emails__button"
                 value="Add"
               />
             </div>

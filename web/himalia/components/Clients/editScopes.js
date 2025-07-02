@@ -36,7 +36,7 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
         className="form-common"
         action="."
         method="post"
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault()
           const data = new FormData()
           data.append('scopes', scopes.join(' '))
@@ -63,7 +63,7 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
         </div>
         <ScopesGroup
           initialScopes={scopes}
-          onChange={(scopes) => setScopes(scopes)}
+          onChange={scopes => setScopes(scopes)}
         />
         <div className="globals__siblings globals__form-actions">
           <div className="globals__input-wrapper">
@@ -71,12 +71,12 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
               disabled={formSent}
               tabIndex="3"
               type="submit"
-              className="button"
+              className="button submit"
               value="Save client application"
             />
             <button
               tabIndex="4"
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault()
                 navigate('/clients')
               }}
@@ -99,7 +99,7 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     application: state.root.application,
     clients: state.root.clients,
@@ -107,7 +107,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     updateClient: (id, data, token) =>
       dispatch(actions.updateClient(id, data, token)),

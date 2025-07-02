@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 
 import Layout from '@containers/Layout'
@@ -77,9 +77,9 @@ const app = () => {
 
   return (
     <React.StrictMode>
-      <Suspense fallback={<p>Pending...</p>}>
+      <React.Suspense fallback={<p>Pending...</p>}>
         <RouterProvider router={router} />
-      </Suspense>
+      </React.Suspense>
     </React.StrictMode>
   )
 }

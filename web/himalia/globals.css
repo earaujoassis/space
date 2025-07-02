@@ -94,7 +94,7 @@
   border-radius: 0;
 }
 
-.globals__input-wrapper input[type="submit"],
+.globals__input-wrapper .button.submit,
 .globals__input-wrapper button.submit {
   display: inline-block;
   margin: 0;
@@ -117,15 +117,18 @@
   color: #272727;
 }
 
-.globals__input-wrapper input[type="submit"]:focus,
+.globals__input-wrapper .button.submit:focus,
 .globals__input-wrapper button.submit:focus,
-.globals__input-wrapper input[type="submit"]:hover,
+.globals__input-wrapper .button.submit:hover,
 .globals__input-wrapper button.submit:hover {
   background-color: #14679e;
   color: #fefefe;
 }
 
-.globals__input-wrapper input[type="submit"] ~ button.submit {
+.globals__input-wrapper .button.submit ~ .button.submit,
+.globals__input-wrapper button.submit ~ button.submit,
+.globals__input-wrapper button.submit ~ .button.submit,
+.globals__input-wrapper .button.submit ~ button.submit {
   margin-left: 16px;
 }
 
@@ -174,4 +177,56 @@
 
 .submenu__list span {
   cursor: default;
+}
+
+.globals__scope {
+  margin: 0;
+  border: 1px solid #cacaca;
+  border-radius: 8px;
+}
+
+.globals__scope ~ .globals__scope {
+  margin-top: 16px;
+}
+
+.globals__scope-header {
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0px;
+  padding: 18px 20px;
+  background: #f8f8f8;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #cacaca;
+}
+
+.globals__scope-corpus {
+  padding: 18px 0;
+  margin: 0 20px;
+  font-size: 14px;
+}
+
+.globals__scope-corpus ~ .globals__scope-corpus {
+  border-top: 1px solid #cacaca;
+}
+
+.globals__scope-corpus .max-width,
+.globals__scope-corpus p {
+  max-width: 80%;
+}
+
+.globals__scope-corpus p:last-child {
+  margin-bottom: 0px;
+}
+
+.globals__scope-subheader {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.globals__scope .switch.tiny {
+  margin-bottom: 0;
 }

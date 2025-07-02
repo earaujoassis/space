@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { ErrorBoundary } from "react-error-boundary";
 import { Outlet } from 'react-router-dom'
 import { connect } from 'react-redux'
 
@@ -6,6 +7,8 @@ import * as actions from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 import Menu from '@components/Menu'
 import Toast from '@components/Toast'
+
+import Error from '@containers/Error'
 
 import './style.css'
 
@@ -15,21 +18,20 @@ const layout = ({ fetchWorkspace, loading, application }) => {
   }, [])
 
   let outlet = <Outlet />
-  let loadingStatus = false
+  const applicationErrorContent = (
+    <Error type="bug">
+      <p>An unexpected error happened</p>
+    </Error>
+  )
 
   if (loading.includes('application') || application === undefined) {
-    loadingStatus = true
     outlet = <SpinningSquare />
   } else if (application && application.error) {
     outlet = (
       <>
-        <div className="error-illustration">
-          <img width="300" src="/public/imgs/illustration.server_error.svg" />
-        </div>
-        <div className="globals__error-message">
-          <h2>Oh, crap</h2>
+        <Error>
           <p>Bad server! The server has just found an error.</p>
-        </div>
+        </Error>
       </>
     )
   }
@@ -39,26 +41,24 @@ const layout = ({ fetchWorkspace, loading, application }) => {
       <div className="layout-root__menu-container">
         <Menu isUserAdmin={application && application.user_is_admin} />
       </div>
-      <div
-        className={`layout-root__corpus-container ${
-          loadingStatus ? 'loading' : 'loaded'
-        }`}
-      >
-        {outlet}
-        <Toast />
+      <div className="layout-root__corpus-container">
+        <ErrorBoundary fallback={applicationErrorContent}>
+          {outlet}
+          <Toast />
+        </ErrorBoundary>
       </div>
     </div>
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     fetchWorkspace: () => dispatch(actions.fetchWorkspace()),
   }

@@ -14,7 +14,7 @@ const store = configureStore({
   reducer: {
     root: reducers,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(thunk),
   devTools: process.env.NODE_ENV !== 'production',
 })
 

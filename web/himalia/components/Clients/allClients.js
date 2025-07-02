@@ -84,7 +84,7 @@ const allClients = ({
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     loading: state.root.loading,
     application: state.root.application,
@@ -92,10 +92,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    fetchClients: (token) => dispatch(actions.fetchClients(token)),
-    setClientForEdition: (client) =>
+    fetchClients: token => dispatch(actions.fetchClients(token)),
+    setClientForEdition: client =>
       dispatch(actions.setClientForEdition(client)),
   }
 }

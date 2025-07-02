@@ -7,14 +7,14 @@ export const userRecordStart = () => {
   }
 }
 
-export const userRecordSuccess = (data) => {
+export const userRecordSuccess = data => {
   return {
     type: actionTypes.USER_RECORD_SUCCESS,
     user: data.user,
   }
 }
 
-export const userRecordError = (error) => {
+export const userRecordError = error => {
   return {
     type: actionTypes.USER_RECORD_ERROR,
     error: error,
@@ -33,7 +33,7 @@ export const userRequestSuccess = () => {
   }
 }
 
-export const userRequestError = (error) => {
+export const userRequestError = error => {
   return {
     type: actionTypes.USER_REQUEST_ERROR,
     error: error,
@@ -41,23 +41,23 @@ export const userRequestError = (error) => {
 }
 
 export const fetchUserProfile = (id, token) => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(userRecordStart())
     fetch
       .get(`users/${id}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((response) => {
+      .then(response => {
         dispatch(userRecordSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(userRecordError(error))
       })
   }
 }
 
 export const becomeAdmin = (id, key, token) => {
-  return (dispatch) => {
+  return dispatch => {
     const data = new FormData()
     data.append('user_id', id)
     data.append('application_key', key)
@@ -66,18 +66,18 @@ export const becomeAdmin = (id, key, token) => {
       .patch('users/me/admin', data, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((response) => {
+      .then(response => {
         dispatch(userRecordSuccess(response.data))
         window.location.reload()
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(userRecordError(error))
       })
   }
 }
 
 export const requestEmailVerification = (holder, email) => {
-  return (dispatch) => {
+  return dispatch => {
     const data = new FormData()
     data.append('request_type', 'email_verification')
     data.append('holder', holder)
@@ -85,44 +85,44 @@ export const requestEmailVerification = (holder, email) => {
     dispatch(userRequestStart())
     fetch
       .post('users/me/requests', data)
-      .then((response) => {
+      .then(response => {
         dispatch(userRequestSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(userRequestError(error))
       })
   }
 }
 
-export const requestResetPassword = (username) => {
-  return (dispatch) => {
+export const requestResetPassword = username => {
+  return dispatch => {
     const data = new FormData()
     data.append('request_type', 'password')
     data.append('holder', username)
     dispatch(userRequestStart())
     fetch
       .post('users/me/requests', data)
-      .then((response) => {
+      .then(response => {
         dispatch(userRequestSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(userRequestError(error))
       })
   }
 }
 
-export const requestResetSecretCodes = (username) => {
-  return (dispatch) => {
+export const requestResetSecretCodes = username => {
+  return dispatch => {
     const data = new FormData()
     data.append('request_type', 'secrets')
     data.append('holder', username)
     dispatch(userRequestStart())
     fetch
       .post('users/me/requests', data)
-      .then((response) => {
+      .then(response => {
         dispatch(userRequestSuccess(response.data))
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(userRequestError(error))
       })
   }
