@@ -36,13 +36,18 @@ const newClient = ({ createClient, application, stateSignal }) => {
                 and policies, while handling user data.
             </p>
             <div className="clients-root">
-                <form className="form-common" action="." method="post" onSubmit={(e) => {
-                    e.preventDefault()
-                    const attrs = ['name', 'description', 'canonical_uri', 'redirect_uri']
-                    const data = extractDataForm(e.target, attrs)
-                    createClient(data, application.action_token)
-                    setFormSent(true)
-                }}>
+                <form
+                    className="form-common"
+                    action="."
+                    method="post"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        const attrs = ['name', 'description', 'canonical_uri', 'redirect_uri']
+                        const data = extractDataForm(e.target, attrs)
+                        createClient(data, application.action_token)
+                        setFormSent(true)
+                    }}
+                >
                     <div className="globals__siblings">
                         <div className="globals__input-wrapper">
                             <label htmlFor="new-client__name">Name</label>

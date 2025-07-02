@@ -24,13 +24,18 @@ const newService = ({ createService, application, stateSignal }) => {
             <h2>Create a new service application</h2>
             <Submenu activeAction="new-service" />
             <div className="services-root">
-                <form className="form-common" action="." method="post" onSubmit={(e) => {
-                    e.preventDefault()
-                    const attrs = ['name', 'description', 'canonical_uri']
-                    const data = extractDataForm(e.target, attrs)
-                    createService(data, application.action_token)
-                    setFormSent(true)
-                }}>
+                <form
+                    className="form-common"
+                    action="."
+                    method="post"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        const attrs = ['name', 'description', 'canonical_uri']
+                        const data = extractDataForm(e.target, attrs)
+                        createService(data, application.action_token)
+                        setFormSent(true)
+                    }}
+                >
                     <div className="globals__siblings">
                         <div className="globals__input-wrapper">
                             <label htmlFor="new-service__name">Name</label>

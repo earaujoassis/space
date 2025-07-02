@@ -35,14 +35,19 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
 
     if (client) {
         content = (
-            <form className="form-common" action="." method="post" onSubmit={(e) => {
-                e.preventDefault()
-                const data = new FormData()
-                data.append('canonical_uri', canonicalUri.join('\n'))
-                data.append('redirect_uri', redirectUri.join('\n'))
-                updateClient(client.id, data, application.action_token)
-                setFormSent(true)
-            }}>
+            <form
+                className="form-common"
+                action="."
+                method="post"
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    const data = new FormData()
+                    data.append('canonical_uri', canonicalUri.join('\n'))
+                    data.append('redirect_uri', redirectUri.join('\n'))
+                    updateClient(client.id, data, application.action_token)
+                    setFormSent(true)
+                }}
+            >
                 <div className="globals__siblings">
                     <div className="globals__input-wrapper">
                         <label htmlFor="new-client__name">Name</label>

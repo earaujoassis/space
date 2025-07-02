@@ -27,10 +27,9 @@ export const userRequestStart = () => {
     }
 }
 
-export const userRequestSuccess = (data) => {
+export const userRequestSuccess = () => {
     return {
-        type: actionTypes.USER_REQUEST_SUCCESS,
-        user: data.user
+        type: actionTypes.USER_REQUEST_SUCCESS
     }
 }
 

@@ -6,6 +6,7 @@ import Applications from '@components/Applications'
 import { AllClients, EditClient, EditScopes, NewClient } from '@components/Clients'
 import Notifications from '@components/Notifications'
 import Profile from '@components/Profile'
+import Emails from '@components/Emails'
 import Security from '@components/Security'
 import { AllServices, NewService } from '@components/Services'
 
@@ -20,6 +21,10 @@ const app = () => {
                 {
                     index: true,
                     element: <Navigate to="/profile" replace />,
+                },
+                {
+                    path: 'emails',
+                    element: <Emails />,
                 },
                 {
                     path: 'applications',

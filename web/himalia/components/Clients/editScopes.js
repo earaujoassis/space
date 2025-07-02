@@ -32,13 +32,18 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
 
     if (client) {
         content = (
-            <form className="form-common" action="." method="post" onSubmit={(e) => {
-                e.preventDefault()
-                const data = new FormData()
-                data.append('scopes', scopes.join(' '))
-                updateClient(client.id, data, application.action_token)
-                setFormSent(true)
-            }}>
+            <form
+                className="form-common"
+                action="."
+                method="post"
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    const data = new FormData()
+                    data.append('scopes', scopes.join(' '))
+                    updateClient(client.id, data, application.action_token)
+                    setFormSent(true)
+                }}
+            >
                 <p>
                     By default, all applications are created with &quot;<code>public</code>&quot; scope, which
                     can&#39;t introspect user data (read user&#39;s full name, email etc.), nor interact

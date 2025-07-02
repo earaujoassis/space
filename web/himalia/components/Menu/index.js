@@ -29,6 +29,12 @@ const menu = ({ isUserAdmin }) => {
                         icon={icon({name: 'user'})} />
                     <Link to="/profile">Personal Info</Link>
                 </li>
+                <li className={pathname === '/emails' ? selectedItemClass : ''}>
+                    <FontAwesomeIcon
+                        className="menu-root__icon"
+                        icon={icon({name: 'envelope'})} />
+                    <Link to="/emails">Emails</Link>
+                </li>
                 <li className={pathname === '/security' ? selectedItemClass : ''}>
                     <FontAwesomeIcon
                         className="menu-root__icon"

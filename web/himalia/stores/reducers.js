@@ -5,6 +5,7 @@ const initialState = {
     displayToast: false,
     application: undefined,
     user: undefined,
+    emails: undefined,
     sessions: undefined,
     clients: undefined,
     services: undefined,
@@ -32,7 +33,9 @@ const internalSetToastDisplay = (state, action) => {
 
 const internalRecordStart = (state) => {
     NProgress.start()
-    return Object.assign({}, state, { loading: addLoading(state, 'application') })
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'application')
+    })
 }
 
 const internalRecordSuccess = (state, action) => {
@@ -57,7 +60,10 @@ const internalRecordError = (state, action) => {
 
 const userRecordStart = (state) => {
     NProgress.start()
-    return Object.assign({}, state, { loading: addLoading(state, 'user'), stateSignal: 'user_record_start' })
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'user'),
+        stateSignal: 'user_record_start'
+    })
 }
 
 const userRecordSuccess = (state, action) => {
@@ -85,7 +91,10 @@ const userRecordError = (state, action) => {
 
 const userRequestStart = (state) => {
     NProgress.start()
-    return Object.assign({}, state, { loading: addLoading(state, 'user'), stateSignal: 'user_request_start' })
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'user'),
+        stateSignal: 'user_request_start'
+    })
 }
 
 const userRequestSuccess = (state) => {
@@ -109,9 +118,43 @@ const userRequestError = (state, action) => {
     })
 }
 
+const emailRecordStart = (state) => {
+    NProgress.start()
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'email'),
+        stateSignal: 'email_record_start'
+    })
+}
+
+const emailRecordSuccess = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'email'),
+        success: true,
+        error: null,
+        emails: action.emails,
+        stateSignal: 'email_record_success'
+    })
+}
+
+const emailRecordError = (state, action) => {
+    NProgress.done()
+    return Object.assign({}, state, {
+        loading: reduceLoading(state, 'email'),
+        displayToast: true,
+        success: false,
+        error: action.error,
+        emails: action.emails,
+        stateSignal: 'email_record_error'
+    })
+}
+
 const sessionRecordStart = (state) => {
     NProgress.start()
-    return Object.assign({}, state, { loading: addLoading(state, 'session'), stateSignal: 'session_record_start' })
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'session'),
+        stateSignal: 'session_record_start'
+    })
 }
 
 const sessionRecordSuccess = (state, action) => {
@@ -139,7 +182,10 @@ const sessionRecordError = (state, action) => {
 
 const clientRecordStart = (state) => {
     NProgress.start()
-    return Object.assign({}, state, { loading: addLoading(state, 'client'), stateSignal: 'client_record_start' })
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'client'),
+        stateSignal: 'client_record_start'
+    })
 }
 
 const clientRecordSuccess = (state, action) => {
@@ -167,7 +213,10 @@ const clientRecordError = (state, action) => {
 
 const serviceRecordStart = (state) => {
     NProgress.start()
-    return Object.assign({}, state, { loading: addLoading(state, 'service'), stateSignal: 'service_record_start' })
+    return Object.assign({}, state, {
+        loading: addLoading(state, 'service'),
+        stateSignal: 'service_record_start'
+    })
 }
 
 const serviceRecordSuccess = (state, action) => {
@@ -205,6 +254,9 @@ const reducer = (state = initialState, action) => {
     case actionTypes.USER_REQUEST_START: return userRequestStart(state, action)
     case actionTypes.USER_REQUEST_SUCCESS: return userRequestSuccess(state, action)
     case actionTypes.USER_REQUEST_ERROR: return userRequestError(state, action)
+    case actionTypes.EMAIL_RECORD_START: return emailRecordStart(state, action)
+    case actionTypes.EMAIL_RECORD_SUCCESS: return emailRecordSuccess(state, action)
+    case actionTypes.EMAIL_RECORD_ERROR: return emailRecordError(state, action)
     case actionTypes.SESSION_RECORD_START: return sessionRecordStart(state, action)
     case actionTypes.SESSION_RECORD_SUCCESS: return sessionRecordSuccess(state, action)
     case actionTypes.SESSION_RECORD_ERROR: return sessionRecordError(state, action)

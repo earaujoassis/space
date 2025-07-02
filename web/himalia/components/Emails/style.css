@@ -1,0 +1,88 @@
+.emails__list {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 10px 26px;
+  border: 1px solid #cacaca;
+  border-radius: 8px;
+}
+
+.emails__list > li {
+  padding: 10px 0;
+  padding-right: 20px;
+  margin: 0;
+  border-bottom: 1px solid #cacaca;
+}
+
+.emails__list > li:last-child {
+  border-bottom: 0;
+}
+
+.emails__entry {
+  display: flex;
+  flex-direction: row;
+}
+
+.emails__entry > * {
+  flex: 1;
+}
+
+.emails__entry p {
+  margin-bottom: 0;
+}
+
+.emails__entry p > span {
+  display: inline-block;
+}
+
+.emails__entry-action {
+  text-align: right;
+}
+
+.emails__entry-address {
+  padding: 4px 8px;
+  line-height: 1rem;
+  margin-right: 12px;
+}
+
+.emails__entry-tag {
+  padding: 4px 6px;
+  border: 1px solid #cacaca;
+  border-radius: 4px;
+  line-height: 1rem;
+  margin: 0 8px;
+}
+
+.emails__entry-tag.primary {
+  border-color: #0c0c5b;
+  color: #0c0c5b;
+  cursor: default;
+}
+
+.emails__entry-tag.verified {
+  border-color: #056900;
+  color: #056900;
+  cursor: default;
+}
+
+.emails__entry-tag.unverified {
+  border-color: #810300;
+  color: #810300;
+  cursor: default;
+}
+
+.emails__form {
+  margin: 20px 0 0;
+}
+
+.emails__form input {
+  margin-bottom: 0;
+}
+
+.globals__siblings.emails__form-fields {
+  align-items: flex-end;
+  gap: 22px;
+}
+
+.globals__input-wrapper input.emails__button[type="submit"] {
+  padding: 12px 24px;
+}

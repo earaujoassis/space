@@ -62,9 +62,7 @@ const personal = ({
                 <div className="globals__children globals__overlay">
                     <EmailVerification
                         emailVerified={user.email_verified}
-                        holder={user.email}
-                        email={user.email}
-                        requestEmailVerification={requestEmailVerification} />
+                        requestEmailVerification={() => requestEmailVerification(user.email, user.email)} />
                     <Sessions
                         sessions={sessions}
                         revokeApplicationSessionForUser={(id) => revokeApplicationSessionForUser(application.user_id, id, application.action_token)} />
