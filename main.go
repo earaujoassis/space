@@ -17,11 +17,11 @@ func main() {
 	defer utils.RecoverHandler()
 	err := godotenv.Load()
 	if err == nil {
-		logs.Propagate(logs.Info, "Application has found a .env file")
+		logs.Propagate(logs.LevelInfo, "Application has found a .env file")
 	}
 	cfg, err := config.Load()
 	if err != nil {
-		logs.Propagatef(logs.Panic, "Could not load configuration: %s\n", err)
+		logs.Propagatef(logs.LevelPanic, "Could not load configuration: %s\n", err)
 	}
 	logs.Setup(logs.Options{
 		Environment: cfg.Environment,

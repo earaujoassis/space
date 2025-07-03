@@ -12,7 +12,7 @@ import (
 )
 
 func (s *ApiHandlerTestSuite) TestClientsCreateHandlerWithoutHeader() {
-	w := s.PerformRequest(s.Router, "POST", "/api/clients/create", nil, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/clients", nil, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.Contains(r.Body, "missing X-Requested-By header attribute or Origin header does not comply with the same-origin policy")
@@ -23,7 +23,7 @@ func (s *ApiHandlerTestSuite) TestClientsCreateHandlerByUnauthenticatedUser() {
 		"X-Requested-By": []string{"SpaceApi"},
 	}
 
-	w := s.PerformRequest(s.Router, "POST", "/api/clients/create", header, nil, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/clients", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.Contains(r.Body, "User must be authenticated")
@@ -37,11 +37,11 @@ func (s *ApiHandlerTestSuite) TestClientsCreateHandlerWithoutActionGrant() {
 	cookie := s.createSessionCookie(true)
 	s.NotNil(cookie)
 
-	w := s.PerformRequest(s.Router, "POST", "/api/clients/create", header, cookie, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/clients", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("must use valid token string", r.JSON["error"])
+	s.Equal("must use valid token field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestClientsCreateHandlerByAdminUser() {
@@ -56,7 +56,7 @@ func (s *ApiHandlerTestSuite) TestClientsCreateHandlerByAdminUser() {
 		"Authorization":  []string{fmt.Sprintf("Bearer %s", actionToken)},
 	}
 
-	w := s.PerformRequest(s.Router, "POST", "/api/clients/create", header, cookie, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/clients", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
@@ -69,7 +69,7 @@ func (s *ApiHandlerTestSuite) TestClientsCreateHandlerByAdminUser() {
 	formData.Set("canonical_uri", "http://localhost:3000")
 	formData.Set("redirect_uri", "http://localhost:4000/callback")
 	encoded := formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/clients/create", header, cookie, strings.NewReader(encoded))
+	w = s.PerformRequest(s.Router, "POST", "/api/clients", header, cookie, strings.NewReader(encoded))
 	s.Require().Equal(400, w.Code)
 
 	formData = url.Values{}
@@ -78,7 +78,7 @@ func (s *ApiHandlerTestSuite) TestClientsCreateHandlerByAdminUser() {
 	formData.Set("canonical_uri", "http://localhost")
 	formData.Set("redirect_uri", "http://localhost/callback")
 	encoded = formData.Encode()
-	w = s.PerformRequest(s.Router, "POST", "/api/clients/create", header, cookie, strings.NewReader(encoded))
+	w = s.PerformRequest(s.Router, "POST", "/api/clients", header, cookie, strings.NewReader(encoded))
 	s.Require().Equal(204, w.Code)
 }
 
@@ -94,7 +94,7 @@ func (s *ApiHandlerTestSuite) TestClientsCreateHandlerByCommonUser() {
 		"Authorization":  []string{fmt.Sprintf("Bearer %s", actionToken)},
 	}
 
-	w := s.PerformRequest(s.Router, "POST", "/api/clients/create", header, cookie, nil)
+	w := s.PerformRequest(s.Router, "POST", "/api/clients", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.True(r.HasKeyInJSON("error"))

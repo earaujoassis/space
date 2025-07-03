@@ -16,7 +16,7 @@ func servicesListHandler(c *gin.Context) {
 	repositories := ioc.GetRepositories(c)
 	action := c.MustGet("Action").(models.Action)
 	user := c.MustGet("User").(models.User)
-	if user.ID != action.UserID || !user.Admin {
+	if user.ID != action.UserID {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",

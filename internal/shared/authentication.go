@@ -19,7 +19,7 @@ func ClientBasicAuthorization(c *gin.Context) {
 	authorizationBasic := strings.Replace(c.Request.Header.Get("Authorization"), "Basic ", "", 1)
 	if !security.ValidBase64(authorizationBasic) {
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error": "must use valid Authorization string",
+			"error": "must use valid Authorization field",
 		})
 		c.Abort()
 		return
@@ -46,7 +46,7 @@ func OAuthTokenBearerAuthorization(c *gin.Context) {
 	authorizationBearer := strings.Replace(c.Request.Header.Get("Authorization"), "Bearer ", "", 1)
 	if !security.ValidToken(authorizationBearer) {
 		c.JSON(http.StatusBadRequest, utils.H{
-			"error": "must use valid token string",
+			"error": "must use valid token field",
 		})
 		c.Abort()
 		return

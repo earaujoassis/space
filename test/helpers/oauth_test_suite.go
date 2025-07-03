@@ -9,7 +9,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/internal/tasks"
 	"github.com/earaujoassis/space/test/factory"
 	"github.com/earaujoassis/space/test/utils"
@@ -37,7 +37,7 @@ func (s *OAuthTestSuite) SetupSuite() {
 	if err != nil {
 		s.T().Fatalf("Could not create new database service: %v", err)
 	}
-	ms, err := redis.NewMemoryService(s.cfg)
+	ms, err := memory.NewMemoryService(s.cfg)
 	if err != nil {
 		s.T().Fatalf("Could not create new memory service: %v", err)
 	}

@@ -21,10 +21,7 @@ func profileEmailVerificationHandler(c *gin.Context) {
 		})
 		return
 	}
-
-	user.EmailVerified = true
-
-	repositories.Users().Save(&user)
+	repositories.Users().ValidateEmail(&user, action.Payload)
 	repositories.Actions().Delete(action)
 	c.Redirect(http.StatusFound, "/")
 }

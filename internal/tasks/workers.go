@@ -1,8 +1,6 @@
 package tasks
 
 import (
-	"fmt"
-
 	"github.com/hibiken/asynq"
 
 	"github.com/earaujoassis/space/internal/config"
@@ -12,9 +10,11 @@ import (
 )
 
 func Workers(cfg *config.Config) {
-	redisAddr := fmt.Sprintf("%s:%d", cfg.MemorystoreHost, cfg.MemorystorePort)
 	srv := asynq.NewServer(
-		asynq.RedisClientOpt{Addr: redisAddr, DB: cfg.MemorystoreIndex},
+		asynq.RedisClientOpt{
+			Addr: cfg.MemoryDNS(),
+			DB:   cfg.MemorystoreIndex,
+		},
 		asynq.Config{
 			Concurrency: 5,
 			Queues: map[string]int{
@@ -31,6 +31,6 @@ func Workers(cfg *config.Config) {
 	mux.Handle(workers.TypeTokensCleanup, workers.NewTokenCleanupProcessor(cfg))
 
 	if err := srv.Run(mux); err != nil {
-		logs.Propagatef(logs.Error, "could not run worker server: %v", err)
+		logs.Propagatef(logs.LevelError, "could not run worker server: %v", err)
 	}
 }

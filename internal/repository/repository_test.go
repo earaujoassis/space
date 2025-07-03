@@ -7,34 +7,37 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/test/utils"
 )
 
 type RepositoryTestSuite struct {
 	suite.Suite
-	Config *config.Config
-	Memory *redis.MemoryService
-	DB     *database.DatabaseService
+	ms *memory.MemoryService
+	db *database.DatabaseService
 }
 
 func (s *RepositoryTestSuite) SetupSuite() {
+	if err := utils.EnsureProjectRoot(); err != nil {
+		s.T().Fatalf("Failed to change to project root: %v", err)
+	}
+
 	utils.SetupConfigEnv()
-	s.Config, _ = config.Load()
-	db, err := database.NewDatabaseService(s.Config)
+	cfg, _ := config.Load()
+	db, err := database.NewDatabaseService(cfg)
 	s.Require().NoError(err)
 	if err != nil {
 		s.T().Fatalf("Could not create new database service: %v", err)
 	}
-	s.DB = db
+	s.db = db
 	err = utils.RunUnitTestMigrator(db.GetDB())
 	s.Require().NoError(err)
-	ms, err := redis.NewMemoryService(s.Config)
+	ms, err := memory.NewMemoryService(cfg)
 	s.Require().NoError(err)
 	if err != nil {
 		s.T().Fatalf("Could not create new memory service: %v", err)
 	}
-	s.Memory = ms
+	s.ms = ms
 }
 
 func (s *RepositoryTestSuite) SetupTest() {
@@ -43,7 +46,7 @@ func (s *RepositoryTestSuite) SetupTest() {
 }
 
 func (s *RepositoryTestSuite) cleanupDatabase() {
-	db, err := s.DB.GetDB().DB()
+	db, err := s.db.GetDB().DB()
 	s.Require().NoError(err)
 	db.Exec("DELETE FROM sessions")
 	db.Exec("DELETE FROM users")
@@ -53,12 +56,12 @@ func (s *RepositoryTestSuite) cleanupDatabase() {
 }
 
 func (s *RepositoryTestSuite) cleanupRedis() {
-	s.Memory.Do("FLUSHDB")
+	s.ms.Do("FLUSHDB")
 }
 
 func (s *RepositoryTestSuite) TearDownSuite() {
-	s.Memory.Close()
-	s.DB.Close()
+	s.ms.Close()
+	s.db.Close()
 }
 
 func TestRepositorySuite(t *testing.T) {

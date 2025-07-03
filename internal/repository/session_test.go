@@ -9,7 +9,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestSessionRepository__FindByUUID() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -54,7 +54,7 @@ func (s *RepositoryTestSuite) TestSessionRepository__FindByUUID() {
 }
 
 func (s *RepositoryTestSuite) TestSessionRepository__FindByToken() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -111,7 +111,7 @@ func (s *RepositoryTestSuite) TestSessionRepository__FindByToken() {
 }
 
 func (s *RepositoryTestSuite) TestSessionRepository__Invalidate() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -167,7 +167,7 @@ func (s *RepositoryTestSuite) TestSessionRepository__Invalidate() {
 }
 
 func (s *RepositoryTestSuite) TestSessionRepository__ApplicationSessions() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -227,7 +227,7 @@ func (s *RepositoryTestSuite) TestSessionRepository__ApplicationSessions() {
 }
 
 func (s *RepositoryTestSuite) TestSessionRepository__ActiveForClient() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -294,7 +294,7 @@ func (s *RepositoryTestSuite) TestSessionRepository__ActiveForClient() {
 }
 
 func (s *RepositoryTestSuite) TestSessionRepository__RevokeAccess() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -365,7 +365,7 @@ func (s *RepositoryTestSuite) TestSessionRepository__RevokeAccess() {
 }
 
 func (s *RepositoryTestSuite) TestSessionRepository__InvalidateStaleSessions() {
-	repository := NewSessionRepository(s.DB)
+	repository := NewSessionRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),

@@ -25,7 +25,7 @@ func exposeClientsRoutes(router *gin.RouterGroup) {
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		clientsRoutes.POST("/create", clientsCreateHandler)
+		clientsRoutes.POST("", clientsCreateHandler)
 
 		// In order to avoid an overhead in this endpoint, it relies only on the cookies session data to guarantee security
 		// Authorization type: action token / Bearer (for web use)

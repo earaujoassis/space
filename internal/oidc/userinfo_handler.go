@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -17,6 +18,7 @@ import (
 func userinfoHandler(c *gin.Context) {
 	var userinfo utils.H
 	var user models.User
+	var client models.Client
 	var scope string
 
 	authorizationHeader := c.GetHeader("Authorization")
@@ -64,6 +66,7 @@ func userinfoHandler(c *gin.Context) {
 			return
 		}
 		user = session.User
+		client = session.Client
 		scope = session.Scopes
 	}
 
@@ -87,6 +90,14 @@ func userinfoHandler(c *gin.Context) {
 		userinfo["email"] = user.Email
 		userinfo["email_verified"] = user.EmailVerified
 	}
+
+	notifier := ioc.GetNotifier(c)
+	go notifier.Announce(user, "client.userinfo_introspection", shared.NotificationTemplateData(c, utils.H{
+		"Email":      shared.GetUserDefaultEmailForNotifications(c, user),
+		"FirstName":  user.FirstName,
+		"ClientName": client.Name,
+		"CreatedAt":  time.Now().UTC().Format(time.RFC850),
+	}))
 
 	c.JSON(http.StatusOK, userinfo)
 }

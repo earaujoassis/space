@@ -7,7 +7,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestClientRepository__FindOrCreate() {
-	repository := NewClientRepository(s.DB)
+	repository := NewClientRepository(s.db)
 
 	defaultClient := repository.FindOrCreate(models.DefaultClient)
 	s.Require().NotZero(defaultClient.ID)
@@ -33,7 +33,7 @@ func (s *RepositoryTestSuite) TestClientRepository__FindOrCreate() {
 }
 
 func (s *RepositoryTestSuite) TestClientRepository__FindByKey() {
-	repository := NewClientRepository(s.DB)
+	repository := NewClientRepository(s.db)
 
 	clientName := gofakeit.Company()
 	client := models.Client{
@@ -55,7 +55,7 @@ func (s *RepositoryTestSuite) TestClientRepository__FindByKey() {
 }
 
 func (s *RepositoryTestSuite) TestClientRepository__FindByUUID() {
-	repository := NewClientRepository(s.DB)
+	repository := NewClientRepository(s.db)
 
 	clientName := gofakeit.Company()
 	client := models.Client{
@@ -77,7 +77,7 @@ func (s *RepositoryTestSuite) TestClientRepository__FindByUUID() {
 }
 
 func (s *RepositoryTestSuite) TestClientRepository__Authentication() {
-	repository := NewClientRepository(s.DB)
+	repository := NewClientRepository(s.db)
 
 	clientName := gofakeit.Company()
 	client := models.Client{
@@ -105,7 +105,7 @@ func (s *RepositoryTestSuite) TestClientRepository__Authentication() {
 }
 
 func (s *RepositoryTestSuite) TestClientRepository__GetActive() {
-	repository := NewClientRepository(s.DB)
+	repository := NewClientRepository(s.db)
 
 	defaultClient := repository.FindOrCreate(models.DefaultClient)
 	s.Require().NotZero(defaultClient.ID)

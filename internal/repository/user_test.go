@@ -10,7 +10,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByAccountHolder() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	username := gofakeit.Username()
 	email := gofakeit.Email()
@@ -58,7 +58,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByAccountHolder() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByPublicID() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -92,7 +92,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByPublicID() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByUUID() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -126,7 +126,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByUUID() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByID() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -161,7 +161,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByID() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__ActiveClients() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -192,7 +192,7 @@ func (s *RepositoryTestSuite) TestUserRepository__ActiveClients() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__Authentic() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	passphrase := gofakeit.Password(true, true, true, true, false, 32)
 	email := gofakeit.Email()
@@ -250,4 +250,69 @@ func (s *RepositoryTestSuite) TestUserRepository__Authentic() {
 
 	result = repository.Authentic(retrievedByEmail, newPassphrase, code)
 	s.True(result)
+}
+
+func (s *RepositoryTestSuite) TestUserRepository__HoldsEmail() {
+	repository := NewUserRepository(s.db)
+	email := gofakeit.Email()
+	user := models.User{
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         email,
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 32),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
+	}
+	user.Client = models.Client{
+		Name:         gofakeit.Company(),
+		Secret:       models.GenerateRandomString(64),
+		CanonicalURI: []string{"localhost"},
+		RedirectURI:  []string{"/"},
+		Scopes:       models.PublicScope,
+		Type:         models.PublicClient,
+	}
+	user.Language = models.Language{
+		Name:    "English",
+		IsoCode: "en-US",
+	}
+	err := repository.Create(&user)
+	s.Require().NoError(err)
+
+	result := repository.HoldsEmail(user, email)
+	s.True(result)
+
+	result = repository.HoldsEmail(user, gofakeit.Email())
+	s.False(result)
+}
+
+func (s *RepositoryTestSuite) TestUserRepository__ValidateEmail() {
+	repository := NewUserRepository(s.db)
+	email := gofakeit.Email()
+	user := models.User{
+		FirstName:     gofakeit.FirstName(),
+		LastName:      gofakeit.LastName(),
+		Username:      gofakeit.Username(),
+		Email:         email,
+		Passphrase:    gofakeit.Password(true, true, true, true, false, 32),
+		CodeSecret:    gofakeit.Password(true, true, true, true, false, 64),
+		RecoverSecret: gofakeit.Password(true, true, true, true, false, 64),
+	}
+	user.Client = models.Client{
+		Name:         gofakeit.Company(),
+		Secret:       models.GenerateRandomString(64),
+		CanonicalURI: []string{"localhost"},
+		RedirectURI:  []string{"/"},
+		Scopes:       models.PublicScope,
+		Type:         models.PublicClient,
+	}
+	user.Language = models.Language{
+		Name:    "English",
+		IsoCode: "en-US",
+	}
+	err := repository.Create(&user)
+	s.Require().NoError(err)
+
+	result := repository.ValidateEmail(&user, email)
+	s.NoError(result)
 }

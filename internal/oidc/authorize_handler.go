@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -179,6 +180,15 @@ func authorizeHandler(c *gin.Context) {
 				Nonce:        nonce,
 				ResponseMode: responseMode,
 			}, repositories)
+			if err == nil {
+				notifier := ioc.GetNotifier(c)
+				go notifier.Announce(user, "user.authorization_granted", shared.NotificationTemplateData(c, utils.H{
+					"Email":      shared.GetUserDefaultEmailForNotifications(c, user),
+					"FirstName":  user.FirstName,
+					"ClientName": client.Name,
+					"CreatedAt":  time.Now().UTC().Format(time.RFC850),
+				}))
+			}
 			processResponseForAuthorizeHandlerCode(c, result, err)
 			return
 		}

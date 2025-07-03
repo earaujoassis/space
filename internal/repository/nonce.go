@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/internal/models"
 )
 
@@ -18,7 +18,7 @@ type NonceRepository struct {
 	*BaseMemoryRepository[models.Nonce]
 }
 
-func NewNonceRepository(ms *redis.MemoryService) *NonceRepository {
+func NewNonceRepository(ms *memory.MemoryService) *NonceRepository {
 	return &NonceRepository{
 		BaseMemoryRepository: NewBaseMemoryRepository[models.Nonce](ms),
 	}
@@ -36,7 +36,7 @@ func (r *NonceRepository) Create(nonce models.Nonce) bool {
 	nonceStr := nonce.Nonce
 
 	nonceKey := fmt.Sprintf("%s:%s:%s", NoncePrepend, key, nonceStr)
-	r.ms.Transaction(func(c *redis.Commands) {
+	r.ms.Transaction(func(c *memory.Commands) {
 		ok = c.SetKeyNXWithExpiration(nonceKey, 1, NonceTTL)
 	})
 
@@ -46,7 +46,7 @@ func (r *NonceRepository) Create(nonce models.Nonce) bool {
 
 	if code != "" {
 		codeKey := fmt.Sprintf("oidc.code.nonce:%s", code)
-		r.ms.Transaction(func(c *redis.Commands) {
+		r.ms.Transaction(func(c *memory.Commands) {
 			ok = c.SetKeyWithExpiration(codeKey, nonceStr, NonceCodeTTL)
 		})
 	}
@@ -62,7 +62,7 @@ func (r *NonceRepository) RetrieveByCode(code string) models.Nonce {
 	}
 
 	codeKey := fmt.Sprintf("oidc.code.nonce:%s", code)
-	r.ms.Transaction(func(c *redis.Commands) {
+	r.ms.Transaction(func(c *memory.Commands) {
 		nonce = c.GetKey(codeKey).ToString()
 	})
 

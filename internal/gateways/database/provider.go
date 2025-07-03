@@ -29,12 +29,12 @@ func (s *SQLiteProvider) Connect(cfg *config.Config) (*gorm.DB, error) {
 
 func NewDatabaseProvider(cfg *config.Config) DatabaseProvider {
 	switch cfg.Environment {
-	case "production", "staging", "development", "integration":
+	case config.Production, config.Development, config.Integration:
 		return &PostgresProvider{}
-	case "test":
+	case config.Test:
 		return &SQLiteProvider{}
 	default:
-		logs.Propagate(logs.Panic, "gateway misconfigured")
+		logs.Propagate(logs.LevelPanic, "gateway misconfigured")
 		return nil
 	}
 }

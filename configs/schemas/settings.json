@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "realms": [
+    {
+      "name": "notifications",
+      "categories": [
+        {
+          "name": "system-email-notifications",
+          "properties": [
+            {
+              "name": "email-address",
+              "type": "string"
+            },
+            {
+              "name": "authentication",
+              "type": "bool",
+              "default": true
+            },
+            {
+              "name": "client-authorization",
+              "type": "bool",
+              "default": false
+            }
+          ]
+        },
+        {
+          "name": "client-application-email-notifications",
+          "properties": [
+            {
+              "name": "token-introspection",
+              "type": "bool",
+              "default": false
+            },
+            {
+              "name": "userinfo-introspection",
+              "type": "bool",
+              "default": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

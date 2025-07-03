@@ -41,7 +41,7 @@ func profileSecretsHandler(c *gin.Context) {
 
 	repositories.Users().Save(&user)
 	repositories.Actions().Delete(action)
-	c.HTML(http.StatusOK, "user.update.secrets", utils.H{
+	c.HTML(http.StatusOK, "user.update_secrets", utils.H{
 		"Title":           " - Update Resource Owner Credential",
 		"Satellite":       "amalthea",
 		"Internal":        true,

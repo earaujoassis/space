@@ -19,6 +19,6 @@ func exposeServicesRoutes(router *gin.RouterGroup) {
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		servicesRoutes.POST("/create", servicesCreateHandler)
+		servicesRoutes.POST("", servicesCreateHandler)
 	}
 }

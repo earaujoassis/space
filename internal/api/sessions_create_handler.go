@@ -29,7 +29,7 @@ func sessionsCreateHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
 			"_message": "Session was not created",
-			"error":    "must use valid holder string",
+			"error":    "must use valid holder field",
 		})
 		return
 	}
@@ -51,12 +51,11 @@ func sessionsCreateHandler(c *gin.Context) {
 			repositories.Sessions().Create(&session)
 			if session.IsSavedRecord() {
 				notifier := ioc.GetNotifier(c)
-				go notifier.Announce("session.created", utils.H{
-					"Email":     user.Email,
+				go notifier.Announce(user, "session.created", shared.NotificationTemplateData(c, utils.H{
+					"Email":     shared.GetUserDefaultEmailForNotifications(c, user),
 					"FirstName": user.FirstName,
-					"IP":        session.IP,
-					"CreatedAt": session.CreatedAt.Format(time.RFC850),
-				})
+					"CreatedAt": time.Now().UTC().Format(time.RFC850),
+				}))
 				rls.RegisterSuccessfulSignIn(user.UUID)
 				rls.RegisterSuccessfulSignIn(IP)
 				c.JSON(http.StatusOK, utils.H{

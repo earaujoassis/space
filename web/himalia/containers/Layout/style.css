@@ -15,11 +15,9 @@
 .layout-root__corpus-container {
   position: relative;
   flex: 4;
-  padding: 40px 42px;
-}
-
-.layout-root__corpus-container.loading {
   display: flex;
+  flex-direction: column;
+  padding: 40px 42px;
 }
 
 .layout-root__corpus-container > h2 {
@@ -27,5 +25,5 @@
   font-weight: 500;
   margin-bottom: 24px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #fafafa;
+  border-bottom: 1px solid #cacaca;
 }

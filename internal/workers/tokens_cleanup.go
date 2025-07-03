@@ -7,7 +7,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/gateways/database"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/internal/logs"
 	"github.com/earaujoassis/space/internal/repository"
 )
@@ -23,11 +23,11 @@ type TokenCleanupProcessor struct {
 func NewTokenCleanupProcessor(cfg *config.Config) *TokenCleanupProcessor {
 	db, err := database.NewDatabaseService(cfg)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
-	ms, err := redis.NewMemoryService(cfg)
+	ms, err := memory.NewMemoryService(cfg)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	manager := repository.NewRepositoryManager(db, ms)
 	return &TokenCleanupProcessor{

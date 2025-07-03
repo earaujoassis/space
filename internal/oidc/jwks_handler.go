@@ -13,7 +13,7 @@ import (
 func jwksHandler(c *gin.Context) {
 	keyManager, err := initKeyManager()
 	if err != nil {
-		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
+		logs.Propagatef(logs.LevelError, "JWKS is not available: %s", err)
 		c.JSON(http.StatusInternalServerError, utils.H{
 			"error":             shared.ServerError,
 			"error_description": "JWKS is not available",

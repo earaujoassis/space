@@ -6,7 +6,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 	"github.com/earaujoassis/space/internal/notifications"
 	"github.com/earaujoassis/space/internal/policy"
 	"github.com/earaujoassis/space/internal/repository"
@@ -33,7 +33,7 @@ func GetDB(c *gin.Context) *gorm.DB {
 	return GetAppContext(c).DB.GetDB()
 }
 
-func GetMemoryService(c *gin.Context) *redis.MemoryService {
+func GetMemoryService(c *gin.Context) *memory.MemoryService {
 	return GetAppContext(c).Memory
 }
 

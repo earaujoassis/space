@@ -38,7 +38,7 @@ func (s *ApiHandlerTestSuite) TestServicesListHandlerWithoutActionGrant() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(400, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("must use valid token string", r.JSON["error"])
+	s.Equal("must use valid token field", r.JSON["error"])
 }
 
 func (s *ApiHandlerTestSuite) TestServicesListHandlerByAdminUser() {
@@ -83,7 +83,10 @@ func (s *ApiHandlerTestSuite) TestServicesListHandlerByCommonUser() {
 
 	w := s.PerformRequest(s.Router, "GET", "/api/services", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
-	s.Require().Equal(401, w.Code)
-	s.True(r.HasKeyInJSON("error"))
-	s.Equal("access_denied", r.JSON["error"])
+	s.Require().Equal(200, w.Code)
+	s.True(r.HasKeyInJSON("services"))
+	services := r.JSON["services"].([]interface{})
+	s.Equal(2, len(services))
+	service := services[0].(map[string]interface{})
+	s.NotEmpty(service["id"])
 }

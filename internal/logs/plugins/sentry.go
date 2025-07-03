@@ -5,10 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/getsentry/sentry-go"
-	sentrygin "github.com/getsentry/sentry-go/gin"
+
+	"github.com/earaujoassis/space/internal/logs/level"
 )
 
 var isSentryAvailable bool
@@ -41,20 +40,23 @@ func SetupSentry(environment, release, sentryUrl string) error {
 	return nil
 }
 
-func SetupSentryForRouter(router *gin.Engine) {
-	router.Use(sentrygin.New(sentrygin.Options{
-		Repanic:         true,
-		WaitForDelivery: false,
-	}))
-}
-
 func IsSentryAvailable() bool {
 	return isSentryAvailable
 }
 
-func CaptureMessage(msg string) {
+func CaptureMessage(msg string, lev level.Level) {
 	if isSentryAvailable {
-		sentry.CaptureMessage(msg)
+		sentry.WithScope(func(scope *sentry.Scope) {
+			switch lev {
+			case level.Critical, level.Panic:
+				scope.SetLevel(sentry.LevelFatal)
+			case level.Error:
+				scope.SetLevel(sentry.LevelError)
+			default:
+				scope.SetLevel(sentry.LevelInfo)
+			}
+			sentry.CaptureMessage(msg)
+		})
 	}
 }
 

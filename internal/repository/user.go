@@ -3,10 +3,12 @@ package repository
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 
 	"github.com/earaujoassis/space/internal/gateways/database"
 	"github.com/earaujoassis/space/internal/models"
@@ -122,4 +124,56 @@ func (r *UserRepository) SetPassword(user *models.User, password string) error {
 		return nil
 	}
 	return err
+}
+
+// HoldsEmail checks if a User holds an email address
+func (r *UserRepository) HoldsEmail(user models.User, email string) bool {
+	var count int64
+	r.db.GetDB().
+		Raw(`SELECT COUNT(*)
+			FROM users
+			WHERE users.id = ? AND (
+				users.email = ? OR
+				EXISTS (
+					SELECT 1 FROM emails
+					WHERE emails.user_id = users.id AND emails.address = ?
+				)
+			);`, user.ID, email, email).Scan(&count)
+	return count > 0
+}
+
+// ValidateEmail sets a User's email as validated
+func (r *UserRepository) ValidateEmail(user *models.User, email string) error {
+	db := r.db.GetDB()
+	return db.Transaction(func(tx *gorm.DB) error {
+		now := time.Now().UTC()
+		result := tx.
+			Exec(`UPDATE users
+			SET email_verified = true, updated_at = ?
+			WHERE id = ? AND email = ?`, now, user.ID, email)
+
+		if result.Error != nil {
+			return result.Error
+		}
+
+		if result.RowsAffected > 0 {
+			user.EmailVerified = true
+			return nil
+		}
+
+		result = tx.
+			Exec(`UPDATE emails
+			SET verified = true, updated_at = ?
+			WHERE user_id = ? AND address = ?`, now, user.ID, email)
+
+		if result.Error != nil {
+			return result.Error
+		}
+
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("email not found for user")
+		}
+
+		return nil
+	})
 }

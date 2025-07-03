@@ -10,7 +10,7 @@ import (
 
 func RecoverHandler() {
 	if rec := recover(); rec != nil {
-		logs.Propagatef(logs.Error, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
+		logs.Propagatef(logs.LevelError, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
 		os.Exit(1)
 	}
 }

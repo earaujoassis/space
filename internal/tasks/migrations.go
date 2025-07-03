@@ -51,19 +51,19 @@ func createMigrator(cfg *config.Config, relativePath string) (*migrate.Migrate, 
 func RunMigrations(cfg *config.Config, relativePath string) {
 	migrator, err := createMigrator(cfg, relativePath)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	if err = migrator.Up(); err != nil && err != migrate.ErrNoChange {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 }
 
 func RollbackMigrations(cfg *config.Config, relativePath string) {
 	migrator, err := createMigrator(cfg, relativePath)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	if err = migrator.Down(); err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 }

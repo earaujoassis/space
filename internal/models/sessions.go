@@ -10,9 +10,9 @@ import (
 type Session struct {
 	Model
 	UUID        string `gorm:"not null;unique;index" validate:"omitempty,uuid4" json:"id"`
-	User        User   `gorm:"not null" validate:"required" json:"-"`
+	User        User   `gorm:"not null;foreignKey:UserID" validate:"required" json:"-"`
 	UserID      uint   `gorm:"not null" json:"-"`
-	Client      Client `gorm:"not null" validate:"required" json:"-"`
+	Client      Client `gorm:"not null;foreignKey:ClientID" validate:"required" json:"-"`
 	ClientID    uint   `gorm:"not null" json:"-"`
 	Moment      int64  `gorm:"not null" json:"-"`
 	ExpiresIn   int64  `gorm:"not null;default:0" json:"-"`
@@ -38,20 +38,18 @@ func expirationLengthForTokenType(tokenType string) int64 {
 	}
 }
 
-// BeforeSave Session model/struct hook
-func (session *Session) BeforeSave(tx *gorm.DB) error {
-	return validateModel("validate", session)
-}
-
 // BeforeCreate Session model/struct hook
 func (session *Session) BeforeCreate(tx *gorm.DB) error {
-	if session.Token == "" {
-		session.Token = GenerateRandomString(64)
-	}
+	session.Token = GenerateRandomString(64)
 	session.UUID = generateUUID()
 	session.Moment = time.Now().UTC().Unix()
 	session.ExpiresIn = expirationLengthForTokenType(session.TokenType)
 	return nil
+}
+
+// BeforeSave Session model/struct hook
+func (session *Session) BeforeSave(tx *gorm.DB) error {
+	return validateModel("validate", session)
 }
 
 // WithinExpirationWindow checks if a Session entry is still valid (time-based)

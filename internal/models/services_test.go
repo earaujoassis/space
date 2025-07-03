@@ -21,13 +21,7 @@ func TestValidServiceModel(t *testing.T) {
 }
 
 func TestInvalidServiceMissingRequiredFields(t *testing.T) {
-	service := Service{
-		Name:         "",
-		Description:  "",
-		CanonicalURI: "",
-		Type:         "",
-	}
-
+	service := Service{}
 	assert.False(t, IsValid("validate", service))
 }
 

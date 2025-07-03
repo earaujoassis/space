@@ -6,7 +6,7 @@ func (s *OAuthProviderSuite) TestSessionCreation() {
 		user := s.Factory.NewUser()
 		code := user.GenerateCode()
 
-		response := s.Client.LoginUser(user.Email, user.Passphrase, code)
+		response := s.Client.LoginUser(user.Model.Email, user.Passphrase, code)
 
 		s.Equal(200, response.StatusCode)
 		s.Equal("created", response.JSON["_status"])

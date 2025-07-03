@@ -1,14 +1,14 @@
 package policy
 
 import (
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 type RateLimitService struct {
-	ms *redis.MemoryService
+	ms *memory.MemoryService
 }
 
-func NewRateLimitService(ms *redis.MemoryService) *RateLimitService {
+func NewRateLimitService(ms *memory.MemoryService) *RateLimitService {
 	return &RateLimitService{ms: ms}
 }
 
@@ -16,7 +16,7 @@ func NewRateLimitService(ms *redis.MemoryService) *RateLimitService {
 func (rls *RateLimitService) SignInAttemptStatus(id string) string {
 	var result string
 
-	rls.ms.Transaction(func(c *redis.Commands) {
+	rls.ms.Transaction(func(c *memory.Commands) {
 		if c.CheckFieldExistence("sign-in.blocked", id) {
 			result = Blocked
 		} else if c.CheckFieldExistence("sign-in.attempt", id) {
@@ -41,7 +41,7 @@ func (rls *RateLimitService) SignInAttemptStatus(id string) string {
 func (rls *RateLimitService) SignUpAttemptStatus(id string) string {
 	var result string
 
-	rls.ms.Transaction(func(c *redis.Commands) {
+	rls.ms.Transaction(func(c *memory.Commands) {
 		if c.CheckFieldExistence("sign-up.blocked", id) {
 			result = Blocked
 		} else if c.CheckFieldExistence("sign-up.attempt", id) {

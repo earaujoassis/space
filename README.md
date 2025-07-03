@@ -59,3 +59,7 @@ If you have any question, comment or an issue, please take a look at [/issues](h
 ## License
 
 [MIT License](http://earaujoassis.mit-license.org/) &copy; Ewerton Carlos Assis
+
+## Credits
+
+Illustrations provided by [unDraw](https://undraw.co) - "Open-source illustrations for any idea you can imagine and create". For more details, take a look at [ATTRIBUTIONS.md](ATTRIBUTIONS.md)

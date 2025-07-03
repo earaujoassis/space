@@ -1,3 +1,9 @@
+.personal-root {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
 .profile_session__list {
   list-style: none;
   margin: 0 0 24px;
@@ -31,6 +37,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  align-items: center
 }
 
 .profile_session__entry-subsection > * {
@@ -38,9 +45,16 @@
   display: inline-block;
 }
 
+.profile_session__entry-subsection > *:last-child {
+  text-align: right;
+}
+
 .profile_session__current {
   display: inline-block;
-  text-align: right;
+  padding: 4px 6px;
+  border: 1px solid #0c0c5b;
+  border-radius: 4px;
+  color: #0c0c5b;
+  line-height: 1rem;
   cursor: default;
-  color: #3b82f6;
 }

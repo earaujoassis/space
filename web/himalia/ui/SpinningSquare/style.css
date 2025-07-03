@@ -1,9 +1,9 @@
 .spinning-square__wrapper {
   width: 100px;
   height: 140px;
-  margin: 0 auto;
-  text-transform: uppercase;
   align-self: center;
+  margin: auto 0;
+  text-transform: uppercase;
 }
 
 @keyframes rescale {

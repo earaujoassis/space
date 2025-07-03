@@ -18,18 +18,13 @@ type User struct {
 	Passphrase         string   `gorm:"not null" validate:"required,min=10" essential:"required,min=10" json:"-"`
 	Active             bool     `gorm:"not null;default:false" json:"active"`
 	Admin              bool     `gorm:"not null;default:false" json:"-"`
-	Client             Client   `gorm:"not null" validate:"required" json:"-"`
+	Client             Client   `gorm:"not null;foreignKey:ClientID" validate:"required" json:"-"`
 	ClientID           uint     `gorm:"not null" json:"-"`
-	Language           Language `gorm:"not null" validate:"required" json:"-"`
+	Language           Language `gorm:"not null;foreignKey:LanguageID" validate:"required" json:"-"`
 	LanguageID         uint     `gorm:"not null" json:"-"`
 	TimezoneIdentifier string   `gorm:"not null;default:'GMT'" json:"timezone_identifier"`
 	CodeSecret         string   `gorm:"not null" validate:"required" json:"-"`
 	RecoverSecret      string   `gorm:"not null" validate:"required" json:"-"`
-}
-
-// BeforeSave User model/struct hook
-func (user *User) BeforeSave(tx *gorm.DB) error {
-	return validateModel("validate", user)
 }
 
 // BeforeCreate User model/struct hook
@@ -42,4 +37,9 @@ func (user *User) BeforeCreate(tx *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+// BeforeSave User model/struct hook
+func (user *User) BeforeSave(tx *gorm.DB) error {
+	return validateModel("validate", user)
 }

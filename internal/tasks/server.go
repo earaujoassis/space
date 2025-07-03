@@ -14,7 +14,6 @@ import (
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/logs"
-	"github.com/earaujoassis/space/internal/logs/plugins"
 	"github.com/earaujoassis/space/internal/oauth"
 	"github.com/earaujoassis/space/internal/oidc"
 	"github.com/earaujoassis/space/internal/security"
@@ -36,7 +35,7 @@ func Server(cfg *config.Config) {
 func SetupRouter(cfg *config.Config) *gin.Engine {
 	appCtx, err := ioc.NewAppContext(cfg)
 	if err != nil {
-		logs.Propagatef(logs.Panic, "Could not create app context: %s\n", err)
+		logs.Propagatef(logs.LevelPanic, "Could not create app context: %s\n", err)
 	}
 	gin.DisableConsoleColor()
 	router := gin.Default()
@@ -45,15 +44,14 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 	router.RedirectTrailingSlash = false
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	store.Options(sessions.Options{
-		Secure:   (cfg.IsEnvironment("production") && cfg.SessionSecure),
+		Secure:   (cfg.IsEnvironment(config.Production) && cfg.SessionSecure),
 		HttpOnly: true,
 	})
 	router.Use(sessions.Sessions("space.session", store))
 	router.Use(func(c *gin.Context) {
 		defer func(c *gin.Context) {
 			if rec := recover(); rec != nil {
-				defer logs.Propagatef(logs.Error, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
-				plugins.SentryForGin(c, err)
+				defer logs.Propagatef(logs.LevelPanic, "%+v\n%s\n", fmt.Errorf("%v", rec), string(debug.Stack()))
 				if shared.MustServeJSON(c.Request.URL.Path, c.Request.Header.Get("Accept")) {
 					c.JSON(http.StatusInternalServerError, utils.H{
 						"_status":  "error",

@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 type BaseMemoryRepository[T any] struct {
-	ms *redis.MemoryService
+	ms *memory.MemoryService
 }
 
-func NewBaseMemoryRepository[T any](ms *redis.MemoryService) *BaseMemoryRepository[T] {
+func NewBaseMemoryRepository[T any](ms *memory.MemoryService) *BaseMemoryRepository[T] {
 	return &BaseMemoryRepository[T]{ms: ms}
 }

@@ -8,12 +8,12 @@ import (
 
 	"github.com/earaujoassis/space/internal/config"
 	"github.com/earaujoassis/space/internal/feature"
-	"github.com/earaujoassis/space/internal/gateways/redis"
+	"github.com/earaujoassis/space/internal/gateways/memory"
 )
 
 // ToggleFeature is used to enable or disable a feature-gate
 func ToggleFeature(cfg *config.Config) {
-	ms, _ := redis.NewMemoryService(cfg)
+	ms, _ := memory.NewMemoryService(cfg)
 	fg := feature.NewFeatureGate(ms)
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Feature key: ")

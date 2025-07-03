@@ -17,15 +17,15 @@ type Service struct {
 	Type         string `gorm:"not null" validate:"required,service" json:"-"`
 }
 
-// BeforeSave Service model/struct hook
-func (service *Service) BeforeSave(tx *gorm.DB) error {
-	return validateModel("validate", service)
-}
-
 // BeforeCreate Service model/struct hook
 func (service *Service) BeforeCreate(tx *gorm.DB) error {
 	service.UUID = generateUUID()
 	return nil
+}
+
+// BeforeSave Service model/struct hook
+func (service *Service) BeforeSave(tx *gorm.DB) error {
+	return validateModel("validate", service)
 }
 
 func (service Service) MarshalJSON() ([]byte, error) {
