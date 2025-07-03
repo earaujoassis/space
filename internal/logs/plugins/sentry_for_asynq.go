@@ -17,7 +17,7 @@ func SentryErrorHandler() asynq.ErrorHandlerFunc {
 			scope.SetTag("error_handler", "fallback")
 			scope.SetLevel(sentry.LevelError)
 		})
-		hub.CaptureException(err)
+		hub.CaptureMessage(fmt.Sprintf("[space-worker] Error: %s", err))
 	})
 }
 
