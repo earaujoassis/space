@@ -11,6 +11,7 @@ import (
 
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
+	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
@@ -68,7 +69,7 @@ func usersCreateHandler(c *gin.Context) {
 	} else {
 		notifier := ioc.GetNotifier(c)
 		go notifier.Announce("user.created", utils.H{
-			"Email":     user.Email,
+			"Email":     shared.GetUserDefaultEmailForNotifications(c),
 			"FirstName": user.FirstName,
 		})
 		c.JSON(http.StatusOK, utils.H{

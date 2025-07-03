@@ -75,10 +75,16 @@ const notifications = ({
           System notifications are related to actions performed through the
           application, using your credentials and sessions. Client notifications
           are related to actions performed by client applications, using your
-          authorization.
+          authorization. Sensitive e-mail messages, like password-less
+          authentication through magic-links, are sent to the primary e-mail
+          only.
         </p>
         <NotificationEmail
-          selectedEmail={protectedResource.settings['notifications.system-email-notifications.email-address']}
+          selectedEmail={
+            protectedResource.settings[
+              'notifications.system-email-notifications.email-address'
+            ]
+          }
           emails={emailsComplete}
           patchUserSettings={data =>
             patchUserSettings(application.action_token, data)
