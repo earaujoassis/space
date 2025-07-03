@@ -29,6 +29,7 @@ func Workers(cfg *config.Config) {
 	mux := asynq.NewServeMux()
 	mux.Use(plugins.SentryMiddleware())
 	mux.Handle(workers.TypeTokensCleanup, workers.NewTokenCleanupProcessor(cfg))
+	mux.Handle(workers.TypeEmailDelivery, workers.NewEmailDeliveryProcessor(cfg))
 
 	if err := srv.Run(mux); err != nil {
 		logs.Propagatef(logs.LevelError, "could not run worker server: %v", err)
