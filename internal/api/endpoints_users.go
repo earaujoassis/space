@@ -81,5 +81,17 @@ func exposeUsersRoutes(router *gin.RouterGroup) {
 			requiresApplicationSession(),
 			actionTokenBearerAuthorization(),
 			usersMeEmailsCreateHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.GET("/settings",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersMeSettingsListHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		usersMeRoutes.PATCH("/settings",
+			requiresApplicationSession(),
+			actionTokenBearerAuthorization(),
+			usersMeSettingsPatchHandler)
 	}
 }

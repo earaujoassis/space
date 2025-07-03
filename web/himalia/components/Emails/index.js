@@ -19,6 +19,8 @@ const personal = ({
   emails,
   user,
 }) => {
+  const [pendingFirstRender, setPendingFirstRender] = useState(true)
+  const [protectedResource, setProtectedResource] = useState({})
   const [requestedVerification, setRequestedVerification] = useState([])
   let content = null
 
@@ -30,23 +32,32 @@ const personal = ({
   useEffect(() => {
     if (emails === undefined) {
       fetchEmails(application.action_token)
+    } else {
+      setProtectedResource({ ...protectedResource, emails })
     }
   }, [emails])
 
-  if (
-    loading.includes('email') ||
-    loading.includes('user') ||
-    emails === undefined ||
-    user === undefined
-  ) {
+  useEffect(() => {
+    if (
+      !loading.includes('user') &&
+      !loading.includes('email') &&
+      user !== undefined &&
+      emails !== undefined &&
+      pendingFirstRender === true
+    ) {
+      setPendingFirstRender(false)
+    }
+  }, [loading, user, emails])
+
+  if (pendingFirstRender) {
     content = <SpinningSquare />
-  } else if (emails) {
+  } else if (protectedResource.emails) {
     const primaryEmail = {
       verified: user.email_verified,
       address: user.email,
       primary: true,
     }
-    const emailsComplete = [primaryEmail, ...emails]
+    const emailsComplete = [primaryEmail, ...protectedResource.emails]
     content = (
       <>
         <p>

@@ -7,6 +7,7 @@ export {
   requestResetSecretCodes,
 } from './users'
 export { fetchEmails, addEmail } from './emails'
+export { fetchUserSettings, patchUserSettings } from './settings'
 export {
   fetchApplicationSessionsForUser,
   revokeApplicationSessionForUser,

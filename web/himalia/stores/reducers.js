@@ -6,6 +6,7 @@ const initialState = {
   application: undefined,
   user: undefined,
   emails: undefined,
+  settings: undefined,
   sessions: undefined,
   clients: undefined,
   services: undefined,
@@ -149,6 +150,37 @@ const emailRecordError = (state, action) => {
   })
 }
 
+const settingRecordStart = state => {
+  NProgress.start()
+  return Object.assign({}, state, {
+    loading: addLoading(state, 'setting'),
+    stateSignal: 'setting_record_start',
+  })
+}
+
+const settingRecordSuccess = (state, action) => {
+  NProgress.done()
+  return Object.assign({}, state, {
+    loading: reduceLoading(state, 'setting'),
+    success: true,
+    error: null,
+    settings: action.settings,
+    stateSignal: 'setting_record_success',
+  })
+}
+
+const settingRecordError = (state, action) => {
+  NProgress.done()
+  return Object.assign({}, state, {
+    loading: reduceLoading(state, 'setting'),
+    displayToast: true,
+    success: false,
+    error: action.error,
+    settings: action.settings,
+    stateSignal: 'setting_record_error',
+  })
+}
+
 const sessionRecordStart = state => {
   NProgress.start()
   return Object.assign({}, state, {
@@ -270,6 +302,12 @@ const reducer = (state = initialState, action) => {
       return emailRecordSuccess(state, action)
     case actionTypes.EMAIL_RECORD_ERROR:
       return emailRecordError(state, action)
+    case actionTypes.SETTING_RECORD_START:
+      return settingRecordStart(state, action)
+    case actionTypes.SETTING_RECORD_SUCCESS:
+      return settingRecordSuccess(state, action)
+    case actionTypes.SETTING_RECORD_ERROR:
+      return settingRecordError(state, action)
     case actionTypes.SESSION_RECORD_START:
       return sessionRecordStart(state, action)
     case actionTypes.SESSION_RECORD_SUCCESS:

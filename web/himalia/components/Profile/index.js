@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 
 import * as actions from '@actions'
@@ -19,6 +19,10 @@ const personal = ({
   user,
   sessions,
 }) => {
+  const [pendingFirstRender, setPendingFirstRender] = useState(true)
+  const [protectedResource, setProtectedResource] = useState({})
+  let content = null
+
   useEffect(() => {
     fetchUserProfile(application.user_id, application.action_token)
     fetchApplicationSessionsForUser(
@@ -33,12 +37,23 @@ const personal = ({
         application.user_id,
         application.action_token
       )
+    } else {
+      setProtectedResource({ ...protectedResource, sessions })
     }
   }, [sessions])
 
-  let content = null
+  useEffect(() => {
+    if (
+      !loading.includes('user') &&
+      !loading.includes('email') &&
+      user !== undefined &&
+      pendingFirstRender === true
+    ) {
+      setPendingFirstRender(false)
+    }
+  }, [loading, user])
 
-  if (loading.includes('user') || user === undefined) {
+  if (pendingFirstRender) {
     content = <SpinningSquare />
   } else if (user && !user.error) {
     content = (
@@ -103,7 +118,7 @@ const personal = ({
             }
           />
           <Sessions
-            sessions={sessions}
+            sessions={protectedResource.sessions}
             revokeApplicationSessionForUser={id =>
               revokeApplicationSessionForUser(
                 application.user_id,
