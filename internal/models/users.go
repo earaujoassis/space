@@ -27,11 +27,6 @@ type User struct {
 	RecoverSecret      string   `gorm:"not null" validate:"required" json:"-"`
 }
 
-// BeforeSave User model/struct hook
-func (user *User) BeforeSave(tx *gorm.DB) error {
-	return validateModel("validate", user)
-}
-
 // BeforeCreate User model/struct hook
 func (user *User) BeforeCreate(tx *gorm.DB) error {
 	user.UUID = generateUUID()
@@ -42,4 +37,9 @@ func (user *User) BeforeCreate(tx *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+// BeforeSave User model/struct hook
+func (user *User) BeforeSave(tx *gorm.DB) error {
+	return validateModel("validate", user)
 }

@@ -38,11 +38,6 @@ func expirationLengthForTokenType(tokenType string) int64 {
 	}
 }
 
-// BeforeSave Session model/struct hook
-func (session *Session) BeforeSave(tx *gorm.DB) error {
-	return validateModel("validate", session)
-}
-
 // BeforeCreate Session model/struct hook
 func (session *Session) BeforeCreate(tx *gorm.DB) error {
 	session.Token = GenerateRandomString(64)
@@ -50,6 +45,11 @@ func (session *Session) BeforeCreate(tx *gorm.DB) error {
 	session.Moment = time.Now().UTC().Unix()
 	session.ExpiresIn = expirationLengthForTokenType(session.TokenType)
 	return nil
+}
+
+// BeforeSave Session model/struct hook
+func (session *Session) BeforeSave(tx *gorm.DB) error {
+	return validateModel("validate", session)
 }
 
 // WithinExpirationWindow checks if a Session entry is still valid (time-based)

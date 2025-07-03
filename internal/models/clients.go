@@ -19,9 +19,9 @@ type Client struct {
 	Description  string         `json:"description"`
 	Key          string         `gorm:"not null;unique;index" json:"-"`
 	Secret       string         `gorm:"not null" json:"-"`
-	Scopes       string         `gorm:"not null" validate:"required,restrict" json:"scopes"`
-	CanonicalURI pq.StringArray `gorm:"type:text[];not null" validate:"required,canonical" json:"uri"`
-	RedirectURI  pq.StringArray `gorm:"type:text[];not null" validate:"required,redirect" json:"redirect"`
+	Scopes       string         `gorm:"not null" validate:"required,scope_restrict" json:"scopes"`
+	CanonicalURI pq.StringArray `gorm:"type:text[];not null" validate:"required,canonical_uri" json:"uri"`
+	RedirectURI  pq.StringArray `gorm:"type:text[];not null" validate:"required,redirect_uri" json:"redirect"`
 	Type         string         `gorm:"not null" validate:"required,client" json:"-"`
 }
 
@@ -41,11 +41,6 @@ func (client *Client) SetSecret(secret string) error {
 	return err
 }
 
-// BeforeSave Client model/struct hook
-func (client *Client) BeforeSave(tx *gorm.DB) error {
-	return validateModel("validate", client)
-}
-
 // BeforeCreate Client model/struct hook
 func (client *Client) BeforeCreate(tx *gorm.DB) error {
 	client.UUID = generateUUID()
@@ -57,6 +52,11 @@ func (client *Client) BeforeCreate(tx *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+// BeforeSave Client model/struct hook
+func (client *Client) BeforeSave(tx *gorm.DB) error {
+	return validateModel("validate", client)
 }
 
 // DefaultCanonicalURI gets the default (first) canonical URI/URL for a client application

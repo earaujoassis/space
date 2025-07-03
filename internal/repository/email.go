@@ -15,7 +15,7 @@ func NewEmailRepository(db *database.DatabaseService) *EmailRepository {
 	}
 }
 
-// Emails lists emails for a given user
+// GetAllForUser lists emails for a given user
 func (r *EmailRepository) GetAllForUser(user models.User) []models.Email {
 	emails := make([]models.Email, 0)
 

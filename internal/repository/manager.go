@@ -46,3 +46,7 @@ func (rm *RepositoryManager) Users() *UserRepository {
 func (rm *RepositoryManager) Emails() *EmailRepository {
 	return rm.factory.NewEmailRepository()
 }
+
+func (rm *RepositoryManager) Settings() *SettingRepository {
+	return rm.factory.NewSettingRepository()
+}

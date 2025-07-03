@@ -14,6 +14,12 @@ type Email struct {
 	Verified bool   `gorm:"not null;default:false" json:"verified"`
 }
 
+// BeforeCreate Email model/struct hook
+func (email *Email) BeforeCreate(tx *gorm.DB) error {
+	email.UUID = generateUUID()
+	return nil
+}
+
 // BeforeSave Email model/struct hook
 func (email *Email) BeforeSave(tx *gorm.DB) error {
 	email.UUID = generateUUID()

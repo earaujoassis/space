@@ -19,6 +19,10 @@ type RepositoryTestSuite struct {
 }
 
 func (s *RepositoryTestSuite) SetupSuite() {
+	if err := utils.EnsureProjectRoot(); err != nil {
+		s.T().Fatalf("Failed to change to project root: %v", err)
+	}
+
 	utils.SetupConfigEnv()
 	s.Config, _ = config.Load()
 	db, err := database.NewDatabaseService(s.Config)

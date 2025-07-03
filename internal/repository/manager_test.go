@@ -10,4 +10,5 @@ func (s *RepositoryTestSuite) TestRepositoryManager() {
 	s.Require().NotNil(manager.Sessions())
 	s.Require().NotNil(manager.Users())
 	s.Require().NotNil(manager.Emails())
+	s.Require().NotNil(manager.Settings())
 }
