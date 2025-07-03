@@ -36,7 +36,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 			},
 		}
 	case config.Test:
-		s, err := miniredis.Run()
+		provider, err := miniredis.Run()
 		if err != nil {
 			logs.Propagate(logs.LevelPanic, err.Error())
 			return nil
@@ -44,7 +44,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 		return &redis.Pool{
 			MaxIdle: 3,
 			Dial: func() (redis.Conn, error) {
-				return redis.Dial("tcp", s.Addr())
+				return redis.Dial("tcp", provider.Addr())
 			},
 		}
 	default:
