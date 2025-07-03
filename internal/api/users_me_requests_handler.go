@@ -67,11 +67,11 @@ func usersMeRequestsHandler(c *gin.Context) {
 		}
 		repositories.Actions().Create(&actionToken)
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce(user, "user.update_password", utils.H{
+		go notifier.Announce(user, "user.update_password", shared.NotificationTemplateData(c, utils.H{
 			"Email":     user.Email,
 			"FirstName": user.FirstName,
 			"Callback":  fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
-		})
+		}))
 	case secretsType:
 		actionToken := models.Action{
 			User:        user,
@@ -83,11 +83,11 @@ func usersMeRequestsHandler(c *gin.Context) {
 		}
 		repositories.Actions().Create(&actionToken)
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce(user, "user.update_secrets", utils.H{
+		go notifier.Announce(user, "user.update_secrets", shared.NotificationTemplateData(c, utils.H{
 			"Email":     user.Email,
 			"FirstName": user.FirstName,
 			"Callback":  fmt.Sprintf("%s/profile/secrets?_=%s", host, actionToken.Token),
-		})
+		}))
 	case emailVerificationType:
 		var emailAddress = c.PostForm("email")
 		if !security.ValidEmail(emailAddress) || !repositories.Users().HoldsEmail(user, emailAddress) {
@@ -109,11 +109,11 @@ func usersMeRequestsHandler(c *gin.Context) {
 		}
 		repositories.Actions().Create(&actionToken)
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce(user, "user.email_verification", utils.H{
+		go notifier.Announce(user, "user.email_verification", shared.NotificationTemplateData(c, utils.H{
 			"Email":     emailAddress,
 			"FirstName": user.FirstName,
 			"Callback":  fmt.Sprintf("%s/profile/email_verification?_=%s", host, actionToken.Token),
-		})
+		}))
 	}
 
 	// No Content is the default response for valid requests

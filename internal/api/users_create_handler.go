@@ -68,10 +68,10 @@ func usersCreateHandler(c *gin.Context) {
 		})
 	} else {
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce(user, "user.created", utils.H{
+		go notifier.Announce(user, "user.created", shared.NotificationTemplateData(c, utils.H{
 			"Email":     shared.GetUserDefaultEmailForNotifications(c, user),
 			"FirstName": user.FirstName,
-		})
+		}))
 		c.JSON(http.StatusOK, utils.H{
 			"_status":           "created",
 			"_message":          "User was created",

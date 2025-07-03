@@ -51,11 +51,11 @@ func sessionsCreateHandler(c *gin.Context) {
 			repositories.Sessions().Create(&session)
 			if session.IsSavedRecord() {
 				notifier := ioc.GetNotifier(c)
-				go notifier.Announce(user, "session.created", utils.H{
+				go notifier.Announce(user, "session.created", shared.NotificationTemplateData(c, utils.H{
 					"Email":     shared.GetUserDefaultEmailForNotifications(c, user),
 					"FirstName": user.FirstName,
 					"CreatedAt": time.Now().UTC().Format(time.RFC850),
-				})
+				}))
 				rls.RegisterSuccessfulSignIn(user.UUID)
 				rls.RegisterSuccessfulSignIn(IP)
 				c.JSON(http.StatusOK, utils.H{
