@@ -68,7 +68,7 @@ func usersCreateHandler(c *gin.Context) {
 		})
 	} else {
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce("user.created", utils.H{
+		go notifier.Announce(user, "user.created", utils.H{
 			"Email":     shared.GetUserDefaultEmailForNotifications(c, user),
 			"FirstName": user.FirstName,
 		})

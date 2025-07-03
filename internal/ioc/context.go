@@ -29,16 +29,16 @@ func NewAppContext(cfg *config.Config) (*AppContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	repoManager := repository.NewRepositoryManager(db, ms)
+	rm := repository.NewRepositoryManager(db, ms)
 	fg := feature.NewFeatureGate(ms)
 	rls := policy.NewRateLimitService(ms)
-	ntfr := notifications.NewNotifier(cfg)
+	ntfr := notifications.NewNotifier(cfg, rm)
 
 	return &AppContext{
 		Config:       cfg,
 		DB:           db,
 		Memory:       ms,
-		Repositories: repoManager,
+		Repositories: rm,
 		FeatureGate:  fg,
 		RateLimit:    rls,
 		Notifier:     ntfr,

@@ -16,6 +16,27 @@ func (m *Mailer) AnnounceMessage(name string, data utils.H) error {
 	case config.Production:
 		var err error
 		switch name {
+		case "client.token_introspection":
+			data["Year"] = time.Now().Year()
+			message := CreateMessage("client.token_introspection.html", data)
+			err = m.SendEmail(
+				"Client application performed token introspection at quatroLABS",
+				message,
+				data["Email"].(string))
+		case "client.userinfo_introspection":
+			data["Year"] = time.Now().Year()
+			message := CreateMessage("client.userinfo_introspection.html", data)
+			err = m.SendEmail(
+				"Client application performed userinfo introspection at quatroLABS",
+				message,
+				data["Email"].(string))
+		case "user.authorization_granted":
+			data["Year"] = time.Now().Year()
+			message := CreateMessage("user.authorization_granted.html", data)
+			err = m.SendEmail(
+				"A new authorization was granted at quatroLABS",
+				message,
+				data["Email"].(string))
 		case "user.created":
 			data["Year"] = time.Now().Year()
 			message := CreateMessage("user.created.html", data)

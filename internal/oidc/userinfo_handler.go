@@ -92,7 +92,7 @@ func userinfoHandler(c *gin.Context) {
 	}
 
 	notifier := ioc.GetNotifier(c)
-	go notifier.Announce("client.userinfo_introspection", utils.H{
+	go notifier.Announce(user, "client.userinfo_introspection", utils.H{
 		"Email":      shared.GetUserDefaultEmailForNotifications(c, user),
 		"FirstName":  user.FirstName,
 		"ClientName": client.Name,

@@ -102,7 +102,7 @@ func introspectHandler(c *gin.Context) {
 	}
 
 	notifier := ioc.GetNotifier(c)
-	go notifier.Announce("client.token_introspection", utils.H{
+	go notifier.Announce(user, "client.token_introspection", utils.H{
 		"Email":      shared.GetUserDefaultEmailForNotifications(c, user),
 		"FirstName":  user.FirstName,
 		"ClientName": client.Name,
