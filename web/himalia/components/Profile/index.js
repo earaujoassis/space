@@ -80,7 +80,7 @@ const personal = ({
             />
           </div>
           <div className="globals__input-wrapper">
-            <label htmlFor="personal__email">Email</label>
+            <label htmlFor="personal__email">Primary email</label>
             <input
               className="read-only"
               disabled
