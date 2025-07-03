@@ -12,20 +12,20 @@ import (
 
 type PolicyTestSuite struct {
 	suite.Suite
-	memory *memory.MemoryService
-	rls    *RateLimitService
+	ms  *memory.MemoryService
+	rls *RateLimitService
 }
 
 func (s *PolicyTestSuite) SetupSuite() {
 	utils.SetupConfigEnv()
 	config, _ := config.Load()
-	memory, err := memory.NewMemoryService(config)
+	ms, err := memory.NewMemoryService(config)
 	s.Require().NoError(err)
 	if err != nil {
 		s.T().Fatalf("Could not create new memory service: %v", err)
 	}
-	s.rls = NewRateLimitService(memory)
-	s.memory = memory
+	s.rls = NewRateLimitService(ms)
+	s.ms = ms
 }
 
 func (s *PolicyTestSuite) SetupTest() {
@@ -33,11 +33,11 @@ func (s *PolicyTestSuite) SetupTest() {
 }
 
 func (s *PolicyTestSuite) cleanupRedis() {
-	s.memory.Do("FLUSHDB")
+	s.ms.Do("FLUSHDB")
 }
 
 func (s *PolicyTestSuite) TearDownSuite() {
-	s.memory.Close()
+	s.ms.Close()
 }
 
 func TestPolicySuite(t *testing.T) {
