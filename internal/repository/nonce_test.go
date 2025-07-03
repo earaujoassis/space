@@ -5,7 +5,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestNonceRepository__Create() {
-	repository := NewNonceRepository(s.Memory)
+	repository := NewNonceRepository(s.ms)
 
 	nonce := models.Nonce{
 		ClientKey: models.GenerateRandomString(32),
@@ -33,7 +33,7 @@ func (s *RepositoryTestSuite) TestNonceRepository__Create() {
 }
 
 func (s *RepositoryTestSuite) TestNonceRepository__RetrieveByCode() {
-	repository := NewNonceRepository(s.Memory)
+	repository := NewNonceRepository(s.ms)
 
 	code := models.GenerateRandomString(32)
 	nonceSrt := models.GenerateRandomString(128)

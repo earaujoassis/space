@@ -7,10 +7,10 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestActionRepository__CreationAndRetrieval() {
-	repository := NewActionRepository(s.Memory)
-	clients := NewClientRepository(s.DB)
-	languages := NewLanguageRepository(s.DB)
-	users := NewUserRepository(s.DB)
+	repository := NewActionRepository(s.ms)
+	clients := NewClientRepository(s.db)
+	languages := NewLanguageRepository(s.db)
+	users := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:  gofakeit.FirstName(),
@@ -44,10 +44,10 @@ func (s *RepositoryTestSuite) TestActionRepository__CreationAndRetrieval() {
 }
 
 func (s *RepositoryTestSuite) TestActionRepository__Authentication() {
-	repository := NewActionRepository(s.Memory)
-	clients := NewClientRepository(s.DB)
-	languages := NewLanguageRepository(s.DB)
-	users := NewUserRepository(s.DB)
+	repository := NewActionRepository(s.ms)
+	clients := NewClientRepository(s.db)
+	languages := NewLanguageRepository(s.db)
+	users := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:  gofakeit.FirstName(),
@@ -80,10 +80,10 @@ func (s *RepositoryTestSuite) TestActionRepository__Authentication() {
 }
 
 func (s *RepositoryTestSuite) TestActionRepository__Delete() {
-	repository := NewActionRepository(s.Memory)
-	clients := NewClientRepository(s.DB)
-	languages := NewLanguageRepository(s.DB)
-	users := NewUserRepository(s.DB)
+	repository := NewActionRepository(s.ms)
+	clients := NewClientRepository(s.db)
+	languages := NewLanguageRepository(s.db)
+	users := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:  gofakeit.FirstName(),

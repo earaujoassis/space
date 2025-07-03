@@ -7,7 +7,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestServiceRepository__GetAll() {
-	repository := NewServiceRepository(s.DB)
+	repository := NewServiceRepository(s.db)
 
 	service := models.Service{
 		Name:         "Omega",

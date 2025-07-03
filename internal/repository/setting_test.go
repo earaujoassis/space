@@ -7,7 +7,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestSettingRepository__Create() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -44,7 +44,7 @@ func (s *RepositoryTestSuite) TestSettingRepository__Create() {
 }
 
 func (s *RepositoryTestSuite) TestSettingRepository__CreateInvalidValue() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -81,7 +81,7 @@ func (s *RepositoryTestSuite) TestSettingRepository__CreateInvalidValue() {
 }
 
 func (s *RepositoryTestSuite) TestSettingRepository__CreateInvalidKey() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -118,7 +118,7 @@ func (s *RepositoryTestSuite) TestSettingRepository__CreateInvalidKey() {
 }
 
 func (s *RepositoryTestSuite) TestSettingRepository__FindOrDefault() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -170,7 +170,7 @@ func (s *RepositoryTestSuite) TestSettingRepository__FindOrDefault() {
 }
 
 func (s *RepositoryTestSuite) TestSettingRepository__FindOrFallback() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -222,7 +222,7 @@ func (s *RepositoryTestSuite) TestSettingRepository__FindOrFallback() {
 }
 
 func (s *RepositoryTestSuite) TestSettingRepository__GetAllForUser() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),
@@ -263,7 +263,7 @@ func (s *RepositoryTestSuite) TestSettingRepository__GetAllForUser() {
 }
 
 func (s *RepositoryTestSuite) TestSettingRepository__ReduceForUser() {
-	repository := NewSettingRepository(s.DB)
+	repository := NewSettingRepository(s.db)
 
 	client := models.Client{
 		Name:         gofakeit.Company(),

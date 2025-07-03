@@ -7,7 +7,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestEmailRepository__Create() {
-	repository := NewEmailRepository(s.DB)
+	repository := NewEmailRepository(s.db)
 
 	email := models.Email{}
 	err := repository.Create(&email)
@@ -48,7 +48,7 @@ func (s *RepositoryTestSuite) TestEmailRepository__Create() {
 }
 
 func (s *RepositoryTestSuite) TestEmailRepository__GetAllForUser() {
-	repository := NewEmailRepository(s.DB)
+	repository := NewEmailRepository(s.db)
 
 	client := models.Client{
 		Name:         "internal",

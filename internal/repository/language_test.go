@@ -5,7 +5,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestLanguageRepository__Create() {
-	repository := NewLanguageRepository(s.DB)
+	repository := NewLanguageRepository(s.db)
 
 	language := models.Language{}
 	err := repository.Create(&language)
@@ -20,7 +20,7 @@ func (s *RepositoryTestSuite) TestLanguageRepository__Create() {
 }
 
 func (s *RepositoryTestSuite) TestLanguageRepository__GetByID() {
-	repository := NewLanguageRepository(s.DB)
+	repository := NewLanguageRepository(s.db)
 
 	language := models.Language{
 		Name:    "Español",
@@ -36,7 +36,7 @@ func (s *RepositoryTestSuite) TestLanguageRepository__GetByID() {
 }
 
 func (s *RepositoryTestSuite) TestLanguageRepository__GetAllAndCount() {
-	repository := NewLanguageRepository(s.DB)
+	repository := NewLanguageRepository(s.db)
 
 	language := models.Language{
 		Name:    "Español",
@@ -80,7 +80,7 @@ func (s *RepositoryTestSuite) TestLanguageRepository__GetAllAndCount() {
 }
 
 func (s *RepositoryTestSuite) TestLanguageRepository__Save() {
-	repository := NewLanguageRepository(s.DB)
+	repository := NewLanguageRepository(s.db)
 
 	language := models.Language{
 		Name:    "日本語",
@@ -98,7 +98,7 @@ func (s *RepositoryTestSuite) TestLanguageRepository__Save() {
 }
 
 func (s *RepositoryTestSuite) TestLanguageRepository__Delete() {
-	repository := NewLanguageRepository(s.DB)
+	repository := NewLanguageRepository(s.db)
 
 	language := models.Language{
 		Name:    "中文",
@@ -116,7 +116,7 @@ func (s *RepositoryTestSuite) TestLanguageRepository__Delete() {
 }
 
 func (s *RepositoryTestSuite) TestLanguageRepository__FindWhere() {
-	repository := NewLanguageRepository(s.DB)
+	repository := NewLanguageRepository(s.db)
 
 	language := models.Language{
 		Name:    "Español",

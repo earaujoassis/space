@@ -10,7 +10,7 @@ import (
 )
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByAccountHolder() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	username := gofakeit.Username()
 	email := gofakeit.Email()
@@ -58,7 +58,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByAccountHolder() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByPublicID() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -92,7 +92,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByPublicID() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByUUID() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -126,7 +126,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByUUID() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__FindByID() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -161,7 +161,7 @@ func (s *RepositoryTestSuite) TestUserRepository__FindByID() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__ActiveClients() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -192,7 +192,7 @@ func (s *RepositoryTestSuite) TestUserRepository__ActiveClients() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__Authentic() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 
 	passphrase := gofakeit.Password(true, true, true, true, false, 32)
 	email := gofakeit.Email()
@@ -253,7 +253,7 @@ func (s *RepositoryTestSuite) TestUserRepository__Authentic() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__HoldsEmail() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 	email := gofakeit.Email()
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
@@ -287,7 +287,7 @@ func (s *RepositoryTestSuite) TestUserRepository__HoldsEmail() {
 }
 
 func (s *RepositoryTestSuite) TestUserRepository__ValidateEmail() {
-	repository := NewUserRepository(s.DB)
+	repository := NewUserRepository(s.db)
 	email := gofakeit.Email()
 	user := models.User{
 		FirstName:     gofakeit.FirstName(),
