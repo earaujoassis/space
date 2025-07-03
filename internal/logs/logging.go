@@ -7,16 +7,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/earaujoassis/space/internal/logs/level"
 	"github.com/earaujoassis/space/internal/logs/plugins"
 )
 
-type Level int8
-
 const (
-	Info Level = iota
-	Error
-	Critical
-	Panic
+	LevelInfo     = level.Info
+	LevelError    = level.Error
+	LevelCritical = level.Critical
+	LevelPanic    = level.Panic
 )
 
 type Options struct {
@@ -34,7 +33,7 @@ func init() {
 func Setup(opts Options) {
 	err := plugins.SetupSentry(opts.Environment, opts.Release, opts.SentryUrl)
 	if err != nil {
-		Propagatef(Error, "sentry.Init: %s\n", err)
+		Propagatef(level.Error, "sentry.Init: %s\n", err)
 	}
 }
 
@@ -42,30 +41,30 @@ func SetupRouter(router *gin.Engine) {
 	plugins.SetupSentryForRouter(router)
 }
 
-func setLogForLevel(level Level) {
-	switch level {
-	case Info:
+func setLogForLevel(lev level.Level) {
+	switch lev {
+	case level.Info:
 		logger.SetPrefix("[space][INFO    ] ")
-	case Error:
+	case level.Error:
 		logger.SetPrefix("[space][ERROR   ] ")
-	case Critical:
+	case level.Critical:
 		logger.SetPrefix("[space][CRITICAL] ")
-	case Panic:
+	case level.Panic:
 		logger.SetPrefix("[space][PANIC   ] ")
 	}
 }
 
-func Propagate(level Level, msg string) {
-	setLogForLevel(level)
-	switch level {
-	case Error:
-		plugins.CaptureMessage(fmt.Sprintf("[space][ERROR] %s", msg))
+func Propagate(lev level.Level, msg string) {
+	setLogForLevel(lev)
+	switch lev {
+	case level.Error:
+		plugins.CaptureMessage(fmt.Sprintf("[space][ERROR] %s", msg), lev)
 		logger.Println(msg)
-	case Critical:
-		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", msg))
+	case level.Critical:
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", msg), lev)
 		logger.Print(msg)
-	case Panic:
-		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", msg))
+	case level.Panic:
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", msg), lev)
 		logger.Println(msg)
 		panic(msg)
 	default:
@@ -73,19 +72,19 @@ func Propagate(level Level, msg string) {
 	}
 }
 
-func Propagatef(level Level, msg string, args ...interface{}) {
+func Propagatef(lev level.Level, msg string, args ...interface{}) {
 	formattedMsg := fmt.Sprintf(msg, args...)
-	setLogForLevel(level)
+	setLogForLevel(lev)
 
-	switch level {
-	case Error:
-		plugins.CaptureMessage(fmt.Sprintf("[space][ERROR] %s", formattedMsg))
+	switch lev {
+	case level.Error:
+		plugins.CaptureMessage(fmt.Sprintf("[space][ERROR] %s", formattedMsg), lev)
 		logger.Print(formattedMsg)
-	case Critical:
-		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", formattedMsg))
+	case level.Critical:
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", formattedMsg), lev)
 		logger.Print(formattedMsg)
-	case Panic:
-		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", formattedMsg))
+	case level.Panic:
+		plugins.CaptureMessage(fmt.Sprintf("[space][FATAL] %s", formattedMsg), lev)
 		logger.Print(formattedMsg)
 		panic(formattedMsg)
 	default:

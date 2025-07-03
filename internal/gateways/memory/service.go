@@ -23,7 +23,7 @@ func NewMemoryService(cfg *config.Config) (*MemoryService, error) {
 	conn := pool.Get()
 	defer conn.Close()
 	if _, err := conn.Do("PING"); err != nil {
-		logs.Propagate(logs.Error, err.Error())
+		logs.Propagate(logs.LevelError, err.Error())
 		return nil, fmt.Errorf("failed to connect to Redis: %v", err)
 	}
 

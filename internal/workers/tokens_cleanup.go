@@ -23,11 +23,11 @@ type TokenCleanupProcessor struct {
 func NewTokenCleanupProcessor(cfg *config.Config) *TokenCleanupProcessor {
 	db, err := database.NewDatabaseService(cfg)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	ms, err := memory.NewMemoryService(cfg)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	manager := repository.NewRepositoryManager(db, ms)
 	return &TokenCleanupProcessor{

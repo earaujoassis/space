@@ -31,6 +31,6 @@ func Workers(cfg *config.Config) {
 	mux.Handle(workers.TypeTokensCleanup, workers.NewTokenCleanupProcessor(cfg))
 
 	if err := srv.Run(mux); err != nil {
-		logs.Propagatef(logs.Error, "could not run worker server: %v", err)
+		logs.Propagatef(logs.LevelError, "could not run worker server: %v", err)
 	}
 }

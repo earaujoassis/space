@@ -23,10 +23,10 @@ type Service struct {
 func (s *Service) LoadService(filepath string) {
 	yamlFile, err := os.ReadFile(filepath)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	err = yaml.Unmarshal([]byte(yamlFile), &s)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 }

@@ -76,7 +76,7 @@ func getJWTValidationKey(token *jwt.Token) (interface{}, error) {
 func getPublicKeyByID(keyID string) (*rsa.PublicKey, error) {
 	keyManager, err := initKeyManager()
 	if err != nil {
-		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
+		logs.Propagatef(logs.LevelError, "JWKS is not available: %s", err)
 		return nil, err
 	}
 	keyPair := keyManager.GetKeyByID(keyID)
@@ -112,7 +112,7 @@ func generateJWKSETag(keys []utils.H) string {
 func createIDToken(issuer, userPublicId, clientKey, nonce string) string {
 	keyManager, err := initKeyManager()
 	if err != nil || len(keyManager.Keys) == 0 {
-		logs.Propagatef(logs.Error, "JWKS is not available: %s", err)
+		logs.Propagatef(logs.LevelError, "JWKS is not available: %s", err)
 		return ""
 	}
 
@@ -137,7 +137,7 @@ func createIDToken(issuer, userPublicId, clientKey, nonce string) string {
 
 	signedToken, err := token.SignedString(key.PrivateKey)
 	if err != nil {
-		logs.Propagatef(logs.Error, "Could not sign id_token: %s", err)
+		logs.Propagatef(logs.LevelError, "Could not sign id_token: %s", err)
 		return ""
 	}
 

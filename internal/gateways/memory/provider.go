@@ -21,7 +21,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 			Dial: func() (redis.Conn, error) {
 				c, err := redis.DialURL(getRedisURL(cfg))
 				if err != nil {
-					logs.Propagate(logs.Error, err.Error())
+					logs.Propagate(logs.LevelError, err.Error())
 					return nil, err
 				}
 
@@ -30,7 +30,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 			TestOnBorrow: func(c redis.Conn, t time.Time) error {
 				_, err := c.Do("PING")
 				if err != nil {
-					logs.Propagate(logs.Error, err.Error())
+					logs.Propagate(logs.LevelError, err.Error())
 				}
 				return err
 			},
@@ -38,7 +38,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 	case config.Test:
 		s, err := miniredis.Run()
 		if err != nil {
-			logs.Propagate(logs.Panic, err.Error())
+			logs.Propagate(logs.LevelPanic, err.Error())
 			return nil
 		}
 		return &redis.Pool{
@@ -48,7 +48,7 @@ func NewRedisProviderPool(cfg *config.Config) *redis.Pool {
 			},
 		}
 	default:
-		logs.Propagate(logs.Panic, "gateway misconfigured")
+		logs.Propagate(logs.LevelPanic, "gateway misconfigured")
 		return nil
 	}
 }

@@ -18,43 +18,43 @@ func LoadSettingsSchema() utils.H {
 	var schema utils.H
 
 	if _, err := os.Stat(settingsSchemaFile); err != nil {
-		logs.Propagatef(logs.Panic, "cannot load settings schema file: %s", err.Error())
+		logs.Propagatef(logs.LevelPanic, "cannot load settings schema file: %s", err.Error())
 	}
 
 	dataStream, err := os.ReadFile(settingsSchemaFile)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 	err = json.Unmarshal([]byte(dataStream), &inputSchema)
 	if err != nil {
-		logs.Propagate(logs.Panic, err.Error())
+		logs.Propagate(logs.LevelPanic, err.Error())
 	}
 
 	if inputSchemaType, ok := inputSchema["type"].(string); !ok || inputSchemaType != "object" {
-		logs.Propagate(logs.Panic, "settings schema file unrecognized")
+		logs.Propagate(logs.LevelPanic, "settings schema file unrecognized")
 	}
 	if _, ok := inputSchema["realms"].([]interface{}); !ok {
-		logs.Propagate(logs.Panic, "settings schema file unrecognized")
+		logs.Propagate(logs.LevelPanic, "settings schema file unrecognized")
 	}
 
 	schema = utils.H{}
 	realms, ok := inputSchema["realms"].([]interface{})
 	if !ok {
-		logs.Propagate(logs.Panic, "settings schema file unrecognized")
+		logs.Propagate(logs.LevelPanic, "settings schema file unrecognized")
 	}
 	for _, realmInterface := range realms {
 		realm := utils.H(realmInterface.(map[string]interface{}))
 		realmName := realm["name"].(string)
 		categoriesInterface, ok := realm["categories"].([]interface{})
 		if !ok {
-			logs.Propagate(logs.Panic, "settings schema file unrecognized")
+			logs.Propagate(logs.LevelPanic, "settings schema file unrecognized")
 		}
 		for _, categoryInterface := range categoriesInterface {
 			category := utils.H(categoryInterface.(map[string]interface{}))
 			categoryName := category["name"].(string)
 			propertiesInterface, ok := category["properties"].([]interface{})
 			if !ok {
-				logs.Propagate(logs.Panic, "settings schema file unrecognized")
+				logs.Propagate(logs.LevelPanic, "settings schema file unrecognized")
 			}
 			for _, propertyInterface := range propertiesInterface {
 				var value []interface{}
@@ -70,7 +70,7 @@ func LoadSettingsSchema() utils.H {
 				}
 				_, ok = schema[key]
 				if ok {
-					logs.Propagate(logs.Panic, "settings schema has duplicated path keys")
+					logs.Propagate(logs.LevelPanic, "settings schema has duplicated path keys")
 				}
 				schema[key] = value
 			}

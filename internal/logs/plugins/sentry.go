@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/getsentry/sentry-go"
+
+	"github.com/earaujoassis/space/internal/logs/level"
 )
 
 var isSentryAvailable bool
@@ -42,9 +44,19 @@ func IsSentryAvailable() bool {
 	return isSentryAvailable
 }
 
-func CaptureMessage(msg string) {
+func CaptureMessage(msg string, lev level.Level) {
 	if isSentryAvailable {
-		sentry.CaptureMessage(msg)
+		sentry.WithScope(func(scope *sentry.Scope) {
+			switch lev {
+			case level.Critical, level.Panic:
+				scope.SetLevel(sentry.LevelFatal)
+			case level.Error:
+				scope.SetLevel(sentry.LevelError)
+			default:
+				scope.SetLevel(sentry.LevelInfo)
+			}
+			sentry.CaptureMessage(msg)
+		})
 	}
 }
 

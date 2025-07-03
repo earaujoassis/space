@@ -34,7 +34,7 @@ func NewDatabaseProvider(cfg *config.Config) DatabaseProvider {
 	case config.Test:
 		return &SQLiteProvider{}
 	default:
-		logs.Propagate(logs.Panic, "gateway misconfigured")
+		logs.Propagate(logs.LevelPanic, "gateway misconfigured")
 		return nil
 	}
 }

@@ -141,7 +141,7 @@ func authorizeHandler(c *gin.Context) {
 			} else {
 				notifier := ioc.GetNotifier(c)
 				go notifier.Announce("user.authorization_granted", utils.H{
-					"Email":      shared.GetUserDefaultEmailForNotifications(c),
+					"Email":      shared.GetUserDefaultEmailForNotifications(c, user),
 					"FirstName":  user.FirstName,
 					"ClientName": client.Name,
 					"CreatedAt":  time.Now().UTC().Format(time.RFC850),

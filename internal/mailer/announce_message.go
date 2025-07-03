@@ -61,14 +61,14 @@ func (m *Mailer) AnnounceMessage(name string, data utils.H) error {
 		}
 		if err != nil {
 			logs.Propagatef(
-				logs.Critical,
+				logs.LevelCritical,
 				"Critical error sending announcement: action `%s` with data `%v`\n",
 				name,
 				data)
 			return err
 		}
 	case config.Development:
-		logs.Propagatef(logs.Info, "Action `%s` with data `%v`\n", name, data)
+		logs.Propagatef(logs.LevelInfo, "Action `%s` with data `%v`\n", name, data)
 	}
 
 	return nil

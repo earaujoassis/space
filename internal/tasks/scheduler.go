@@ -21,12 +21,12 @@ func Scheduler(cfg *config.Config) {
 	)
 
 	if entryID, err := scheduler.Register("@every 15m", asynq.NewTask(workers.TypeTokensCleanup, nil)); err != nil {
-		logs.Propagatef(logs.Error, "could not register schedule: %v", err)
+		logs.Propagatef(logs.LevelError, "could not register schedule: %v", err)
 	} else {
 		log.Printf("Schedule registered with ID: %s\n", entryID)
 	}
 
 	if err := scheduler.Run(); err != nil {
-		logs.Propagatef(logs.Error, "could not run scheduler: %v", err)
+		logs.Propagatef(logs.LevelError, "could not run scheduler: %v", err)
 	}
 }

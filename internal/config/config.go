@@ -72,14 +72,14 @@ func Load() (*Config, error) {
 		// .config.local.json exists
 		dataStream, err = os.ReadFile(localConfigurationFile)
 		if err != nil {
-			logs.Propagate(logs.Panic, err.Error())
+			logs.Propagate(logs.LevelPanic, err.Error())
 		}
 		err = json.Unmarshal([]byte(dataStream), &globalConfig)
 		if err != nil {
-			logs.Propagate(logs.Panic, err.Error())
+			logs.Propagate(logs.LevelPanic, err.Error())
 		}
 		loadedFlag = true
-		logs.Propagatef(logs.Info, "Configuration obtained from %s; all good\n", localConfigurationFile)
+		logs.Propagatef(logs.LevelInfo, "Configuration obtained from %s; all good\n", localConfigurationFile)
 	} else if _, yErr := os.Stat(configurationStoreFile); !loadFromEnvVarsFlag && yErr == nil && os.IsNotExist(jErr) {
 		// .config.yml exists
 		globalService.LoadService(configurationStoreFile)
@@ -87,20 +87,20 @@ func Load() (*Config, error) {
 			Address: globalService.Space.ConfigurationStore.Addr,
 		})
 		if err != nil {
-			logs.Propagate(logs.Panic, err.Error())
+			logs.Propagate(logs.LevelPanic, err.Error())
 		}
 		client.SetToken(globalService.Space.ConfigurationStore.Token)
 		secret, err = client.Logical().Read(globalService.Space.ConfigurationStore.Path)
 		if err != nil {
-			logs.Propagate(logs.Panic, err.Error())
+			logs.Propagate(logs.LevelPanic, err.Error())
 		}
 
 		dataStream, _ = json.Marshal(secret.Data)
 		err = json.Unmarshal([]byte(dataStream), &globalConfig)
 		if err != nil {
-			logs.Propagate(logs.Panic, err.Error())
+			logs.Propagate(logs.LevelPanic, err.Error())
 		}
-		logs.Propagate(logs.Info, "Configuration obtained from Vault; all good")
+		logs.Propagate(logs.LevelInfo, "Configuration obtained from Vault; all good")
 		loadedFlag = true
 	} else {
 		loadFromEnvVarsFlag = true
@@ -110,9 +110,9 @@ func Load() (*Config, error) {
 		opts := env.Options{RequiredIfNoDef: true}
 		if err = env.ParseWithOptions(&globalConfig, opts); err == nil {
 			loadedFlag = true
-			logs.Propagate(logs.Info, "Configuration obtained from environment; all good")
+			logs.Propagate(logs.LevelInfo, "Configuration obtained from environment; all good")
 		} else {
-			logs.Propagatef(logs.Error, "Cannot load configuration from environment: %s", err.Error())
+			logs.Propagatef(logs.LevelError, "Cannot load configuration from environment: %s", err.Error())
 		}
 	}
 

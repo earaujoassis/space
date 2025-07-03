@@ -38,11 +38,11 @@ func (n *Notifier) Announce(name string, data utils.H) {
 			Data: data,
 		})
 		if err != nil {
-			logs.Propagatef(logs.Error, "could not enqueue task for email delivery: %s", name)
+			logs.Propagatef(logs.LevelError, "could not enqueue task for email delivery: %s", name)
 			return
 		}
 		enqueuer.Enqueue(asynq.NewTask(workers.TypeEmailDelivery, payload))
 	default:
-		logs.Propagatef(logs.Info, "Action `%s` with data `%v`\n", name, data)
+		logs.Propagatef(logs.LevelInfo, "Action `%s` with data `%v`\n", name, data)
 	}
 }

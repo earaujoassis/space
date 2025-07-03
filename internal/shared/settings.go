@@ -7,14 +7,13 @@ import (
 	"github.com/earaujoassis/space/internal/models"
 )
 
-func GetUserDefaultEmailForNotifications(c *gin.Context) string {
+func GetUserDefaultEmailForNotifications(c *gin.Context, user models.User) string {
 	const (
 		realm    = "notifications"
 		category = "system-email-notifications"
 		property = "email-address"
 	)
 	repositories := ioc.GetRepositories(c)
-	user := c.MustGet("User").(models.User)
 	setting := repositories.Settings().FindOrFallback(user, realm, category, property, user.Email)
 	value, _ := setting.DeserializeValue()
 	return value.(string)
