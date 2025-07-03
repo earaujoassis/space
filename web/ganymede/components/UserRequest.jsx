@@ -29,13 +29,13 @@ const RequestForm = ({ type, onRequest }) => {
     if (e) e.preventDefault()
 
     const formData = new FormData()
-    formData.append('request_type', 'passwordless_signin')
     formData.append('holder', holder)
     if (type === 'magic') {
       let next = getParameterByName('_')
       if (next && next) {
         formData.append('next', next)
       }
+      formData.append('request_type', 'passwordless_signin')
       actions.requestMagicLink(formData)
     } else {
       formData.append('request_type', 'password')

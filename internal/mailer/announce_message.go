@@ -23,23 +23,23 @@ func (m *Mailer) AnnounceMessage(name string, data utils.H) error {
 				"Welcome to quatroLABS services",
 				message,
 				data["Email"].(string))
-		case "user.update.password":
+		case "user.update_password":
 			data["Year"] = time.Now().Year()
-			message := CreateMessage("user.update.password.html", data)
+			message := CreateMessage("user.update_password.html", data)
 			err = m.SendEmail(
 				"A magic link to update your password was requested at quatroLABS",
 				message,
 				data["Email"].(string))
-		case "user.update.secrets":
+		case "user.update_secrets":
 			data["Year"] = time.Now().Year()
-			message := CreateMessage("user.update.secrets.html", data)
+			message := CreateMessage("user.update_secrets.html", data)
 			err = m.SendEmail(
 				"A magic link to recreat your recovery code and secret code generator was requested at quatroLABS",
 				message,
 				data["Email"].(string))
-		case "user.update.email_verification":
+		case "user.email_verification":
 			data["Year"] = time.Now().Year()
-			message := CreateMessage("user.update.email_verification.html", data)
+			message := CreateMessage("user.email_verification.html", data)
 			err = m.SendEmail(
 				"Please confirm you e-mail address at quatroLABS",
 				message,

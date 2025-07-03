@@ -54,8 +54,7 @@ func sessionsCreateHandler(c *gin.Context) {
 				go notifier.Announce("session.created", utils.H{
 					"Email":     shared.GetUserDefaultEmailForNotifications(c),
 					"FirstName": user.FirstName,
-					"IP":        session.IP,
-					"CreatedAt": session.CreatedAt.Format(time.RFC850),
+					"CreatedAt": time.Now().UTC().Format(time.RFC850),
 				})
 				rls.RegisterSuccessfulSignIn(user.UUID)
 				rls.RegisterSuccessfulSignIn(IP)

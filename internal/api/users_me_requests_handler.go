@@ -67,7 +67,7 @@ func usersMeRequestsHandler(c *gin.Context) {
 		}
 		repositories.Actions().Create(&actionToken)
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce("session.magic", utils.H{
+		go notifier.Announce("user.update_password", utils.H{
 			"Email":     user.Email,
 			"FirstName": user.FirstName,
 			"Callback":  fmt.Sprintf("%s/profile/password?_=%s", host, actionToken.Token),
@@ -83,7 +83,7 @@ func usersMeRequestsHandler(c *gin.Context) {
 		}
 		repositories.Actions().Create(&actionToken)
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce("session.magic", utils.H{
+		go notifier.Announce("user.update_secrets", utils.H{
 			"Email":     user.Email,
 			"FirstName": user.FirstName,
 			"Callback":  fmt.Sprintf("%s/profile/secrets?_=%s", host, actionToken.Token),
@@ -109,7 +109,7 @@ func usersMeRequestsHandler(c *gin.Context) {
 		}
 		repositories.Actions().Create(&actionToken)
 		notifier := ioc.GetNotifier(c)
-		go notifier.Announce("user.update.email_verification", utils.H{
+		go notifier.Announce("user.email_verification", utils.H{
 			"Email":     emailAddress,
 			"FirstName": user.FirstName,
 			"Callback":  fmt.Sprintf("%s/profile/email_verification?_=%s", host, actionToken.Token),

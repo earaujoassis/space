@@ -3,6 +3,7 @@ package oauth
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -99,6 +100,14 @@ func introspectHandler(c *gin.Context) {
 	if introspectType == models.AccessToken {
 		introspectionData["token_type"] = "Bearer"
 	}
+
+	notifier := ioc.GetNotifier(c)
+	go notifier.Announce("client.token_introspection", utils.H{
+		"Email":      shared.GetUserDefaultEmailForNotifications(c),
+		"FirstName":  user.FirstName,
+		"ClientName": client.Name,
+		"CreatedAt":  time.Now().UTC().Format(time.RFC850),
+	})
 
 	c.JSON(http.StatusOK, introspectionData)
 }

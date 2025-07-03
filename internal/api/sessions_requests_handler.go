@@ -65,7 +65,7 @@ func sessionsRequestsHandler(c *gin.Context) {
 					go notifier.Announce("session.magic", utils.H{
 						"Email":     user.Email,
 						"FirstName": user.FirstName,
-						"CreatedAt": session.CreatedAt.Format(time.RFC850),
+						"CreatedAt": time.Now().UTC().Format(time.RFC850),
 						"Callback": fmt.Sprintf("%s/session?client_id=%s&code=%s&grant_type=authorization_code&scope=%s&state=%s&_=%s",
 							host, client.Key, session.Token, session.Scopes, state, next),
 					})
