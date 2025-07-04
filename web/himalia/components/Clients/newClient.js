@@ -14,7 +14,7 @@ const privacyPolicyLink = (
   <a href="//quatrolabs.com/privacy-policy">privacy policy</a>
 )
 
-const newClient = ({ createClient, application, stateSignal }) => {
+const newClient = ({ createClient, stateSignal }) => {
   const [formSent, setFormSent] = useState(false)
   const navigate = useNavigate()
 
@@ -50,7 +50,7 @@ const newClient = ({ createClient, application, stateSignal }) => {
               'redirect_uri',
             ]
             const data = extractDataForm(e.target, attrs)
-            createClient(data, application.action_token)
+            createClient(data)
             setFormSent(true)
           }}
         >
@@ -129,14 +129,13 @@ const newClient = ({ createClient, application, stateSignal }) => {
 
 const mapStateToProps = state => {
   return {
-    application: state.root.application,
     stateSignal: state.root.stateSignal,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    createClient: (data, token) => dispatch(actions.createClient(data, token)),
+    createClient: data => dispatch(actions.createClient(data)),
   }
 }
 

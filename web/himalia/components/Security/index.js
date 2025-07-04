@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
 import * as actions from '@actions'
@@ -10,7 +10,6 @@ const processedRequestMessage = (
 )
 
 const security = ({
-  fetchUserProfile,
   requestResetPassword,
   requestResetSecretCodes,
   becomeAdmin,
@@ -18,10 +17,6 @@ const security = ({
   application,
   user,
 }) => {
-  useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-  }, [])
-
   const [applicationKey, setApplicationKey] = useState('')
   const [resetPasswordRequested, setResetPasswordRequested] = useState(false)
   const [resetSecretCodesRequested, setResetSecretCodesRequested] =
@@ -29,7 +24,7 @@ const security = ({
 
   const handleKeypressForAdminify = e => {
     if (e.key === 'Enter') {
-      becomeAdmin(application.user_id, applicationKey, application.action_token)
+      becomeAdmin(application.user_id, applicationKey)
     }
   }
 
@@ -53,13 +48,7 @@ const security = ({
         </div>
         <p>
           <button
-            onClick={() =>
-              becomeAdmin(
-                application.user_id,
-                applicationKey,
-                application.action_token
-              )
-            }
+            onClick={() => becomeAdmin(application.user_id, applicationKey)}
             className="button-anchor"
           >
             Confirm application key and become an admin
@@ -151,14 +140,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
     requestResetPassword: username =>
       dispatch(actions.requestResetPassword(username)),
     requestResetSecretCodes: username =>
       dispatch(actions.requestResetSecretCodes(username)),
-    becomeAdmin: (id, key, token) =>
-      dispatch(actions.becomeAdmin(id, key, token)),
+    becomeAdmin: (id, key) => dispatch(actions.becomeAdmin(id, key)),
   }
 }
 

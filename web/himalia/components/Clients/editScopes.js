@@ -6,7 +6,7 @@ import * as actions from '@actions'
 import Submenu from './submenu'
 import ScopesGroup from '@ui/ScopesGroup'
 
-const editScopes = ({ updateClient, application, clients, stateSignal }) => {
+const editScopes = ({ updateClient, clients, stateSignal }) => {
   const client = clients && clients.length ? clients[0] : null
   let content = null
 
@@ -40,7 +40,7 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
           e.preventDefault()
           const data = new FormData()
           data.append('scopes', scopes.join(' '))
-          updateClient(client.id, data, application.action_token)
+          updateClient(client.id, data)
           setFormSent(true)
         }}
       >
@@ -101,7 +101,6 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
 
 const mapStateToProps = state => {
   return {
-    application: state.root.application,
     clients: state.root.clients,
     stateSignal: state.root.stateSignal,
   }
@@ -109,8 +108,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateClient: (id, data, token) =>
-      dispatch(actions.updateClient(id, data, token)),
+    updateClient: (id, data) => dispatch(actions.updateClient(id, data)),
   }
 }
 

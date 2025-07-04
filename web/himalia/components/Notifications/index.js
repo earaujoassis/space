@@ -10,12 +10,10 @@ import NotificationEmail from './notificationEmail'
 import NotificationSettings from './notificationSettings'
 
 const notifications = ({
-  fetchUserProfile,
   fetchUserSettings,
   patchUserSettings,
   fetchEmails,
   loading,
-  application,
   emails,
   settings,
   user,
@@ -25,22 +23,21 @@ const notifications = ({
   let content = null
 
   useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-    fetchEmails(application.action_token)
-    fetchUserSettings(application.action_token)
+    fetchEmails()
+    fetchUserSettings()
   }, [])
 
   useEffect(() => {
-    if (emails === undefined) {
-      fetchEmails(application.action_token)
+    if (!loading.includes('email') && emails === undefined) {
+      fetchEmails()
     } else {
       setProtectedResource({ ...protectedResource, emails })
     }
   }, [emails])
 
   useEffect(() => {
-    if (settings === undefined) {
-      fetchUserSettings(application.action_token)
+    if (!loading.includes('setting') && settings === undefined) {
+      fetchUserSettings()
     } else {
       setProtectedResource({ ...protectedResource, settings })
     }
@@ -48,21 +45,20 @@ const notifications = ({
 
   useEffect(() => {
     if (
-      !loading.includes('user') &&
       !loading.includes('email') &&
       !loading.includes('setting') &&
-      user !== undefined &&
       emails !== undefined &&
       settings !== undefined &&
       pendingFirstRender === true
     ) {
       setPendingFirstRender(false)
+      setProtectedResource({ ...protectedResource, emails, settings })
     }
-  }, [loading, user, emails, settings])
+  }, [loading, emails, settings])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
-  } else if (protectedResource.emails) {
+  } else {
     const primaryEmail = {
       verified: user.email_verified,
       address: user.email,
@@ -86,15 +82,11 @@ const notifications = ({
             ]
           }
           emails={emailsComplete}
-          patchUserSettings={data =>
-            patchUserSettings(application.action_token, data)
-          }
+          patchUserSettings={data => patchUserSettings(data)}
         />
         <NotificationSettings
           settings={protectedResource.settings}
-          patchUserSettings={data =>
-            patchUserSettings(application.action_token, data)
-          }
+          patchUserSettings={data => patchUserSettings(data)}
         />
       </>
     )
@@ -111,7 +103,6 @@ const notifications = ({
 const mapStateToProps = state => {
   return {
     loading: state.root.loading,
-    application: state.root.application,
     user: state.root.user,
     emails: state.root.emails,
     settings: state.root.settings,
@@ -120,12 +111,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
-    fetchEmails: token => dispatch(actions.fetchEmails(token)),
-    fetchUserSettings: token => dispatch(actions.fetchUserSettings(token)),
-    patchUserSettings: (token, data) =>
-      dispatch(actions.patchUserSettings(token, data)),
+    fetchEmails: () => dispatch(actions.fetchEmails()),
+    fetchUserSettings: () => dispatch(actions.fetchUserSettings()),
+    patchUserSettings: data => dispatch(actions.patchUserSettings(data)),
   }
 }
 

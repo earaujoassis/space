@@ -11,14 +11,13 @@ const allClients = ({
   fetchClients,
   setClientForEdition,
   loading,
-  application,
   clients,
 }) => {
   const navigate = useNavigate()
   let content = null
 
   useEffect(() => {
-    fetchClients(application.action_token)
+    fetchClients()
   }, [])
 
   if (loading.includes('client') || clients === undefined) {
@@ -87,14 +86,13 @@ const allClients = ({
 const mapStateToProps = state => {
   return {
     loading: state.root.loading,
-    application: state.root.application,
     clients: state.root.clients,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchClients: token => dispatch(actions.fetchClients(token)),
+    fetchClients: () => dispatch(actions.fetchClients()),
     setClientForEdition: client =>
       dispatch(actions.setClientForEdition(client)),
   }

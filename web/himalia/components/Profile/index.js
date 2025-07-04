@@ -10,7 +10,6 @@ import Sessions from './sessions'
 import './style.css'
 
 const personal = ({
-  fetchUserProfile,
   requestEmailVerification,
   fetchApplicationSessionsForUser,
   revokeApplicationSessionForUser,
@@ -24,19 +23,8 @@ const personal = ({
   let content = null
 
   useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-    fetchApplicationSessionsForUser(
-      application.user_id,
-      application.action_token
-    )
-  }, [])
-
-  useEffect(() => {
-    if (sessions === undefined) {
-      fetchApplicationSessionsForUser(
-        application.user_id,
-        application.action_token
-      )
+    if (!loading.includes('session') && sessions === undefined) {
+      fetchApplicationSessionsForUser(application.user_id)
     } else {
       setProtectedResource({ ...protectedResource, sessions })
     }
@@ -44,20 +32,19 @@ const personal = ({
 
   useEffect(() => {
     if (
-      !loading.includes('user') &&
-      !loading.includes('email') &&
-      user !== undefined &&
+      !loading.includes('session') &&
+      sessions !== undefined &&
       pendingFirstRender === true
     ) {
       setPendingFirstRender(false)
     }
-  }, [loading, user])
+  }, [loading, sessions])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
   } else if (user && !user.error) {
     content = (
-      <div className="globals__siblings globals__max">
+      <div className="globals__siblings">
         <div className="globals__children">
           <div className="globals__input-wrapper">
             <label htmlFor="personal__full-name">Full name</label>
@@ -110,7 +97,7 @@ const personal = ({
             />
           </div>
         </div>
-        <div className="globals__children globals__overlay">
+        <div className="globals__children">
           <EmailVerification
             emailVerified={user.email_verified}
             requestEmailVerification={() =>
@@ -120,11 +107,7 @@ const personal = ({
           <Sessions
             sessions={protectedResource.sessions}
             revokeApplicationSessionForUser={id =>
-              revokeApplicationSessionForUser(
-                application.user_id,
-                id,
-                application.action_token
-              )
+              revokeApplicationSessionForUser(application.user_id, id)
             }
           />
         </div>
@@ -151,16 +134,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
     requestEmailVerification: (holder, email) =>
       dispatch(actions.requestEmailVerification(holder, email)),
-    fetchApplicationSessionsForUser: (id, token) =>
-      dispatch(actions.fetchApplicationSessionsForUser(id, token)),
-    revokeApplicationSessionForUser: (userId, sessionId, token) =>
-      dispatch(
-        actions.revokeApplicationSessionForUser(userId, sessionId, token)
-      ),
+    fetchApplicationSessionsForUser: id =>
+      dispatch(actions.fetchApplicationSessionsForUser(id)),
+    revokeApplicationSessionForUser: (userId, sessionId) =>
+      dispatch(actions.revokeApplicationSessionForUser(userId, sessionId)),
   }
 }
 

@@ -21,13 +21,11 @@ export const settingRecordError = error => {
   }
 }
 
-export const fetchUserSettings = token => {
+export const fetchUserSettings = () => {
   return dispatch => {
     dispatch(settingRecordStart())
     fetch
-      .get(`users/me/settings`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`users/me/settings`)
       .then(response => {
         dispatch(settingRecordSuccess(response.data))
       })
@@ -37,13 +35,11 @@ export const fetchUserSettings = token => {
   }
 }
 
-export const patchUserSettings = (token, data) => {
+export const patchUserSettings = data => {
   return dispatch => {
     dispatch(settingRecordStart())
     fetch
-      .patch(`users/me/settings`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .patch(`users/me/settings`, data)
       .then(response => {
         dispatch(settingRecordSuccess(response.data))
       })

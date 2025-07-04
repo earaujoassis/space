@@ -10,12 +10,10 @@ import NewEmail from './newEmail'
 import Emails from './emails'
 
 const personal = ({
-  fetchUserProfile,
   fetchEmails,
   requestEmailVerification,
   addEmail,
   loading,
-  application,
   emails,
   user,
 }) => {
@@ -25,13 +23,12 @@ const personal = ({
   let content = null
 
   useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-    fetchEmails(application.action_token)
+    fetchEmails()
   }, [])
 
   useEffect(() => {
-    if (emails === undefined) {
-      fetchEmails(application.action_token)
+    if (!loading.includes('email') && emails === undefined) {
+      fetchEmails()
     } else {
       setProtectedResource({ ...protectedResource, emails })
     }
@@ -39,19 +36,18 @@ const personal = ({
 
   useEffect(() => {
     if (
-      !loading.includes('user') &&
       !loading.includes('email') &&
-      user !== undefined &&
       emails !== undefined &&
       pendingFirstRender === true
     ) {
       setPendingFirstRender(false)
+      setProtectedResource({ ...protectedResource, emails })
     }
-  }, [loading, user, emails])
+  }, [loading, emails])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
-  } else if (protectedResource.emails) {
+  } else {
     const primaryEmail = {
       verified: user.email_verified,
       address: user.email,
@@ -72,7 +68,7 @@ const personal = ({
             requestEmailVerification(user.email, email)
           }
         />
-        <NewEmail addEmail={data => addEmail(data, application.action_token)} />
+        <NewEmail addEmail={data => addEmail(data)} />
       </>
     )
   }
@@ -88,7 +84,6 @@ const personal = ({
 const mapStateToProps = state => {
   return {
     loading: state.root.loading,
-    application: state.root.application,
     emails: state.root.emails,
     user: state.root.user,
   }
@@ -96,12 +91,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
-    fetchEmails: token => dispatch(actions.fetchEmails(token)),
+    fetchEmails: () => dispatch(actions.fetchEmails()),
     requestEmailVerification: (holder, email) =>
       dispatch(actions.requestEmailVerification(holder, email)),
-    addEmail: (data, token) => dispatch(actions.addEmail(data, token)),
+    addEmail: data => dispatch(actions.addEmail(data)),
   }
 }
 

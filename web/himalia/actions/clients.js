@@ -21,11 +21,11 @@ export const clientRecordError = error => {
   }
 }
 
-export const createClient = (data, token) => {
+export const createClient = data => {
   return dispatch => {
     dispatch(clientRecordStart())
     fetch
-      .post('clients', data, { headers: { Authorization: `Bearer ${token}` } })
+      .post('clients', data)
       .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
@@ -35,11 +35,11 @@ export const createClient = (data, token) => {
   }
 }
 
-export const fetchClients = token => {
+export const fetchClients = () => {
   return dispatch => {
     dispatch(clientRecordStart())
     fetch
-      .get('clients', { headers: { Authorization: `Bearer ${token}` } })
+      .get('clients')
       .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
@@ -55,13 +55,11 @@ export const setClientForEdition = client => {
   }
 }
 
-export const updateClient = (id, data, token) => {
+export const updateClient = (id, data) => {
   return dispatch => {
     dispatch(clientRecordStart())
     fetch
-      .patch(`clients/${id}/profile`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .patch(`clients/${id}/profile`, data)
       .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
@@ -71,13 +69,11 @@ export const updateClient = (id, data, token) => {
   }
 }
 
-export const fetchClientApplicationsFromUser = (id, token) => {
+export const fetchClientApplicationsFromUser = id => {
   return dispatch => {
     dispatch(clientRecordStart())
     fetch
-      .get(`users/${id}/clients`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`users/${id}/clients`)
       .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })
@@ -87,13 +83,11 @@ export const fetchClientApplicationsFromUser = (id, token) => {
   }
 }
 
-export const revokeClientApplicationFromUser = (userId, clientId, token) => {
+export const revokeClientApplicationFromUser = (userId, clientId) => {
   return dispatch => {
     dispatch(clientRecordStart())
     fetch
-      .delete(`users/${userId}/clients/${clientId}/revoke`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .delete(`users/${userId}/clients/${clientId}/revoke`)
       .then(response => {
         dispatch(clientRecordSuccess(response.data))
       })

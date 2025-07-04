@@ -21,13 +21,11 @@ export const sessionRecordError = error => {
   }
 }
 
-export const fetchApplicationSessionsForUser = (id, token) => {
+export const fetchApplicationSessionsForUser = id => {
   return dispatch => {
     dispatch(sessionRecordStart())
     fetch
-      .get(`users/${id}/sessions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`users/${id}/sessions`)
       .then(response => {
         dispatch(sessionRecordSuccess(response.data))
       })
@@ -37,13 +35,11 @@ export const fetchApplicationSessionsForUser = (id, token) => {
   }
 }
 
-export const revokeApplicationSessionForUser = (userId, sessionId, token) => {
+export const revokeApplicationSessionForUser = (userId, sessionId) => {
   return dispatch => {
     dispatch(sessionRecordStart())
     fetch
-      .delete(`users/${userId}/sessions/${sessionId}/revoke`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .delete(`users/${userId}/sessions/${sessionId}/revoke`)
       .then(response => {
         dispatch(sessionRecordSuccess(response.data))
       })

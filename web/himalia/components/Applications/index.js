@@ -13,18 +13,18 @@ const applications = ({
   application,
   clients,
 }) => {
-  const { user_id, action_token } = application
+  const { user_id } = application
   let content = null
 
   useEffect(() => {
-    fetchClientApplicationsFromUser(user_id, action_token)
-  }, [])
-
-  useEffect(() => {
-    if (clients === undefined) {
-      fetchClientApplicationsFromUser(user_id, action_token)
+    if (!loading.includes('client') && clients === undefined) {
+      fetchClientApplicationsFromUser(user_id)
     }
   }, [clients])
+
+  useEffect(() => {
+    fetchClientApplicationsFromUser(user_id)
+  }, [])
 
   if (loading.includes('client') || clients === undefined) {
     content = <SpinningSquare />
@@ -50,11 +50,7 @@ const applications = ({
                     <button
                       onClick={e => {
                         e.preventDefault()
-                        revokeClientApplicationFromUser(
-                          user_id,
-                          client.id,
-                          action_token
-                        )
+                        revokeClientApplicationFromUser(user_id, client.id)
                       }}
                       className="button-anchor"
                     >
@@ -88,12 +84,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchClientApplicationsFromUser: (id, token) =>
-      dispatch(actions.fetchClientApplicationsFromUser(id, token)),
-    revokeClientApplicationFromUser: (userId, clientId, token) =>
-      dispatch(
-        actions.revokeClientApplicationFromUser(userId, clientId, token)
-      ),
+    fetchClientApplicationsFromUser: id =>
+      dispatch(actions.fetchClientApplicationsFromUser(id)),
+    revokeClientApplicationFromUser: (userId, clientId) =>
+      dispatch(actions.revokeClientApplicationFromUser(userId, clientId)),
   }
 }
 

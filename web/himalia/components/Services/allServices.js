@@ -6,11 +6,11 @@ import SpinningSquare from '@ui/SpinningSquare'
 
 import Submenu from './submenu'
 
-const allServices = ({ fetchServices, loading, application, services }) => {
+const allServices = ({ fetchServices, loading, services }) => {
   let content = null
 
   useEffect(() => {
-    fetchServices(application.action_token)
+    fetchServices()
   }, [])
 
   if (loading.includes('service') || services === undefined) {
@@ -45,14 +45,13 @@ const allServices = ({ fetchServices, loading, application, services }) => {
 const mapStateToProps = state => {
   return {
     loading: state.root.loading,
-    application: state.root.application,
     services: state.root.services,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchServices: token => dispatch(actions.fetchServices(token)),
+    fetchServices: () => dispatch(actions.fetchServices()),
   }
 }
 

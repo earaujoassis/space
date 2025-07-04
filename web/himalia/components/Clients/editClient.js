@@ -7,7 +7,7 @@ import DynamicList from '@ui/DynamicList'
 
 import Submenu from './submenu'
 
-const editClient = ({ updateClient, application, clients, stateSignal }) => {
+const editClient = ({ updateClient, clients, stateSignal }) => {
   const client = clients && clients.length ? clients[0] : null
   let content = null
 
@@ -48,7 +48,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
           const data = new FormData()
           data.append('canonical_uri', canonicalUri.join('\n'))
           data.append('redirect_uri', redirectUri.join('\n'))
-          updateClient(client.id, data, application.action_token)
+          updateClient(client.id, data)
           setFormSent(true)
         }}
       >
@@ -130,7 +130,6 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
 
 const mapStateToProps = state => {
   return {
-    application: state.root.application,
     clients: state.root.clients,
     stateSignal: state.root.stateSignal,
   }
@@ -138,8 +137,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateClient: (id, data, token) =>
-      dispatch(actions.updateClient(id, data, token)),
+    updateClient: (id, data) => dispatch(actions.updateClient(id, data)),
   }
 }
 

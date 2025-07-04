@@ -21,11 +21,11 @@ export const emailRecordError = error => {
   }
 }
 
-export const fetchEmails = token => {
+export const fetchEmails = () => {
   return dispatch => {
     dispatch(emailRecordStart())
     fetch
-      .get('users/me/emails', { headers: { Authorization: `Bearer ${token}` } })
+      .get('users/me/emails')
       .then(response => {
         dispatch(emailRecordSuccess(response.data))
       })
@@ -35,13 +35,11 @@ export const fetchEmails = token => {
   }
 }
 
-export const addEmail = (data, token) => {
+export const addEmail = data => {
   return dispatch => {
     dispatch(emailRecordStart())
     fetch
-      .post('users/me/emails', data, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .post('users/me/emails', data)
       .then(() => {
         dispatch(emailRecordSuccess())
       })

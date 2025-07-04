@@ -7,7 +7,7 @@ import { extractDataForm, prependUrlWithHttps } from '@utils/forms'
 
 import Submenu from './submenu'
 
-const newService = ({ createService, application, stateSignal }) => {
+const newService = ({ createService, stateSignal }) => {
   const [formSent, setFormSent] = useState(false)
   const navigate = useNavigate()
 
@@ -32,7 +32,7 @@ const newService = ({ createService, application, stateSignal }) => {
             e.preventDefault()
             const attrs = ['name', 'description', 'canonical_uri']
             const data = extractDataForm(e.target, attrs)
-            createService(data, application.action_token)
+            createService(data)
             setFormSent(true)
           }}
         >
@@ -95,15 +95,13 @@ const newService = ({ createService, application, stateSignal }) => {
 
 const mapStateToProps = state => {
   return {
-    application: state.root.application,
     stateSignal: state.root.stateSignal,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    createService: (data, token) =>
-      dispatch(actions.createService(data, token)),
+    createService: data => dispatch(actions.createService(data)),
   }
 }
 

@@ -40,13 +40,11 @@ export const userRequestError = error => {
   }
 }
 
-export const fetchUserProfile = (id, token) => {
+export const fetchUserProfile = id => {
   return dispatch => {
     dispatch(userRecordStart())
     fetch
-      .get(`users/${id}/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`users/${id}/profile`)
       .then(response => {
         dispatch(userRecordSuccess(response.data))
       })
@@ -56,16 +54,14 @@ export const fetchUserProfile = (id, token) => {
   }
 }
 
-export const becomeAdmin = (id, key, token) => {
+export const becomeAdmin = (id, key) => {
   return dispatch => {
     const data = new FormData()
     data.append('user_id', id)
     data.append('application_key', key)
     dispatch(userRecordStart())
     fetch
-      .patch('users/me/admin', data, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .patch('users/me/admin', data)
       .then(response => {
         dispatch(userRecordSuccess(response.data))
         window.location.reload()

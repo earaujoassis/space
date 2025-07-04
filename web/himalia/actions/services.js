@@ -21,11 +21,11 @@ export const serviceRecordError = error => {
   }
 }
 
-export const createService = (data, token) => {
+export const createService = data => {
   return dispatch => {
     dispatch(serviceRecordStart())
     fetch
-      .post('services', data, { headers: { Authorization: `Bearer ${token}` } })
+      .post('services', data)
       .then(response => {
         dispatch(serviceRecordSuccess(response.data))
       })
@@ -35,11 +35,11 @@ export const createService = (data, token) => {
   }
 }
 
-export const fetchServices = token => {
+export const fetchServices = () => {
   return dispatch => {
     dispatch(serviceRecordStart())
     fetch
-      .get('services', { headers: { Authorization: `Bearer ${token}` } })
+      .get('services')
       .then(response => {
         dispatch(serviceRecordSuccess(response.data))
       })
