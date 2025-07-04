@@ -32,7 +32,7 @@ const notificationEmail = ({ patchUserSettings, emails, selectedEmail }) => {
             <select
               value={selectedEmail}
               name="system-email-notifications__email-address"
-              onChange={(event) => changeNotificationEmail(event.target.value)}
+              onChange={event => changeNotificationEmail(event.target.value)}
             >
               {emails.map(entry => (
                 <option key={entry.id || 'primary-email'} value={entry.address}>

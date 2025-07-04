@@ -1,28 +1,40 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import * as actions from '@actions'
 
-import Submenu from './submenu'
+import { updateClient } from '@actions'
+import { useClientCleanup } from '@hooks'
+
 import ScopesGroup from '@ui/ScopesGroup'
 
-const editScopes = ({ updateClient, application, clients, stateSignal }) => {
+import Submenu from './submenu'
+
+const editScopes = () => {
+  useClientCleanup()
+  const loading = useSelector(state => state.clients.loading)
+  const error = useSelector(state => state.clients.error)
+  const clients = useSelector(state => state.clients.data)
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
   const client = clients && clients.length ? clients[0] : null
-  let content = null
 
   const [formSent, setFormSent] = useState(false)
   const [scopes, setScopes] = useState([])
-  const navigate = useNavigate()
+
+  let content = null
 
   useEffect(() => {
-    if (!clients || !clients.length || clients.error || !client) {
+    if (!clients || !clients.length || error || !client) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_success' && formSent) {
+    } else if (formSent && !loading && !error) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_error' && formSent) {
+    // eslint-disable-next-line no-dupe-else-if
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   useEffect(() => {
     if (client) {
@@ -40,7 +52,7 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
           e.preventDefault()
           const data = new FormData()
           data.append('scopes', scopes.join(' '))
-          updateClient(client.id, data, application.action_token)
+          dispatch(updateClient(client.id, data))
           setFormSent(true)
         }}
       >
@@ -99,19 +111,4 @@ const editScopes = ({ updateClient, application, clients, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    application: state.root.application,
-    clients: state.root.clients,
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    updateClient: (id, data, token) =>
-      dispatch(actions.updateClient(id, data, token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(editScopes)
+export default editScopes

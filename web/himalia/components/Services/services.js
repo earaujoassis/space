@@ -1,19 +1,21 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
 
-import * as actions from '@actions'
+import { fetchServices } from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import Submenu from './submenu'
 
-const allServices = ({ fetchServices, loading, application, services }) => {
+const services = () => {
+  const { data: services, loading } = useProtectedResource(
+    'services',
+    fetchServices
+  )
+
   let content = null
 
-  useEffect(() => {
-    fetchServices(application.action_token)
-  }, [])
-
-  if (loading.includes('service') || services === undefined) {
+  if (loading || services === undefined) {
     content = <SpinningSquare />
   } else if (services && services.length) {
     content = (
@@ -42,18 +44,4 @@ const allServices = ({ fetchServices, loading, application, services }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    services: state.root.services,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchServices: token => dispatch(actions.fetchServices(token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(allServices)
+export default services

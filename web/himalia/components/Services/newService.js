@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { connect } from 'react-redux'
 
-import * as actions from '@actions'
+import { createService } from '@actions'
+
 import { extractDataForm, prependUrlWithHttps } from '@utils/forms'
 
 import Submenu from './submenu'
 
-const newService = ({ createService, application, stateSignal }) => {
+const newService = () => {
+  const loading = useSelector(state => state.services.loading)
+  const error = useSelector(state => state.services.error)
+
   const [formSent, setFormSent] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if (stateSignal === 'service_record_success' && formSent) {
+    if (formSent && !loading && !error) {
       navigate('/services')
-    } else if (stateSignal === 'service_record_error' && formSent) {
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   return (
     <>
@@ -32,7 +37,7 @@ const newService = ({ createService, application, stateSignal }) => {
             e.preventDefault()
             const attrs = ['name', 'description', 'canonical_uri']
             const data = extractDataForm(e.target, attrs)
-            createService(data, application.action_token)
+            dispatch(createService(data))
             setFormSent(true)
           }}
         >
@@ -93,18 +98,4 @@ const newService = ({ createService, application, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    application: state.root.application,
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    createService: (data, token) =>
-      dispatch(actions.createService(data, token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(newService)
+export default newService

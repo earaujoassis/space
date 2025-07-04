@@ -25,11 +25,12 @@ module.exports = {
     },
     resolve: {
         alias: {
-            '@core': path.resolve(__dirname, 'web/core'),
-            '@app': path.resolve(__dirname, 'web/himalia/app'),
             '@actions': path.resolve(__dirname, 'web/himalia/actions'),
+            '@app': path.resolve(__dirname, 'web/himalia/app'),
             '@components': path.resolve(__dirname, 'web/himalia/components'),
             '@containers': path.resolve(__dirname, 'web/himalia/containers'),
+            '@core': path.resolve(__dirname, 'web/core'),
+            '@hooks': path.resolve(__dirname, 'web/himalia/hooks'),
             '@stores': path.resolve(__dirname, 'web/himalia/stores'),
             '@ui': path.resolve(__dirname, 'web/himalia/ui'),
             '@utils': path.resolve(__dirname, 'web/himalia/utils'),

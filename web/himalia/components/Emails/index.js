@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchEmails, requestEmailVerification, addEmail } from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
@@ -9,55 +11,34 @@ import './style.css'
 import NewEmail from './newEmail'
 import Emails from './emails'
 
-const personal = ({
-  fetchUserProfile,
-  fetchEmails,
-  requestEmailVerification,
-  addEmail,
-  loading,
-  application,
-  emails,
-  user,
-}) => {
-  const [pendingFirstRender, setPendingFirstRender] = useState(true)
-  const [protectedResource, setProtectedResource] = useState({})
+const emails = () => {
+  const user = useSelector(state => state.user.data)
+  const { data: emails, loading } = useProtectedResource('emails', fetchEmails)
+
+  const [pendingFirstRender, setPendingFirstRender] = useState(
+    loading || emails === undefined
+  )
   const [requestedVerification, setRequestedVerification] = useState([])
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-    fetchEmails(application.action_token)
-  }, [])
-
-  useEffect(() => {
-    if (emails === undefined) {
-      fetchEmails(application.action_token)
-    } else {
-      setProtectedResource({ ...protectedResource, emails })
-    }
-  }, [emails])
-
-  useEffect(() => {
-    if (
-      !loading.includes('user') &&
-      !loading.includes('email') &&
-      user !== undefined &&
-      emails !== undefined &&
-      pendingFirstRender === true
-    ) {
+    if (!loading && emails !== undefined && user !== undefined) {
       setPendingFirstRender(false)
     }
-  }, [loading, user, emails])
+  }, [loading, emails])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
-  } else if (protectedResource.emails) {
+  } else {
     const primaryEmail = {
       verified: user.email_verified,
       address: user.email,
       primary: true,
     }
-    const emailsComplete = [primaryEmail, ...protectedResource.emails]
+    const emailsComplete = [primaryEmail, ...emails]
     content = (
       <>
         <p>
@@ -69,10 +50,10 @@ const personal = ({
           requestedVerification={requestedVerification}
           setRequestedVerification={setRequestedVerification}
           requestEmailVerification={email =>
-            requestEmailVerification(user.email, email)
+            dispatch(requestEmailVerification(user.email, email))
           }
         />
-        <NewEmail addEmail={data => addEmail(data, application.action_token)} />
+        <NewEmail addEmail={data => dispatch(addEmail(data))} />
       </>
     )
   }
@@ -85,24 +66,4 @@ const personal = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    emails: state.root.emails,
-    user: state.root.user,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
-    fetchEmails: token => dispatch(actions.fetchEmails(token)),
-    requestEmailVerification: (holder, email) =>
-      dispatch(actions.requestEmailVerification(holder, email)),
-    addEmail: (data, token) => dispatch(actions.addEmail(data, token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(personal)
+export default emails

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchUserSettings, fetchEmails, patchUserSettings } from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
@@ -9,66 +11,44 @@ import './style.css'
 import NotificationEmail from './notificationEmail'
 import NotificationSettings from './notificationSettings'
 
-const notifications = ({
-  fetchUserProfile,
-  fetchUserSettings,
-  patchUserSettings,
-  fetchEmails,
-  loading,
-  application,
-  emails,
-  settings,
-  user,
-}) => {
+const notifications = () => {
+  const user = useSelector(state => state.user.data)
+  const { data: emails, loading: loadingEmails } = useProtectedResource(
+    'emails',
+    fetchEmails
+  )
+  const { data: settings, loading: loadingSettings } = useProtectedResource(
+    'settings',
+    fetchUserSettings
+  )
+
   const [pendingFirstRender, setPendingFirstRender] = useState(true)
-  const [protectedResource, setProtectedResource] = useState({})
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-    fetchEmails(application.action_token)
-    fetchUserSettings(application.action_token)
-  }, [])
-
-  useEffect(() => {
-    if (emails === undefined) {
-      fetchEmails(application.action_token)
-    } else {
-      setProtectedResource({ ...protectedResource, emails })
-    }
-  }, [emails])
-
-  useEffect(() => {
-    if (settings === undefined) {
-      fetchUserSettings(application.action_token)
-    } else {
-      setProtectedResource({ ...protectedResource, settings })
-    }
-  }, [settings])
-
-  useEffect(() => {
     if (
-      !loading.includes('user') &&
-      !loading.includes('email') &&
-      !loading.includes('setting') &&
-      user !== undefined &&
+      !loadingEmails &&
+      !loadingSettings &&
       emails !== undefined &&
       settings !== undefined &&
-      pendingFirstRender === true
+      user !== undefined
     ) {
       setPendingFirstRender(false)
     }
-  }, [loading, user, emails, settings])
+  }, [loadingEmails, loadingSettings, emails, settings])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
-  } else if (protectedResource.emails) {
+  } else {
     const primaryEmail = {
       verified: user.email_verified,
       address: user.email,
       primary: true,
     }
-    const emailsComplete = [primaryEmail, ...protectedResource.emails]
+    const emailsComplete = [primaryEmail, ...emails]
     content = (
       <>
         <p>
@@ -81,20 +61,14 @@ const notifications = ({
         </p>
         <NotificationEmail
           selectedEmail={
-            protectedResource.settings[
-              'notifications.system-email-notifications.email-address'
-            ]
+            settings['notifications.system-email-notifications.email-address']
           }
           emails={emailsComplete}
-          patchUserSettings={data =>
-            patchUserSettings(application.action_token, data)
-          }
+          patchUserSettings={data => dispatch(patchUserSettings(data))}
         />
         <NotificationSettings
-          settings={protectedResource.settings}
-          patchUserSettings={data =>
-            patchUserSettings(application.action_token, data)
-          }
+          settings={settings}
+          patchUserSettings={data => dispatch(patchUserSettings(data))}
         />
       </>
     )
@@ -108,25 +82,4 @@ const notifications = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    user: state.root.user,
-    emails: state.root.emails,
-    settings: state.root.settings,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
-    fetchEmails: token => dispatch(actions.fetchEmails(token)),
-    fetchUserSettings: token => dispatch(actions.fetchUserSettings(token)),
-    patchUserSettings: (token, data) =>
-      dispatch(actions.patchUserSettings(token, data)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(notifications)
+export default notifications

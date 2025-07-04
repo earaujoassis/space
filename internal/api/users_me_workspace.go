@@ -28,7 +28,7 @@ func usersMeWorkspaceHandler(c *gin.Context) {
 	err := repositories.Actions().Create(&actionToken)
 	if err == nil {
 		c.JSON(http.StatusOK, utils.H{
-			"application": utils.H{
+			"workspace": utils.H{
 				"action_token":  actionToken.Token,
 				"user_id":       user.UUID,
 				"user_is_admin": user.Admin,

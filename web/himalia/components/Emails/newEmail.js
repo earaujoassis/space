@@ -14,6 +14,7 @@ const newEmail = ({ addEmail }) => {
           e.preventDefault()
           const data = extractDataForm(e.target, ['address'])
           addEmail(data)
+          e.target.reset()
         }}
       >
         <div className="globals__siblings emails__form-fields">

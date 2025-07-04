@@ -1,27 +1,24 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import * as actions from '@actions'
+import { fetchClients, setClientForEdition } from '@actions'
+import { useProtectedResource, useClientCleanup } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import Submenu from './submenu'
 
-const allClients = ({
-  fetchClients,
-  setClientForEdition,
-  loading,
-  application,
-  clients,
-}) => {
+const clients = () => {
+  useClientCleanup()
+  const { data: clients, loading } = useProtectedResource('clients', fetchClients)
+
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+
   let content = null
 
-  useEffect(() => {
-    fetchClients(application.action_token)
-  }, [])
-
-  if (loading.includes('client') || clients === undefined) {
+  if (loading || clients === undefined) {
     content = <SpinningSquare />
   } else if (clients && clients.length) {
     content = (
@@ -42,7 +39,7 @@ const allClients = ({
                 <p>
                   <button
                     onClick={() => {
-                      setClientForEdition(client)
+                      dispatch(setClientForEdition(client))
                       navigate('/clients/edit')
                     }}
                     className="button-anchor"
@@ -51,7 +48,7 @@ const allClients = ({
                   </button>
                   <button
                     onClick={() => {
-                      setClientForEdition(client)
+                      dispatch(setClientForEdition(client))
                       navigate('/clients/edit/scopes')
                     }}
                     className="button-anchor"
@@ -84,20 +81,4 @@ const allClients = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    clients: state.root.clients,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchClients: token => dispatch(actions.fetchClients(token)),
-    setClientForEdition: client =>
-      dispatch(actions.setClientForEdition(client)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(allClients)
+export default clients

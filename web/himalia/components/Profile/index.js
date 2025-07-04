@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import {
+  fetchApplicationSessionsForUser,
+  revokeApplicationSessionForUser,
+  requestEmailVerification,
+} from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import EmailVerification from './emailVerification'
@@ -9,55 +15,32 @@ import Sessions from './sessions'
 
 import './style.css'
 
-const personal = ({
-  fetchUserProfile,
-  requestEmailVerification,
-  fetchApplicationSessionsForUser,
-  revokeApplicationSessionForUser,
-  loading,
-  application,
-  user,
-  sessions,
-}) => {
-  const [pendingFirstRender, setPendingFirstRender] = useState(true)
-  const [protectedResource, setProtectedResource] = useState({})
+const profile = () => {
+  const workspace = useSelector(state => state.workspace.data)
+  const { data: sessions, loading } = useProtectedResource('sessions', () =>
+    fetchApplicationSessionsForUser(workspace.user_id)
+  )
+  const user = useSelector(state => state.user.data)
+
+  const [pendingFirstRender, setPendingFirstRender] = useState(
+    loading || sessions === undefined
+  )
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-    fetchApplicationSessionsForUser(
-      application.user_id,
-      application.action_token
-    )
-  }, [])
-
-  useEffect(() => {
-    if (sessions === undefined) {
-      fetchApplicationSessionsForUser(
-        application.user_id,
-        application.action_token
-      )
-    } else {
-      setProtectedResource({ ...protectedResource, sessions })
-    }
-  }, [sessions])
-
-  useEffect(() => {
-    if (
-      !loading.includes('user') &&
-      !loading.includes('email') &&
-      user !== undefined &&
-      pendingFirstRender === true
-    ) {
+    if (!loading && sessions !== undefined) {
       setPendingFirstRender(false)
     }
-  }, [loading, user])
+  }, [loading, sessions])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
   } else if (user && !user.error) {
     content = (
-      <div className="globals__siblings globals__max">
+      <div className="globals__siblings">
         <div className="globals__children">
           <div className="globals__input-wrapper">
             <label htmlFor="personal__full-name">Full name</label>
@@ -110,21 +93,17 @@ const personal = ({
             />
           </div>
         </div>
-        <div className="globals__children globals__overlay">
+        <div className="globals__children">
           <EmailVerification
             emailVerified={user.email_verified}
             requestEmailVerification={() =>
-              requestEmailVerification(user.email, user.email)
+              dispatch(requestEmailVerification(user.email, user.email))
             }
           />
           <Sessions
-            sessions={protectedResource.sessions}
+            sessions={sessions}
             revokeApplicationSessionForUser={id =>
-              revokeApplicationSessionForUser(
-                application.user_id,
-                id,
-                application.action_token
-              )
+              dispatch(revokeApplicationSessionForUser(workspace.user_id, id))
             }
           />
         </div>
@@ -140,28 +119,4 @@ const personal = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    user: state.root.user,
-    sessions: state.root.sessions,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
-    requestEmailVerification: (holder, email) =>
-      dispatch(actions.requestEmailVerification(holder, email)),
-    fetchApplicationSessionsForUser: (id, token) =>
-      dispatch(actions.fetchApplicationSessionsForUser(id, token)),
-    revokeApplicationSessionForUser: (userId, sessionId, token) =>
-      dispatch(
-        actions.revokeApplicationSessionForUser(userId, sessionId, token)
-      ),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(personal)
+export default profile

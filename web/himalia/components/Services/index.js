@@ -1,6 +1,6 @@
-import AllServices from './allServices'
+import Services from './services'
 import NewService from './newService'
 
 import './style.css'
 
-export { AllServices, NewService }
+export { Services, NewService }

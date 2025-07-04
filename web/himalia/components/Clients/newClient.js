@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { connect } from 'react-redux'
 
-import * as actions from '@actions'
+import { createClient } from '@actions'
+import { useClientCleanup } from '@hooks'
+
 import { extractDataForm, prependUrlWithHttps } from '@utils/forms'
 
 import Submenu from './submenu'
@@ -14,17 +16,22 @@ const privacyPolicyLink = (
   <a href="//quatrolabs.com/privacy-policy">privacy policy</a>
 )
 
-const newClient = ({ createClient, application, stateSignal }) => {
+const newClient = () => {
+  useClientCleanup()
+  const loading = useSelector(state => state.clients.loading)
+  const error = useSelector(state => state.clients.error)
+
   const [formSent, setFormSent] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if (stateSignal === 'client_record_success' && formSent) {
+    if (formSent && !loading && !error) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_error' && formSent) {
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   return (
     <>
@@ -50,7 +57,7 @@ const newClient = ({ createClient, application, stateSignal }) => {
               'redirect_uri',
             ]
             const data = extractDataForm(e.target, attrs)
-            createClient(data, application.action_token)
+            dispatch(createClient(data))
             setFormSent(true)
           }}
         >
@@ -127,17 +134,4 @@ const newClient = ({ createClient, application, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    application: state.root.application,
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    createClient: (data, token) => dispatch(actions.createClient(data, token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(newClient)
+export default newClient

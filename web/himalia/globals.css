@@ -12,14 +12,6 @@
   padding: 8px 0;
 }
 
-.globals__max {
-  max-height: calc(100vh - 370px);
-}
-
-.globals__overlay {
-  overflow-y: auto;
-}
-
 .globals__subheader {
   font-size: 1.2rem;
 }

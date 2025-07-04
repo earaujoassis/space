@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react'
-import { ErrorBoundary } from "react-error-boundary";
+import { useSelector, useDispatch } from 'react-redux'
+import { ErrorBoundary } from 'react-error-boundary'
 import { Outlet } from 'react-router-dom'
-import { connect } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchWorkspace, fetchUserProfile } from '@actions'
+
 import SpinningSquare from '@ui/SpinningSquare'
 import Menu from '@components/Menu'
 import Toast from '@components/Toast'
@@ -12,21 +13,41 @@ import Error from '@containers/Error'
 
 import './style.css'
 
-const layout = ({ fetchWorkspace, loading, application }) => {
+const layout = () => {
+  const workspace = useSelector(state => state.workspace.data)
+  const workspaceError = useSelector(state => state.workspace.error)
+  const user = useSelector(state => state.user.data)
+  const userError = useSelector(state => state.user.error)
+  const loadingUser = useSelector(state => state.user.loading)
+
+  const dispatch = useDispatch()
+
   useEffect(() => {
-    fetchWorkspace()
+    dispatch(fetchWorkspace())
   }, [])
 
-  let outlet = <Outlet />
-  const applicationErrorContent = (
+  useEffect(() => {
+    if (
+      workspace !== undefined &&
+      workspace.user_id &&
+      user === undefined &&
+      !loadingUser
+    ) {
+      dispatch(fetchUserProfile(workspace.user_id))
+    }
+  }, [workspace, user])
+
+  const workspaceErrorContent = (
     <Error type="bug">
       <p>An unexpected error happened</p>
     </Error>
   )
 
-  if (loading.includes('application') || application === undefined) {
+  let outlet
+
+  if ((workspace === undefined && user === undefined) || loadingUser) {
     outlet = <SpinningSquare />
-  } else if (application && application.error) {
+  } else if (workspaceError || userError) {
     outlet = (
       <>
         <Error>
@@ -34,15 +55,17 @@ const layout = ({ fetchWorkspace, loading, application }) => {
         </Error>
       </>
     )
+  } else {
+    outlet = <Outlet />
   }
 
   return (
     <div role="main" className="layout-root">
       <div className="layout-root__menu-container">
-        <Menu isUserAdmin={application && application.user_is_admin} />
+        <Menu isUserAdmin={workspace && workspace.user_is_admin} />
       </div>
       <div className="layout-root__corpus-container">
-        <ErrorBoundary fallback={applicationErrorContent}>
+        <ErrorBoundary fallback={workspaceErrorContent}>
           {outlet}
           <Toast />
         </ErrorBoundary>
@@ -51,17 +74,4 @@ const layout = ({ fetchWorkspace, loading, application }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchWorkspace: () => dispatch(actions.fetchWorkspace()),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(layout)
+export default layout

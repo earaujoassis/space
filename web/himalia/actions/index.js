@@ -1,11 +1,11 @@
-export { fetchWorkspace, internalSetToastDisplay } from './internal'
+export { internalSetToastDisplay } from './internal'
+export { fetchWorkspace } from './workspace'
+export { fetchUserProfile, becomeAdmin } from './users'
 export {
-  fetchUserProfile,
-  becomeAdmin,
   requestEmailVerification,
   requestResetPassword,
   requestResetSecretCodes,
-} from './users'
+} from './requests'
 export { fetchEmails, addEmail } from './emails'
 export { fetchUserSettings, patchUserSettings } from './settings'
 export {
@@ -19,5 +19,6 @@ export {
   updateClient,
   fetchClientApplicationsFromUser,
   revokeClientApplicationFromUser,
+  staleClientRecords,
 } from './clients'
 export { createService, fetchServices } from './services'

@@ -1,9 +1,9 @@
 import React from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import * as actions from '@actions'
+import { internalSetToastDisplay } from '@actions'
 
 import './style.css'
 
@@ -20,8 +20,13 @@ const extractMessage = error => {
   }
 }
 
-const toast = ({ internalSetToastDisplay, displayToast, success, error }) => {
-  if (displayToast === true && success === false) {
+const toast = () => {
+  const displayToast = useSelector(state => state.internal.displayToast)
+  const error = useSelector(state => state.internal.error)
+
+  const dispatch = useDispatch()
+
+  if (displayToast === true) {
     return (
       <div className="toast-root">
         <div className="toast-icon-box">
@@ -40,7 +45,7 @@ const toast = ({ internalSetToastDisplay, displayToast, success, error }) => {
           <button
             onClick={e => {
               e.preventDefault()
-              internalSetToastDisplay()
+              dispatch(internalSetToastDisplay())
             }}
             className="toast-close"
           >
@@ -54,18 +59,4 @@ const toast = ({ internalSetToastDisplay, displayToast, success, error }) => {
   return null
 }
 
-const mapStateToProps = state => {
-  return {
-    success: state.root.success,
-    error: state.root.error,
-    displayToast: state.root.displayToast,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    internalSetToastDisplay: () => dispatch(actions.internalSetToastDisplay()),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(toast)
+export default toast
