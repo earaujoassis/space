@@ -6,6 +6,8 @@ import {
   revokeApplicationSessionForUser,
   requestEmailVerification,
 } from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import EmailVerification from './emailVerification'
@@ -13,33 +15,23 @@ import Sessions from './sessions'
 
 import './style.css'
 
-const personal = () => {
-  const loading = useSelector(state => state.root.loading)
-  const application = useSelector(state => state.root.application)
-  const user = useSelector(state => state.root.user)
-  const sessions = useSelector(state => state.root.sessions)
+const profile = () => {
+  const workspace = useSelector(state => state.workspace.data)
+  const { data: sessions, loading } = useProtectedResource('sessions', () =>
+    fetchApplicationSessionsForUser(workspace.user_id)
+  )
+  const user = useSelector(state => state.user.data)
 
-  const [pendingFirstRender, setPendingFirstRender] = useState(true)
-  const [protectedResource, setProtectedResource] = useState({})
+  const [pendingFirstRender, setPendingFirstRender] = useState(
+    loading || sessions === undefined
+  )
 
   const dispatch = useDispatch()
 
   let content = null
 
   useEffect(() => {
-    if (!loading.includes('session') && sessions === undefined) {
-      dispatch(fetchApplicationSessionsForUser(application.user_id))
-    } else {
-      setProtectedResource({ ...protectedResource, sessions })
-    }
-  }, [sessions])
-
-  useEffect(() => {
-    if (
-      !loading.includes('session') &&
-      sessions !== undefined &&
-      pendingFirstRender === true
-    ) {
+    if (!loading && sessions !== undefined) {
       setPendingFirstRender(false)
     }
   }, [loading, sessions])
@@ -109,9 +101,9 @@ const personal = () => {
             }
           />
           <Sessions
-            sessions={protectedResource.sessions}
+            sessions={sessions}
             revokeApplicationSessionForUser={id =>
-              dispatch(revokeApplicationSessionForUser(application.user_id, id))
+              dispatch(revokeApplicationSessionForUser(workspace.user_id, id))
             }
           />
         </div>
@@ -127,4 +119,4 @@ const personal = () => {
   )
 }
 
-export default personal
+export default profile

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { fetchEmails, requestEmailVerification, addEmail } from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
@@ -9,13 +11,13 @@ import './style.css'
 import NewEmail from './newEmail'
 import Emails from './emails'
 
-const personal = () => {
-  const loading = useSelector(state => state.root.loading)
-  const user = useSelector(state => state.root.user)
-  const emails = useSelector(state => state.root.emails)
+const emails = () => {
+  const user = useSelector(state => state.user.data)
+  const { data: emails, loading } = useProtectedResource('emails', fetchEmails)
 
-  const [pendingFirstRender, setPendingFirstRender] = useState(true)
-  const [protectedResource, setProtectedResource] = useState({})
+  const [pendingFirstRender, setPendingFirstRender] = useState(
+    loading || emails === undefined
+  )
   const [requestedVerification, setRequestedVerification] = useState([])
 
   const dispatch = useDispatch()
@@ -23,25 +25,8 @@ const personal = () => {
   let content = null
 
   useEffect(() => {
-    dispatch(fetchEmails())
-  }, [])
-
-  useEffect(() => {
-    if (!loading.includes('email') && emails === undefined) {
-      dispatch(fetchEmails())
-    } else {
-      setProtectedResource({ ...protectedResource, emails })
-    }
-  }, [emails])
-
-  useEffect(() => {
-    if (
-      !loading.includes('email') &&
-      emails !== undefined &&
-      pendingFirstRender === true
-    ) {
+    if (!loading && emails !== undefined && user !== undefined) {
       setPendingFirstRender(false)
-      setProtectedResource({ ...protectedResource, emails })
     }
   }, [loading, emails])
 
@@ -53,7 +38,7 @@ const personal = () => {
       address: user.email,
       primary: true,
     }
-    const emailsComplete = [primaryEmail, ...protectedResource.emails]
+    const emailsComplete = [primaryEmail, ...emails]
     content = (
       <>
         <p>
@@ -81,4 +66,4 @@ const personal = () => {
   )
 }
 
-export default personal
+export default emails

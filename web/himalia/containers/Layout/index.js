@@ -4,6 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { Outlet } from 'react-router-dom'
 
 import { fetchWorkspace, fetchUserProfile } from '@actions'
+
 import SpinningSquare from '@ui/SpinningSquare'
 import Menu from '@components/Menu'
 import Toast from '@components/Toast'
@@ -13,9 +14,11 @@ import Error from '@containers/Error'
 import './style.css'
 
 const layout = () => {
-  const loading = useSelector(state => state.root.loading)
-  const application = useSelector(state => state.root.application)
-  const user = useSelector(state => state.root.user)
+  const workspace = useSelector(state => state.workspace.data)
+  const workspaceError = useSelector(state => state.workspace.error)
+  const user = useSelector(state => state.user.data)
+  const userError = useSelector(state => state.user.error)
+  const loadingUser = useSelector(state => state.user.loading)
 
   const dispatch = useDispatch()
 
@@ -25,30 +28,26 @@ const layout = () => {
 
   useEffect(() => {
     if (
-      application !== undefined &&
-      application.user_id &&
-      !loading.includes('user') &&
-      user === undefined
+      workspace !== undefined &&
+      workspace.user_id &&
+      user === undefined &&
+      !loadingUser
     ) {
-      dispatch(fetchUserProfile(application.user_id))
+      dispatch(fetchUserProfile(workspace.user_id))
     }
-  }, [application, user])
+  }, [workspace, user])
 
-  let outlet = <Outlet />
-  const applicationErrorContent = (
+  const workspaceErrorContent = (
     <Error type="bug">
       <p>An unexpected error happened</p>
     </Error>
   )
 
-  if (
-    loading.includes('application') ||
-    loading.includes('user') ||
-    application === undefined ||
-    user === undefined
-  ) {
+  let outlet
+
+  if ((workspace === undefined && user === undefined) || loadingUser) {
     outlet = <SpinningSquare />
-  } else if (application && application.error) {
+  } else if (workspaceError || userError) {
     outlet = (
       <>
         <Error>
@@ -56,15 +55,17 @@ const layout = () => {
         </Error>
       </>
     )
+  } else {
+    outlet = <Outlet />
   }
 
   return (
     <div role="main" className="layout-root">
       <div className="layout-root__menu-container">
-        <Menu isUserAdmin={application && application.user_is_admin} />
+        <Menu isUserAdmin={workspace && workspace.user_is_admin} />
       </div>
       <div className="layout-root__corpus-container">
-        <ErrorBoundary fallback={applicationErrorContent}>
+        <ErrorBoundary fallback={workspaceErrorContent}>
           {outlet}
           <Toast />
         </ErrorBoundary>

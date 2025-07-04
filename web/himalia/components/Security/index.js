@@ -14,9 +14,8 @@ const processedRequestMessage = (
 )
 
 const security = () => {
-  const loading = useSelector(state => state.root.loading)
-  const application = useSelector(state => state.root.application)
-  const user = useSelector(state => state.root.user)
+  const workspace = useSelector(state => state.workspace.data)
+  const user = useSelector(state => state.user.data)
 
   const [applicationKey, setApplicationKey] = useState('')
   const [resetPasswordRequested, setResetPasswordRequested] = useState(false)
@@ -27,12 +26,12 @@ const security = () => {
 
   const handleKeypressForAdminify = e => {
     if (e.key === 'Enter') {
-      dispatch(becomeAdmin(application.user_id, applicationKey))
+      dispatch(becomeAdmin(workspace.user_id, applicationKey))
     }
   }
 
   const becomeAdminUserBox =
-    application && application.user_is_admin ? null : (
+    workspace && workspace.user_is_admin ? null : (
       <div className="globals__warning-box">
         <h3>Become an admin user</h3>
         <p>Using the application key, you can become an admin user.</p>
@@ -51,7 +50,7 @@ const security = () => {
         </div>
         <p>
           <button
-            onClick={() => becomeAdmin(application.user_id, applicationKey)}
+            onClick={() => becomeAdmin(workspace.user_id, applicationKey)}
             className="button-anchor"
           >
             Confirm application key and become an admin
@@ -92,11 +91,7 @@ const security = () => {
     </p>
   )
 
-  if (
-    loading.includes('user') ||
-    user === undefined ||
-    application === undefined
-  ) {
+  if (user === undefined || workspace === undefined) {
     return (
       <>
         <h2>Password &amp; Security</h2>

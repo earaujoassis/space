@@ -23,5 +23,5 @@ func (s *ApiHandlerTestSuite) TestUsersMeWorkspaceHandler() {
 	w = s.PerformRequest(s.Router, "GET", "/api/users/me/workspace", header, cookie, nil)
 	r = utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(200, w.Code)
-	s.True(r.HasKeyInJSON("application"))
+	s.True(r.HasKeyInJSON("workspace"))
 }

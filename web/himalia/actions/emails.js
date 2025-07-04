@@ -1,22 +1,28 @@
-import * as actionTypes from './types'
+import {
+  EMAIL_RECORD_START,
+  EMAIL_RECORD_SUCCESS,
+  EMAIL_RECORD_ERROR,
+} from './types'
 import fetch from './fetch'
+import { toastError } from './internal'
 
 export const emailRecordStart = () => {
   return {
-    type: actionTypes.EMAIL_RECORD_START,
+    type: EMAIL_RECORD_START,
   }
 }
 
-export const emailRecordSuccess = data => {
+export const emailRecordSuccess = (data, status) => {
   return {
-    type: actionTypes.EMAIL_RECORD_SUCCESS,
-    emails: data.emails,
+    type: EMAIL_RECORD_SUCCESS,
+    emails: data ? data.emails : undefined,
+    stale: status == 204,
   }
 }
 
 export const emailRecordError = error => {
   return {
-    type: actionTypes.EMAIL_RECORD_ERROR,
+    type: EMAIL_RECORD_ERROR,
     error: error,
   }
 }
@@ -27,10 +33,11 @@ export const fetchEmails = () => {
     fetch
       .get('users/me/emails')
       .then(response => {
-        dispatch(emailRecordSuccess(response.data))
+        dispatch(emailRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(emailRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }
@@ -40,11 +47,12 @@ export const addEmail = data => {
     dispatch(emailRecordStart())
     fetch
       .post('users/me/emails', data)
-      .then(() => {
-        dispatch(emailRecordSuccess())
+      .then(response => {
+        dispatch(emailRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(emailRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }

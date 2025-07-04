@@ -3,19 +3,22 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { updateClient } from '@actions'
+import { useClientCleanup } from '@hooks'
+
 import DynamicList from '@ui/DynamicList'
 
 import Submenu from './submenu'
 
 const editClient = () => {
-  const stateSignal = useSelector(state => state.root.stateSignal)
-  const clients = useSelector(state => state.root.clients)
+  useClientCleanup()
+  const loading = useSelector(state => state.clients.loading)
+  const error = useSelector(state => state.clients.error)
+  const clients = useSelector(state => state.clients.data)
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const client = clients && clients.length ? clients[0] : null
-
-  let content = null
 
   const [formSent, setFormSent] = useState(false)
   const [canonicalUri, setCanonicalUri] = useState(
@@ -24,17 +27,18 @@ const editClient = () => {
   const [redirectUri, setRedirectUri] = useState(
     client ? client.redirect.split('\n') : new Array()
   )
-  const navigate = useNavigate()
+
+  let content = null
 
   useEffect(() => {
-    if (!clients || !clients.length || clients.error) {
+    if (!clients || !clients.length || !client) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_success' && formSent) {
+    } else if (formSent && !loading && !error) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_error' && formSent) {
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   useEffect(() => {
     if (client) {

@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { createClient } from '@actions'
+import { useClientCleanup } from '@hooks'
+
 import { extractDataForm, prependUrlWithHttps } from '@utils/forms'
 
 import Submenu from './submenu'
@@ -15,20 +17,21 @@ const privacyPolicyLink = (
 )
 
 const newClient = () => {
-  const stateSignal = useSelector(state => state.root.stateSignal)
+  useClientCleanup()
+  const loading = useSelector(state => state.clients.loading)
+  const error = useSelector(state => state.clients.error)
 
   const [formSent, setFormSent] = useState(false)
-
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (stateSignal === 'client_record_success' && formSent) {
+    if (formSent && !loading && !error) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_error' && formSent) {
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   return (
     <>

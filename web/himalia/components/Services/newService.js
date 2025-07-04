@@ -3,25 +3,26 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { createService } from '@actions'
+
 import { extractDataForm, prependUrlWithHttps } from '@utils/forms'
 
 import Submenu from './submenu'
 
 const newService = () => {
-  const stateSignal = useSelector(state => state.root.stateSignal)
+  const loading = useSelector(state => state.services.loading)
+  const error = useSelector(state => state.services.error)
 
   const [formSent, setFormSent] = useState(false)
   const navigate = useNavigate()
-
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (stateSignal === 'service_record_success' && formSent) {
+    if (formSent && !loading && !error) {
       navigate('/services')
-    } else if (stateSignal === 'service_record_error' && formSent) {
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   return (
     <>

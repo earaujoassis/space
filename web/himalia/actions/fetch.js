@@ -17,11 +17,11 @@ fetch.interceptors.request.use(config => {
   const state = store.getState()
   if (
     state &&
-    state.root &&
-    state.root.application &&
-    state.root.application.action_token
+    state.workspace &&
+    state.workspace.data &&
+    state.workspace.data.action_token
   ) {
-    const token = state.root.application.action_token
+    const token = state.workspace.data.action_token
     config.headers['Authorization'] = `Bearer ${token}`
   }
   return config

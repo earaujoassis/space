@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { fetchUserSettings, fetchEmails, patchUserSettings } from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
@@ -10,43 +12,33 @@ import NotificationEmail from './notificationEmail'
 import NotificationSettings from './notificationSettings'
 
 const notifications = () => {
-  const loading = useSelector(state => state.root.loading)
-  const user = useSelector(state => state.root.user)
-  const emails = useSelector(state => state.root.emails)
-  const settings = useSelector(state => state.root.settings)
+  const user = useSelector(state => state.user.data)
+  const { data: emails, loading: loadingEmails } = useProtectedResource(
+    'emails',
+    fetchEmails
+  )
+  const { data: settings, loading: loadingSettings } = useProtectedResource(
+    'settings',
+    fetchUserSettings
+  )
 
   const [pendingFirstRender, setPendingFirstRender] = useState(true)
-  const [protectedResource, setProtectedResource] = useState({})
 
   const dispatch = useDispatch()
 
   let content = null
 
   useEffect(() => {
-    dispatch(fetchEmails())
-    dispatch(fetchUserSettings())
-  }, [])
-
-  useEffect(() => {
-    if (!loading.includes('setting') && settings === undefined) {
-      dispatch(fetchUserSettings())
-    } else {
-      setProtectedResource({ ...protectedResource, settings })
-    }
-  }, [settings])
-
-  useEffect(() => {
     if (
-      !loading.includes('email') &&
-      !loading.includes('setting') &&
+      !loadingEmails &&
+      !loadingSettings &&
       emails !== undefined &&
       settings !== undefined &&
-      pendingFirstRender === true
+      user !== undefined
     ) {
       setPendingFirstRender(false)
-      setProtectedResource({ ...protectedResource, emails, settings })
     }
-  }, [loading, emails, settings])
+  }, [loadingEmails, loadingSettings, emails, settings])
 
   if (pendingFirstRender) {
     content = <SpinningSquare />
@@ -56,7 +48,7 @@ const notifications = () => {
       address: user.email,
       primary: true,
     }
-    const emailsComplete = [primaryEmail, ...protectedResource.emails]
+    const emailsComplete = [primaryEmail, ...emails]
     content = (
       <>
         <p>
@@ -69,15 +61,13 @@ const notifications = () => {
         </p>
         <NotificationEmail
           selectedEmail={
-            protectedResource.settings[
-              'notifications.system-email-notifications.email-address'
-            ]
+            settings['notifications.system-email-notifications.email-address']
           }
           emails={emailsComplete}
           patchUserSettings={data => dispatch(patchUserSettings(data))}
         />
         <NotificationSettings
-          settings={protectedResource.settings}
+          settings={settings}
           patchUserSettings={data => dispatch(patchUserSettings(data))}
         />
       </>

@@ -1,12 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
 import thunk from 'redux-thunk'
 
-import reducers from './reducers'
+import reducer from './reducers'
 
 const store = configureStore({
-  reducer: {
-    root: reducers,
-  },
+  reducer,
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(thunk),
   devTools: process.env.NODE_ENV !== 'production',
 })

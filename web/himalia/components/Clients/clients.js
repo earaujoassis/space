@@ -1,26 +1,24 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { fetchClients, setClientForEdition } from '@actions'
+import { useProtectedResource, useClientCleanup } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import Submenu from './submenu'
 
-const allClients = () => {
-  const loading = useSelector(state => state.root.loading)
-  const clients = useSelector(state => state.root.clients)
+const clients = () => {
+  useClientCleanup()
+  const { data: clients, loading } = useProtectedResource('clients', fetchClients)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   let content = null
 
-  useEffect(() => {
-    dispatch(fetchClients())
-  }, [])
-
-  if (loading.includes('client') || clients === undefined) {
+  if (loading || clients === undefined) {
     content = <SpinningSquare />
   } else if (clients && clients.length) {
     content = (
@@ -83,4 +81,4 @@ const allClients = () => {
   )
 }
 
-export default allClients
+export default clients

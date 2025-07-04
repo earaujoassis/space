@@ -1,22 +1,28 @@
-import * as actionTypes from './types'
+import {
+  SERVICE_RECORD_START,
+  SERVICE_RECORD_SUCCESS,
+  SERVICE_RECORD_ERROR,
+} from './types'
 import fetch from './fetch'
+import { toastError } from './internal'
 
 export const serviceRecordStart = () => {
   return {
-    type: actionTypes.SERVICE_RECORD_START,
+    type: SERVICE_RECORD_START,
   }
 }
 
-export const serviceRecordSuccess = data => {
+export const serviceRecordSuccess = (data, status) => {
   return {
-    type: actionTypes.SERVICE_RECORD_SUCCESS,
-    services: data.services,
+    type: SERVICE_RECORD_SUCCESS,
+    services: data ? data.services : undefined,
+    stale: status == 204,
   }
 }
 
 export const serviceRecordError = error => {
   return {
-    type: actionTypes.SERVICE_RECORD_ERROR,
+    type: SERVICE_RECORD_ERROR,
     error: error,
   }
 }
@@ -27,10 +33,11 @@ export const createService = data => {
     fetch
       .post('services', data)
       .then(response => {
-        dispatch(serviceRecordSuccess(response.data))
+        dispatch(serviceRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(serviceRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }
@@ -41,10 +48,11 @@ export const fetchServices = () => {
     fetch
       .get('services')
       .then(response => {
-        dispatch(serviceRecordSuccess(response.data))
+        dispatch(serviceRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(serviceRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }

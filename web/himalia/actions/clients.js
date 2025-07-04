@@ -1,23 +1,36 @@
-import * as actionTypes from './types'
+import {
+  CLIENT_RECORD_START,
+  CLIENT_RECORD_SUCCESS,
+  CLIENT_RECORD_ERROR,
+  CLIENT_RECORD_STALE,
+} from './types'
 import fetch from './fetch'
+import { toastError } from './internal'
 
 export const clientRecordStart = () => {
   return {
-    type: actionTypes.CLIENT_RECORD_START,
+    type: CLIENT_RECORD_START,
   }
 }
 
-export const clientRecordSuccess = data => {
+export const clientRecordSuccess = (data, status) => {
   return {
-    type: actionTypes.CLIENT_RECORD_SUCCESS,
-    clients: data.clients,
+    type: CLIENT_RECORD_SUCCESS,
+    clients: data ? data.clients : undefined,
+    stale: status == 204,
   }
 }
 
 export const clientRecordError = error => {
   return {
-    type: actionTypes.CLIENT_RECORD_ERROR,
+    type: CLIENT_RECORD_ERROR,
     error: error,
+  }
+}
+
+export const clientRecordStale = () => {
+  return {
+    type: CLIENT_RECORD_STALE
   }
 }
 
@@ -27,10 +40,11 @@ export const createClient = data => {
     fetch
       .post('clients', data)
       .then(response => {
-        dispatch(clientRecordSuccess(response.data))
+        dispatch(clientRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(clientRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }
@@ -41,10 +55,11 @@ export const fetchClients = () => {
     fetch
       .get('clients')
       .then(response => {
-        dispatch(clientRecordSuccess(response.data))
+        dispatch(clientRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(clientRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }
@@ -61,10 +76,11 @@ export const updateClient = (id, data) => {
     fetch
       .patch(`clients/${id}/profile`, data)
       .then(response => {
-        dispatch(clientRecordSuccess(response.data))
+        dispatch(clientRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(clientRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }
@@ -75,10 +91,11 @@ export const fetchClientApplicationsFromUser = id => {
     fetch
       .get(`users/${id}/clients`)
       .then(response => {
-        dispatch(clientRecordSuccess(response.data))
+        dispatch(clientRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(clientRecordError(error))
+        dispatch(toastError(error))
       })
   }
 }
@@ -89,10 +106,17 @@ export const revokeClientApplicationFromUser = (userId, clientId) => {
     fetch
       .delete(`users/${userId}/clients/${clientId}/revoke`)
       .then(response => {
-        dispatch(clientRecordSuccess(response.data))
+        dispatch(clientRecordSuccess(response.data, response.status))
       })
       .catch(error => {
         dispatch(clientRecordError(error))
+        dispatch(toastError(error))
       })
+  }
+}
+
+export const staleClientRecords = () => {
+  return dispatch => {
+    dispatch(clientRecordStale())
   }
 }

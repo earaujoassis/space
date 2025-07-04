@@ -1,8 +1,8 @@
-import AllClients from './allClients'
+import Clients from './clients'
 import EditClient from './editClient'
 import EditScopes from './editScopes'
 import NewClient from './newClient'
 
 import './style.css'
 
-export { AllClients, EditClient, EditScopes, NewClient }
+export { Clients, EditClient, EditScopes, NewClient }

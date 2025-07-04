@@ -3,32 +3,38 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { updateClient } from '@actions'
+import { useClientCleanup } from '@hooks'
 
-import Submenu from './submenu'
 import ScopesGroup from '@ui/ScopesGroup'
 
+import Submenu from './submenu'
+
 const editScopes = () => {
-  const stateSignal = useSelector(state => state.root.stateSignal)
-  const clients = useSelector(state => state.root.clients)
-
-  const client = clients && clients.length ? clients[0] : null
-  let content = null
-
-  const [formSent, setFormSent] = useState(false)
-  const [scopes, setScopes] = useState([])
+  useClientCleanup()
+  const loading = useSelector(state => state.clients.loading)
+  const error = useSelector(state => state.clients.error)
+  const clients = useSelector(state => state.clients.data)
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  const client = clients && clients.length ? clients[0] : null
+
+  const [formSent, setFormSent] = useState(false)
+  const [scopes, setScopes] = useState([])
+
+  let content = null
+
   useEffect(() => {
-    if (!clients || !clients.length || clients.error || !client) {
+    if (!clients || !clients.length || error || !client) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_success' && formSent) {
+    } else if (formSent && !loading && !error) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_error' && formSent) {
+    // eslint-disable-next-line no-dupe-else-if
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   useEffect(() => {
     if (client) {

@@ -3,10 +3,10 @@ import React from 'react'
 import './style.css'
 
 const error = ({ type, children }) => {
-  let imgSrc = "/public/imgs/illustration.server_error.svg"
+  let imgSrc = '/public/imgs/illustration.server_error.svg'
 
-  if (type == "bug") {
-    imgSrc = "/public/imgs/illustration.bug.svg"
+  if (type == 'bug') {
+    imgSrc = '/public/imgs/illustration.bug.svg'
   }
 
   return (

@@ -1,36 +1,28 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
   fetchClientApplicationsFromUser,
   revokeClientApplicationFromUser,
 } from '@actions'
+import { useProtectedResource, useClientCleanup } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
 
 const applications = () => {
-  const loading = useSelector(state => state.root.loading)
-  const application = useSelector(state => state.root.application)
-  const clients = useSelector(state => state.root.clients)
+  useClientCleanup()
+  const { user_id } = useSelector(state => state.workspace.data)
+  const { data: clients, loading } = useProtectedResource('clients', () =>
+    fetchClientApplicationsFromUser(user_id)
+  )
 
   const dispatch = useDispatch()
 
-  const { user_id } = application
-
   let content = null
 
-  useEffect(() => {
-    if (!loading.includes('client') && clients === undefined) {
-      dispatch(fetchClientApplicationsFromUser(user_id))
-    }
-  }, [clients])
-
-  useEffect(() => {
-    dispatch(fetchClientApplicationsFromUser(user_id))
-  }, [])
-
-  if (loading.includes('client') || clients === undefined) {
+  if (loading || clients === undefined) {
     content = <SpinningSquare />
   } else if (clients && clients.length) {
     content = (
@@ -54,7 +46,9 @@ const applications = () => {
                     <button
                       onClick={e => {
                         e.preventDefault()
-                        dispatch(revokeClientApplicationFromUser(user_id, client.id))
+                        dispatch(
+                          revokeClientApplicationFromUser(user_id, client.id)
+                        )
                       }}
                       className="button-anchor"
                     >

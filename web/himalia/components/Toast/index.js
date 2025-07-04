@@ -21,13 +21,12 @@ const extractMessage = error => {
 }
 
 const toast = () => {
-  const displayToast = useSelector(state => state.root.displayToast)
-  const error = useSelector(state => state.root.error)
-  const success = useSelector(state => state.root.success)
+  const displayToast = useSelector(state => state.internal.displayToast)
+  const error = useSelector(state => state.internal.error)
 
   const dispatch = useDispatch()
 
-  if (displayToast === true && success === false) {
+  if (displayToast === true) {
     return (
       <div className="toast-root">
         <div className="toast-icon-box">
