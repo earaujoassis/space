@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import {
+  fetchApplicationSessionsForUser,
+  revokeApplicationSessionForUser,
+  requestEmailVerification,
+} from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 
 import EmailVerification from './emailVerification'
@@ -9,22 +13,22 @@ import Sessions from './sessions'
 
 import './style.css'
 
-const personal = ({
-  requestEmailVerification,
-  fetchApplicationSessionsForUser,
-  revokeApplicationSessionForUser,
-  loading,
-  application,
-  user,
-  sessions,
-}) => {
+const personal = () => {
+  const loading = useSelector(state => state.root.loading)
+  const application = useSelector(state => state.root.application)
+  const user = useSelector(state => state.root.user)
+  const sessions = useSelector(state => state.root.sessions)
+
   const [pendingFirstRender, setPendingFirstRender] = useState(true)
   const [protectedResource, setProtectedResource] = useState({})
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
     if (!loading.includes('session') && sessions === undefined) {
-      fetchApplicationSessionsForUser(application.user_id)
+      dispatch(fetchApplicationSessionsForUser(application.user_id))
     } else {
       setProtectedResource({ ...protectedResource, sessions })
     }
@@ -101,13 +105,13 @@ const personal = ({
           <EmailVerification
             emailVerified={user.email_verified}
             requestEmailVerification={() =>
-              requestEmailVerification(user.email, user.email)
+              dispatch(requestEmailVerification(user.email, user.email))
             }
           />
           <Sessions
             sessions={protectedResource.sessions}
             revokeApplicationSessionForUser={id =>
-              revokeApplicationSessionForUser(application.user_id, id)
+              dispatch(revokeApplicationSessionForUser(application.user_id, id))
             }
           />
         </div>
@@ -123,24 +127,4 @@ const personal = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    user: state.root.user,
-    sessions: state.root.sessions,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    requestEmailVerification: (holder, email) =>
-      dispatch(actions.requestEmailVerification(holder, email)),
-    fetchApplicationSessionsForUser: id =>
-      dispatch(actions.fetchApplicationSessionsForUser(id)),
-    revokeApplicationSessionForUser: (userId, sessionId) =>
-      dispatch(actions.revokeApplicationSessionForUser(userId, sessionId)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(personal)
+export default personal

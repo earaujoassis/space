@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import {
+  requestResetPassword,
+  requestResetSecretCodes,
+  becomeAdmin,
+} from '@actions'
 
 import './style.css'
 
@@ -9,22 +13,21 @@ const processedRequestMessage = (
   <p>You should receive an e-mail message in the next few minutes.</p>
 )
 
-const security = ({
-  requestResetPassword,
-  requestResetSecretCodes,
-  becomeAdmin,
-  loading,
-  application,
-  user,
-}) => {
+const security = () => {
+  const loading = useSelector(state => state.root.loading)
+  const application = useSelector(state => state.root.application)
+  const user = useSelector(state => state.root.user)
+
   const [applicationKey, setApplicationKey] = useState('')
   const [resetPasswordRequested, setResetPasswordRequested] = useState(false)
   const [resetSecretCodesRequested, setResetSecretCodesRequested] =
     useState(false)
 
+  const dispatch = useDispatch()
+
   const handleKeypressForAdminify = e => {
     if (e.key === 'Enter') {
-      becomeAdmin(application.user_id, applicationKey)
+      dispatch(becomeAdmin(application.user_id, applicationKey))
     }
   }
 
@@ -63,7 +66,7 @@ const security = ({
     <p>
       <button
         onClick={() => {
-          requestResetPassword(user.username)
+          dispatch(requestResetPassword(user.username))
           setResetPasswordRequested(true)
         }}
         className="button-anchor"
@@ -79,7 +82,7 @@ const security = ({
     <p>
       <button
         onClick={() => {
-          requestResetSecretCodes(user.username)
+          dispatch(requestResetSecretCodes(user.username))
           setResetSecretCodesRequested(true)
         }}
         className="button-anchor"
@@ -130,22 +133,4 @@ const security = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    user: state.root.user,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    requestResetPassword: username =>
-      dispatch(actions.requestResetPassword(username)),
-    requestResetSecretCodes: username =>
-      dispatch(actions.requestResetSecretCodes(username)),
-    becomeAdmin: (id, key) => dispatch(actions.becomeAdmin(id, key)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(security)
+export default security

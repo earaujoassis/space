@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Outlet } from 'react-router-dom'
-import { connect } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchWorkspace, fetchUserProfile } from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 import Menu from '@components/Menu'
 import Toast from '@components/Toast'
@@ -12,15 +12,15 @@ import Error from '@containers/Error'
 
 import './style.css'
 
-const layout = ({
-  fetchWorkspace,
-  fetchUserProfile,
-  loading,
-  application,
-  user,
-}) => {
+const layout = () => {
+  const loading = useSelector(state => state.root.loading)
+  const application = useSelector(state => state.root.application)
+  const user = useSelector(state => state.root.user)
+
+  const dispatch = useDispatch()
+
   useEffect(() => {
-    fetchWorkspace()
+    dispatch(fetchWorkspace())
   }, [])
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const layout = ({
       !loading.includes('user') &&
       user === undefined
     ) {
-      fetchUserProfile(application.user_id)
+      dispatch(fetchUserProfile(application.user_id))
     }
   }, [application, user])
 
@@ -73,19 +73,4 @@ const layout = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    user: state.root.user,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchWorkspace: () => dispatch(actions.fetchWorkspace()),
-    fetchUserProfile: id => dispatch(actions.fetchUserProfile(id)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(layout)
+export default layout

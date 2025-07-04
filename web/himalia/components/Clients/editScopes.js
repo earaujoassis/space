@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import * as actions from '@actions'
+
+import { updateClient } from '@actions'
 
 import Submenu from './submenu'
 import ScopesGroup from '@ui/ScopesGroup'
 
-const editScopes = ({ updateClient, clients, stateSignal }) => {
+const editScopes = () => {
+  const stateSignal = useSelector(state => state.root.stateSignal)
+  const clients = useSelector(state => state.root.clients)
+
   const client = clients && clients.length ? clients[0] : null
   let content = null
 
   const [formSent, setFormSent] = useState(false)
   const [scopes, setScopes] = useState([])
+
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (!clients || !clients.length || clients.error || !client) {
@@ -40,7 +46,7 @@ const editScopes = ({ updateClient, clients, stateSignal }) => {
           e.preventDefault()
           const data = new FormData()
           data.append('scopes', scopes.join(' '))
-          updateClient(client.id, data)
+          dispatch(updateClient(client.id, data))
           setFormSent(true)
         }}
       >
@@ -99,17 +105,4 @@ const editScopes = ({ updateClient, clients, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    clients: state.root.clients,
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    updateClient: (id, data) => dispatch(actions.updateClient(id, data)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(editScopes)
+export default editScopes

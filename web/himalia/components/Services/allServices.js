@@ -1,16 +1,21 @@
 import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchServices } from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 
 import Submenu from './submenu'
 
-const allServices = ({ fetchServices, loading, services }) => {
+const allServices = () => {
+  const loading = useSelector(state => state.root.loading)
+  const services = useSelector(state => state.root.services)
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
-    fetchServices()
+    dispatch(fetchServices())
   }, [])
 
   if (loading.includes('service') || services === undefined) {
@@ -42,17 +47,4 @@ const allServices = ({ fetchServices, loading, services }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    services: state.root.services,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchServices: () => dispatch(actions.fetchServices()),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(allServices)
+export default allServices

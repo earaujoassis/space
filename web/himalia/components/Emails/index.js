@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchEmails, requestEmailVerification, addEmail } from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
@@ -9,26 +9,26 @@ import './style.css'
 import NewEmail from './newEmail'
 import Emails from './emails'
 
-const personal = ({
-  fetchEmails,
-  requestEmailVerification,
-  addEmail,
-  loading,
-  emails,
-  user,
-}) => {
+const personal = () => {
+  const loading = useSelector(state => state.root.loading)
+  const user = useSelector(state => state.root.user)
+  const emails = useSelector(state => state.root.emails)
+
   const [pendingFirstRender, setPendingFirstRender] = useState(true)
   const [protectedResource, setProtectedResource] = useState({})
   const [requestedVerification, setRequestedVerification] = useState([])
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
-    fetchEmails()
+    dispatch(fetchEmails())
   }, [])
 
   useEffect(() => {
     if (!loading.includes('email') && emails === undefined) {
-      fetchEmails()
+      dispatch(fetchEmails())
     } else {
       setProtectedResource({ ...protectedResource, emails })
     }
@@ -65,10 +65,10 @@ const personal = ({
           requestedVerification={requestedVerification}
           setRequestedVerification={setRequestedVerification}
           requestEmailVerification={email =>
-            requestEmailVerification(user.email, email)
+            dispatch(requestEmailVerification(user.email, email))
           }
         />
-        <NewEmail addEmail={data => addEmail(data)} />
+        <NewEmail addEmail={data => dispatch(addEmail(data))} />
       </>
     )
   }
@@ -81,21 +81,4 @@ const personal = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    emails: state.root.emails,
-    user: state.root.user,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchEmails: () => dispatch(actions.fetchEmails()),
-    requestEmailVerification: (holder, email) =>
-      dispatch(actions.requestEmailVerification(holder, email)),
-    addEmail: data => dispatch(actions.addEmail(data)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(personal)
+export default personal

@@ -1,23 +1,23 @@
 import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import * as actions from '@actions'
+import { fetchClients, setClientForEdition } from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 
 import Submenu from './submenu'
 
-const allClients = ({
-  fetchClients,
-  setClientForEdition,
-  loading,
-  clients,
-}) => {
+const allClients = () => {
+  const loading = useSelector(state => state.root.loading)
+  const clients = useSelector(state => state.root.clients)
+
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+
   let content = null
 
   useEffect(() => {
-    fetchClients()
+    dispatch(fetchClients())
   }, [])
 
   if (loading.includes('client') || clients === undefined) {
@@ -41,7 +41,7 @@ const allClients = ({
                 <p>
                   <button
                     onClick={() => {
-                      setClientForEdition(client)
+                      dispatch(setClientForEdition(client))
                       navigate('/clients/edit')
                     }}
                     className="button-anchor"
@@ -50,7 +50,7 @@ const allClients = ({
                   </button>
                   <button
                     onClick={() => {
-                      setClientForEdition(client)
+                      dispatch(setClientForEdition(client))
                       navigate('/clients/edit/scopes')
                     }}
                     className="button-anchor"
@@ -83,19 +83,4 @@ const allClients = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    clients: state.root.clients,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchClients: () => dispatch(actions.fetchClients()),
-    setClientForEdition: client =>
-      dispatch(actions.setClientForEdition(client)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(allClients)
+export default allClients

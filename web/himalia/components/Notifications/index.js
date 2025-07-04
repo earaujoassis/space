@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import { fetchUserSettings, fetchEmails, patchUserSettings } from '@actions'
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
@@ -9,35 +9,27 @@ import './style.css'
 import NotificationEmail from './notificationEmail'
 import NotificationSettings from './notificationSettings'
 
-const notifications = ({
-  fetchUserSettings,
-  patchUserSettings,
-  fetchEmails,
-  loading,
-  emails,
-  settings,
-  user,
-}) => {
+const notifications = () => {
+  const loading = useSelector(state => state.root.loading)
+  const user = useSelector(state => state.root.user)
+  const emails = useSelector(state => state.root.emails)
+  const settings = useSelector(state => state.root.settings)
+
   const [pendingFirstRender, setPendingFirstRender] = useState(true)
   const [protectedResource, setProtectedResource] = useState({})
+
+  const dispatch = useDispatch()
+
   let content = null
 
   useEffect(() => {
-    fetchEmails()
-    fetchUserSettings()
+    dispatch(fetchEmails())
+    dispatch(fetchUserSettings())
   }, [])
 
   useEffect(() => {
-    if (!loading.includes('email') && emails === undefined) {
-      fetchEmails()
-    } else {
-      setProtectedResource({ ...protectedResource, emails })
-    }
-  }, [emails])
-
-  useEffect(() => {
     if (!loading.includes('setting') && settings === undefined) {
-      fetchUserSettings()
+      dispatch(fetchUserSettings())
     } else {
       setProtectedResource({ ...protectedResource, settings })
     }
@@ -82,11 +74,11 @@ const notifications = ({
             ]
           }
           emails={emailsComplete}
-          patchUserSettings={data => patchUserSettings(data)}
+          patchUserSettings={data => dispatch(patchUserSettings(data))}
         />
         <NotificationSettings
           settings={protectedResource.settings}
-          patchUserSettings={data => patchUserSettings(data)}
+          patchUserSettings={data => dispatch(patchUserSettings(data))}
         />
       </>
     )
@@ -100,21 +92,4 @@ const notifications = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    user: state.root.user,
-    emails: state.root.emails,
-    settings: state.root.settings,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchEmails: () => dispatch(actions.fetchEmails()),
-    fetchUserSettings: () => dispatch(actions.fetchUserSettings()),
-    patchUserSettings: data => dispatch(actions.patchUserSettings(data)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(notifications)
+export default notifications

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { connect } from 'react-redux'
 
-import * as actions from '@actions'
+import { createClient } from '@actions'
 import { extractDataForm, prependUrlWithHttps } from '@utils/forms'
 
 import Submenu from './submenu'
@@ -14,9 +14,13 @@ const privacyPolicyLink = (
   <a href="//quatrolabs.com/privacy-policy">privacy policy</a>
 )
 
-const newClient = ({ createClient, stateSignal }) => {
+const newClient = () => {
+  const stateSignal = useSelector(state => state.root.stateSignal)
+
   const [formSent, setFormSent] = useState(false)
+
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (stateSignal === 'client_record_success' && formSent) {
@@ -50,7 +54,7 @@ const newClient = ({ createClient, stateSignal }) => {
               'redirect_uri',
             ]
             const data = extractDataForm(e.target, attrs)
-            createClient(data)
+            dispatch(createClient(data))
             setFormSent(true)
           }}
         >
@@ -127,16 +131,4 @@ const newClient = ({ createClient, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    createClient: data => dispatch(actions.createClient(data)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(newClient)
+export default newClient

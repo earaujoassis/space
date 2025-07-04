@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import * as actions from '@actions'
+import { updateClient } from '@actions'
 import DynamicList from '@ui/DynamicList'
 
 import Submenu from './submenu'
 
-const editClient = ({ updateClient, clients, stateSignal }) => {
+const editClient = () => {
+  const stateSignal = useSelector(state => state.root.stateSignal)
+  const clients = useSelector(state => state.root.clients)
+
+  const dispatch = useDispatch()
+
   const client = clients && clients.length ? clients[0] : null
+
   let content = null
 
   const [formSent, setFormSent] = useState(false)
@@ -48,7 +54,7 @@ const editClient = ({ updateClient, clients, stateSignal }) => {
           const data = new FormData()
           data.append('canonical_uri', canonicalUri.join('\n'))
           data.append('redirect_uri', redirectUri.join('\n'))
-          updateClient(client.id, data)
+          dispatch(updateClient(client.id, data))
           setFormSent(true)
         }}
       >
@@ -128,17 +134,4 @@ const editClient = ({ updateClient, clients, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    clients: state.root.clients,
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    updateClient: (id, data) => dispatch(actions.updateClient(id, data)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(editClient)
+export default editClient
