@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import {
+  requestResetPassword,
+  requestResetSecretCodes,
+  becomeAdmin,
+} from '@actions'
 
 import './style.css'
 
@@ -9,32 +13,25 @@ const processedRequestMessage = (
   <p>You should receive an e-mail message in the next few minutes.</p>
 )
 
-const security = ({
-  fetchUserProfile,
-  requestResetPassword,
-  requestResetSecretCodes,
-  becomeAdmin,
-  loading,
-  application,
-  user,
-}) => {
-  useEffect(() => {
-    fetchUserProfile(application.user_id, application.action_token)
-  }, [])
+const security = () => {
+  const workspace = useSelector(state => state.workspace.data)
+  const user = useSelector(state => state.user.data)
 
   const [applicationKey, setApplicationKey] = useState('')
   const [resetPasswordRequested, setResetPasswordRequested] = useState(false)
   const [resetSecretCodesRequested, setResetSecretCodesRequested] =
     useState(false)
 
+  const dispatch = useDispatch()
+
   const handleKeypressForAdminify = e => {
     if (e.key === 'Enter') {
-      becomeAdmin(application.user_id, applicationKey, application.action_token)
+      dispatch(becomeAdmin(workspace.user_id, applicationKey))
     }
   }
 
   const becomeAdminUserBox =
-    application && application.user_is_admin ? null : (
+    workspace && workspace.user_is_admin ? null : (
       <div className="globals__warning-box">
         <h3>Become an admin user</h3>
         <p>Using the application key, you can become an admin user.</p>
@@ -53,13 +50,7 @@ const security = ({
         </div>
         <p>
           <button
-            onClick={() =>
-              becomeAdmin(
-                application.user_id,
-                applicationKey,
-                application.action_token
-              )
-            }
+            onClick={() => becomeAdmin(workspace.user_id, applicationKey)}
             className="button-anchor"
           >
             Confirm application key and become an admin
@@ -74,7 +65,7 @@ const security = ({
     <p>
       <button
         onClick={() => {
-          requestResetPassword(user.username)
+          dispatch(requestResetPassword(user.username))
           setResetPasswordRequested(true)
         }}
         className="button-anchor"
@@ -90,7 +81,7 @@ const security = ({
     <p>
       <button
         onClick={() => {
-          requestResetSecretCodes(user.username)
+          dispatch(requestResetSecretCodes(user.username))
           setResetSecretCodesRequested(true)
         }}
         className="button-anchor"
@@ -100,11 +91,7 @@ const security = ({
     </p>
   )
 
-  if (
-    loading.includes('user') ||
-    user === undefined ||
-    application === undefined
-  ) {
+  if (user === undefined || workspace === undefined) {
     return (
       <>
         <h2>Password &amp; Security</h2>
@@ -141,25 +128,4 @@ const security = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    user: state.root.user,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchUserProfile: (id, token) =>
-      dispatch(actions.fetchUserProfile(id, token)),
-    requestResetPassword: username =>
-      dispatch(actions.requestResetPassword(username)),
-    requestResetSecretCodes: username =>
-      dispatch(actions.requestResetSecretCodes(username)),
-    becomeAdmin: (id, key, token) =>
-      dispatch(actions.becomeAdmin(id, key, token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(security)
+export default security

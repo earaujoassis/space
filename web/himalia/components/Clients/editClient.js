@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import * as actions from '@actions'
+import { updateClient } from '@actions'
+import { useClientCleanup } from '@hooks'
+
 import DynamicList from '@ui/DynamicList'
 
 import Submenu from './submenu'
 
-const editClient = ({ updateClient, application, clients, stateSignal }) => {
+const editClient = () => {
+  useClientCleanup()
+  const loading = useSelector(state => state.clients.loading)
+  const error = useSelector(state => state.clients.error)
+  const clients = useSelector(state => state.clients.data)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const client = clients && clients.length ? clients[0] : null
-  let content = null
 
   const [formSent, setFormSent] = useState(false)
   const [canonicalUri, setCanonicalUri] = useState(
@@ -18,17 +27,18 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
   const [redirectUri, setRedirectUri] = useState(
     client ? client.redirect.split('\n') : new Array()
   )
-  const navigate = useNavigate()
+
+  let content = null
 
   useEffect(() => {
-    if (!clients || !clients.length || clients.error) {
+    if (!clients || !clients.length || !client) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_success' && formSent) {
+    } else if (formSent && !loading && !error) {
       navigate('/clients')
-    } else if (stateSignal === 'client_record_error' && formSent) {
+    } else if (formSent && !loading && error) {
       setFormSent(false)
     }
-  }, [stateSignal])
+  }, [loading, error])
 
   useEffect(() => {
     if (client) {
@@ -48,7 +58,7 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
           const data = new FormData()
           data.append('canonical_uri', canonicalUri.join('\n'))
           data.append('redirect_uri', redirectUri.join('\n'))
-          updateClient(client.id, data, application.action_token)
+          dispatch(updateClient(client.id, data))
           setFormSent(true)
         }}
       >
@@ -128,19 +138,4 @@ const editClient = ({ updateClient, application, clients, stateSignal }) => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    application: state.root.application,
-    clients: state.root.clients,
-    stateSignal: state.root.stateSignal,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    updateClient: (id, data, token) =>
-      dispatch(actions.updateClient(id, data, token)),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(editClient)
+export default editClient

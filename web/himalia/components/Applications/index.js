@@ -1,32 +1,27 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
-import * as actions from '@actions'
+import {
+  fetchClientApplicationsFromUser,
+  revokeClientApplicationFromUser,
+} from '@actions'
+import { useProtectedResource } from '@hooks'
+
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
 
-const applications = ({
-  fetchClientApplicationsFromUser,
-  revokeClientApplicationFromUser,
-  loading,
-  application,
-  clients,
-}) => {
-  const { user_id, action_token } = application
+const applications = () => {
+  const { user_id } = useSelector(state => state.workspace.data)
+  const { data: clients, loading } = useProtectedResource('applications', () =>
+    fetchClientApplicationsFromUser(user_id)
+  )
+
+  const dispatch = useDispatch()
+
   let content = null
 
-  useEffect(() => {
-    fetchClientApplicationsFromUser(user_id, action_token)
-  }, [])
-
-  useEffect(() => {
-    if (clients === undefined) {
-      fetchClientApplicationsFromUser(user_id, action_token)
-    }
-  }, [clients])
-
-  if (loading.includes('client') || clients === undefined) {
+  if (loading || clients === undefined) {
     content = <SpinningSquare />
   } else if (clients && clients.length) {
     content = (
@@ -50,10 +45,8 @@ const applications = ({
                     <button
                       onClick={e => {
                         e.preventDefault()
-                        revokeClientApplicationFromUser(
-                          user_id,
-                          client.id,
-                          action_token
+                        dispatch(
+                          revokeClientApplicationFromUser(user_id, client.id)
                         )
                       }}
                       className="button-anchor"
@@ -78,23 +71,4 @@ const applications = ({
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    loading: state.root.loading,
-    application: state.root.application,
-    clients: state.root.clients,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchClientApplicationsFromUser: (id, token) =>
-      dispatch(actions.fetchClientApplicationsFromUser(id, token)),
-    revokeClientApplicationFromUser: (userId, clientId, token) =>
-      dispatch(
-        actions.revokeClientApplicationFromUser(userId, clientId, token)
-      ),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(applications)
+export default applications
