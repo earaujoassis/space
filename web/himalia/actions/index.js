@@ -13,12 +13,14 @@ export {
   revokeApplicationSessionForUser,
 } from './sessions'
 export {
+  fetchClientApplicationsFromUser,
+  revokeClientApplicationFromUser,
+} from './applications'
+export {
   createClient,
   fetchClients,
   setClientForEdition,
   updateClient,
-  fetchClientApplicationsFromUser,
-  revokeClientApplicationFromUser,
   staleClientRecords,
 } from './clients'
 export { createService, fetchServices } from './services'

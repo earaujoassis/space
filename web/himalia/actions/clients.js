@@ -85,36 +85,6 @@ export const updateClient = (id, data) => {
   }
 }
 
-export const fetchClientApplicationsFromUser = id => {
-  return dispatch => {
-    dispatch(clientRecordStart())
-    fetch
-      .get(`users/${id}/clients`)
-      .then(response => {
-        dispatch(clientRecordSuccess(response.data, response.status))
-      })
-      .catch(error => {
-        dispatch(clientRecordError(error))
-        dispatch(toastError(error))
-      })
-  }
-}
-
-export const revokeClientApplicationFromUser = (userId, clientId) => {
-  return dispatch => {
-    dispatch(clientRecordStart())
-    fetch
-      .delete(`users/${userId}/clients/${clientId}/revoke`)
-      .then(response => {
-        dispatch(clientRecordSuccess(response.data, response.status))
-      })
-      .catch(error => {
-        dispatch(clientRecordError(error))
-        dispatch(toastError(error))
-      })
-  }
-}
-
 export const staleClientRecords = () => {
   return dispatch => {
     dispatch(clientRecordStale())

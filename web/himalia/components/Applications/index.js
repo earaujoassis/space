@@ -5,16 +5,15 @@ import {
   fetchClientApplicationsFromUser,
   revokeClientApplicationFromUser,
 } from '@actions'
-import { useProtectedResource, useClientCleanup } from '@hooks'
+import { useProtectedResource } from '@hooks'
 
 import SpinningSquare from '@ui/SpinningSquare'
 
 import './style.css'
 
 const applications = () => {
-  useClientCleanup()
   const { user_id } = useSelector(state => state.workspace.data)
-  const { data: clients, loading } = useProtectedResource('clients', () =>
+  const { data: clients, loading } = useProtectedResource('applications', () =>
     fetchClientApplicationsFromUser(user_id)
   )
 
