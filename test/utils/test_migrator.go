@@ -13,5 +13,7 @@ func RunUnitTestMigrator(db *gorm.DB) error {
 		&models.Session{},
 		&models.User{},
 		&models.Email{},
-		&models.Setting{})
+		&models.Setting{},
+		&models.Group{},
+	)
 }
