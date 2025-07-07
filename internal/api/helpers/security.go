@@ -88,7 +88,7 @@ func ActionTokenBearerAuthorization() gin.HandlerFunc {
 	}
 }
 
-func RequireMatchBetweenActionTokenAndAuthenticatedUser() gin.HandlerFunc {
+func RequireActionTokenFromAuthenticatedUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		action := c.MustGet("Action").(models.Action)
 		authenticatedUser := c.MustGet("User").(models.User)

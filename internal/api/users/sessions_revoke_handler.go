@@ -30,7 +30,7 @@ func sessionsRevokeHandler(c *gin.Context) {
 	action := c.MustGet("Action").(models.Action)
 	user := repositories.Users().FindByUUID(userUUID)
 	session := repositories.Sessions().FindByUUID(sessionUUID)
-	if user.IsNewRecord() || user.ID != action.UserID || user.ID != session.User.ID {
+	if user.ID != action.UserID || user.ID != session.User.ID {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",

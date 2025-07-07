@@ -35,24 +35,28 @@ func ExposeRoutes(router *gin.RouterGroup) {
 		group.GET("/emails",
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
+			helpers.RequireActionTokenFromAuthenticatedUser(),
 			emailsListHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		group.POST("/emails",
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
+			helpers.RequireActionTokenFromAuthenticatedUser(),
 			emailsCreateHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		group.GET("/settings",
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
+			helpers.RequireActionTokenFromAuthenticatedUser(),
 			settingsListHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		group.PATCH("/settings",
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
+			helpers.RequireActionTokenFromAuthenticatedUser(),
 			settingsPatchHandler)
 	}
 }

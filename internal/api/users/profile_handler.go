@@ -28,7 +28,7 @@ func profileHandler(c *gin.Context) {
 	action := c.MustGet("Action").(models.Action)
 	repositories := ioc.GetRepositories(c)
 	user := repositories.Users().FindByUUID(uuid)
-	if user.IsNewRecord() || user.ID != action.UserID {
+	if user.ID != action.UserID {
 		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
 			"_status":  "error",

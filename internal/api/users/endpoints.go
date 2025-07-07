@@ -56,7 +56,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 		usersRoutes.GET("/:user_id/clients/:client_id/groups",
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
-			helpers.RequireMatchBetweenActionTokenAndAuthenticatedUser(),
+			helpers.RequireActionTokenFromAuthenticatedUser(),
 			groupsListHandler)
 
 		// Requires X-Requested-By and Origin (same-origin policy)
@@ -64,7 +64,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 		usersRoutes.PATCH("/:user_id/clients/:client_id/groups",
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
-			helpers.RequireMatchBetweenActionTokenAndAuthenticatedUser(),
+			helpers.RequireActionTokenFromAuthenticatedUser(),
 			groupsPatchHandler)
 	}
 }
