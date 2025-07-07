@@ -14,6 +14,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 	// TODO Improve security for this endpoint avoiding any overhead
 	router.GET("/clients/:client_id/credentials",
 		helpers.RequiresApplicationSession(),
+		helpers.RequirePermission("role:admin"),
 		credentialsHandler)
 
 	clientsRoutes := router.Group("/clients")
@@ -21,6 +22,7 @@ func ExposeRoutes(router *gin.RouterGroup) {
 	clientsRoutes.Use(helpers.RequiresApplicationSession())
 	clientsRoutes.Use(helpers.ActionTokenBearerAuthorization())
 	clientsRoutes.Use(helpers.RequireActionTokenFromAuthenticatedUser())
+	clientsRoutes.Use(helpers.RequirePermission("role:admin"))
 	{
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)

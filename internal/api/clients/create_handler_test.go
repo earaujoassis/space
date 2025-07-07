@@ -24,9 +24,7 @@ func (s *ClientsTestSuite) TestCreateHandlerByUnauthenticatedUser() {
 	}
 
 	w := s.PerformRequest(s.Router, "POST", "/api/clients", header, nil, nil)
-	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
-	s.Contains(r.Body, "User must be authenticated")
 }
 
 func (s *ClientsTestSuite) TestCreateHandlerWithoutActionGrant() {
@@ -96,7 +94,6 @@ func (s *ClientsTestSuite) TestCreateHandlerByCommonUser() {
 
 	w := s.PerformRequest(s.Router, "POST", "/api/clients", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
-	s.Require().Equal(401, w.Code)
+	s.Require().Equal(403, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("access_denied", r.JSON["error"])
 }

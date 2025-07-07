@@ -30,7 +30,6 @@ func (s *ClientsTestSuite) TestProfileHandlerByUnauthenticatedUser() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("User must be authenticated", r.JSON["_message"])
 }
 
 func (s *ClientsTestSuite) TestProfileHandlerWithoutActionGrant() {
@@ -100,7 +99,6 @@ func (s *ClientsTestSuite) TestProfileHandlerByAdminUser() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("User must be authenticated", r.JSON["_message"])
 
 	formData := url.Values{}
 	formData.Set("canonical_uri", "http://localhost:4000")
@@ -143,5 +141,5 @@ func (s *ClientsTestSuite) TestProfileHandlerByCommonUser() {
 	formData.Set("scopes", "openid profile")
 	encoded := formData.Encode()
 	w := s.PerformRequest(s.Router, "PATCH", path, header, cookie, strings.NewReader(encoded))
-	s.Require().Equal(401, w.Code)
+	s.Require().Equal(403, w.Code)
 }

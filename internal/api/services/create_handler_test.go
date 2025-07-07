@@ -26,7 +26,7 @@ func (s *ServicesTestSuite) TestCreateHandlerByUnauthenticatedUser() {
 	w := s.PerformRequest(s.Router, "POST", "/api/services", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
-	s.Contains(r.Body, "User must be authenticated")
+	s.True(r.HasKeyInJSON("error"))
 }
 
 func (s *ServicesTestSuite) TestCreateHandlerWithoutActionGrant() {
@@ -107,9 +107,9 @@ func (s *ServicesTestSuite) TestCreateHandlerByCommonUser() {
 
 	w := s.PerformRequest(s.Router, "POST", "/api/services", header, cookie, nil)
 	r := utils.ParseResponse(w.Result(), nil)
-	s.Require().Equal(401, w.Code)
+	s.Require().Equal(403, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("access_denied", r.JSON["error"])
+	s.Equal("authorization error", r.JSON["error"])
 
 	formData := url.Values{}
 	formData.Set("name", gofakeit.Company())
@@ -117,7 +117,7 @@ func (s *ServicesTestSuite) TestCreateHandlerByCommonUser() {
 	formData.Set("canonical_uri", "http://localhost")
 	encoded := formData.Encode()
 	w = s.PerformRequest(s.Router, "POST", "/api/services", header, cookie, strings.NewReader(encoded))
-	s.Require().Equal(401, w.Code)
+	s.Require().Equal(403, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("access_denied", r.JSON["error"])
+	s.Equal("authorization error", r.JSON["error"])
 }

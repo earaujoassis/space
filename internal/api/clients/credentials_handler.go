@@ -10,24 +10,11 @@ import (
 	"github.com/earaujoassis/space/internal/ioc"
 	"github.com/earaujoassis/space/internal/models"
 	"github.com/earaujoassis/space/internal/security"
-	"github.com/earaujoassis/space/internal/shared"
 	"github.com/earaujoassis/space/internal/utils"
 )
 
 func credentialsHandler(c *gin.Context) {
 	clientUUID := c.Param("client_id")
-	repositories := ioc.GetRepositories(c)
-	user := c.MustGet("User").(models.User)
-	if !user.Admin {
-		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
-		c.JSON(http.StatusUnauthorized, utils.H{
-			"_status":  "error",
-			"_message": "Client credentials are not available",
-			"error":    shared.AccessDenied,
-		})
-		return
-	}
-
 	if !security.ValidUUID(clientUUID) {
 		c.JSON(http.StatusBadRequest, utils.H{
 			"_status":  "error",
@@ -37,6 +24,7 @@ func credentialsHandler(c *gin.Context) {
 		return
 	}
 
+	repositories := ioc.GetRepositories(c)
 	client := repositories.Clients().FindByUUID(clientUUID)
 	// For security reasons, the client's secret is regenerated
 	clientSecret := models.GenerateRandomString(64)

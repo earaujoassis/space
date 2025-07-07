@@ -26,7 +26,7 @@ func (s *SelfTestSuite) TestEmailsCreateHandlerByUnauthenticatedUser() {
 	w := s.PerformRequest(s.Router, "POST", "/api/users/me/emails", header, nil, nil)
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
-	s.Contains(r.Body, "User must be authenticated")
+	s.Contains(r.Body, "access_denied")
 }
 
 func (s *SelfTestSuite) TestEmailsCreateHandlerWithoutActionGrant() {

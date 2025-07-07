@@ -22,6 +22,8 @@ func ExposeRoutes(router *gin.RouterGroup) {
 
 		// Requires X-Requested-By and Origin (same-origin policy)
 		// Authorization type: action token / Bearer (for web use)
-		servicesRoutes.POST("", createHandler)
+		servicesRoutes.POST("",
+			helpers.RequirePermission("role:admin"),
+			createHandler)
 	}
 }

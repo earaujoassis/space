@@ -30,7 +30,6 @@ func (s *UsersTestSuite) TestSessionsRevokeHandlerByUnauthenticatedUser() {
 	r := utils.ParseResponse(w.Result(), nil)
 	s.Require().Equal(401, w.Code)
 	s.True(r.HasKeyInJSON("error"))
-	s.Equal("User must be authenticated", r.JSON["_message"])
 }
 
 func (s *UsersTestSuite) TestSessionsRevokeHandlerWithoutActionGrant() {

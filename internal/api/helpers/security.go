@@ -51,10 +51,10 @@ func RequiresApplicationSession() gin.HandlerFunc {
 			c.Next()
 			return
 		}
+
+		c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 		c.JSON(http.StatusUnauthorized, utils.H{
-			"_status":  "error",
-			"_message": "User must be authenticated",
-			"error":    "unauthorized request",
+			"error": shared.AccessDenied,
 		})
 		c.Abort()
 	}
@@ -95,9 +95,7 @@ func RequireActionTokenFromAuthenticatedUser() gin.HandlerFunc {
 		if authenticatedUser.ID != action.UserID {
 			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
 			c.JSON(http.StatusUnauthorized, utils.H{
-				"_status":  "error",
-				"_message": "Groups not available",
-				"error":    shared.AccessDenied,
+				"error": shared.AccessDenied,
 			})
 			c.Abort()
 			return
