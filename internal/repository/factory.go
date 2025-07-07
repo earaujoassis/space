@@ -52,3 +52,7 @@ func (f *RepositoryFactory) NewEmailRepository() *EmailRepository {
 func (f *RepositoryFactory) NewSettingRepository() *SettingRepository {
 	return NewSettingRepository(f.db)
 }
+
+func (f *RepositoryFactory) NewGroupRepository() *GroupRepository {
+	return NewGroupRepository(f.db)
+}

@@ -1,4 +1,4 @@
-package api
+package helpers
 
 import (
 	"testing"
@@ -9,23 +9,22 @@ import (
 	"github.com/earaujoassis/space/test/unit"
 )
 
-type ApiTestSuite struct {
+type HelpersTestSuite struct {
 	unit.ApiBaseTestSuite
 	Router *gin.Engine
 }
 
-func (s *ApiTestSuite) SetupSuite() {
+func (s *HelpersTestSuite) SetupSuite() {
 	s.ApiBaseTestSuite.SetupSuite()
 	gin.SetMode(gin.TestMode)
 	s.Router = s.SetupRouter()
 }
 
-func (s *ApiTestSuite) SetupTest() {
+func (s *HelpersTestSuite) SetupTest() {
 	s.ApiBaseTestSuite.SetupTest()
 	s.Router = s.SetupRouter()
-	ExposeRoutes(s.Router)
 }
 
 func TestClientsSuite(t *testing.T) {
-	suite.Run(t, new(ApiTestSuite))
+	suite.Run(t, new(HelpersTestSuite))
 }

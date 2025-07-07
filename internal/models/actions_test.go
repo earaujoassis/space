@@ -19,6 +19,7 @@ func TestValidActionModel(t *testing.T) {
 	assert.NotNil(t, err)
 
 	client := Client{
+		Model:        Model{ID: 1},
 		Name:         "internal",
 		Secret:       GenerateRandomString(64),
 		CanonicalURI: []string{"localhost"},
@@ -29,6 +30,7 @@ func TestValidActionModel(t *testing.T) {
 	err = client.BeforeSave(nil)
 	assert.Nil(t, err, fmt.Sprintf("%s", err))
 	user := User{
+		Model:         Model{ID: 1},
 		FirstName:     gofakeit.FirstName(),
 		LastName:      gofakeit.LastName(),
 		Username:      gofakeit.Username(),
