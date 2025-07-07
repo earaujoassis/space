@@ -82,7 +82,27 @@ func ActionTokenBearerAuthorization() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
 		c.Set("Action", action)
+		c.Next()
+	}
+}
+
+func RequireMatchBetweenActionTokenAndAuthenticatedUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		action := c.MustGet("Action").(models.Action)
+		authenticatedUser := c.MustGet("User").(models.User)
+		if authenticatedUser.ID != action.UserID {
+			c.Header("WWW-Authenticate", fmt.Sprintf("Bearer realm=\"%s\"", c.Request.RequestURI))
+			c.JSON(http.StatusUnauthorized, utils.H{
+				"_status":  "error",
+				"_message": "Groups not available",
+				"error":    shared.AccessDenied,
+			})
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
 }

@@ -28,28 +28,40 @@ func NewUserRepository(db *database.DatabaseService) *UserRepository {
 // FindByAccountHolder gets an user by its account holder (username or email)
 func (r *UserRepository) FindByAccountHolder(holder string) models.User {
 	var user models.User
-	r.db.GetDB().Preload("Client").Preload("Language").Where("username = ? OR email = ?", holder, holder).First(&user)
+	r.db.GetDB().
+		Preload("Client").
+		Preload("Language").
+		Where("username = ? OR email = ?", holder, holder).First(&user)
 	return user
 }
 
 // FindByPublicID gets an user by its public ID (used by client applications)
 func (r *UserRepository) FindByPublicID(publicID string) models.User {
 	var user models.User
-	r.db.GetDB().Preload("Client").Preload("Language").Where("public_id = ?", publicID).First(&user)
+	r.db.GetDB().
+		Preload("Client").
+		Preload("Language").
+		Where("public_id = ?", publicID).First(&user)
 	return user
 }
 
 // FindByUUID gets an user by its UUID (internal use only)
 func (r *UserRepository) FindByUUID(uuid string) models.User {
 	var user models.User
-	r.db.GetDB().Preload("Client").Preload("Language").Where("uuid = ?", uuid).First(&user)
+	r.db.GetDB().
+		Preload("Client").
+		Preload("Language").
+		Where("uuid = ?", uuid).First(&user)
 	return user
 }
 
 // FindByID gets an user by its ID (internal use only)
 func (r *UserRepository) FindByID(id uint) models.User {
 	var user models.User
-	r.db.GetDB().Preload("Client").Preload("Language").Where("id = ?", id).First(&user)
+	r.db.GetDB().
+		Preload("Client").
+		Preload("Language").
+		Where("id = ?", id).First(&user)
 	return user
 }
 

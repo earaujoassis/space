@@ -7,9 +7,9 @@ import (
 
 type Group struct {
 	Model
-	User     User           `gorm:"not null;foreignKey:UserID" validate:"required" json:"-"`
+	User     User           `gorm:"not null;foreignKey:UserID" validate:"nostructlevel" json:"-"`
 	UserID   uint           `gorm:"not null" json:"-"`
-	Client   Client         `gorm:"not null;foreignKey:ClientID" validate:"required" json:"-"`
+	Client   Client         `gorm:"not null;foreignKey:ClientID" validate:"nostructlevel" json:"-"`
 	ClientID uint           `gorm:"not null" json:"-"`
 	Tags     pq.StringArray `gorm:"type:text[];not null" validate:"required" json:"groups"`
 }

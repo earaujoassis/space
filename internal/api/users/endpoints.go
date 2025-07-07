@@ -50,5 +50,21 @@ func ExposeRoutes(router *gin.RouterGroup) {
 			helpers.RequiresApplicationSession(),
 			helpers.ActionTokenBearerAuthorization(),
 			sessionsRevokeHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		// Authorization type: action token / Bearer (for web use)
+		usersRoutes.GET("/:user_id/clients/:client_id/groups",
+			helpers.RequiresApplicationSession(),
+			helpers.ActionTokenBearerAuthorization(),
+			helpers.RequireMatchBetweenActionTokenAndAuthenticatedUser(),
+			groupsListHandler)
+
+		// Requires X-Requested-By and Origin (same-origin policy)
+		// Authorization type: action token / Bearer (for web use)
+		usersRoutes.PATCH("/:user_id/clients/:client_id/groups",
+			helpers.RequiresApplicationSession(),
+			helpers.ActionTokenBearerAuthorization(),
+			helpers.RequireMatchBetweenActionTokenAndAuthenticatedUser(),
+			groupsPatchHandler)
 	}
 }

@@ -14,3 +14,15 @@ func NewGroupRepository(db *database.DatabaseService) *GroupRepository {
 		BaseRepository: NewBaseRepository[models.Group](db),
 	}
 }
+
+func (r *GroupRepository) FindOrCreate(user models.User, client models.Client) models.Group {
+	var group models.Group
+	r.db.GetDB().
+		Preload("Client").
+		Preload("User").
+		Preload("User.Client").
+		Preload("User.Language").
+		Where("user_id = ? AND client_id = ?", user.ID, client.ID).
+		First(&group)
+	return group
+}
