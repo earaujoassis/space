@@ -2,7 +2,6 @@ package notifications
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/earaujoassis/space/internal/config"
@@ -44,12 +43,14 @@ func (n *Notifier) Announce(user models.User, name string, data utils.H) {
 			Data: data,
 		})
 		if err != nil {
-			logs.Propagatef(logs.LevelError, "could not enqueue task for email delivery: %s", name)
+			logs.Propagatef(logs.LevelError, "could not enqueue task for email delivery: %s: %s", name, err.Error())
 			return
 		}
-		info, err := enqueuer.Enqueue(workers.TypeEmailDelivery, payload)
-		fmt.Printf("%v\n", err)
-		fmt.Printf("%v\n", info)
+		_, err = enqueuer.Enqueue(workers.TypeEmailDelivery, payload)
+		if err != nil {
+			logs.Propagatef(logs.LevelError, "could not enqueue task for email delivery: %s: %s", name, err.Error())
+			return
+		}
 	default:
 		logs.Propagatef(logs.LevelInfo, "Action `%s` with data `%v`\n", name, data)
 	}

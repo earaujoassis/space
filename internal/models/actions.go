@@ -9,9 +9,9 @@ import (
 type Action struct {
 	UUID        string `validate:"omitempty,uuid4" json:"uuid"`
 	User        User   `validate:"required" json:"-"`
-	UserID      uint   `json:"user_id"`
+	UserID      uint   `validate:"min=1" json:"user_id"`
 	Client      Client `validate:"required" json:"-"`
-	ClientID    uint   `json:"client_id"`
+	ClientID    uint   `validate:"min=1" json:"client_id"`
 	Moment      int64  `json:"moment"`
 	ExpiresIn   int64  `json:"expires_in"`
 	IP          string `validate:"required" json:"ip"`

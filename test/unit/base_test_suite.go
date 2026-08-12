@@ -56,6 +56,9 @@ func (s *BaseTestSuite) SetupTest() {
 func (s *BaseTestSuite) cleanupDatabase() {
 	db, err := s.AppCtx.DB.GetDB().DB()
 	s.Require().NoError(err)
+	db.Exec("DELETE FROM groups")
+	db.Exec("DELETE FROM settings")
+	db.Exec("DELETE FROM emails")
 	db.Exec("DELETE FROM sessions")
 	db.Exec("DELETE FROM users")
 	db.Exec("DELETE FROM services")

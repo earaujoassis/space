@@ -1,0 +1,1 @@
+ALTER INDEX public.idx_settings_user_realm_category_property RENAME TO idx_settings_address;

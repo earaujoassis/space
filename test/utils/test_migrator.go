@@ -7,11 +7,14 @@ import (
 )
 
 func RunUnitTestMigrator(db *gorm.DB) error {
-	return db.AutoMigrate(&models.Language{},
+	return db.AutoMigrate(
+		&models.Language{},
 		&models.Client{},
 		&models.Service{},
-		&models.Session{},
 		&models.User{},
+		&models.Session{},
 		&models.Email{},
-		&models.Setting{})
+		&models.Setting{},
+		&models.Group{},
+	)
 }

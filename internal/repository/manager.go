@@ -50,3 +50,7 @@ func (rm *RepositoryManager) Emails() *EmailRepository {
 func (rm *RepositoryManager) Settings() *SettingRepository {
 	return rm.factory.NewSettingRepository()
 }
+
+func (rm *RepositoryManager) Groups() *GroupRepository {
+	return rm.factory.NewGroupRepository()
+}
