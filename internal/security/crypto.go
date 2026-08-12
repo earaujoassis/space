@@ -21,6 +21,7 @@ func Encrypt(key, text []byte) (string, error) {
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return "", err
 	}
+	//lint:ignore SA1019 CFB deprecated, planned migration to AES-GCM
 	cfb := cipher.NewCFBEncrypter(block, iv)
 	cfb.XORKeyStream(ciphertext[aes.BlockSize:], []byte(b))
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
@@ -38,6 +39,7 @@ func Decrypt(key []byte, encodedText string) ([]byte, error) {
 	}
 	iv := text[:aes.BlockSize]
 	text = text[aes.BlockSize:]
+	//lint:ignore SA1019 CFB deprecated, planned migration to AES-GCM
 	cfb := cipher.NewCFBDecrypter(block, iv)
 	cfb.XORKeyStream(text, text)
 	data, err := base64.StdEncoding.DecodeString(string(text))
