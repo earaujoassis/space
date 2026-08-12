@@ -1,4 +1,4 @@
-FROM golang:1.23.10-alpine3.22
+FROM golang:1.25.12-alpine3.24
 
 LABEL "com.quatrolabs.space"="quatroLABS Space"
 LABEL "description"="A user management microservice; OAuth 2 provider"
